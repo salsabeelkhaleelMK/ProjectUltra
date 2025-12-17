@@ -880,6 +880,8 @@ const leadTabs = computed(() => [
   { key: 'overview', label: 'Overview', count: tabCounts.value.overview },
   { key: 'note', label: 'Notes', count: tabCounts.value.note },
   { key: 'communication', label: 'Communication', count: tabCounts.value.communication },
+  { key: 'tradein', label: 'Trade-ins', count: tabCounts.value.tradein },
+  { key: 'financing', label: 'Financing', count: tabCounts.value.financing },
   { key: 'attachment', label: 'Attachments', count: tabCounts.value.attachment }
 ])
 

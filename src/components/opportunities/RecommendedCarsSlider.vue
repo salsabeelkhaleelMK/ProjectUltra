@@ -2,7 +2,7 @@
   <div v-if="recommendedCars.length > 0" class="mb-8">
     <h3 class="font-bold text-gray-800 text-sm mb-4">Recommended Cars</h3>
     <div class="relative">
-      <div class="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide scroll-smooth">
+      <div class="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide scroll-smooth" style="scroll-behavior: smooth;">
         <div
           v-for="car in recommendedCars"
           :key="car.id"

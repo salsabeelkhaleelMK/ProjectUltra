@@ -6,13 +6,17 @@
         <div
           v-for="(offer, index) in offers"
           :key="offer.id"
-          class="flex-none w-64 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+          class="flex-none w-64 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
           @click="handleOfferClick(offer)"
         >
           <!-- Main Offer Badge -->
-          <div v-if="index === 0" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 text-center">
+          <div
+            v-if="index === 0"
+            class="absolute top-2 right-2 z-10 bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm"
+          >
             Main Offer
           </div>
+          
           <div class="w-full h-36 bg-gray-200 flex items-center justify-center overflow-hidden">
             <img 
               v-if="offer.image" 
@@ -50,8 +54,9 @@ import { ref, onMounted } from 'vue'
 import { mockVehicles } from '@/api/mockData'
 import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
 
-const offers = ref([])
 const showModal = ref(false)
+
+const offers = ref([])
 
 onMounted(() => {
   // Use mock vehicles as offers (can be replaced with actual offers data)
@@ -78,4 +83,3 @@ const handleOfferClick = (offer) => {
   scrollbar-width: none;  /* Firefox */
 }
 </style>
-
