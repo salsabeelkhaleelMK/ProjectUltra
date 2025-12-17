@@ -113,13 +113,5 @@ const handleCancel = () => {
   selectedDate.value = ''
   selectedTime.value = ''
 }
-
-const handleCancel = () => {
-  emit('close')
-  // Reset
-  selectedOption.value = null
-  selectedDate.value = ''
-  selectedTime.value = ''
-}
 </script>
 
