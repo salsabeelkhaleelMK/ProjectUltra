@@ -1,0 +1,121 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle } from '@/api/vehicles'
+
+export const useVehiclesStore = defineStore('vehicles', () => {
+  // State
+  const vehicles = ref([])
+  const currentVehicle = ref(null)
+  const loading = ref(false)
+  const error = ref(null)
+  const filters = ref({
+    status: null,
+    brand: null,
+    search: ''
+  })
+  
+  // Getters
+  const totalVehicles = computed(() => vehicles.value.length)
+  const availableVehicles = computed(() => 
+    vehicles.value.filter(v => v.status === 'Available')
+  )
+  const totalInventoryValue = computed(() => 
+    vehicles.value.reduce((sum, v) => sum + v.price, 0)
+  )
+  
+  // Actions
+  async function loadVehicles() {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await fetchVehicles(filters.value)
+      vehicles.value = result.data
+    } catch (err) {
+      error.value = err.message
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function loadVehicleById(id) {
+    loading.value = true
+    error.value = null
+    try {
+      currentVehicle.value = await fetchVehicleById(id)
+    } catch (err) {
+      error.value = err.message
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function addVehicle(vehicleData) {
+    loading.value = true
+    error.value = null
+    try {
+      const newVehicle = await createVehicle(vehicleData)
+      vehicles.value.unshift(newVehicle)
+      return newVehicle
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function modifyVehicle(id, updates) {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedVehicle = await updateVehicle(id, updates)
+      const index = vehicles.value.findIndex(v => v.id === id)
+      if (index !== -1) {
+        vehicles.value[index] = updatedVehicle
+      }
+      return updatedVehicle
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function removeVehicle(id) {
+    loading.value = true
+    error.value = null
+    try {
+      await deleteVehicle(id)
+      vehicles.value = vehicles.value.filter(v => v.id !== id)
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  function setFilters(newFilters) {
+    filters.value = { ...filters.value, ...newFilters }
+    loadVehicles()
+  }
+  
+  return {
+    vehicles,
+    currentVehicle,
+    loading,
+    error,
+    filters,
+    totalVehicles,
+    availableVehicles,
+    totalInventoryValue,
+    loadVehicles,
+    loadVehicleById,
+    addVehicle,
+    modifyVehicle,
+    removeVehicle,
+    setFilters
+  }
+})
+

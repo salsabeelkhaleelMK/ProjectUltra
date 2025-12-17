@@ -1,0 +1,14 @@
+[build]
+  publish = "dist"
+  command = "echo 'Skipping build - using pre-built files'"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

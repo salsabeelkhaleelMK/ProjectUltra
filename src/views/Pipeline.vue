@@ -1,0 +1,640 @@
+<template>
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <h1 class="page-header-title">Sales Pipeline</h1>
+          <!-- Stage Cards (Tabs) -->
+          <div class="flex items-center gap-2 md:gap-4 mt-3 md:mt-4 overflow-x-auto pb-2 scrollbar-hide">
+            <div
+              v-for="tab in stageTabs"
+              :key="tab.key"
+              @click="setTab(tab.key)"
+              class="bg-white rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-all min-w-[120px] md:min-w-[140px] shrink-0"
+              :class="activeTab === tab.key ? 'ring-2 ring-blue-500' : ''"
+            >
+              <!-- Colored Bar -->
+              <div 
+                class="h-1 rounded-t-lg"
+                :class="tab.barColor"
+              ></div>
+              <!-- Content -->
+              <div class="p-3">
+                <div class="text-xs font-medium text-gray-600 mb-1">{{ tab.label }}</div>
+                <div class="flex items-center gap-2">
+                  <span 
+                    class="text-lg font-bold text-gray-900"
+                    :class="tab.key === 'open-leads' ? 'text-blue-600' : ''"
+                  >
+                    {{ tab.count }}
+                  </span>
+                  <span 
+                    v-if="tab.key === 'open-leads'"
+                    class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700"
+                  >
+                    {{ tab.count }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Search & Filters -->
+      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 flex-wrap">
+        <div class="flex-1 min-w-0 sm:min-w-[200px] md:min-w-[300px] max-w-full md:max-w-md">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input 
+              v-model="searchQuery"
+              @input="handleSearch"
+              type="text" 
+              placeholder="Search or ask a question" 
+              class="input-with-icon"
+            >
+          </div>
+        </div>
+        
+        <select v-model="filters.status" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+          <option value="">Status</option>
+          <option value="Valid">Valid</option>
+          <option value="Not valid">Not valid</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Not interested">Not interested</option>
+        </select>
+        
+        <select v-model="filters.priority" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+          <option value="">Priority</option>
+          <option value="Hot">Hot</option>
+          <option value="Normal">Normal</option>
+        </select>
+        
+        <select v-model="filters.source" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+          <option value="">Source</option>
+          <option value="Marketing">Marketing</option>
+        </select>
+        
+        <button class="btn-secondary text-sm">
+          <i class="fa-solid fa-plus mr-1"></i> More filters
+        </button>
+        
+        <button @click="clearFilters" class="btn-secondary text-sm">
+          Clear
+        </button>
+        
+        <button class="btn-secondary text-sm">
+          Save
+        </button>
+      </div>
+    </div>
+    
+    <!-- Table -->
+    <div class="p-4 md:p-8">
+      <!-- Add Button -->
+      <div v-if="activeTab === 'open-leads' || activeTab === 'open-opportunities'" class="mb-4 flex justify-end">
+        <button 
+          @click="showAddModal = true"
+          class="btn-primary-lg"
+        >
+          <i class="fa-solid fa-plus"></i> {{ getAddButtonLabel() }}
+        </button>
+      </div>
+      
+      <div v-if="filteredRows.length === 0" class="empty-state">
+        <i class="fa-solid fa-inbox empty-state-icon"></i>
+        <p class="empty-state-text">No records found</p>
+      </div>
+
+      <div v-else class="card overflow-hidden">
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                  <input type="checkbox" class="rounded">
+                </th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Customer</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Next action due</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Requested car</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Car status</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Source</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Assignee</th>
+                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Status</th>
+                <th class="px-3 md:px-6 py-3"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr 
+                v-for="row in filteredRows" 
+                :key="row.id"
+                class="hover:bg-gray-50 cursor-pointer transition-colors"
+                @click="handleRowClick(row)"
+              >
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                  <input type="checkbox" class="rounded">
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2 md:gap-3">
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0">
+                      {{ row.initials }}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-semibold text-gray-900 truncate">{{ row.customer }}</div>
+                      <div class="text-xs text-gray-500 truncate hidden sm:block">{{ row.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <span 
+                    class="text-xs md:text-sm font-medium"
+                    :class="row.priority === 'Hot' ? 'text-red-600' : 'text-gray-600'"
+                  >
+                    {{ row.nextAction }}
+                  </span>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-brands fa-volkswagen text-gray-400 text-xs md:text-sm"></i>
+                    <span class="text-xs md:text-sm font-medium text-gray-900 truncate max-w-[120px]">{{ row.car }}</span>
+                  </div>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold" :class="row.carStatusClass">
+                    {{ row.carStatus }}
+                  </span>
+                </td>
+                <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600 whitespace-nowrap">{{ row.source }}</td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex items-center justify-center text-[9px] md:text-[10px] font-bold text-gray-600 shrink-0">
+                      {{ row.assigneeInitials }}
+                    </div>
+                    <span class="text-xs md:text-sm text-gray-600 truncate max-w-[80px] hidden md:inline">{{ row.assignee }}</span>
+                  </div>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 rounded text-xs font-semibold" :class="row.statusClass">
+                    {{ row.status }}
+                  </span>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                  <button class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="text-xs md:text-sm text-gray-600 flex items-center">
+            Rows per page: 
+            <select class="ml-2 px-2 py-1 border border-gray-200 rounded text-xs md:text-sm">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-1 md:gap-2 flex-wrap">
+            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Previous</button>
+            <button class="px-2 md:px-3 py-1 text-xs md:text-sm bg-blue-600 text-white rounded">1</button>
+            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50">2</button>
+            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 hidden sm:inline-block">3</button>
+            <span class="px-1 md:px-2 text-xs md:text-sm text-gray-500 hidden sm:inline">...</span>
+            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Add Modal -->
+    <teleport to="body">
+      <div 
+        v-if="showAddModal" 
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+        @click.self="showAddModal = false"
+      >
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+          <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+            <h3 class="font-bold text-lg text-gray-900">{{ getModalTitle() }}</h3>
+            <p class="text-xs text-gray-500 mt-1">Fill in the details below</p>
+          </div>
+          
+          <div class="p-5 space-y-4">
+            <!-- Form fields based on active tab -->
+            <div v-if="activeTab === 'open-leads'">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <input 
+                v-model="newItem.customerName"
+                type="text" 
+                placeholder="Enter customer name..." 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Email</label>
+              <input 
+                v-model="newItem.email"
+                type="email" 
+                placeholder="customer@example.com" 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Requested Vehicle</label>
+              <input 
+                v-model="newItem.vehicle"
+                type="text" 
+                placeholder="e.g., Volkswagen ID.4" 
+                class="input"
+              >
+            </div>
+            
+            <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <input 
+                v-model="newItem.customerName"
+                type="text" 
+                placeholder="Enter customer name..." 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Vehicle</label>
+              <input 
+                v-model="newItem.vehicle"
+                type="text" 
+                placeholder="e.g., Porsche Taycan" 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Opportunity Value</label>
+              <input 
+                v-model="newItem.value"
+                type="number" 
+                placeholder="0" 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Probability (%)</label>
+              <input 
+                v-model="newItem.probability"
+                type="number" 
+                min="0"
+                max="100"
+                placeholder="75" 
+                class="input"
+              >
+            </div>
+            
+            <div v-else>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <input 
+                v-model="newItem.customerName"
+                type="text" 
+                placeholder="Enter customer name..." 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Vehicle</label>
+              <input 
+                v-model="newItem.vehicle"
+                type="text" 
+                placeholder="Vehicle model" 
+                class="input"
+              >
+              
+              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Reason</label>
+              <textarea 
+                v-model="newItem.reason"
+                rows="3"
+                placeholder="Reason for {{ activeTab === 'won' ? 'win' : 'loss' }}..." 
+                class="input resize-none"
+              ></textarea>
+            </div>
+          </div>
+          
+          <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+            <button 
+              @click="showAddModal = false"
+              class="btn-secondary text-sm"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="handleAdd"
+              class="btn-primary text-sm"
+            >
+              Create {{ getItemType() }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </teleport>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { pipelineStats, mockLeads, mockOpportunities } from '@/api/mockData'
+
+const router = useRouter()
+
+const stats = ref(pipelineStats)
+const activeTab = ref('open-leads')
+const searchQuery = ref('')
+const showAddModal = ref(false)
+const filters = ref({
+  status: '',
+  priority: '',
+  source: ''
+})
+
+const newItem = ref({
+  customerName: '',
+  email: '',
+  vehicle: '',
+  value: '',
+  probability: '',
+  reason: ''
+})
+
+const stageTabs = computed(() => [
+  { 
+    key: 'open-leads', 
+    label: 'Open Leads', 
+    count: stats.value.openLeads,
+    barColor: 'bg-gray-300'
+  },
+  { 
+    key: 'open-opportunities', 
+    label: 'Open opportunities', 
+    count: stats.value.openOpportunities,
+    barColor: 'bg-orange-500'
+  },
+  { 
+    key: 'in-negotiation', 
+    label: 'In negotiation', 
+    count: stats.value.inNegotiation,
+    barColor: 'bg-blue-500'
+  },
+  { 
+    key: 'won', 
+    label: 'Won', 
+    count: stats.value.won,
+    barColor: 'bg-green-500'
+  },
+  { 
+    key: 'lost', 
+    label: 'Lost', 
+    count: stats.value.lost,
+    barColor: 'bg-red-500'
+  }
+])
+
+const getAddButtonLabel = () => {
+  const labels = {
+    'open-leads': 'Create a new lead',
+    'open-opportunities': 'Create a new opportunity',
+    'in-negotiation': 'Create a new opportunity',
+    'won': 'Add won deal',
+    'lost': 'Add lost deal'
+  }
+  return labels[activeTab.value] || 'Add new'
+}
+
+const getModalTitle = () => {
+  const titles = {
+    'open-leads': 'Create New Lead',
+    'open-opportunities': 'Create New Opportunity',
+    'in-negotiation': 'Create New Opportunity',
+    'won': 'Add Won Deal',
+    'lost': 'Add Lost Deal'
+  }
+  return titles[activeTab.value] || 'Add New'
+}
+
+const getItemType = () => {
+  const types = {
+    'open-leads': 'Lead',
+    'open-opportunities': 'Opportunity',
+    'in-negotiation': 'Opportunity',
+    'won': 'Deal',
+    'lost': 'Deal'
+  }
+  return types[activeTab.value] || 'Item'
+}
+
+const handleAdd = () => {
+  // TODO: Implement actual add logic
+  console.log('Adding new item:', {
+    type: activeTab.value,
+    data: newItem.value
+  })
+  
+  // Reset form and close modal
+  newItem.value = {
+    customerName: '',
+    email: '',
+    vehicle: '',
+    value: '',
+    probability: '',
+    reason: ''
+  }
+  showAddModal.value = false
+}
+
+const rows = computed(() => {
+  const leadRows = mockLeads.map((lead) => ({
+    id: `lead-${lead.id}`,
+    stageKey: 'open-leads',
+    customer: lead.customer.name,
+    email: lead.customer.email,
+    initials: lead.customer.initials || lead.customer.name.slice(0,2).toUpperCase(),
+    nextAction: lead.nextActionDue || '1h 12m',
+    car: `${lead.requestedCar.brand} ${lead.requestedCar.model}`,
+    carStatus: lead.carStatus || 'New',
+    carStatusClass: lead.carStatus === 'New' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
+    requestType: lead.requestType || 'Quotation',
+    source: lead.source || 'Marketing',
+    assignee: lead.assignee,
+    assigneeInitials: lead.assigneeInitials || (lead.assignee ? lead.assignee.slice(0,2).toUpperCase() : 'NA'),
+    createdAt: formatDate(lead.createdAt),
+    lastActivity: formatDate(lead.lastActivity),
+    status: lead.status,
+    statusClass: getStatusClass(lead.status),
+    priority: lead.priority
+  }))
+  
+  const oppRows = mockOpportunities.map((opp) => {
+    let stageKey = 'open-opportunities'
+    if (opp.stage === 'In Negotiation' || opp.stage === 'In negotiation') {
+      stageKey = 'in-negotiation'
+    } else if (opp.stage === 'Closed') {
+      stageKey = 'won'
+    }
+    return {
+      id: `opp-${opp.id}`,
+      stageKey,
+      customer: opp.customer.name,
+      email: opp.customer.email,
+      initials: opp.customer.initials || opp.customer.name.slice(0,2).toUpperCase(),
+      nextAction: '1h 12m',
+      car: `${opp.vehicle.brand} ${opp.vehicle.model}`,
+      carStatus: 'New',
+      carStatusClass: 'bg-green-100 text-green-700',
+      requestType: 'Opportunity',
+      source: 'Marketing',
+      assignee: opp.assignee,
+      assigneeInitials: opp.assignee ? opp.assignee.slice(0,2).toUpperCase() : 'NA',
+      createdAt: formatDate(opp.createdAt),
+      lastActivity: formatDate(opp.lastActivity),
+      status: opp.stage,
+      statusClass: stageKey === 'in-negotiation' ? 'bg-orange-100 text-orange-700' : 'bg-purple-100 text-purple-700',
+      priority: 'Normal'
+    }
+  })
+  
+  // Add some mock "Won" and "Lost" records
+  const wonRows = [
+    {
+      id: 'won-1',
+      stageKey: 'won',
+      customer: 'John Doe',
+      email: 'john.doe@example.com',
+      initials: 'JD',
+      nextAction: '-',
+      car: 'Audi A6',
+      carStatus: 'New',
+      carStatusClass: 'bg-green-100 text-green-700',
+      requestType: 'Quotation',
+      source: 'Marketing',
+      assignee: 'Michael Thomas',
+      assigneeInitials: 'MT',
+      createdAt: '15/03/2025',
+      lastActivity: '15/03/2025',
+      status: 'Won',
+      statusClass: 'bg-green-100 text-green-700',
+      priority: 'Normal'
+    }
+  ]
+  
+  const lostRows = [
+    {
+      id: 'lost-1',
+      stageKey: 'lost',
+      customer: 'Jane Smith',
+      email: 'jane.smith@example.com',
+      initials: 'JS',
+      nextAction: '-',
+      car: 'BMW X5',
+      carStatus: 'New',
+      carStatusClass: 'bg-green-100 text-green-700',
+      requestType: 'Test Drive',
+      source: 'Marketing',
+      assignee: 'Sarah Jenkins',
+      assigneeInitials: 'SJ',
+      createdAt: '10/03/2025',
+      lastActivity: '10/03/2025',
+      status: 'Lost',
+      statusClass: 'bg-red-100 text-red-700',
+      priority: 'Normal'
+    }
+  ]
+  
+  return [...leadRows, ...oppRows, ...wonRows, ...lostRows]
+})
+
+const filteredRows = computed(() => {
+  let result = rows.value.filter(r => r.stageKey === activeTab.value)
+  
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(r => 
+      r.customer.toLowerCase().includes(query) ||
+      r.email.toLowerCase().includes(query) ||
+      r.car.toLowerCase().includes(query)
+    )
+  }
+  
+  // Apply status filter
+  if (filters.value.status) {
+    result = result.filter(r => r.status === filters.value.status)
+  }
+  
+  // Apply priority filter
+  if (filters.value.priority) {
+    result = result.filter(r => r.priority === filters.value.priority)
+  }
+  
+  // Apply source filter
+  if (filters.value.source) {
+    result = result.filter(r => r.source === filters.value.source)
+  }
+  
+  return result
+})
+
+const setTab = (key) => {
+  activeTab.value = key
+}
+
+const handleSearch = () => {
+  // Search is handled in computed property
+}
+
+const applyFilters = () => {
+  // Filters are handled in computed property
+}
+
+const clearFilters = () => {
+  filters.value = {
+    status: '',
+    priority: '',
+    source: ''
+  }
+  searchQuery.value = ''
+}
+
+const getStatusClass = (status) => {
+  const statusMap = {
+    'Valid': 'bg-green-100 text-green-700',
+    'Not valid': 'bg-red-100 text-red-700',
+    'Qualified': 'bg-gray-100 text-gray-700',
+    'Not interested': 'bg-red-100 text-red-700',
+    'Open': 'bg-blue-100 text-blue-700'
+  }
+  return statusMap[status] || 'bg-gray-100 text-gray-700'
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return '-'
+  const d = new Date(dateString)
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
+
+const handleRowClick = (row) => {
+  // Extract numeric ID from row.id (format: 'lead-1', 'opp-1', etc.)
+  const idMatch = row.id.match(/-(\d+)$/)
+  
+  if (activeTab.value === 'open-leads' && row.id.startsWith('lead-')) {
+    // Navigate to lead detail page
+    const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
+    router.push(`/leads/${leadId}`)
+  } else if (row.id.startsWith('opp-')) {
+    // Navigate to opportunity detail page
+    const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
+    router.push(`/opportunities/${oppId}`)
+  } else if (row.stageKey === 'won' || row.stageKey === 'lost') {
+    // For won/lost rows, navigate to first opportunity as fallback
+    // In a real app, these would have proper opportunity IDs
+    if (mockOpportunities.length > 0) {
+      router.push(`/opportunities/${mockOpportunities[0].id}`)
+    }
+  }
+}
+</script>
