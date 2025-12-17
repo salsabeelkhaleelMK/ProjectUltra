@@ -88,7 +88,7 @@
                       <i class="fa-solid fa-car text-lg md:text-2xl text-gray-400"></i>
                     </div>
                     <div class="min-w-0">
-                      <div class="font-semibold text-gray-900 text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{{ vehicle.brand }} {{ vehicle.model }}</div>
+                      <div class="font-semibold text-gray-900 text-xs truncate max-w-[120px] md:max-w-none">{{ vehicle.brand }} {{ vehicle.model }}</div>
                       <div class="text-xs text-gray-500">{{ vehicle.year }}</div>
                     </div>
                   </div>
@@ -102,14 +102,14 @@
                   </span>
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <span class="text-xs md:text-sm font-bold text-gray-900">€{{ formatCurrency(vehicle.price) }}</span>
+                  <span class="text-xs font-bold text-gray-900">€{{ formatCurrency(vehicle.price) }}</span>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600 whitespace-nowrap hidden md:table-cell">
+                <td class="px-3 md:px-6 py-4 text-xs text-gray-600 whitespace-nowrap hidden md:table-cell">
                   {{ formatNumber(vehicle.kilometers) }} km
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                   <span 
-                    class="text-xs md:text-sm font-medium"
+                    class="text-xs font-medium"
                     :class="vehicle.stockDays > 300 ? 'text-red-600' : 'text-gray-600'"
                   >
                     {{ vehicle.stockDays }} days
@@ -142,7 +142,7 @@
         
         <!-- Pagination -->
         <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="text-xs md:text-sm text-gray-600">
+          <div class="text-xs text-gray-600">
             Showing {{ vehiclesStore.vehicles.length }} of {{ vehiclesStore.totalVehicles }} vehicles
           </div>
           <div class="flex items-center gap-1 md:gap-2 flex-wrap">

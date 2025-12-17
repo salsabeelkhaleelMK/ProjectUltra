@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="relative flex items-center py-2 mb-6">
+  <div v-if="show" class="relative flex items-center py-1 mb-4">
     <div class="flex-grow border-t border-gray-200"></div>
     <div class="relative mx-4">
       <button 
@@ -18,14 +18,14 @@
         <!-- Vehicle Actions (at the top, only for opportunities) -->
         <template v-if="hasVehicleActions">
           <button 
-            v-if="actions.includes('addVehicle')"
+            v-if="filteredActions.includes('addVehicle')"
             @click="handleAction('addVehicle')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Add Vehicle
           </button>
           <button 
-            v-if="actions.includes('configureVehicle')"
+            v-if="filteredActions.includes('configureVehicle')"
             @click="handleAction('configureVehicle')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
@@ -33,51 +33,32 @@
           </button>
         </template>
         
-        <!-- Opportunity-specific Actions (Offer and Purchase, no icons) -->
-        <template v-if="hasOpportunityActions">
-          <div v-if="hasVehicleActions" class="border-t border-gray-100 my-1"></div>
-          <button 
-            v-if="actions.includes('offer')"
-            @click="handleAction('offer')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-          >
-            Offer
-          </button>
-          <button 
-            v-if="actions.includes('purchase')"
-            @click="handleAction('purchase')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-          >
-            Purchase
-          </button>
-        </template>
-        
         <!-- Common Actions -->
         <template v-if="hasCommonActions">
-          <div v-if="hasOpportunityActions || hasVehicleActions" class="border-t border-gray-100 my-1"></div>
+          <div v-if="hasVehicleActions" class="border-t border-gray-100 my-1"></div>
           <button 
-            v-if="actions.includes('note')"
+            v-if="filteredActions.includes('note')"
             @click="handleAction('note')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Note
           </button>
           <button 
-            v-if="actions.includes('financing')"
+            v-if="filteredActions.includes('financing')"
             @click="handleAction('financing')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Financing
           </button>
           <button 
-            v-if="actions.includes('tradein')"
+            v-if="filteredActions.includes('tradein')"
             @click="handleAction('tradein')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Trade-in
           </button>
           <button 
-            v-if="actions.includes('attachment')"
+            v-if="filteredActions.includes('attachment')"
             @click="handleAction('attachment')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
@@ -89,21 +70,21 @@
         <template v-if="hasCommunicationActions">
           <div class="border-t border-gray-100 my-1"></div>
           <button 
-            v-if="actions.includes('email')"
+            v-if="filteredActions.includes('email')"
             @click="handleAction('email')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
             <i class="fa-regular fa-envelope text-xs text-gray-400"></i> Send Email
           </button>
           <button 
-            v-if="actions.includes('whatsapp')"
+            v-if="filteredActions.includes('whatsapp')"
             @click="handleAction('whatsapp')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
             <i class="fa-brands fa-whatsapp text-xs text-gray-400"></i> Send WhatsApp
           </button>
           <button 
-            v-if="actions.includes('sms')"
+            v-if="filteredActions.includes('sms')"
             @click="handleAction('sms')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
@@ -142,6 +123,10 @@ const props = defineProps({
   actions: {
     type: Array,
     default: () => ['note', 'financing', 'tradein', 'attachment', 'email', 'whatsapp', 'sms']
+  },
+  activeTab: {
+    type: String,
+    default: 'overview'
   }
 })
 
@@ -149,20 +134,32 @@ const emit = defineEmits(['action'])
 
 const showMenu = ref(false)
 
-const hasCommunicationActions = computed(() => {
-  return props.actions.some(action => ['email', 'whatsapp', 'sms'].includes(action))
+// Filter actions based on active tab
+const filteredActions = computed(() => {
+  if (!props.activeTab || props.activeTab === 'overview') {
+    return props.actions
+  }
+  
+  const tabActionMap = {
+    'note': ['note'],
+    'communication': ['email', 'whatsapp', 'sms'],
+    'attachment': ['attachment']
+  }
+  
+  const allowedActions = tabActionMap[props.activeTab] || []
+  return props.actions.filter(action => allowedActions.includes(action))
 })
 
-const hasOpportunityActions = computed(() => {
-  return props.actions.some(action => ['offer', 'purchase'].includes(action))
+const hasCommunicationActions = computed(() => {
+  return filteredActions.value.some(action => ['email', 'whatsapp', 'sms'].includes(action))
 })
 
 const hasVehicleActions = computed(() => {
-  return props.actions.some(action => ['addVehicle', 'configureVehicle'].includes(action))
+  return filteredActions.value.some(action => ['addVehicle', 'configureVehicle'].includes(action))
 })
 
 const hasCommonActions = computed(() => {
-  return props.actions.some(action => ['note', 'financing', 'tradein', 'attachment'].includes(action))
+  return filteredActions.value.some(action => ['note', 'financing', 'tradein', 'attachment'].includes(action))
 })
 
 const handleAction = (action) => {

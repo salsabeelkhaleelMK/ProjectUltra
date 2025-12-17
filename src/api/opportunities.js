@@ -79,3 +79,33 @@ export const deleteOpportunity = async (id) => {
   mockOpportunities.splice(index, 1)
   return { success: true }
 }
+
+export const addOpportunityActivity = async (opportunityId, activity) => {
+  await delay()
+  const newActivity = {
+    id: mockActivities.length + 1,
+    opportunityId: parseInt(opportunityId),
+    timestamp: new Date().toISOString(),
+    ...activity
+  }
+  mockActivities.push(newActivity)
+  return newActivity
+}
+
+export const updateOpportunityActivity = async (opportunityId, activityId, updates) => {
+  await delay()
+  const activity = mockActivities.find(a => a.id === parseInt(activityId) && a.opportunityId === parseInt(opportunityId))
+  if (!activity) throw new Error('Activity not found')
+  
+  Object.assign(activity, updates, { timestamp: new Date().toISOString() })
+  return activity
+}
+
+export const deleteOpportunityActivity = async (opportunityId, activityId) => {
+  await delay()
+  const index = mockActivities.findIndex(a => a.id === parseInt(activityId) && a.opportunityId === parseInt(opportunityId))
+  if (index === -1) throw new Error('Activity not found')
+  
+  mockActivities.splice(index, 1)
+  return { success: true }
+}

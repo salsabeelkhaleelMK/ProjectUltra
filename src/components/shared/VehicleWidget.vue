@@ -1,28 +1,31 @@
 <template>
-  <details 
-    v-if="show"
-    class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 group overflow-hidden"
-  >
-    <summary class="block p-4 cursor-pointer select-none bg-white hover:bg-gray-50 transition-colors">
-      <!-- Request message at the top -->
-      <div v-if="requestMessage" class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-        <div class="text-xs font-medium text-gray-500 mb-1">Request message</div>
-        <p class="text-sm text-slate-700 leading-snug">{{ requestMessage }}</p>
-      </div>
-      
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-12 bg-gray-200 rounded-md overflow-hidden shrink-0 border border-gray-100">
-            <img v-if="image" :src="image" alt="Car" class="w-full h-full object-cover">
-            <i v-else class="fa-solid fa-car text-3xl text-gray-400 w-full h-full flex items-center justify-center"></i>
-          </div>
-          <div>
-            <div class="text-xs text-gray-500 font-medium mb-0.5">{{ label }}</div>
-            <div class="flex items-center gap-2">
-              <div class="font-bold text-slate-800 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
+  <div v-if="show" class="mb-8">
+    <div class="flex items-center gap-2 mb-4">
+      <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
+      <h3 class="font-bold text-gray-800 text-sm">{{ label }}</h3>
+    </div>
+    <details 
+      class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 group overflow-hidden"
+    >
+      <summary class="block p-4 cursor-pointer select-none bg-white hover:bg-gray-50 transition-colors">
+        <!-- Request message at the top -->
+        <div v-if="requestMessage" class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+          <div class="text-xs font-medium text-gray-500 mb-1">Request message</div>
+          <p class="text-sm text-slate-700 leading-snug">{{ requestMessage }}</p>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-12 bg-gray-200 rounded-md overflow-hidden shrink-0 border border-gray-100">
+              <img v-if="image" :src="image" alt="Car" class="w-full h-full object-cover">
+              <i v-else class="fa-solid fa-car text-3xl text-gray-400 w-full h-full flex items-center justify-center"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <div class="font-bold text-slate-800 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
+              </div>
             </div>
           </div>
-        </div>
         <div class="flex items-center gap-4">
           <button 
             v-if="showOpenAd && price" 
@@ -35,6 +38,12 @@
             class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
           >
             <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
+          </div>
+          <div 
+            v-else
+            class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-semibold rounded-md"
+          >
+            <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
           </div>
           <div v-if="price" class="text-right">
             <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
@@ -99,12 +108,6 @@
       <div>
         <div class="flex justify-between items-center mb-4">
           <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider">VEHICLE DETAILS</h4>
-          <div 
-            v-if="stockDays !== undefined && stockDays !== null"
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
-          >
-            <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
-          </div>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6">
           <div v-if="registration">
@@ -141,7 +144,8 @@
         </div>
       </div>
     </div>
-  </details>
+    </details>
+  </div>
 </template>
 
 <script setup>

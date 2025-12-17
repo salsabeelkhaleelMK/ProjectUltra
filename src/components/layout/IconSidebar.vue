@@ -57,22 +57,13 @@
     
     <!-- Primary -->
     <router-link 
-      to="/leads/1" 
+      to="/tasks/1" 
       class="nav-icon"
-      :class="{ 'nav-icon-active': isActive('/leads') }"
-      title="Lead (first)"
+      :class="{ 'nav-icon-active': isActive('/tasks') }"
+      title="Tasks"
     >
-      <i class="fa-solid fa-address-book"></i>
+      <i class="fa-solid fa-list-check"></i>
       <div v-if="hotLeadsCount > 0" class="absolute -right-1 top-0 w-2 h-2 bg-red-500 rounded-full"></div>
-    </router-link>
-    
-    <router-link 
-      to="/opportunities/1" 
-      class="nav-icon"
-      :class="{ 'nav-icon-active': isActive('/opportunities') }"
-      title="Opportunities"
-    >
-      <i class="fa-solid fa-gem"></i>
     </router-link>
     
     <router-link 
@@ -93,79 +84,60 @@
       <i class="fa-regular fa-calendar"></i>
     </router-link>
     
-    <!-- Lists Icon with Dropdown -->
-    <div class="relative" ref="listsContainer">
-      <button
-        @click.stop="toggleListsMenu"
-        class="nav-icon"
-        :class="{ 'nav-icon-active': isActive('/contacts') || isActive('/vehicles') || showListsMenu }"
-        title="Lists"
-      >
-        <i class="fa-solid fa-list"></i>
-      </button>
-      
-      <!-- Lists Dropdown Menu -->
-      <transition name="dropdown">
-        <div 
-          v-if="showListsMenu"
-          class="absolute left-full ml-2 top-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
-          @click.stop
-        >
-          <router-link 
-            to="/contacts"
-            @click="showListsMenu = false"
-            class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
-            :class="{ 'bg-blue-50 text-blue-700': isActive('/contacts') }"
-          >
-            <i class="fa-solid fa-users w-5 text-gray-400"></i> Contacts & Accounts
-          </router-link>
-          <router-link 
-            to="/vehicles"
-            @click="showListsMenu = false"
-            class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 border-t border-gray-100"
-            :class="{ 'bg-blue-50 text-blue-700': isActive('/vehicles') }"
-          >
-            <i class="fa-solid fa-car w-5 text-gray-400"></i> Vehicles
-          </router-link>
-        </div>
-      </transition>
-    </div>
+    <router-link 
+      to="/reports" 
+      class="nav-icon"
+      :class="{ 'nav-icon-active': isActive('/reports') }"
+      title="Reports"
+    >
+      <i class="fa-solid fa-chart-pie"></i>
+    </router-link>
     
     <!-- Bottom Icons -->
     <div class="mt-auto pb-4 flex flex-col gap-6 items-center w-full">
-      <!-- Other Icon with Dropdown -->
-      <div class="relative" ref="otherContainer">
+      <!-- Marketing Icon -->
+      <router-link 
+        to="/marketing" 
+        class="nav-icon"
+        :class="{ 'nav-icon-active': isActive('/marketing') }"
+        title="Marketing"
+      >
+        <i class="fa-solid fa-bullhorn"></i>
+      </router-link>
+      
+      <!-- Lists Icon with Dropdown -->
+      <div class="relative" ref="listsContainer">
         <button
-          @click.stop="toggleOtherMenu"
+          @click.stop="toggleListsMenu"
           class="nav-icon"
-          :class="{ 'nav-icon-active': isActive('/marketing') || isActive('/reports') || showOtherMenu }"
-          title="Other"
+          :class="{ 'nav-icon-active': isActive('/contacts') || isActive('/vehicles') || showListsMenu }"
+          title="Lists"
         >
-          <i class="fa-solid fa-ellipsis"></i>
+          <i class="fa-solid fa-list"></i>
         </button>
         
-        <!-- Other Dropdown Menu -->
+        <!-- Lists Dropdown Menu -->
         <transition name="dropdown">
           <div 
-            v-if="showOtherMenu"
+            v-if="showListsMenu"
             class="absolute left-full ml-2 bottom-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
             @click.stop
           >
             <router-link 
-              to="/marketing"
-              @click="showOtherMenu = false"
+              to="/contacts"
+              @click="showListsMenu = false"
               class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
-              :class="{ 'bg-blue-50 text-blue-700': isActive('/marketing') }"
+              :class="{ 'bg-blue-50 text-blue-700': isActive('/contacts') }"
             >
-              <i class="fa-solid fa-bullhorn w-5 text-gray-400"></i> Marketing
+              <i class="fa-solid fa-users w-5 text-gray-400"></i> Contacts & Accounts
             </router-link>
             <router-link 
-              to="/reports"
-              @click="showOtherMenu = false"
+              to="/vehicles"
+              @click="showListsMenu = false"
               class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 border-t border-gray-100"
-              :class="{ 'bg-blue-50 text-blue-700': isActive('/reports') }"
+              :class="{ 'bg-blue-50 text-blue-700': isActive('/vehicles') }"
             >
-              <i class="fa-solid fa-chart-pie w-5 text-gray-400"></i> Reports
+              <i class="fa-solid fa-car w-5 text-gray-400"></i> Vehicles
             </router-link>
           </div>
         </transition>
@@ -193,10 +165,8 @@ const leadsStore = useLeadsStore()
 
 const showAddMenu = ref(false)
 const showListsMenu = ref(false)
-const showOtherMenu = ref(false)
 const addContainer = ref(null)
 const listsContainer = ref(null)
-const otherContainer = ref(null)
 
 const hotLeadsCount = computed(() => leadsStore.hotLeads.length)
 
@@ -208,7 +178,6 @@ const toggleAddMenu = () => {
   showAddMenu.value = !showAddMenu.value
   if (showAddMenu.value) {
     showListsMenu.value = false
-    showOtherMenu.value = false
   }
 }
 
@@ -216,15 +185,6 @@ const toggleListsMenu = () => {
   showListsMenu.value = !showListsMenu.value
   if (showListsMenu.value) {
     showAddMenu.value = false
-    showOtherMenu.value = false
-  }
-}
-
-const toggleOtherMenu = () => {
-  showOtherMenu.value = !showOtherMenu.value
-  if (showOtherMenu.value) {
-    showAddMenu.value = false
-    showListsMenu.value = false
   }
 }
 
@@ -235,11 +195,9 @@ const handleAddItem = (type) => {
   // For now, navigate to the appropriate page or show a modal
   switch (type) {
     case 'lead':
-      // Navigate to leads page or show add lead modal
-      router.push('/leads/1')
-      break
     case 'opportunity':
-      router.push('/opportunities/1')
+      // Navigate to tasks page
+      router.push('/tasks/1')
       break
     case 'contact':
       router.push('/contacts')
@@ -256,9 +214,6 @@ const handleClickOutside = (event) => {
   }
   if (listsContainer.value && !listsContainer.value.contains(event.target)) {
     showListsMenu.value = false
-  }
-  if (otherContainer.value && !otherContainer.value.contains(event.target)) {
-    showOtherMenu.value = false
   }
 }
 

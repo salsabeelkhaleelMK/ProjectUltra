@@ -19,7 +19,7 @@ export const mockLeads = [
       model: 'A6 Allroad', 
       year: 2023, 
       price: 19000, 
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5ap8dR1YoIY8e1Yopb3EojZi1LTuCvzymmg&s',
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
       vin: '7015733W8749',
       kilometers: 102000,
       fuelType: 'Petrol',
@@ -54,7 +54,7 @@ export const mockLeads = [
       model: 'EQS', 
       year: 2024, 
       price: 95000, 
-      image: '',
+      image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
       vin: '8912345X6789',
       kilometers: 0,
       fuelType: 'Electric',
@@ -89,7 +89,7 @@ export const mockLeads = [
       model: 'EQS', 
       year: 2023, 
       price: 88000, 
-      image: '',
+      image: 'https://images.unsplash.com/photo-1599912027765-a69c78bfa3aa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fG1lcmNlZGVzfGVufDB8fDB8fHww',
       vin: '7890123Y4567',
       kilometers: 15000,
       fuelType: 'Electric',
@@ -125,6 +125,7 @@ export const mockOpportunities = [
       model: 'e-tron GT', 
       year: 2024,
       price: 98000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
       dealership: 'Firenze',
       fuelType: 'Electric',
       gearType: 'Automatic',
@@ -132,7 +133,7 @@ export const mockOpportunities = [
       stockDays: 12,
       requestMessage: 'Looking for a new e-tron GT. What are the financing options?'
     },
-    stage: 'Open',
+    stage: 'Qualified',
     probability: 40,
     value: 98000,
     expectedCloseDate: '2025-04-30',
@@ -162,6 +163,7 @@ export const mockOpportunities = [
       model: 'Taycan', 
       year: 2024,
       price: 120000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
       dealership: 'Milano',
       fuelType: 'Electric',
       gearType: 'Automatic',
@@ -169,7 +171,7 @@ export const mockOpportunities = [
       stockDays: null,
       requestMessage: 'Interested in a Taycan. Do you have any in a specific color?'
     },
-    stage: 'Open',
+    stage: 'Qualified',
     probability: 50,
     value: 120000,
     expectedCloseDate: '2025-05-15',
@@ -185,6 +187,7 @@ export const mockOpportunities = [
       model: 'iX', 
       year: 2024,
       price: 105000,
+      image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
       dealership: 'Roma',
       fuelType: 'Electric',
       gearType: 'Automatic',
@@ -197,8 +200,9 @@ export const mockOpportunities = [
     value: 105000,
     expectedCloseDate: '2025-03-20',
     assignee: 'David Miller',
-    createdAt: '2025-02-15T10:00:00',
-    lastActivity: '2025-03-20T16:45:00'
+    createdAt: '2024-11-15T10:00:00',
+    lastActivity: '2024-12-25T16:45:00', // Delivery date - matches delivery activity
+    contractDate: '2024-12-20T15:00:00' // Contract signed before delivery - perfect for DFB
   },
   {
     id: 4,
@@ -208,7 +212,7 @@ export const mockOpportunities = [
       model: 'Model S', 
       year: 2024,
       price: 95000,
-      image: 'https://example.com/tesla_model_s.jpg',
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       vin: 'TSLA2024MODELS123',
       kilometers: 5000,
       fuelType: 'Electric',
@@ -228,6 +232,259 @@ export const mockOpportunities = [
     source: 'Website',
     createdAt: '2025-03-15T11:00:00',
     lastActivity: '2025-03-26T14:20:00'
+  },
+  {
+    id: 5,
+    customer: { id: 8, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901234567890' },
+    vehicle: { 
+      brand: 'Mercedes-Benz', 
+      model: 'EQS', 
+      year: 2024,
+      price: 110000,
+      image: 'https://images.unsplash.com/photo-1599912027765-a69c78bfa3aa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fG1lcmNlZGVzfGVufDB8fDB8fHww',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 20,
+      requestMessage: 'Interested in EQS. Need more information about features.'
+    },
+    stage: 'Qualified',
+    probability: 35,
+    value: 110000,
+    expectedCloseDate: '2025-06-01',
+    assignee: 'Michael Thomas',
+    source: 'Website',
+    createdAt: '2024-12-20T10:00:00', // 7+ days ago (OOFB criteria)
+    lastActivity: '2024-12-20T10:00:00'
+    // No offers, no appointment - perfect for OOFB
+  },
+  {
+    id: 6,
+    customer: { id: 9, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901987654321' },
+    vehicle: { 
+      brand: 'Volkswagen', 
+      model: 'ID.4', 
+      year: 2024,
+      price: 45000,
+      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Looking for an ID.4. What are the available options?'
+    },
+    stage: 'Qualified',
+    probability: 30,
+    value: 45000,
+    expectedCloseDate: '2025-07-01',
+    assignee: 'Sarah Jenkins',
+    source: 'Marketing',
+    createdAt: '2024-12-10T09:00:00', // 14+ days ago (UFB criteria)
+    lastActivity: '2024-12-10T09:00:00'
+    // No offers, no appointment - perfect for UFB
+  },
+  {
+    id: 7,
+    customer: { id: 10, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456' },
+    vehicle: { 
+      brand: 'BMW', 
+      model: 'i4', 
+      year: 2024,
+      price: 65000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 10,
+      requestMessage: 'Interested in BMW i4. Need financing details.'
+    },
+    stage: 'In Negotiation',
+    probability: 70,
+    value: 65000,
+    expectedCloseDate: '2025-04-15',
+    assignee: 'David Miller',
+    source: 'Website',
+    createdAt: '2024-12-15T11:00:00',
+    lastActivity: '2024-12-20T14:00:00' // 5+ days in negotiation (OFB criteria)
+    // Has offers (stage is In Negotiation) but no contract - perfect for OFB
+  },
+  {
+    id: 8,
+    customer: { id: 11, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766' },
+    vehicle: { 
+      brand: 'Audi', 
+      model: 'Q4 e-tron', 
+      year: 2024,
+      price: 55000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 18,
+      requestMessage: 'Interested in Q4 e-tron. When can I test drive?'
+    },
+    stage: 'In Negotiation',
+    probability: 60,
+    value: 55000,
+    expectedCloseDate: '2025-05-20',
+    assignee: 'Michael Thomas',
+    source: 'Marketing',
+    createdAt: '2024-12-18T10:00:00',
+    lastActivity: '2024-12-25T15:00:00',
+    contractDate: null // No contract date - perfect for NFU
+    // In Negotiation, no contract date, no appointment - perfect for NFU
+  },
+  {
+    id: 9,
+    customer: { id: 12, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666' },
+    vehicle: { 
+      brand: 'Porsche', 
+      model: 'Macan Electric', 
+      year: 2024,
+      price: 85000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 5,
+      requestMessage: 'Interested in Macan Electric. Ready to proceed.'
+    },
+    stage: 'Closed',
+    probability: 100,
+    value: 85000,
+    expectedCloseDate: '2025-01-15',
+    assignee: 'Sarah Jenkins',
+    source: 'Website',
+    createdAt: '2024-12-01T09:00:00',
+    lastActivity: '2024-12-22T16:00:00',
+    contractDate: '2024-12-22T16:00:00' // Contract signed date - perfect for CFB
+    // Closed Won (contract signed) but not delivered yet - perfect for CFB
+  },
+  {
+    id: 10,
+    customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888' },
+    vehicle: { 
+      brand: 'Mercedes-Benz', 
+      model: 'EQC', 
+      year: 2024,
+      price: 75000,
+      image: 'https://images.unsplash.com/photo-1605822102629-918beea85679?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDh8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 14,
+      requestMessage: 'Interested in EQC. Need information about charging infrastructure.'
+    },
+    stage: 'In Negotiation',
+    probability: 75,
+    value: 75000,
+    expectedCloseDate: '2025-05-10',
+    assignee: 'David Miller',
+    source: 'Website',
+    createdAt: '2024-12-05T10:00:00',
+    lastActivity: '2024-12-15T11:00:00', // 10+ days in negotiation (UFB criteria)
+    contractDate: null // No contract date - perfect for UFB (In Negotiation)
+    // In Negotiation for 10+ days without contract - perfect for UFB
+  },
+  {
+    id: 11,
+    customer: { id: 14, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666' },
+    vehicle: { 
+      brand: 'BMW', 
+      model: 'iX3', 
+      year: 2024,
+      price: 68000,
+      image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 22,
+      requestMessage: 'Interested in iX3. What are the warranty terms?'
+    },
+    stage: 'In Negotiation',
+    probability: 80,
+    value: 68000,
+    expectedCloseDate: '2025-04-20',
+    assignee: 'Michael Thomas',
+    source: 'Marketing',
+    createdAt: '2024-12-10T09:00:00',
+    lastActivity: '2024-12-20T14:00:00',
+    contractDate: '2024-12-20T14:00:00' // Has contract date - should NOT show OFB/UFB/NFU
+    // In Negotiation with contract date - no task widgets should appear
+  },
+  {
+    id: 12,
+    customer: { id: 15, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901999888777' },
+    vehicle: { 
+      brand: 'Audi', 
+      model: 'A6 e-tron', 
+      year: 2024,
+      price: 90000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Interested in A6 e-tron. When can I schedule a test drive?'
+    },
+    stage: 'In Negotiation',
+    probability: 70,
+    value: 90000,
+    expectedCloseDate: '2025-05-05',
+    assignee: 'Sarah Jenkins',
+    source: 'Website',
+    createdAt: '2024-12-12T11:00:00',
+    lastActivity: '2024-12-18T10:00:00',
+    contractDate: null, // No contract date
+    scheduledAppointment: {
+      id: 21,
+      title: 'Test Drive - Daniel Kim',
+      start: '2026-01-10T14:00:00', // Future appointment
+      end: '2026-01-10T15:00:00',
+      type: 'appointment',
+      customer: 'Daniel Kim',
+      vehicle: 'Audi A6 e-tron',
+      assignee: 'Sarah Jenkins',
+      assigneeId: 2,
+      dealership: 'Milano',
+      team: 'Sales (New)',
+      status: 'confirmed'
+    }
+    // In Negotiation with future appointment - should NOT show NFU
+  },
+  {
+    id: 13,
+    customer: { id: 16, name: 'Rachel Green', initials: 'RG', email: 'rachel.green@example.com', phone: '+4901555444333' },
+    vehicle: { 
+      brand: 'Volkswagen', 
+      model: 'ID.3', 
+      year: 2024,
+      price: 40000,
+      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 16,
+      requestMessage: 'Interested in ID.3. What financing options are available?'
+    },
+    stage: 'Qualified',
+    probability: 40,
+    value: 40000,
+    expectedCloseDate: '2025-06-15',
+    assignee: 'David Miller',
+    source: 'Marketing',
+    createdAt: '2024-12-01T08:00:00', // 14+ days ago
+    lastActivity: '2024-12-01T08:00:00'
+    // Open for 14+ days, no offers, no appointment - stale but no task widget (UFB is for In Negotiation)
   }
 ]
 
@@ -271,6 +528,7 @@ export const mockVehicles = [
     vin: '7015733W8749',
     status: 'Available',
     price: 45000,
+    image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
     kilometers: 0,
     fuelType: 'Electric',
     gearType: 'Automatic',
@@ -287,6 +545,7 @@ export const mockVehicles = [
     vin: '8912345X6789',
     status: 'In Stock',
     price: 95000,
+    image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
     kilometers: 0,
     fuelType: 'Electric',
     gearType: 'Automatic',
@@ -303,12 +562,47 @@ export const mockVehicles = [
     vin: '7015733W8750',
     status: 'In Stock',
     price: 19000,
+    image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
     kilometers: 102000,
     fuelType: 'Petrol',
     gearType: 'Manual',
     dealership: 'Firenze',
     stockDays: 412,
     color: 'Silver',
+    requestedBy: []
+  },
+  {
+    id: 4,
+    brand: 'BMW',
+    model: 'X5',
+    year: 2024,
+    vin: 'BMW2024X5001',
+    status: 'In Stock',
+    price: 75000,
+    image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+    kilometers: 0,
+    fuelType: 'Petrol',
+    gearType: 'Automatic',
+    dealership: 'Milano',
+    stockDays: 8,
+    color: 'Black',
+    requestedBy: []
+  },
+  {
+    id: 5,
+    brand: 'BMW',
+    model: 'iX',
+    year: 2024,
+    vin: 'BMW2024IX001',
+    status: 'In Stock',
+    price: 105000,
+    image: 'https://images.unsplash.com/photo-1605822102629-918beea85679?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDh8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+    kilometers: 0,
+    fuelType: 'Electric',
+    gearType: 'Automatic',
+    dealership: 'Roma',
+    stockDays: 15,
+    color: 'White',
     requestedBy: []
   }
 ]
@@ -748,14 +1042,14 @@ export const mockActivities = [
     timestamp: '2025-03-01T09:00:00',
     opportunityId: 2
   },
-  // Opportunity 3 activities
+  // Opportunity 3 activities (DFB - Delivery completed, 3+ days ago)
   {
     id: 12,
     type: 'delivery',
     user: 'David Miller',
     action: 'completed delivery',
     content: 'Vehicle delivered successfully. Customer satisfied with the purchase.',
-    timestamp: '2025-03-20T16:45:00',
+    timestamp: '2024-12-25T16:45:00', // 3+ days ago - perfect for DFB
     opportunityId: 3
   },
   {
@@ -764,7 +1058,7 @@ export const mockActivities = [
     user: 'David Miller',
     action: 'added a note',
     content: 'Final paperwork completed. Payment received in full.',
-    timestamp: '2025-03-20T14:00:00',
+    timestamp: '2024-12-25T14:00:00',
     opportunityId: 3
   },
   {
@@ -773,7 +1067,7 @@ export const mockActivities = [
     user: 'David Miller',
     action: 'added a note',
     content: 'Customer very satisfied with the purchase process. Potential referral opportunity.',
-    timestamp: '2025-03-19T11:00:00',
+    timestamp: '2024-12-24T11:00:00',
     opportunityId: 3
   },
   {
@@ -782,7 +1076,7 @@ export const mockActivities = [
     user: 'David Miller',
     action: 'made a call',
     content: 'Confirmed delivery date and time. Customer will pick up at dealership.',
-    timestamp: '2025-03-18T10:30:00',
+    timestamp: '2024-12-23T10:30:00',
     opportunityId: 3
   },
   {
@@ -790,7 +1084,7 @@ export const mockActivities = [
     type: 'opportunity-won',
     user: 'David Miller',
     action: 'marked opportunity as won',
-    timestamp: '2025-03-15T15:00:00',
+    timestamp: '2024-12-20T15:00:00', // Contract signed date
     opportunityId: 3
   },
   {
@@ -798,7 +1092,7 @@ export const mockActivities = [
     type: 'opportunity-created',
     user: 'System',
     action: 'Opportunity was created from showroom visit',
-    timestamp: '2025-02-15T10:00:00',
+    timestamp: '2024-11-15T10:00:00',
     opportunityId: 3
   },
   // Opportunity 4 activities
@@ -854,6 +1148,249 @@ export const mockActivities = [
     action: 'Opportunity was created from website inquiry',
     timestamp: '2025-03-15T11:00:00',
     opportunityId: 4
+  },
+  // Opportunity 5 activities (OOFB - Open for 7+ days without offers)
+  {
+    id: 26,
+    type: 'note',
+    user: 'Michael Thomas',
+    action: 'added a note',
+    content: 'Initial contact made. Customer interested in EQS features.',
+    timestamp: '2024-12-20T10:30:00',
+    opportunityId: 5
+  },
+  {
+    id: 27,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: '2024-12-20T10:00:00',
+    opportunityId: 5
+  },
+  // Opportunity 6 activities (UFB - Open for 14+ days without offers)
+  {
+    id: 28,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Initial call. Customer asked about ID.4 availability.',
+    timestamp: '2024-12-10T09:30:00',
+    opportunityId: 6
+  },
+  {
+    id: 29,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from marketing campaign',
+    timestamp: '2024-12-10T09:00:00',
+    opportunityId: 6
+  },
+  // Opportunity 7 activities (OFB - In Negotiation for 5+ days without contract)
+  {
+    id: 30,
+    type: 'offer',
+    user: 'David Miller',
+    action: 'created an offer',
+    content: 'Initial offer sent for BMW i4',
+    timestamp: '2024-12-20T14:00:00',
+    opportunityId: 7
+  },
+  {
+    id: 31,
+    type: 'call',
+    user: 'David Miller',
+    action: 'made a call',
+    content: 'Discussed offer details. Customer reviewing financing options.',
+    timestamp: '2024-12-19T11:00:00',
+    opportunityId: 7
+  },
+  {
+    id: 32,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: '2024-12-15T11:00:00',
+    opportunityId: 7
+  },
+  // Opportunity 8 activities (NFU - In Negotiation with no contract date)
+  {
+    id: 33,
+    type: 'offer',
+    user: 'Michael Thomas',
+    action: 'created an offer',
+    content: 'Offer sent for Audi Q4 e-tron',
+    timestamp: '2024-12-25T15:00:00',
+    opportunityId: 8
+  },
+  {
+    id: 34,
+    type: 'email',
+    user: 'Michael Thomas',
+    action: 'sent an email',
+    content: 'Sent offer details and specifications.',
+    timestamp: '2024-12-24T10:00:00',
+    opportunityId: 8
+  },
+  {
+    id: 35,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from marketing campaign',
+    timestamp: '2024-12-18T10:00:00',
+    opportunityId: 8
+  },
+  // Opportunity 9 activities (CFB - Contract signed but not delivered)
+  {
+    id: 36,
+    type: 'opportunity-won',
+    user: 'Sarah Jenkins',
+    action: 'marked opportunity as won',
+    content: 'Contract signed. Vehicle preparation in progress.',
+    timestamp: '2024-12-22T16:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 37,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Contract finalized. Payment received. Preparing vehicle for delivery.',
+    timestamp: '2024-12-22T14:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 38,
+    type: 'offer',
+    user: 'Sarah Jenkins',
+    action: 'created an offer',
+    content: 'Final offer accepted for Macan Electric',
+    timestamp: '2024-12-20T11:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 39,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: '2024-12-01T09:00:00',
+    opportunityId: 9
+  },
+  // Opportunity 10 activities (UFB - In Negotiation for 10+ days without contract)
+  {
+    id: 40,
+    type: 'offer',
+    user: 'David Miller',
+    action: 'created an offer',
+    content: 'Initial offer sent for Mercedes-Benz EQC',
+    timestamp: '2024-12-15T11:00:00',
+    opportunityId: 10
+  },
+  {
+    id: 41,
+    type: 'call',
+    user: 'David Miller',
+    action: 'made a call',
+    content: 'Discussed offer details. Customer reviewing terms.',
+    timestamp: '2024-12-14T10:00:00',
+    opportunityId: 10
+  },
+  {
+    id: 42,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: '2024-12-05T10:00:00',
+    opportunityId: 10
+  },
+  // Opportunity 11 activities (In Negotiation with contract date - no task widgets)
+  {
+    id: 43,
+    type: 'opportunity-won',
+    user: 'Michael Thomas',
+    action: 'marked opportunity as won',
+    content: 'Contract signed. Vehicle preparation in progress.',
+    timestamp: '2024-12-20T14:00:00',
+    opportunityId: 11
+  },
+  {
+    id: 44,
+    type: 'offer',
+    user: 'Michael Thomas',
+    action: 'created an offer',
+    content: 'Final offer accepted for BMW iX3',
+    timestamp: '2024-12-18T11:00:00',
+    opportunityId: 11
+  },
+  {
+    id: 45,
+    type: 'note',
+    user: 'Michael Thomas',
+    action: 'added a note',
+    content: 'Customer satisfied with offer. Contract terms agreed upon.',
+    timestamp: '2024-12-19T15:00:00',
+    opportunityId: 11
+  },
+  {
+    id: 46,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from marketing campaign',
+    timestamp: '2024-12-10T09:00:00',
+    opportunityId: 11
+  },
+  // Opportunity 12 activities (In Negotiation with future appointment - no NFU)
+  {
+    id: 47,
+    type: 'offer',
+    user: 'Sarah Jenkins',
+    action: 'created an offer',
+    content: 'Initial offer sent for Audi A6 e-tron',
+    timestamp: '2024-12-18T10:00:00',
+    opportunityId: 12
+  },
+  {
+    id: 48,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Discussed offer and scheduled test drive for next month.',
+    timestamp: '2024-12-17T14:00:00',
+    opportunityId: 12
+  },
+  {
+    id: 49,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Customer interested in test drive. Appointment scheduled.',
+    timestamp: '2024-12-16T11:00:00',
+    opportunityId: 12
+  },
+  {
+    id: 50,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: '2024-12-12T11:00:00',
+    opportunityId: 12
+  },
+  // Opportunity 13 activities (Open for 14+ days - stale but no task widget)
+  {
+    id: 51,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Initial contact made. Customer interested in ID.3 features.',
+    timestamp: '2024-12-01T08:30:00',
+    opportunityId: 13
+  },
+  {
+    id: 52,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from marketing campaign',
+    timestamp: '2024-12-01T08:00:00',
+    opportunityId: 13
   }
 ]
 
@@ -864,3 +1401,95 @@ export const pipelineStats = {
   won: 127,
   lost: 3
 }
+
+// Dashboard Mock Data
+export const mockDashboardKPIs = [
+  {
+    id: 1,
+    title: 'Deals closed today',
+    value: 12,
+    change: 20,
+    changeType: 'increase',
+    trend: [8, 9, 10, 11, 12, 11, 12]
+  },
+  {
+    id: 2,
+    title: 'Deals in negotiation',
+    value: 320,
+    change: 11,
+    changeType: 'increase',
+    trend: [280, 290, 300, 310, 315, 318, 320]
+  },
+  {
+    id: 3,
+    title: 'New leads today',
+    value: 79,
+    change: 11,
+    changeType: 'decrease',
+    trend: [90, 88, 85, 82, 80, 79, 79]
+  },
+  {
+    id: 4,
+    title: 'New opportunities today',
+    value: 23,
+    change: 17,
+    changeType: 'increase',
+    trend: [18, 19, 20, 21, 22, 22, 23]
+  }
+]
+
+export const mockSalesPipeline = {
+  stages: [
+    { name: 'Lead generated', percentage: 100, count: 1000, avgTime: '12h' },
+    { name: 'Contacted', percentage: 87.2, count: 872, avgTime: '12h' },
+    { name: 'Qualified', percentage: 63.4, count: 634, avgTime: '12h' },
+    { name: 'Offer created', percentage: 17.2, count: 172, avgTime: '7d 9h' },
+    { name: 'Won', percentage: 11.2, count: 112, avgTime: '12h' }
+  ],
+  leadSources: [
+    { name: 'Coches.net', color: 'red', data: [1000, 872, 634, 172, 112] },
+    { name: 'Autoscout24', color: 'orange', data: [800, 700, 500, 140, 90] },
+    { name: 'OLX', color: 'blue', data: [600, 520, 380, 100, 65] },
+    { name: 'Cars.com', color: 'gray', data: [400, 350, 250, 70, 45] }
+  ]
+}
+
+export const mockTeamPerformance = [
+  { name: 'Jose Maria Gonzalez', leads: 171, qualifiedLeads: 85, qualifiedPercentage: 49, opportunities: 42, inNegotiation: 18, inNegotiationPercentage: 43, won: 12, wonPercentage: 67 },
+  { name: 'Sarah Johnson', leads: 145, qualifiedLeads: 62, qualifiedPercentage: 43, opportunities: 38, inNegotiation: 15, inNegotiationPercentage: 39, won: 9, wonPercentage: 60 },
+  { name: 'Michael Chen', leads: 198, qualifiedLeads: 94, qualifiedPercentage: 47, opportunities: 51, inNegotiation: 22, inNegotiationPercentage: 43, won: 15, wonPercentage: 68 },
+  { name: 'Emma Rodriguez', leads: 156, qualifiedLeads: 78, qualifiedPercentage: 50, opportunities: 45, inNegotiation: 19, inNegotiationPercentage: 42, won: 11, wonPercentage: 58 },
+  { name: 'David Kim', leads: 182, qualifiedLeads: 89, qualifiedPercentage: 49, opportunities: 48, inNegotiation: 21, inNegotiationPercentage: 44, won: 14, wonPercentage: 67 },
+  { name: 'Lisa Thompson', leads: 134, qualifiedLeads: 59, qualifiedPercentage: 44, opportunities: 35, inNegotiation: 14, inNegotiationPercentage: 40, won: 8, wonPercentage: 57 },
+  { name: 'Carlos Martinez', leads: 167, qualifiedLeads: 82, qualifiedPercentage: 49, opportunities: 44, inNegotiation: 20, inNegotiationPercentage: 45, won: 13, wonPercentage: 65 },
+  { name: 'Anna Kowalski', leads: 143, qualifiedLeads: 65, qualifiedPercentage: 45, opportunities: 37, inNegotiation: 16, inNegotiationPercentage: 43, won: 10, wonPercentage: 63 },
+  { name: 'Thomas Anderson', leads: 189, qualifiedLeads: 91, qualifiedPercentage: 48, opportunities: 49, inNegotiation: 23, inNegotiationPercentage: 47, won: 16, wonPercentage: 70 },
+  { name: 'Sophie Laurent', leads: 159, qualifiedLeads: 73, qualifiedPercentage: 46, opportunities: 41, inNegotiation: 17, inNegotiationPercentage: 41, won: 11, wonPercentage: 65 }
+]
+
+export const mockTodaysEvents = [
+  { id: 1, time: '09:30-10:30', type: 'Dealership visit', customer: 'Jose Maria Gonzalez', location: 'Madrid Mercedes-Benz Central' },
+  { id: 2, time: '11:00-12:00', type: 'Test drive', customer: 'Sarah Johnson', location: 'Barcelona Mercedes-Benz' },
+  { id: 3, time: '13:15-13:45', type: 'Call', customer: 'Michael Chen', location: 'Virtual Meeting' },
+  { id: 4, time: '14:30-15:30', type: 'Delivery', customer: 'Emma Rodriguez', location: 'Valencia Mercedes-Benz' },
+  { id: 5, time: '15:45-16:45', type: 'Recall', customer: 'David Kim', location: 'Seville Service Center' },
+  { id: 6, time: '17:00-18:00', type: 'Offsite visit', customer: 'Lisa Thompson', location: 'Customer Location - Malaga' }
+]
+
+export const mockPageViewsByVehicle = [
+  { id: 1, brand: 'BMW', model: 'X5', views: 102, change: 15.3, changeType: 'increase', avgPerDay: 3.4, trend: [85, 88, 92, 95, 98, 100, 102] },
+  { id: 2, brand: 'Mercedes-Benz', model: 'GLE', views: 81, change: 12.0, changeType: 'increase', avgPerDay: 2.7, trend: [70, 72, 75, 77, 79, 80, 81] },
+  { id: 3, brand: 'Audi', model: 'Q7', views: 72, change: 2.7, changeType: 'decrease', avgPerDay: 2.4, trend: [74, 73, 73, 72, 72, 72, 72] },
+  { id: 4, brand: 'Porsche', model: 'Cayenne', views: 68, change: 8.0, changeType: 'increase', avgPerDay: 2.3, trend: [60, 62, 64, 65, 66, 67, 68] },
+  { id: 5, brand: 'Tesla', model: 'Model Y', views: 60, change: 8.0, changeType: 'decrease', avgPerDay: 2.0, trend: [65, 64, 63, 62, 61, 60, 60] }
+]
+
+export const mockPageViewsOrganicPaid = [
+  { day: 'Mon', organic: 45, paid: 15 },
+  { day: 'Tue', organic: 50, paid: 20 },
+  { day: 'Wed', organic: 35, paid: 20 },
+  { day: 'Thu', organic: 35, paid: 20 },
+  { day: 'Fri', organic: 40, paid: 20 },
+  { day: 'Sat', organic: 60, paid: 30 },
+  { day: 'Sun', organic: 55, paid: 25 }
+]

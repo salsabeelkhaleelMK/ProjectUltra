@@ -83,3 +83,21 @@ export const addLeadActivity = async (leadId, activity) => {
   mockActivities.push(newActivity)
   return newActivity
 }
+
+export const updateLeadActivity = async (leadId, activityId, updates) => {
+  await delay()
+  const activity = mockActivities.find(a => a.id === parseInt(activityId) && a.leadId === parseInt(leadId))
+  if (!activity) throw new Error('Activity not found')
+  
+  Object.assign(activity, updates, { timestamp: new Date().toISOString() })
+  return activity
+}
+
+export const deleteLeadActivity = async (leadId, activityId) => {
+  await delay()
+  const index = mockActivities.findIndex(a => a.id === parseInt(activityId) && a.leadId === parseInt(leadId))
+  if (index === -1) throw new Error('Activity not found')
+  
+  mockActivities.splice(index, 1)
+  return { success: true }
+}

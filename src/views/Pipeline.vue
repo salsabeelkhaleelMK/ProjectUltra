@@ -24,7 +24,7 @@
                 <div class="text-xs font-medium text-gray-600 mb-1">{{ tab.label }}</div>
                 <div class="flex items-center gap-2">
                   <span 
-                    class="text-lg font-bold text-gray-900"
+                    class="text-sm font-bold text-gray-900"
                     :class="tab.key === 'open-leads' ? 'text-blue-600' : ''"
                   >
                     {{ tab.count }}
@@ -42,7 +42,7 @@
         </div>
       </div>
       
-      <!-- Search & Filters -->
+      <!-- Search, Filters & Add New -->
       <div class="mt-4 md:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 flex-wrap">
         <div class="flex-1 min-w-0 sm:min-w-[200px] md:min-w-[300px] max-w-full md:max-w-md">
           <div class="relative">
@@ -87,21 +87,20 @@
         <button class="btn-secondary text-sm">
           Save
         </button>
+
+        <!-- Add New Button: visible for Open Leads & Open Opportunities -->
+        <button 
+          v-if="activeTab === 'open-leads' || activeTab === 'open-opportunities'"
+          @click="showAddModal = true"
+          class="btn-primary-lg"
+        >
+          <i class="fa-solid fa-plus"></i> Add new
+        </button>
       </div>
     </div>
     
     <!-- Table -->
     <div class="p-4 md:p-8">
-      <!-- Add Button -->
-      <div v-if="activeTab === 'open-leads' || activeTab === 'open-opportunities'" class="mb-4 flex justify-end">
-        <button 
-          @click="showAddModal = true"
-          class="btn-primary-lg"
-        >
-          <i class="fa-solid fa-plus"></i> {{ getAddButtonLabel() }}
-        </button>
-      </div>
-      
       <div v-if="filteredRows.length === 0" class="empty-state">
         <i class="fa-solid fa-inbox empty-state-icon"></i>
         <p class="empty-state-text">No records found</p>
@@ -622,18 +621,18 @@ const handleRowClick = (row) => {
   const idMatch = row.id.match(/-(\d+)$/)
   
   if (activeTab.value === 'open-leads' && row.id.startsWith('lead-')) {
-    // Navigate to lead detail page
+    // Navigate to tasks page with lead type
     const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
-    router.push(`/leads/${leadId}`)
+    router.push({ path: `/tasks/${leadId}`, query: { type: 'lead' } })
   } else if (row.id.startsWith('opp-')) {
-    // Navigate to opportunity detail page
+    // Navigate to tasks page with opportunity type
     const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push(`/opportunities/${oppId}`)
+    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
   } else if (row.stageKey === 'won' || row.stageKey === 'lost') {
     // For won/lost rows, navigate to first opportunity as fallback
     // In a real app, these would have proper opportunity IDs
     if (mockOpportunities.length > 0) {
-      router.push(`/opportunities/${mockOpportunities[0].id}`)
+      router.push({ path: `/tasks/${mockOpportunities[0].id}`, query: { type: 'opportunity' } })
     }
   }
 }

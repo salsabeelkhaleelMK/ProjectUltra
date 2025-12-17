@@ -83,13 +83,13 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
                   <span class="truncate block max-w-[100px]">{{ contact.company || '-' }}</span>
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <div class="text-xs md:text-sm text-gray-600 truncate max-w-[150px]">{{ contact.email }}</div>
+                  <div class="text-xs text-gray-600 truncate max-w-[150px]">{{ contact.email }}</div>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
                   {{ contact.phone }}
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
@@ -121,7 +121,7 @@
         
         <!-- Pagination -->
         <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="text-xs md:text-sm text-gray-600">
+          <div class="text-xs text-gray-600">
             Showing {{ contactsStore.contacts.length }} of {{ contactsStore.totalContacts }} contacts
           </div>
           <div class="flex items-center gap-1 md:gap-2 flex-wrap">

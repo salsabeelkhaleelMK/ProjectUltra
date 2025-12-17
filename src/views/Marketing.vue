@@ -14,7 +14,7 @@
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
               <i class="fa-solid fa-envelope text-blue-600 text-xl"></i>
             </div>
-            <h3 class="font-bold text-lg text-gray-900 mb-2">Email Campaigns</h3>
+            <h3 class="font-bold text-sm text-gray-900 mb-2">Email Campaigns</h3>
             <p class="text-gray-600 text-sm mb-4">Create and manage email marketing campaigns</p>
             <button class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
               Open <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -25,7 +25,7 @@
             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
               <i class="fa-brands fa-whatsapp text-green-600 text-xl"></i>
             </div>
-            <h3 class="font-bold text-lg text-gray-900 mb-2">WhatsApp Marketing</h3>
+            <h3 class="font-bold text-sm text-gray-900 mb-2">WhatsApp Marketing</h3>
             <p class="text-gray-600 text-sm mb-4">Send bulk WhatsApp messages to customers</p>
             <button class="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1">
               Open <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -36,7 +36,7 @@
             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
               <i class="fa-solid fa-bullhorn text-purple-600 text-xl"></i>
             </div>
-            <h3 class="font-bold text-lg text-gray-900 mb-2">Campaigns</h3>
+            <h3 class="font-bold text-sm text-gray-900 mb-2">Campaigns</h3>
             <p class="text-gray-600 text-sm mb-4">Track and analyze marketing campaigns</p>
             <button class="text-purple-600 hover:text-purple-700 font-medium text-sm flex items-center gap-1">
               Open <i class="fa-solid fa-arrow-right text-xs"></i>

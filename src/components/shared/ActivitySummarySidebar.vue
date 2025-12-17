@@ -17,7 +17,7 @@
     </div>
     
     <div v-if="!collapsed" class="flex-1 overflow-y-auto px-5 py-6 scrollbar-hide relative">
-      <div class="absolute left-[39px] top-0 bottom-0 w-0.5 bg-gray-200 z-0"></div>
+      <div v-if="activities.length > 0" class="absolute left-[39px] top-0 bottom-0 w-0.5 bg-gray-200 z-0"></div>
       <div v-if="activities.length === 0" class="text-center py-8 text-gray-400 relative z-10">
         <i class="fa-solid fa-clock text-4xl mb-2"></i>
         <p class="text-sm">{{ emptyMessage }}</p>

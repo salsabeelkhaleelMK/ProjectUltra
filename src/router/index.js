@@ -8,7 +8,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/leads/1'
+        redirect: '/tasks/1'
       },
       {
         path: 'contacts',
@@ -16,23 +16,25 @@ const routes = [
         component: () => import('@/views/Contacts.vue')
       },
       {
+        path: 'tasks/:id',
+        name: 'task-detail',
+        component: () => import('@/views/TaskDetail.vue')
+      },
+      {
         path: 'leads',
-        name: 'leads',
-        component: () => import('@/views/Leads.vue')
+        redirect: '/tasks/1?type=lead'
       },
       {
         path: 'leads/:id',
-        name: 'lead-detail',
-        component: () => import('@/views/LeadDetail.vue')
+        redirect: to => `/tasks/${to.params.id}?type=lead`
       },
       {
         path: 'opportunities',
-        redirect: '/opportunities/1'
+        redirect: '/tasks/1?type=opportunity'
       },
       {
         path: 'opportunities/:id',
-        name: 'opportunity-detail',
-        component: () => import('@/views/OpportunityDetail.vue')
+        redirect: to => `/tasks/${to.params.id}?type=opportunity`
       },
       {
         path: 'vehicles',

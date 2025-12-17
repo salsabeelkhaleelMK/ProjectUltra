@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity } from '@/api/leads'
+import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity } from '@/api/leads'
 
 export const useLeadsStore = defineStore('leads', () => {
   // State
@@ -109,6 +109,31 @@ export const useLeadsStore = defineStore('leads', () => {
     }
   }
   
+  async function updateActivity(leadId, activityId, updates) {
+    try {
+      const updatedActivity = await updateLeadActivity(leadId, activityId, updates)
+      const index = currentLeadActivities.value.findIndex(a => a.id === parseInt(activityId))
+      if (index !== -1) {
+        currentLeadActivities.value[index] = updatedActivity
+      }
+      return updatedActivity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+  
+  async function deleteActivity(leadId, activityId) {
+    try {
+      await deleteLeadActivity(leadId, activityId)
+      currentLeadActivities.value = currentLeadActivities.value.filter(a => a.id !== parseInt(activityId))
+      return { success: true }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+  
   function setFilters(newFilters) {
     filters.value = { ...filters.value, ...newFilters }
     loadLeads()
@@ -140,6 +165,8 @@ export const useLeadsStore = defineStore('leads', () => {
     modifyLead,
     removeLead,
     addActivity,
+    updateActivity,
+    deleteActivity,
     setFilters,
     clearFilters
   }

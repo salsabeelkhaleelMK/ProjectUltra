@@ -1,12 +1,15 @@
 <template>
   <div v-if="offers.length > 0" class="mb-8">
-    <h3 class="font-bold text-gray-800 text-sm mb-4">Offers</h3>
+    <div class="flex items-center gap-2 mb-4">
+      <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
+      <h3 class="font-bold text-gray-800 text-sm">Offers</h3>
+    </div>
     <div class="relative">
-      <div class="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide scroll-smooth">
+      <div class="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide scroll-smooth snap-x snap-mandatory" style="scrollbar-width: thin;">
         <div
           v-for="(offer, index) in offers"
           :key="offer.id"
-          class="flex-none w-64 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
+          class="flex-none w-64 snap-start bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
           @click="handleOfferClick(offer)"
         >
           <!-- Main Offer Badge -->

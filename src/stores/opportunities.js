@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities } from '@/api/opportunities'
+import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities, addOpportunityActivity, updateOpportunityActivity, deleteOpportunityActivity } from '@/api/opportunities'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
   // State
@@ -51,6 +51,11 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     try {
       currentOpportunity.value = await fetchOpportunityById(id)
       currentOpportunityActivities.value = await fetchOpportunityActivities(id)
+      // Also update in the opportunities list if it exists
+      const index = opportunities.value.findIndex(o => o.id === parseInt(id))
+      if (index !== -1) {
+        opportunities.value[index] = currentOpportunity.value
+      }
     } catch (err) {
       error.value = err.message
     } finally {
@@ -105,6 +110,42 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
   
+  async function addActivity(opportunityId, activity) {
+    try {
+      const newActivity = await addOpportunityActivity(opportunityId, activity)
+      currentOpportunityActivities.value.unshift(newActivity)
+      return newActivity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+  
+  async function updateActivity(opportunityId, activityId, updates) {
+    try {
+      const updatedActivity = await updateOpportunityActivity(opportunityId, activityId, updates)
+      const index = currentOpportunityActivities.value.findIndex(a => a.id === parseInt(activityId))
+      if (index !== -1) {
+        currentOpportunityActivities.value[index] = updatedActivity
+      }
+      return updatedActivity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+  
+  async function deleteActivity(opportunityId, activityId) {
+    try {
+      await deleteOpportunityActivity(opportunityId, activityId)
+      currentOpportunityActivities.value = currentOpportunityActivities.value.filter(a => a.id !== parseInt(activityId))
+      return { success: true }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+  
   function setFilters(newFilters) {
     filters.value = { ...filters.value, ...newFilters }
     loadOpportunities()
@@ -125,6 +166,9 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     addOpportunity,
     modifyOpportunity,
     removeOpportunity,
+    addActivity,
+    updateActivity,
+    deleteActivity,
     setFilters
   }
 })

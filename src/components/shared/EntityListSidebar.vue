@@ -11,6 +11,33 @@
       </div>
     </div>
     
+    <!-- Type Filter Buttons -->
+    <div v-if="showTypeFilter" class="px-5 py-2 border-b border-gray-100 bg-gray-50/50">
+      <div class="flex gap-2">
+        <button
+          @click="$emit('filter-change', 'all')"
+          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
+          :class="typeFilter === 'all' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        >
+          All
+        </button>
+        <button
+          @click="$emit('filter-change', 'lead')"
+          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
+          :class="typeFilter === 'lead' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        >
+          Leads
+        </button>
+        <button
+          @click="$emit('filter-change', 'opportunity')"
+          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
+          :class="typeFilter === 'opportunity' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        >
+          Opportunities
+        </button>
+      </div>
+    </div>
+    
     <div class="px-5 py-3">
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
@@ -27,25 +54,18 @@
       <div 
         v-for="item in filteredItems" 
         :key="item.id"
-        @click="$emit('select', item.id)"
+        @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
         class="rounded-xl p-3 cursor-pointer transition-all relative group"
-        :class="isSelected(item.id) ? selectedClass : unselectedClass"
+        :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
       >
-        <div class="flex justify-between items-start mb-2.5">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <slot name="badges" :item="item"></slot>
-          </div>
-          <div class="flex items-center gap-2">
-            <slot name="meta" :item="item"></slot>
-            <button 
-              v-if="showMenu"
-              @click.stop="$emit('menu-click', item.id)"
-              class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-            </button>
-          </div>
-        </div>
+        <!-- Top right menu button -->
+        <button 
+          v-if="showMenu"
+          @click.stop="$emit('menu-click', item.id)"
+          class="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors z-10"
+        >
+          <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+        </button>
         
         <!-- Card Menu -->
         <div 
@@ -56,23 +76,33 @@
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <div class="flex items-center gap-3">
+        <!-- Main content: Avatar, Name, Vehicle, Amount/Due -->
+        <div class="flex items-start gap-3 pr-6">
+          <!-- Avatar -->
           <div 
-            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+            class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
             :class="avatarClass(item)"
           >
             {{ getInitials(item) }}
           </div>
+          
+          <!-- Name and Vehicle -->
           <div class="flex-1 min-w-0">
             <div class="font-bold text-gray-800 text-sm leading-tight truncate">{{ getName(item) }}</div>
-            <div class="flex items-center gap-1.5 text-gray-600 text-xs mt-0.5">
-              <i class="fa-solid fa-car text-gray-400"></i>
-              <span class="font-medium truncate">{{ getVehicleInfo(item) }}</span>
-            </div>
+            <div class="text-gray-600 text-xs mt-0.5 truncate">{{ getVehicleInfo(item) }}</div>
+          </div>
+          
+          <!-- Right side: Amount/Due time -->
+          <div class="text-right shrink-0">
+            <slot name="meta" :item="item"></slot>
+            <slot name="footer" :item="item"></slot>
           </div>
         </div>
         
-        <slot name="footer" :item="item"></slot>
+        <!-- Tags at bottom -->
+        <div class="flex items-center gap-1.5 flex-wrap mt-2.5">
+          <slot name="badges" :item="item"></slot>
+        </div>
       </div>
     </div>
   </div>
@@ -110,7 +140,7 @@ const props = defineProps({
     default: null
   },
   selectedClass: {
-    type: String,
+    type: [String, Function],
     default: 'bg-white border-2 border-blue-500 shadow-md'
   },
   unselectedClass: {
@@ -144,25 +174,45 @@ const props = defineProps({
   avatarClass: {
     type: Function,
     default: () => 'bg-orange-100 text-orange-600'
+  },
+  typeFilter: {
+    type: String,
+    default: 'all'
+  },
+  showTypeFilter: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change'])
 
 const searchQuery = ref('')
 
 const filteredItems = computed(() => {
-  if (!searchQuery.value) return props.items
-  const query = searchQuery.value.toLowerCase()
-  return props.items.filter(item => {
-    const name = props.getName(item).toLowerCase()
-    const vehicle = props.getVehicleInfo(item).toLowerCase()
-    return name.includes(query) || vehicle.includes(query)
-  })
+  let items = props.items
+  
+  // Apply type filter if provided
+  if (props.typeFilter && props.typeFilter !== 'all') {
+    items = items.filter(item => item.type === props.typeFilter)
+  }
+  
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    items = items.filter(item => {
+      const name = props.getName(item).toLowerCase()
+      const vehicle = props.getVehicleInfo(item).toLowerCase()
+      return name.includes(query) || vehicle.includes(query)
+    })
+  }
+  
+  return items
 })
 
-const isSelected = (id) => {
-  return props.selectedId === id
+const isSelected = (item) => {
+  const itemId = item.compositeId || `${item.type || 'task'}-${item.id}` || item.id
+  return props.selectedId === itemId
 }
 </script>
 
