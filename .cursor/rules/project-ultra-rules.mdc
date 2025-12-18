@@ -1,0 +1,100 @@
+---
+alwaysApply: true
+---
+# ProjectUltra – Cursor Project Rules
+
+## 1. Architecture & Data
+
+- Use the **mock data layer** only for sample data.
+  - All sample entities, filters, and calendar events must live in `src/api/mockData.js` (and related API wrappers), not inside components.
+  - When adding a new feature, first extend:
+    - `mockData` → API wrapper (`src/api/*.js`) → Pinia store (`src/stores/*.js`) → then use in components.
+
+
+## 2. Components & Reuse
+
+- Always **reuse shared widgets**, do not fork duplicates.
+
+
+## 3. Styling & Layout
+
+- **Responsive rules**:
+  - Tables must not rely on horizontal scroll; remove non-essential columns instead.
+  - Filters headers (like on Pipeline/Calendar) stay in main page container **above** the table or grid.
+  - “Add new” buttons in list/grid views:
+    - Are aligned to the **far right** of the filter bar, responsive on smaller screens.
+
+## 4. Netlify & Builds
+
+- Netlify should build the app itself:
+  - `netlify.toml`:
+    - `[build].publish = "dist"`
+    - `[build].command = "npm run build"`
+- Do **not** commit `dist/` or use “echo Skipping build” for this project.
+- Before pushing to any branch that Netlify deploys, ensure `npm run build` passes locally.
+
+## 5. Clean Code & Logging
+
+- Remove unused views/components as soon as they’re replaced (e.g., legacy dashboards, old leads/opportunities detail pages).
+- Don’t add long‑term `console.log` in:
+  - Stores, widgets, or shared components.
+  - Use them only while debugging, then delete before commit.
+- When removing a view, route, or component:
+  - Delete the old file.
+  - Remove all imports, routes, and references.
+  - Prefer a clean, minimal codebase over leaving commented-out or unused code.
+
+## 6. When Adding New Features
+
+- Prefer this order:
+  1. **Data**: Extend mock data + API wrappers + Pinia stores.
+  2. **Shared component**: Reuse an existing shared widget or create a new one in `components/shared` or `components/widgets`.
+  3. **No duplication**: If a new feature looks like something we already have, always check for a reusable component before creating a new file.
+
+## 7. Tooling & Plans
+
+- After a dedicated plan file (e.g. `*.plan.md`) has been executed and is no longer useful, delete it to keep the repo clean.
+- Avoid leaving old, unused planning documents in the root or feature folders.
+
+## 8. README Maintenance
+
+- Keep `README.md` roughly in sync with major app functionality.
+- When adding or changing a significant feature or view, update a short high-level description in `README.md` (no need to document every small UI tweak).
+
+## 9. .gitignore Hygiene
+
+- Ensure `.gitignore` is present and correctly excludes:
+  - `node_modules`, log files, local environment files, and other build artifacts.
+- For this project, `dist/` should remain ignored (since Netlify builds from source).
+
+## 10. Global Styling & Theme
+
+- Prefer using global Tailwind utility patterns and existing theme classes over defining ad-hoc styles in each component.
+- If a style pattern is reused in multiple components (layout, padding, typography), promote it into the global theme (shared classes, base styles, or small shared layout components).
+
+## 11. Refactoring Large Files
+
+- When a single component or view exceeds ~200–250 lines and mixes multiple responsibilities (layout + business logic + many widgets), consider refactoring by:
+  - Extracting reusable subcomponents, and/or
+  - Moving shared logic into composables.
+- New features should prefer composition over adding more code to already large files.
+
+## 12. Component & Code Style (Vue 3)
+
+- Use `<script setup>` for all new Vue components.
+- Naming:
+  - Components: `PascalCase.vue` (e.g. `LeadContent.vue`, `OpportunityManagementWidget.vue`).
+  - Composables: `useSomething.js` (e.g. `useTaskInlineWidgets.js`).
+  - Stores: `useXStore` pattern in `src/stores` (e.g. `useLeadsStore`, `useOpportunitiesStore`).
+- Imports:
+  - Prefer alias imports (`@/components/...`, `@/stores/...`) over long relative paths.
+- State:
+  - All shared/global state must go through Pinia stores; do not introduce ad-hoc global event buses.
+
+## 13. Documentation & Context
+
+- For complex flows (e.g. opportunity task triggers, transcription extraction, time-based widgets), add short inline comments that explain **why**, not just what.
+- Add a brief file-level comment only where the purpose is not obvious from the name and folder (e.g. non-trivial composables or helpers).
+- JSDoc-style comments are optional and should be used mainly for:
+  - Shared utilities/composables that are reused in many places.
+  - Functions with non-obvious parameters or return shapes.
