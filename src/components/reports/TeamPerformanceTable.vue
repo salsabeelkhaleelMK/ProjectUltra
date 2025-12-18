@@ -1,19 +1,19 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
     <div class="p-4 md:p-6 border-b border-gray-200">
-      <h2 class="text-lg md:text-xl font-bold text-gray-900">Team Performance</h2>
+      <h2 class="heading-main">Team Performance</h2>
     </div>
     
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leads</th>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Qualified leads</th>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Opportunities</th>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">In negotiation</th>
-            <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Won</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Name</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Leads</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Qualified leads</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Opportunities</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">In negotiation</th>
+            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Won</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">

@@ -13,12 +13,27 @@
       >
         Create Contract
       </button>
+      <button
+        @click="handleCloseLost"
+        class="bg-white hover:bg-red-50 border border-gray-200 text-slate-700 hover:text-red-600 hover:border-red-200 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+      >
+        Close as Lost
+      </button>
     </div>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -27,7 +42,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-contract'])
+const emit = defineEmits(['create-contract', 'close-lost', 'survey-completed', 'survey-refused', 'not-responding'])
+
+const surveyQuestions = [
+  {
+    key: 'customerFeedback',
+    label: 'Customer feedback on offer?',
+    type: 'select',
+    options: ['Positive', 'Neutral', 'Negative', 'No feedback yet']
+  },
+  {
+    key: 'objections',
+    label: 'Any objections?',
+    type: 'text',
+    placeholder: 'Describe any concerns or objections raised by customer...'
+  },
+  {
+    key: 'nextSteps',
+    label: 'What are the next steps?',
+    type: 'select',
+    options: ['Waiting for customer decision', 'Revising offer', 'Scheduling closing meeting', 'Addressing objections', 'Other']
+  }
+]
 
 const daysInNegotiation = computed(() => {
   // Calculate days since opportunity entered negotiation stage
@@ -43,6 +79,22 @@ const daysInNegotiation = computed(() => {
 
 const handleCreateContract = () => {
   emit('create-contract', props.opportunity)
+}
+
+const handleCloseLost = () => {
+  emit('close-lost', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 

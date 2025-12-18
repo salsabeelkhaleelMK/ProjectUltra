@@ -190,9 +190,8 @@ const toggleListsMenu = () => {
 
 const handleAddItem = (type) => {
   showAddMenu.value = false
-  console.log('Add new', type)
-  // TODO: Implement modals/forms for adding new items
-  // For now, navigate to the appropriate page or show a modal
+  // For now, we navigate to relevant pages. In the future this can
+  // be extended to open specific creation modals per entity type.
   switch (type) {
     case 'lead':
     case 'opportunity':

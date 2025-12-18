@@ -151,6 +151,103 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     loadOpportunities()
   }
   
+  async function reopenOpportunity(id) {
+    loading.value = true
+    error.value = null
+    try {
+      const opportunity = opportunities.value.find(o => o.id === id) || currentOpportunity.value
+      const updates = {
+        stage: 'Qualified'
+      }
+      // Reset probability if it was 0 (lost) or 100 (won)
+      if (opportunity?.probability === 0 || opportunity?.probability === 100) {
+        updates.probability = 50 // Reset to neutral probability
+      }
+      const updatedOpportunity = await updateOpportunity(id, updates)
+      const index = opportunities.value.findIndex(o => o.id === id)
+      if (index !== -1) {
+        opportunities.value[index] = updatedOpportunity
+      }
+      if (currentOpportunity.value?.id === id) {
+        currentOpportunity.value = updatedOpportunity
+      }
+      // Add activity log entry
+      await addActivity(id, {
+        type: 'note',
+        user: 'You',
+        action: 'reopened opportunity',
+        content: `Opportunity has been reopened and moved back to ${updatedOpportunity.stage} stage`
+      })
+      return updatedOpportunity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function markAsRegistration(id) {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedOpportunity = await updateOpportunity(id, {
+        stage: 'Registration'
+      })
+      const index = opportunities.value.findIndex(o => o.id === id)
+      if (index !== -1) {
+        opportunities.value[index] = updatedOpportunity
+      }
+      if (currentOpportunity.value?.id === id) {
+        currentOpportunity.value = updatedOpportunity
+      }
+      // Add activity log entry
+      await addActivity(id, {
+        type: 'note',
+        user: 'You',
+        action: 'marked as registration',
+        content: 'Opportunity moved to Registration stage - administrative phase before delivery'
+      })
+      return updatedOpportunity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function markAsClosedWon(id) {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedOpportunity = await updateOpportunity(id, {
+        stage: 'Closed',
+        probability: 100
+      })
+      const index = opportunities.value.findIndex(o => o.id === id)
+      if (index !== -1) {
+        opportunities.value[index] = updatedOpportunity
+      }
+      if (currentOpportunity.value?.id === id) {
+        currentOpportunity.value = updatedOpportunity
+      }
+      // Add activity log entry
+      await addActivity(id, {
+        type: 'note',
+        user: 'You',
+        action: 'marked as closed won',
+        content: 'Opportunity marked as Closed Won - contract signed and deal completed'
+      })
+      return updatedOpportunity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     opportunities,
     currentOpportunity,
@@ -169,7 +266,10 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     addActivity,
     updateActivity,
     deleteActivity,
-    setFilters
+    setFilters,
+    reopenOpportunity,
+    markAsRegistration,
+    markAsClosedWon
   }
 })
 

@@ -71,6 +71,45 @@ alwaysApply: true
 
 - Prefer using global Tailwind utility patterns and existing theme classes over defining ad-hoc styles in each component.
 - If a style pattern is reused in multiple components (layout, padding, typography), promote it into the global theme (shared classes, base styles, or small shared layout components).
+# Tailwind CSS & Global Theme Guidelines
+
+You are an expert Frontend Developer and UI/UX Designer specializing in Tailwind CSS. Your primary objective is to generate code that strictly adheres to the project's global design system, ensuring consistency, scalability, and maintainability.
+
+## Global Theming Strategy
+* **No Arbitrary Values:** STRICTLY FORBIDDEN to use square bracket notation (e.g., `w-[350px]`, `bg-[#F5F5F5]`, `text-[14px]`) unless dealing with a unique, one-off asset like a specific pixel-perfect SVG.
+* **Semantic Tokens Only:** Always use the semantic classes defined in `tailwind.config.js`.
+    * Use `text-primary` instead of `text-blue-600`.
+    * Use `bg-surface` instead of `bg-white`.
+    * Use `border-border` instead of `border-gray-200`.
+* **Spacing Scale:** Stick rigidly to the standard Tailwind spacing scale (e.g., `p-4`, `m-6`, `gap-8`). Do not invent custom spacing unless it is defined in the config.
+
+## Tailwind Best Practices
+* **Mobile-First Approach:** Define styles for mobile (default) first, then layer on breakpoints for larger screens.
+    * *Correct:* `class="flex flex-col md:flex-row"`
+    * *Incorrect:* `class="flex flex-row max-md:flex-col"`
+* **Layout Engines:** exclusively use Flexbox (`flex`) and CSS Grid (`grid`) for layout. Avoid using floats or hardcoded heights for structural elements.
+* **Component Composition:** If a utility pattern is complex and repeated, suggest abstracting it into a React/Vue component or a standard utility set rather than repeating long class strings.
+
+## Color & Typography
+* **Color Usage:** Rely on the project's CSS variables (via Tailwind classes) for all coloring to ensure dark mode and theming compatibility.
+* **Typography:** Use the preset type scale classes (e.g., `text-xl`, `font-semibold`, `leading-tight`). Do not hardcode font sizes or line heights.
+
+## Code Generation Verification
+Before outputting code, verify:
+* Does this use a hardcoded hex code? If yes, replace it with a semantic Tailwind class.
+* Does this use a magic pixel number? If yes, replace it with a spacing utility.
+* Is the design consistent with the surrounding code style?
+
+## Bad Code Example (Avoid)
+```jsx
+<div className="bg-[#ffffff] text-[#000000] p-[20px] rounded-[10px] w-[300px] border-[1px] border-gray-300">
+  <h2 className="text-[18px] font-bold">Title</h2>
+</div>
+## Good Code Example (Follow) JavaScript
+
+<div className="bg-card text-card-foreground p-6 rounded-xl w-full md:w-80 border border-border shadow-sm">
+  <h2 className="text-lg font-semibold tracking-tight">Title</h2>
+</div>
 
 ## 11. Refactoring Large Files
 

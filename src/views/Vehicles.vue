@@ -61,15 +61,15 @@
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                <th class="px-3 md:px-6 py-3 text-left">
                   <input type="checkbox" class="rounded">
                 </th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Status</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Price</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap hidden md:table-cell">Kilometers</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Stock Days</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell">Requested By</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Vehicle</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Status</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Price</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden md:table-cell">Kilometers</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Stock Days</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden xl:table-cell">Requested By</th>
                 <th class="px-3 md:px-6 py-3"></th>
               </tr>
             </thead>
@@ -95,7 +95,7 @@
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                   <span 
-                    class="inline-flex px-2 py-1 rounded-full text-xs font-semibold"
+                    class="badge-ui font-semibold"
                     :class="vehicle.status === 'Available' ? 'bg-green-100 text-green-700' : vehicle.status === 'In Stock' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'"
                   >
                     {{ vehicle.status }}
@@ -120,11 +120,11 @@
                     <span 
                       v-for="(requester, idx) in vehicle.requestedBy.slice(0, 2)" 
                       :key="idx"
-                      class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold"
+                      class="badge-ui bg-blue-50 text-blue-700 font-semibold"
                     >
                       {{ requester }}
                     </span>
-                    <span v-if="vehicle.requestedBy.length > 2" class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-semibold">
+                    <span v-if="vehicle.requestedBy.length > 2" class="badge-ui bg-gray-100 text-gray-600 font-semibold">
                       +{{ vehicle.requestedBy.length - 2 }}
                     </span>
                   </div>

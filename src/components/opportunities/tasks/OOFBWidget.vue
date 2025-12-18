@@ -19,12 +19,27 @@
       >
         Review Opportunity
       </button>
+      <button
+        @click="handleCloseLost"
+        class="bg-white hover:bg-red-50 border border-gray-200 text-slate-700 hover:text-red-600 hover:border-red-200 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+      >
+        Close as Lost
+      </button>
     </div>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -33,7 +48,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-offer', 'review'])
+const emit = defineEmits(['create-offer', 'review', 'close-lost', 'survey-completed', 'survey-refused', 'not-responding'])
+
+const surveyQuestions = [
+  {
+    key: 'offerStatus',
+    label: 'Why hasn\'t an offer been created?',
+    type: 'select',
+    options: ['Still gathering information', 'Awaiting customer response', 'Vehicle unavailable', 'Pricing concerns', 'Other']
+  },
+  {
+    key: 'customerInterest',
+    label: 'Is customer still interested?',
+    type: 'radio',
+    options: ['Yes', 'Maybe', 'No']
+  },
+  {
+    key: 'notes',
+    label: 'Additional notes',
+    type: 'text',
+    placeholder: 'Any relevant feedback or next steps...'
+  }
+]
 
 const daysOpen = computed(() => {
   if (!props.opportunity.createdAt) return 0
@@ -50,6 +86,22 @@ const handleCreateOffer = () => {
 
 const handleReview = () => {
   emit('review', props.opportunity)
+}
+
+const handleCloseLost = () => {
+  emit('close-lost', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 

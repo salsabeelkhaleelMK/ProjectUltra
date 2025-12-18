@@ -149,6 +149,37 @@ export const useLeadsStore = defineStore('leads', () => {
     loadLeads()
   }
   
+  async function requalifyLead(id) {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedLead = await updateLead(id, {
+        isDisqualified: false,
+        status: 'Open'
+      })
+      const index = leads.value.findIndex(l => l.id === id)
+      if (index !== -1) {
+        leads.value[index] = updatedLead
+      }
+      if (currentLead.value?.id === id) {
+        currentLead.value = updatedLead
+      }
+      // Add activity log entry
+      await addActivity(id, {
+        type: 'note',
+        user: 'You',
+        action: 'requalified lead',
+        content: 'Lead has been requalified and reopened for qualification process'
+      })
+      return updatedLead
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     leads,
     currentLead,
@@ -168,6 +199,7 @@ export const useLeadsStore = defineStore('leads', () => {
     updateActivity,
     deleteActivity,
     setFilters,
-    clearFilters
+    clearFilters,
+    requalifyLead
   }
 })

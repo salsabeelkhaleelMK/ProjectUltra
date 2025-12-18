@@ -8,22 +8,32 @@
     </div>
     <div class="flex gap-3 flex-wrap">
       <button
-        @click="handleCloseOpportunity"
-        class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
-      >
-        Close Opportunity
-      </button>
-      <button
         @click="handleScheduleClosing"
-        class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         Schedule Closing Meeting
       </button>
+      <button
+        @click="handleCloseLost"
+        class="bg-white hover:bg-red-50 border border-gray-200 text-slate-700 hover:text-red-600 hover:border-red-200 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+      >
+        Close as Lost
+      </button>
     </div>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
+
 const props = defineProps({
   opportunity: {
     type: Object,
@@ -31,14 +41,47 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close-opportunity', 'schedule-closing'])
+const emit = defineEmits(['close-lost', 'schedule-closing', 'survey-completed', 'survey-refused', 'not-responding'])
 
-const handleCloseOpportunity = () => {
-  emit('close-opportunity', props.opportunity)
+const surveyQuestions = [
+  {
+    key: 'appointmentStatus',
+    label: 'Why no appointment scheduled?',
+    type: 'select',
+    options: ['Customer delaying', 'Awaiting vehicle availability', 'Logistics issues', 'Customer not responding', 'Other']
+  },
+  {
+    key: 'customerStatus',
+    label: 'Customer status?',
+    type: 'radio',
+    options: ['Still interested', 'Considering', 'Lost interest', 'Unknown']
+  },
+  {
+    key: 'notes',
+    label: 'Additional information',
+    type: 'text',
+    placeholder: 'Any relevant details about the follow-up...'
+  }
+]
+
+const handleCloseLost = () => {
+  emit('close-lost', props.opportunity)
 }
 
 const handleScheduleClosing = () => {
   emit('schedule-closing', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 

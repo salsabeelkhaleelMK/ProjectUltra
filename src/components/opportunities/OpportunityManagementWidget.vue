@@ -6,12 +6,33 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Manage this opportunity</h3>
+        <h3 class="font-bold text-slate-800 text-sm">Manage Next steps</h3>
       </div>
-      <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">Active</span>
+      <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">
+        {{ isClosed ? 'Closed' : 'Active' }}
+      </span>
     </div>
 
     <div class="p-5 space-y-6">
+      <!-- Reopen button for closed opportunities (in body) -->
+      <div 
+        v-if="isClosed"
+        class="bg-green-50/50 border border-green-100 rounded-lg p-4 relative transition-all duration-300"
+      >
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">Opportunity Closed</h4>
+            <p class="text-xs text-gray-500 mt-0.5">This opportunity has been closed. Reopen it to restart the management process.</p>
+          </div>
+        </div>
+        <button
+          @click="handleReopen"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        >
+          Reopen <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+      
       <!-- Risk Warning (when appointment exists but opportunity is taking longer than expected) - Show at top -->
       <div v-if="shouldShowRiskWarning" class="bg-yellow-50/50 border border-yellow-200 rounded-lg p-4 relative transition-all duration-300">
         <div class="flex items-start gap-3">
@@ -138,13 +159,51 @@
           Schedule appointment
         </button>
       </div>
+      
+      <!-- Contract Signed - Mark as Closed Won (In Negotiation with contractDate) -->
+      <div 
+        v-if="shouldShowClosedWonCTA"
+        class="bg-green-50/50 border border-green-100 rounded-lg p-4 relative transition-all duration-300"
+      >
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">Contract Signed</h4>
+            <p class="text-xs text-gray-500 mt-0.5">
+              Contract was signed on {{ formatDate(opportunity.contractDate) }}. Mark this opportunity as Closed Won to complete the deal.
+            </p>
+          </div>
+        </div>
+        <button
+          @click="handleMarkAsClosedWon"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        >
+          Mark as Closed Won <i class="fa-solid fa-check-circle"></i>
+        </button>
+      </div>
+      
       <!-- Legacy Task Widgets - Conditionally Loaded (Priority Order) -->
       <!-- Open/Qualified Opportunities (Most Urgent First) -->
+      <!-- NS Widget (No-Show) - appears first if appointment was missed -->
+      <NSWidget
+        v-if="shouldShowNS"
+        :opportunity="opportunity"
+        :scheduled-appointment="scheduledAppointment"
+        @contact-customer="handleContactCustomer"
+        @reschedule="openRescheduleModal"
+        @close-lost="handleCloseAsLost"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
+      />
+      
       <UFBWidget
         v-if="shouldShowUFB"
         :opportunity="opportunity"
-        @create-contract="handleCreateContract"
-        @mark-unsold="handleMarkUnsold"
+        @create-offer="handleCreateOffer"
+        @mark-unsold="handleCloseAsLost"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
       
       <OOFBWidget
@@ -152,14 +211,21 @@
         :opportunity="opportunity"
         @create-offer="handleCreateOffer"
         @review="handleReview"
+        @close-lost="handleCloseAsLost"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
       
       <!-- In Negotiation Opportunities (Action-Required First) -->
       <NFUWidget
         v-if="shouldShowNFU"
         :opportunity="opportunity"
-        @close-opportunity="handleCloseOpportunity"
+        @close-lost="handleCloseAsLost"
         @schedule-closing="handleScheduleClosing"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
       
       
@@ -167,6 +233,10 @@
         v-if="shouldShowOFB"
         :opportunity="opportunity"
         @create-contract="handleCreateContract"
+        @close-lost="handleCloseAsLost"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
       
       <!-- Closed Won Opportunities -->
@@ -175,13 +245,38 @@
         :opportunity="opportunity"
         @prepare-delivery="handlePrepareDelivery"
         @pre-delivery-checklist="handlePreDeliveryChecklist"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
+      
+      <!-- Registration Status CTA (after contract signed, before delivery) -->
+      <div 
+        v-if="shouldShowRegistrationCTA"
+        class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-4 relative transition-all duration-300"
+      >
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">Administrative Phase</h4>
+            <p class="text-xs text-gray-500 mt-0.5">Contract has been signed. Move to Registration stage to complete administrative processes before delivery.</p>
+          </div>
+        </div>
+        <button
+          @click="handleMarkAsRegistration"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        >
+          Mark as Registration <i class="fa-solid fa-file-contract"></i>
+        </button>
+      </div>
       
       <DFBWidget
         v-if="shouldShowDFB"
         :opportunity="opportunity"
         :activities="activities"
         @delivery-feedback="handleDeliveryFeedback"
+        @survey-completed="handleSurveyCompleted"
+        @survey-refused="handleSurveyRefused"
+        @not-responding="handleNotResponding"
       />
     </div>
 
@@ -189,6 +284,27 @@
       :show="showModal"
       :title="modalTitle"
       @close="showModal = false"
+    />
+    
+    <!-- Close as Lost Modal -->
+    <CloseAsLostModal
+      :show="showCloseAsLostModal"
+      @confirm="handleCloseAsLostConfirm"
+      @cancel="showCloseAsLostModal = false"
+    />
+    
+    <!-- Contract Date Modal -->
+    <ContractDateModal
+      :show="showContractDateModal"
+      @confirm="handleContractDateConfirm"
+      @cancel="showContractDateModal = false"
+    />
+    
+    <!-- Delivery Modal -->
+    <DeliveryModal
+      :show="showDeliveryModal"
+      @confirm="handleDeliveryConfirm"
+      @cancel="showDeliveryModal = false"
     />
     
     <!-- Offer Creation Modal -->
@@ -238,16 +354,21 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Teleport } from 'vue'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 import { mockVehicles } from '@/api/mockData'
 import RescheduleWidget from '@/components/shared/RescheduleWidget.vue'
 import ScheduleAppointmentWidget from '@/components/shared/ScheduleAppointmentWidget.vue'
 import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
+import CloseAsLostModal from '@/components/shared/CloseAsLostModal.vue'
+import ContractDateModal from '@/components/shared/ContractDateModal.vue'
+import DeliveryModal from '@/components/shared/DeliveryModal.vue'
 import OfferWidget from '@/components/widgets/OfferWidget.vue'
 import RecommendedCarsSlider from '@/components/opportunities/RecommendedCarsSlider.vue'
 import OOFBWidget from '@/components/opportunities/tasks/OOFBWidget.vue'
 import UFBWidget from '@/components/opportunities/tasks/UFBWidget.vue'
 import OFBWidget from '@/components/opportunities/tasks/OFBWidget.vue'
 import NFUWidget from '@/components/opportunities/tasks/NFUWidget.vue'
+import NSWidget from '@/components/opportunities/tasks/NSWidget.vue'
 import CFBWidget from '@/components/opportunities/tasks/CFBWidget.vue'
 import DFBWidget from '@/components/opportunities/tasks/DFBWidget.vue'
 
@@ -268,13 +389,25 @@ const props = defineProps({
 
 const emit = defineEmits(['add-vehicle', 'add-vehicle-from-stock', 'configure-vehicle', 'create-offer', 'add-to-opportunity'])
 
+// Check if opportunity is closed (Closed Won, Closed Lost, or Registration)
+const isClosed = computed(() => {
+  return props.opportunity?.stage === 'Closed' || 
+         props.opportunity?.stage === 'Closed Lost' || 
+         props.opportunity?.stage === 'Registration'
+})
+
 const showReschedule = ref(false)
 const showScheduleAppointment = ref(false)
 const scheduleAppointmentSource = ref(null) // Track which button triggered it: 'no-appointment' or 'nfu'
 const showModal = ref(false)
 const modalTitle = ref('')
 const showOfferModal = ref(false)
+const showCloseAsLostModal = ref(false)
+const showContractDateModal = ref(false)
+const showDeliveryModal = ref(false)
 const recommendedCars = ref([])
+
+const opportunitiesStore = useOpportunitiesStore()
 
 onMounted(() => {
   // Load recommended cars (in-stock vehicles)
@@ -345,14 +478,17 @@ const hasAppointment = computed(() => {
 })
 
 const hasContract = computed(() => {
-  // Check if opportunity has contract signed
-  // Look for "marked opportunity as won" activity or "Closed" stage with high probability
+  // Check if contract date exists
+  const hasContractDate = props.opportunity?.contractDate !== null && props.opportunity?.contractDate !== undefined
+  
+  // Check if opportunity has contract signed via activities
   const hasWonActivity = props.activities.some(activity => 
     activity.action?.toLowerCase().includes('won') || 
     activity.action?.toLowerCase().includes('contract')
   )
+  
   // Closed stage with probability 100 likely means contract signed
-  return hasWonActivity || (props.opportunity?.stage === 'Closed' && props.opportunity?.probability === 100)
+  return hasContractDate || hasWonActivity || (props.opportunity?.stage === 'Closed' && props.opportunity?.probability === 100)
 })
 
 const hasDelivery = computed(() => {
@@ -375,24 +511,15 @@ const shouldShowOOFB = computed(() => {
   return days >= 7 && days < 14
 })
 
-// Show UFB when opportunity is In Negotiation for X days without contract
-// This is a second follow-up after OFB (higher threshold)
+// Show UFB when opportunity is Qualified for 14+ days without offers
+// This is a second follow-up after OOFB (14+ days vs 7-13 for OOFB)
 const shouldShowUFB = computed(() => {
-  if (props.opportunity?.stage !== 'In Negotiation') return false
-  
-  // Check if there's a contract date
-  const hasContractDate = props.opportunity?.contractDate !== null && props.opportunity?.contractDate !== undefined
-  
-  // Calculate days in negotiation
-  const negotiationDate = props.opportunity.lastActivity ? new Date(props.opportunity.lastActivity) : new Date(props.opportunity.createdAt)
-  const now = new Date()
-  const diffTime = Math.abs(now - negotiationDate)
-  const daysInNegotiation = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  // UFB requires: In Negotiation for X+ days (higher threshold than OFB, e.g., 10 days) AND no contract date
-  // UFB should only show if OFB threshold has passed (second follow-up)
-  const ufbThreshold = 10 // Configurable - higher than OFB threshold (5 days)
-  return !hasContractDate && daysInNegotiation >= ufbThreshold
+  if (props.opportunity?.stage !== 'Qualified' || hasOffers.value) return false
+  // Don't show if there's a scheduled appointment - opportunity is in active sales management
+  if (props.scheduledAppointment || hasAppointment.value) return false
+  const days = daysSinceCreated.value
+  // Show UFB if 14+ days (after OOFB threshold of 7-13 days)
+  return days >= 14
 })
 
 // Show warning when opportunity has appointment but is taking longer than expected
@@ -456,7 +583,11 @@ const shouldShowNFU = computed(() => {
 })
 
 // Show CFB when contract date is set and X days have passed without delivery
+// Show for both Closed Won and Registration stages
 const shouldShowCFB = computed(() => {
+  // Must be Closed Won or Registration stage
+  if (props.opportunity?.stage !== 'Closed' && props.opportunity?.stage !== 'Registration') return false
+  
   // Check if contract date exists
   const contractDate = props.opportunity?.contractDate
   if (!contractDate) return false
@@ -476,6 +607,7 @@ const shouldShowCFB = computed(() => {
 })
 
 // Show DFB when delivery date is recorded and X days have passed since delivery
+// Works for Closed Won, Registration, or any stage with delivery
 const shouldShowDFB = computed(() => {
   // Check if delivery date exists (from activities or opportunity field)
   const deliveryActivity = props.activities.find(activity => 
@@ -494,6 +626,76 @@ const shouldShowDFB = computed(() => {
   // DFB triggers X days (e.g., 3 days) after delivery date
   const dfbThreshold = 3 // Configurable
   return daysSinceDelivery >= dfbThreshold
+})
+
+// Show NS (No-Show) when appointment date has passed without completion
+const shouldShowNS = computed(() => {
+  if (!props.scheduledAppointment) return false
+  
+  const appointmentDate = new Date(props.scheduledAppointment.start)
+  const now = new Date()
+  
+  // Check if appointment is in the past
+  if (appointmentDate >= now) return false
+  
+  // Check if appointment has been completed
+  const isCompleted = props.activities.some(a => 
+    a.type === 'appointment' && 
+    (a.data?.status === 'completed' || a.action?.toLowerCase().includes('completed')) &&
+    a.data?.appointmentId === props.scheduledAppointment.id
+  )
+  
+  // Check if appointment is marked as no-show
+  const isMarkedNoShow = props.scheduledAppointment.status === 'no-show'
+  
+  // Show NS widget if appointment is past, not completed, and not already marked as no-show
+  return !isCompleted && !isMarkedNoShow
+})
+
+// Show Closed Won CTA when:
+// - Opportunity is In Negotiation
+// - Contract date exists (contract signed)
+// - Not yet Closed Won
+const shouldShowClosedWonCTA = computed(() => {
+  // Must be In Negotiation stage
+  if (props.opportunity?.stage !== 'In Negotiation') return false
+  
+  // Must have contract date
+  if (!props.opportunity?.contractDate) return false
+  
+  // Must not already be Closed Won
+  if (props.opportunity?.stage === 'Closed') return false
+  
+  return true
+})
+
+// Show Registration CTA when:
+// - Opportunity is Closed Won (stage === 'Closed')
+// - Contract date exists (contract signed)
+// - Not yet delivered
+// - After CFB threshold (contract signed 7+ days ago)
+// - Not already in Registration stage
+const shouldShowRegistrationCTA = computed(() => {
+  // Must be Closed Won (not Registration, not Closed Lost)
+  if (props.opportunity?.stage !== 'Closed') return false
+  
+  // Must have contract date
+  if (!props.opportunity?.contractDate) return false
+  
+  // Must not be delivered
+  if (hasDelivery.value) return false
+  
+  // Must not already be in Registration stage
+  if (props.opportunity?.stage === 'Registration') return false
+  
+  // Check if CFB threshold has passed (7+ days since contract)
+  const contractDate = new Date(props.opportunity.contractDate)
+  const now = new Date()
+  const diffTime = Math.abs(now - contractDate)
+  const daysSinceContract = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  // Show after CFB threshold (7 days) - administrative phase begins
+  return daysSinceContract >= 7
 })
 
 // Event handlers for vehicle actions
@@ -541,7 +743,15 @@ const handleMarkUnsold = (opportunity) => {
 }
 
 const handleCreateContract = (opportunity) => {
-  openModal('Create Contract')
+  showContractDateModal.value = true
+}
+
+const handleContractDateConfirm = (data) => {
+  showContractDateModal.value = false
+  console.log('Contract date set:', data)
+  // In real implementation, this would update the opportunity.contractDate field
+  // and trigger CFB widget logic
+  // emit('contract-date-set', { opportunity: props.opportunity, ...data })
 }
 
 const handleCloseOpportunity = (opportunity) => {
@@ -588,14 +798,84 @@ const handleScheduleAppointment = (appointmentData) => {
 }
 
 const handlePrepareDelivery = (opportunity) => {
-  openModal('Prepare for Delivery')
+  showDeliveryModal.value = true
 }
 
 const handlePreDeliveryChecklist = (opportunity) => {
   openModal('Pre-Delivery Checklist')
 }
 
+const handleDeliveryConfirm = (data) => {
+  showDeliveryModal.value = false
+  console.log('Vehicle marked as delivered:', data)
+  // In real implementation, this would create a delivery activity
+  // and trigger DFB widget logic
+  // emit('delivery-completed', { opportunity: props.opportunity, ...data })
+}
+
 const handleDeliveryFeedback = (opportunity) => {
   openModal('Delivery Feedback')
+}
+
+const handleCloseAsLost = () => {
+  showCloseAsLostModal.value = true
+}
+
+const handleCloseAsLostConfirm = (data) => {
+  showCloseAsLostModal.value = false
+  // In real implementation, this would update the opportunity stage to "Closed Lost"
+  // and store the reason and notes
+  // For now, just log it
+  console.log('Closing opportunity as lost:', data)
+  // emit('close-as-lost', { opportunity: props.opportunity, ...data })
+}
+
+const handleContactCustomer = () => {
+  openModal('Contact Customer')
+}
+
+const handleSurveyCompleted = (data) => {
+  console.log('Survey completed:', data)
+  // In real implementation, store survey responses in activities
+}
+
+const handleSurveyRefused = (data) => {
+  console.log('Survey refused:', data)
+  // In real implementation, log refusal
+}
+
+const handleNotResponding = (data) => {
+  console.log('Customer not responding:', data)
+  // In real implementation, update opportunity status
+}
+
+const handleReopen = async () => {
+  try {
+    await opportunitiesStore.reopenOpportunity(props.opportunity.id)
+    // Reload opportunity to get updated state
+    await opportunitiesStore.loadOpportunityById(props.opportunity.id)
+  } catch (err) {
+    console.error('Failed to reopen opportunity:', err)
+  }
+}
+
+const handleMarkAsRegistration = async () => {
+  try {
+    await opportunitiesStore.markAsRegistration(props.opportunity.id)
+    // Reload opportunity to get updated state
+    await opportunitiesStore.loadOpportunityById(props.opportunity.id)
+  } catch (err) {
+    console.error('Failed to mark as registration:', err)
+  }
+}
+
+const handleMarkAsClosedWon = async () => {
+  try {
+    await opportunitiesStore.markAsClosedWon(props.opportunity.id)
+    // Reload opportunity to get updated state
+    await opportunitiesStore.loadOpportunityById(props.opportunity.id)
+  } catch (err) {
+    console.error('Failed to mark as closed won:', err)
+  }
 }
 </script>

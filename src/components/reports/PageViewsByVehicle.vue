@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-lg md:text-xl font-bold text-gray-900">Page Views by Vehicle</h2>
+      <h2 class="heading-main">Page Views by Vehicle</h2>
       <select class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-blue-500">
         <option>This month</option>
         <option>Last month</option>

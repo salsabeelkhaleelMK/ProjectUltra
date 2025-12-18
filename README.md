@@ -1,259 +1,133 @@
-# LeadSpark CRM - Vue 3 Application
-
-A comprehensive CRM (Customer Relationship Management) application built with Vue 3, Pinia, and Tailwind CSS.
-
-## 🚀 Features
-
-### Core Functionality
-- **Role-Based Dashboards**: Different dashboards for Salespeople and Operators
-- **Lead Management**: Complete lead tracking with detailed views
-- **Pipeline Visualization**: Sales funnel with stage tracking
-- **Calendar Integration**: FullCalendar for appointments and test drives
-- **Contacts Management**: Customer and account management
-- **Opportunities Tracking**: Deal pipeline with probability tracking
-- **Vehicle Inventory**: Complete vehicle management system
-- **Marketing Tools**: Campaign management (basic UI)
-- **Reports & Analytics**: Performance metrics and reports (basic UI)
-
-### Technical Features
-- **Vue 3 Composition API**: Modern reactive state management
-- **Pinia State Management**: Centralized store for all entities
-- **Vue Router**: SPA navigation with dynamic routing
-- **Tailwind CSS**: Utility-first CSS framework
-- **FullCalendar**: Interactive calendar component
-- **Mock Data Layer**: Easy-to-replace API abstraction
-- **Responsive Design**: Works on desktop and tablet devices
-- **Icon-Based Navigation**: Clean sidebar navigation
-
-## 📦 Installation
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-## 🏗️ Project Structure
-
-```
-src/
-├── api/                    # Mock data layer (replace with real API)
-│   ├── mockData.js        # Sample CRM data
-│   ├── leads.js           # Lead operations
-│   ├── contacts.js        # Contact operations
-│   ├── opportunities.js   # Opportunity operations
-│   └── vehicles.js        # Vehicle operations
-├── stores/                # Pinia stores
-│   ├── user.js           # User state & authentication
-│   ├── leads.js          # Lead management
-│   ├── contacts.js       # Contact management
-│   ├── opportunities.js  # Opportunity management
-│   └── vehicles.js       # Vehicle management
-├── views/                 # Page components
-│   ├── Home.vue          # Role-based dashboard
-│   ├── Calendar.vue      # FullCalendar integration
-│   ├── Pipeline.vue      # Sales funnel visualization
-│   ├── Leads.vue         # Leads list view
-│   ├── LeadDetail.vue    # Detailed lead view
-│   ├── Contacts.vue      # Contacts grid
-│   ├── Opportunities.vue # Opportunities table
-│   ├── Vehicles.vue      # Vehicle inventory
-│   ├── Marketing.vue     # Marketing tools
-│   └── Reports.vue       # Reports & analytics
-├── components/            # Reusable components
-│   ├── layout/           # Layout components
-│   └── dashboard/        # Dashboard components
-├── router/               # Vue Router configuration
-│   └── index.js
-├── App.vue              # Root component
-└── main.js              # Application entry point
-```
-
-## 🎨 Key Pages
-
-### 1. Home (Dashboard)
-- **Salesman View**: Hot leads, conversion rates, upcoming tasks, recent leads
-- **Operator View**: System-wide metrics, team overview, activity log
-
-### 2. Pipeline
-- Sales funnel with 5 stages: Open Leads → Open Opportunities → In Negotiation → Won → Lost
-- Conversion metrics and funnel visualization
-- Interactive stage filtering
-
-### 3. Leads
-- Comprehensive leads table with filtering
-- Stage tabs (Open Leads, Opportunities, In Negotiation, Won, Lost)
-- Advanced search and filtering
-
-### 4. Lead Detail
-- Three-column layout (lead cards, detail view, activity timeline)
-- Customer information with expandable contact details
-- Requested vehicle widget
-- Action management (call, postpone, create opportunity, disqualify)
-- Activity timeline with notes and communications
-
-### 5. Calendar
-- FullCalendar integration
-- Month, week, and day views
-- Event creation (test drives, appointments, calls)
-- Drag-and-drop scheduling
-
-### 6. Contacts
-- Grid view of all contacts
-- Search and filter functionality
-- Company and tag management
-
-### 7. Opportunities
-- Table view with stage tracking
-- Probability indicators
-- Expected close dates
-- Value tracking
-
-### 8. Vehicles
-- Grid view of vehicle inventory
-- Stock day tracking
-- Requested by tracking
-- Status management
-
-## 🔄 Replacing Mock Data with Real API
-
-The application uses a mock data layer designed for easy replacement with real API calls. To integrate with your backend:
-
-### 1. Update API files in `src/api/`
-
-Replace mock implementations with actual API calls:
-
-```javascript
-// Before (Mock)
-export const fetchLeads = async (filters = {}) => {
-  await delay()
-  return mockLeads.filter(/* filter logic */)
-}
-
-// After (Real API)
-export const fetchLeads = async (filters = {}) => {
-  const response = await axios.get('/api/leads', { params: filters })
-  return response.data
-}
-```
-
-### 2. No changes needed in components or stores!
-
-All components use the store, and stores use the API layer. You only need to update the API files.
-
-## 👥 User Roles
-
-### Salesman
-- View assigned leads and opportunities
-- Manage pipeline
-- Schedule appointments
-- Track personal performance
-
-### Operator
-- System-wide view of all activities
-- Team management and oversight
-- System metrics and reporting
-- Resource allocation
-
-### Switching Roles (Demo)
-Click on the user menu in the top-right corner and select "Switch to Salesman" or "Switch to Operator" to see different dashboard views.
-
-## 🎯 Navigation
-
-### Icon Sidebar (Left)
-- ➕ **Create New**: Quick access to create leads, contacts, opportunities, vehicles
-- 👥 **Contacts**: Contacts & Accounts
-- 🏷️ **Leads**: Lead management (with hot lead indicator)
-- 💎 **Opportunities**: Deal tracking
-- 🚗 **Vehicles**: Inventory management
-- 📈 **Pipeline**: Sales funnel
-- 📅 **Calendar**: Appointments & events
-- 📢 **Marketing**: Marketing tools
-- 📊 **Reports**: Analytics & reports
-
-## 🛠️ Technologies Used
-
-- **Vue 3**: Progressive JavaScript framework
-- **Pinia**: State management for Vue 3
-- **Vue Router 4**: Official router for Vue 3
-- **Tailwind CSS**: Utility-first CSS framework
-- **FullCalendar**: Calendar component library
-- **Font Awesome 6**: Icon library
-- **Vite**: Fast build tool and development server
-
-## 📝 Mock Data
-
-The application includes realistic mock data for:
-- 3 leads with various priorities and stages
-- 2 opportunities at different stages
-- 2 contacts with complete information
-- 3 vehicles in inventory
-- 3 calendar events
-- Activity timeline entries
-
-## 🔮 Future Enhancements
-
-- [ ] Real-time notifications
-- [ ] Advanced filtering and saved views
-- [ ] Email integration
-- [ ] WhatsApp integration
-- [ ] Document management
-- [ ] Advanced reporting with charts
-- [ ] Export functionality (CSV, PDF)
-- [ ] Multi-language support
-- [ ] Dark mode
-- [ ] Mobile app version
-
-## 📱 Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## 🤝 Development
-
-```bash
-# Install dependencies
-npm install
-
-# Run development server (with hot reload)
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-```
-
-## 📄 License
-
-This project is private and proprietary.
-
-## 👤 Author
-
-Built with ❤️ for automotive CRM needs
-
----
-
-**Note**: This application uses mock data by default. To connect to a real backend, update the API layer in `src/api/` with your actual API endpoints.
-
-## 🚀 Quick Start
-
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run dev`
-4. Open `http://localhost:5173` in your browser
-5. Use the user menu to switch between Salesman and Operator roles
-
-Happy CRM managing! 🎉
-
+Project Overview
+A Vue 3-based CRM application for automotive dealerships with unified task management for leads and opportunities, including vehicle tracking, offer management, appointment scheduling, and sales workflow automation.
+Tech Stack
+Frontend: Vue 3 (Composition API with <script setup>), Pinia, Vue Router, Tailwind CSS
+Calendar: FullCalendar Vue component
+Deployment: Netlify (builds from source: npm run build)
+Architecture: Component-based with centralized mock data layer, reusable widgets, composables for shared logic
+Key Architecture Patterns
+1. Unified Task System
+Single View: TaskDetail.vue handles both leads and opportunities
+Route: /tasks/:id?type=lead or /tasks/:id?type=opportunity
+Composite Selection: Uses { id, type } to uniquely identify tasks across stores
+Shared Shell: TaskShell.vue provides common layout (contact info, stage bar, tabs, add new button, feed)
+2. Component Hierarchy
+TaskDetail.vue (router entry)  └─ EntityListSidebar.vue (task list)  └─ TaskDetailContent.vue (decides which config/widgets to use)      └─ TaskShell.vue (shared layout shell)          ├─ ContactInfo.vue          ├─ StageOwnerBar.vue          ├─ LeadManagementWidget.vue OR OpportunityManagementWidget.vue          ├─ Feed widgets (VehicleWidget, OffersCarousel, etc.)          └─ Inline widgets (NoteWidget, AttachmentWidget, etc.)
+3. Reusable Composables
+useTaskInlineWidgets.js: Centralizes inline widget state and handlers (add/edit/delete activities, show/hide widgets, tab filtering)
+useTaskTabs.js: Maps activity types to tabs (note, communication, attachment, overview)
+4. Store Adapters
+Both useLeadsStore and useOpportunitiesStore expose:
+currentActivities (computed)
+addActivity(taskId, data)
+updateActivity(taskId, activityId, data)
+deleteActivity(taskId, activityId)
+Core Features
+Leads
+Management Widget: LeadManagementWidget.vue
+Call simulation with live transcription
+Extract info from transcription (adds notes, trade-ins, financing)
+Postpone/reschedule
+Create opportunity from lead
+Overview Add New Actions: Trade-in, Financing, Requested Car (modals)
+Tabs: Overview, Notes, Communication, Attachment
+Opportunities
+Management Widget: OpportunityManagementWidget.vue
+Vehicle Actions (grouped):
+Add requested vehicle to opportunity
+Add vehicle from stock (Coming Soon modal)
+Configure vehicle (Coming Soon modal)
+Create offer (modal with requested/recommended cars)
+Time-Based Task Widgets (conditional rendering):
+OOFB (Open Opportunity Feedback): Qualified stage, 7-13 days, no offers
+UFB (Unsold Feedback): Qualified stage, 14+ days, no offers
+NFU (No Follow-Up): In Negotiation, X days, no contract, no future appointment
+OFB (Offer Feedback): In Negotiation, X days, no contract
+CFB (Contract Feedback): Contract date set, 7+ days, no delivery
+DFB (Delivery Feedback): 3+ days after delivery date
+Risk Warning: Shows if Qualified opportunity with appointment is taking too long
+Appointment Widget: Shows confirmed/scheduled appointments with postpone toggle
+Stages: Qualified → In Negotiation (on first offer) → Closed Won
+Overview Pinned: Management widget, Offers carousel (if any), Requested car
+Tabs: Overview, Notes, Communication, Attachment
+Shared Functionality
+Hot Flag: Mark/unmark tasks as hot (works for both leads and opportunities)
+Requested Car: VehicleWidget.vue - shows car details, stock status, request message
+Offers: OffersCarousel.vue - horizontal carousel with main offer badge
+Recommended Cars: RecommendedCarsSlider.vue - shows alternatives with "Add to opportunity" CTA (creates offer)
+Activities: Notes, Attachments, Communications (email/SMS/WhatsApp), Trade-ins, Financing, Appointments
+Feed: All activities displayed as FeedItemCard.vue with edit/delete actions
+Contact Info: ContactInfo.vue - expandable card with contact actions (call, email, WhatsApp, SMS)
+Critical Business Logic
+Offer Creation Triggers Stage Transition
+Adding any vehicle (requested, from stock, configured, or recommended) to an opportunity automatically:
+Creates an offer with that vehicle
+Transitions opportunity from "Qualified" → "In Negotiation"
+Activates negotiation-stage task widgets (OFB, NFU)
+Appointment Confirmed = Remove Schedule CTA
+If appointment status is "confirmed", hide "Schedule appointment" button
+Show AppointmentWidget in the feed instead
+Time-Based Task Priority
+Risk Warning > UFB > OOFB > NFU > OFB > CFB > DFB
+Key Components
+Shared (src/components/shared/)
+TaskShell.vue - Unified task layout shell
+ContactInfo.vue - Expandable contact card
+StageOwnerBar.vue - Stage/owner/source/probability chips
+AddNewButton.vue - Context-aware dropdown (changes actions per tab/type)
+ScheduleAppointmentWidget.vue - Modal for scheduling (reused across widgets)
+RescheduleWidget.vue - Inline postpone form
+VehicleWidget.vue - Requested car display
+ComingSoonModal.vue - Placeholder modal
+ActivitySummarySidebar.vue - Right sidebar with activity timeline
+EntityListSidebar.vue - Left sidebar task list
+Tabs.vue - Tab component with counts
+Widgets (src/components/widgets/)
+NoteWidget.vue, AttachmentWidget.vue, CommunicationWidget.vue
+TradeInWidget.vue, FinancingWidget.vue
+OfferWidget.vue - Create/edit offers (shows requested/recommended cars)
+AppointmentWidget.vue - Display appointment details in feed
+OffersCarousel.vue - Horizontal carousel of offers
+RecommendedCarsSlider.vue - Horizontal carousel of in-stock alternatives
+Opportunity Task Widgets (src/components/opportunities/)
+OpportunityManagementWidget.vue - Main opportunity action hub
+OOFBWidget.vue, UFBWidget.vue, NFUWidget.vue, OFBWidget.vue, CFBWidget.vue, DFBWidget.vue
+Lead Management
+LeadManagementWidget.vue - Call/transcription/postpone/create opportunity
+Feed
+FeedItemCard.vue - Unified feed card renderer (handles all activity types)
+Styling Rules (Tailwind)
+NO arbitrary values (w-[350px], text-[14px]) - use semantic classes only
+Colors: text-primary, bg-surface, border-border (from tailwind.config.js)
+Spacing: Use standard scale (p-4, gap-6, mt-8)
+Mobile-first: class="flex flex-col md:flex-row"
+No rounded corners on square buttons: Overview "Add New" button is blue and square; other tabs have gray rounded buttons
+Data Layer (src/api/mockData.js)
+All sample entities: mockLeads, mockOpportunities, mockVehicles, mockEvents
+All opportunity.stage values: "Qualified", "In Negotiation", "Closed Won" (never "Open")
+All contacts have address field
+All opportunities have priority field (supports hot flag)
+Activities array includes: notes, calls, emails, trade-ins, financing, appointments, etc.
+Routing
+/tasks - Main task list view
+/tasks/:id?type=lead - Lead task detail
+/tasks/:id?type=opportunity - Opportunity task detail
+/pipeline - Kanban-style pipeline view
+/calendar - FullCalendar with filters and connection modal
+/reports - Reports dashboard (formerly "Dashboard")
+Recent Refactors
+Unified Leads & Opportunities into single Tasks view
+Extracted TaskShell.vue to eliminate duplication between LeadContent.vue and OpportunityContent.vue
+Created composables (useTaskInlineWidgets, useTaskTabs) for shared logic
+Deleted redundant views: Leads.vue, Opportunities.vue, LeadDetail.vue, OpportunityDetail.vue, LeadContent.vue, OpportunityContent.vue, old dashboard files
+Removed console.log statements and unused code across the project
+Calendar refactor: Extracted CalendarConnectModal.vue
+Build & Deploy
+Local: npm run build (creates dist/)
+Netlify: Configured in netlify.toml to run npm run build on deploy
+.gitignore: Excludes node_modules, dist/, log files
+Next Steps / Notes
+Calendar filter panel extraction was attempted but reverted due to build errors
+All cursor project rules are documented in .cursor/rules/project-ultra-rules.mdc
+Opportunity lifecycle workflow is fully implemented with time-based task triggers
+Hot flag functionality works for both leads and opportunities

@@ -7,7 +7,7 @@
     >
       <div class="flex items-start justify-between mb-3">
         <div class="flex-1">
-          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{{ kpi.title }}</h3>
+          <h3 class="label-upper mb-1">{{ kpi.title }}</h3>
           <div class="flex items-baseline gap-2">
             <span class="text-2xl md:text-3xl font-bold text-gray-900">{{ kpi.value }}</span>
             <span

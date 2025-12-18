@@ -21,7 +21,7 @@
               ></div>
               <!-- Content -->
               <div class="p-3">
-                <div class="text-xs font-medium text-gray-600 mb-1">{{ tab.label }}</div>
+                <div class="label-upper mb-1">{{ tab.label }}</div>
                 <div class="flex items-center gap-2">
                   <span 
                     class="text-sm font-bold text-gray-900"
@@ -31,7 +31,7 @@
                   </span>
                   <span 
                     v-if="tab.key === 'open-leads'"
-                    class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700"
+                    class="badge-ui bg-gray-100 text-gray-700 font-semibold"
                   >
                     {{ tab.count }}
                   </span>
@@ -119,16 +119,16 @@
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                <th class="px-3 md:px-6 py-3 text-left">
                   <input type="checkbox" class="rounded">
                 </th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Customer</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Next action due</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Requested car</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Car status</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Source</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Assignee</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Status</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Customer</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Next action due</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Requested car</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Car status</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Source</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Assignee</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Status</th>
                 <th class="px-3 md:px-6 py-3"></th>
               </tr>
             </thead>
@@ -168,7 +168,7 @@
                   </div>
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold" :class="row.carStatusClass">
+                  <span class="badge-ui font-semibold" :class="row.carStatusClass">
                     {{ row.carStatus }}
                   </span>
                 </td>
@@ -182,7 +182,7 @@
                   </div>
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex px-2 py-1 rounded text-xs font-semibold" :class="row.statusClass">
+                  <span class="badge-ui font-semibold" :class="row.statusClass">
                     {{ row.status }}
                   </span>
                 </td>
@@ -229,13 +229,13 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
           <div class="p-5 border-b border-gray-100 bg-gray-50/50">
             <h3 class="font-bold text-lg text-gray-900">{{ getModalTitle() }}</h3>
-            <p class="text-xs text-gray-500 mt-1">Fill in the details below</p>
+            <p class="label-upper mt-1">Fill in the details below</p>
           </div>
           
           <div class="p-5 space-y-4">
             <!-- Form fields based on active tab -->
             <div v-if="activeTab === 'open-leads'">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <label class="block label-upper mb-1">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -243,7 +243,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Email</label>
+              <label class="block label-upper mb-1 mt-4">Email</label>
               <input 
                 v-model="newItem.email"
                 type="email" 
@@ -251,7 +251,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Requested Vehicle</label>
+              <label class="block label-upper mb-1 mt-4">Requested Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -261,7 +261,7 @@
             </div>
             
             <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <label class="block label-upper mb-1">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -269,7 +269,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Vehicle</label>
+              <label class="block label-upper mb-1 mt-4">Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -277,7 +277,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Opportunity Value</label>
+              <label class="block label-upper mb-1 mt-4">Opportunity Value</label>
               <input 
                 v-model="newItem.value"
                 type="number" 
@@ -285,7 +285,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Probability (%)</label>
+              <label class="block label-upper mb-1 mt-4">Probability (%)</label>
               <input 
                 v-model="newItem.probability"
                 type="number" 
@@ -297,7 +297,7 @@
             </div>
             
             <div v-else>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Customer Name</label>
+              <label class="block label-upper mb-1">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -305,7 +305,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Vehicle</label>
+              <label class="block label-upper mb-1 mt-4">Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -313,7 +313,7 @@
                 class="input"
               >
               
-              <label class="block text-xs font-medium text-gray-500 mb-1 mt-4">Reason</label>
+              <label class="block label-upper mb-1 mt-4">Reason</label>
               <textarea 
                 v-model="newItem.reason"
                 rows="3"
@@ -436,13 +436,9 @@ const getItemType = () => {
 }
 
 const handleAdd = () => {
-  // TODO: Implement actual add logic
-  console.log('Adding new item:', {
-    type: activeTab.value,
-    data: newItem.value
-  })
-  
-  // Reset form and close modal
+  // For now we only reset the form and close the modal.
+  // When a real backend/API exists, this handler should create
+  // a new pipeline item and refresh the table data.
   newItem.value = {
     customerName: '',
     email: '',

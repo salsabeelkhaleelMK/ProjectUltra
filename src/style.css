@@ -84,6 +84,31 @@
     @apply badge bg-gray-100 text-gray-700;
   }
   
+  /* Semantic UI Components from Tasks View */
+  .heading-main {
+    @apply text-lg md:text-xl font-bold text-gray-900;
+  }
+  
+  .label-upper {
+    @apply text-[10px] font-bold uppercase tracking-wider text-gray-400;
+  }
+  
+  .badge-ui {
+    @apply text-[10px] font-bold uppercase px-2 py-0.5 rounded border leading-none flex items-center justify-center;
+  }
+
+  .metadata-bar {
+    @apply flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden;
+  }
+  
+  .metadata-divider {
+    @apply w-px h-4 bg-gray-200 mx-0;
+  }
+  
+  .btn-action-circle {
+    @apply w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors;
+  }
+  
   /* Section Title */
   .section-title {
     @apply text-lg font-bold text-gray-900 mb-4;

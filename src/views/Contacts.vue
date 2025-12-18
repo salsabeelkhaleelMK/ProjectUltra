@@ -52,15 +52,15 @@
           <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                <th class="px-3 md:px-6 py-3 text-left">
                   <input type="checkbox" class="rounded">
                 </th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Contact</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Company</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Email</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Phone</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Source</th>
-                <th class="px-3 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap hidden xl:table-cell">Tags</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Contact</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Company</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Email</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Phone</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Source</th>
+                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden xl:table-cell">Tags</th>
                 <th class="px-3 md:px-6 py-3"></th>
               </tr>
             </thead>
@@ -93,7 +93,7 @@
                   {{ contact.phone }}
                 </td>
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                  <span class="badge-ui bg-gray-100 text-gray-700 font-semibold">
                     {{ contact.source }}
                   </span>
                 </td>
@@ -102,7 +102,7 @@
                     <span 
                       v-for="tag in contact.tags" 
                       :key="tag"
-                      class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold"
+                      class="badge-ui bg-blue-50 text-blue-700 font-semibold"
                     >
                       {{ tag }}
                     </span>

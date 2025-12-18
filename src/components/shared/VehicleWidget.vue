@@ -24,6 +24,20 @@
               <div class="flex items-center gap-2">
                 <div class="font-bold text-slate-800 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
               </div>
+              <div class="mt-1.5">
+                <div 
+                  v-if="stockDays !== undefined && stockDays !== null"
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
+                >
+                  <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
+                </div>
+                <div 
+                  v-else
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-semibold rounded-md"
+                >
+                  <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
+                </div>
+              </div>
             </div>
           </div>
         <div class="flex items-center gap-4">
@@ -33,18 +47,6 @@
           >
             Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
           </button>
-          <div 
-            v-if="stockDays !== undefined && stockDays !== null"
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
-          >
-            <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
-          </div>
-          <div 
-            v-else
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-semibold rounded-md"
-          >
-            <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
-          </div>
           <div v-if="price" class="text-right">
             <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
             <div class="font-bold text-slate-800">€ {{ formatCurrency(price) }}</div>

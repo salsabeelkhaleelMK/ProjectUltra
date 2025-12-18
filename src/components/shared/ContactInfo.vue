@@ -13,7 +13,7 @@
         
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
-          <h1 class="text-lg md:text-xl font-bold text-gray-900 truncate">{{ name }}</h1>
+          <h1 class="heading-main truncate">{{ name }}</h1>
           <div class="flex flex-wrap items-center gap-2 mt-1">
             <slot name="tags"></slot>
           </div>
@@ -23,25 +23,25 @@
       <!-- Contact actions + Expander Arrow -->
       <div class="flex items-center gap-1 ml-2">
         <button 
-          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          class="btn-action-circle"
           title="Call"
         >
           <i class="fa-solid fa-phone text-xs"></i>
         </button>
         <button 
-          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          class="btn-action-circle"
           title="Email"
         >
           <i class="fa-regular fa-envelope text-xs"></i>
         </button>
         <button 
-          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          class="btn-action-circle"
           title="WhatsApp"
         >
           <i class="fa-brands fa-whatsapp text-xs"></i>
         </button>
         <button 
-          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 transition-colors"
+          class="btn-action-circle"
           title="SMS"
         >
           <i class="fa-regular fa-comment-dots text-xs"></i>

@@ -1,17 +1,17 @@
 <template>
-  <div class="flex gap-8 text-sm font-medium text-gray-500 py-1 overflow-x-auto scrollbar-hide">
+  <div class="flex gap-8 text-base font-medium text-slate-500 py-1 overflow-x-auto scrollbar-hide">
     <div 
       v-for="tab in tabs"
       :key="tab.key"
       @click="$emit('update:modelValue', tab.key)"
-      class="pb-2 border-b-2 cursor-pointer whitespace-nowrap transition-all"
-      :class="modelValue === tab.key ? 'border-slate-700 text-slate-800' : 'border-transparent hover:text-gray-700 hover:border-gray-300'"
+      class="pb-2 border-b-2 cursor-pointer whitespace-nowrap transition-colors"
+      :class="modelValue === tab.key ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-700 hover:border-slate-200'"
     >
       {{ tab.label }} 
       <span 
         v-if="tab.count !== undefined"
-        class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full"
-        :class="modelValue === tab.key ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-600'"
+        class="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-semibold"
+        :class="modelValue === tab.key ? 'bg-gray-200 text-gray-700' : 'bg-gray-100 text-gray-500'"
       >
         {{ tab.count }}
       </span>

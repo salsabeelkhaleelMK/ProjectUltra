@@ -95,8 +95,8 @@ const showUserMenu = ref(false)
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    // TODO: Implement global search
-    console.log('Search:', searchQuery.value)
+    // Global search is not implemented yet; this is a no-op hook
+    // that can be connected to a backend or in-memory search later.
   }
 }
 
@@ -109,7 +109,6 @@ const switchRole = (role) => {
 const logout = () => {
   userStore.logout()
   showUserMenu.value = false
-  // TODO: Handle logout
 }
 
 // Click outside directive

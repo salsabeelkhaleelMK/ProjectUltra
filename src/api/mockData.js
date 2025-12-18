@@ -497,6 +497,77 @@ export const mockOpportunities = [
     createdAt: '2024-12-01T08:00:00', // 14+ days ago
     lastActivity: '2024-12-01T08:00:00'
     // Open for 14+ days, no offers, no appointment - stale but no task widget (UFB is for In Negotiation)
+  },
+  {
+    id: 14,
+    customer: { id: 17, name: 'Monica Geller', initials: 'MG', email: 'monica.geller@example.com', phone: '+4901444333222', address: 'Beethovenstraße 8, 80336 München' },
+    vehicle: { 
+      brand: 'Tesla', 
+      model: 'Model 3', 
+      year: 2024,
+      price: 48000,
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 8,
+      requestMessage: 'Interested in Model 3. Need to test drive.'
+    },
+    stage: 'Qualified',
+    tags: [],
+    probability: 55,
+    value: 48000,
+    expectedCloseDate: '2025-04-10',
+    assignee: 'Michael Thomas',
+    source: 'Website',
+    createdAt: '2025-03-10T10:00:00',
+    lastActivity: '2025-03-15T14:00:00',
+    scheduledAppointment: {
+      id: 22,
+      title: 'Test Drive - Monica Geller',
+      start: '2025-12-15T10:00:00', // Past appointment (3 days ago)
+      end: '2025-12-15T11:00:00',
+      type: 'appointment',
+      customer: 'Monica Geller',
+      vehicle: 'Tesla Model 3',
+      assignee: 'Michael Thomas',
+      assigneeId: 1,
+      dealership: 'Milano',
+      team: 'Sales (New)',
+      status: 'scheduled' // Not completed - triggers NS
+    }
+    // Qualified with past appointment not completed - perfect for NS (No-Show) widget
+  },
+  {
+    id: 15,
+    customer: { id: 18, name: 'Ross Geller', initials: 'RG', email: 'ross.geller@example.com', phone: '+4901222333444', address: 'Unter den Linden 77, 10117 Berlin' },
+    vehicle: { 
+      brand: 'BMW', 
+      model: 'i5', 
+      year: 2024,
+      price: 72000,
+      image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Looking for BMW i5. Interested in test drive.'
+    },
+    stage: 'Closed Lost',
+    tags: [],
+    probability: 0,
+    value: 72000,
+    expectedCloseDate: null,
+    assignee: 'Sarah Jenkins',
+    source: 'Marketing',
+    createdAt: '2025-02-10T09:00:00',
+    lastActivity: '2025-03-01T15:00:00',
+    contractDate: null,
+    closedReason: 'Customer found better price at competitor',
+    closedDate: '2025-03-01T15:00:00'
+    // Closed Lost - terminal state, no widgets should appear
   }
 ]
 

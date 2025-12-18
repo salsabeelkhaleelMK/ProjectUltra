@@ -20,11 +20,20 @@
         Pre-Delivery Checklist
       </button>
     </div>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -33,7 +42,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['prepare-delivery', 'pre-delivery-checklist'])
+const emit = defineEmits(['prepare-delivery', 'pre-delivery-checklist', 'survey-completed', 'survey-refused', 'not-responding'])
+
+const surveyQuestions = [
+  {
+    key: 'deliveryTimeline',
+    label: 'Delivery timeline confirmation?',
+    type: 'select',
+    options: ['On schedule', 'Delayed', 'Ahead of schedule', 'To be determined']
+  },
+  {
+    key: 'concerns',
+    label: 'Any concerns?',
+    type: 'text',
+    placeholder: 'Document any concerns or special requests from customer...'
+  },
+  {
+    key: 'readiness',
+    label: 'Vehicle readiness status?',
+    type: 'select',
+    options: ['Ready', 'In preparation', 'Waiting for parts', 'Other']
+  }
+]
 
 const daysSinceContract = computed(() => {
   if (!props.opportunity?.contractDate) return 0
@@ -49,6 +79,18 @@ const handlePrepareDelivery = () => {
 
 const handlePreDeliveryChecklist = () => {
   emit('pre-delivery-checklist', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 

@@ -12,11 +12,20 @@
     >
       Delivery Feedback
     </button>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -29,7 +38,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['delivery-feedback'])
+const emit = defineEmits(['delivery-feedback', 'survey-completed', 'survey-refused', 'not-responding'])
+
+const surveyQuestions = [
+  {
+    key: 'satisfaction',
+    label: 'Satisfaction with vehicle?',
+    type: 'radio',
+    options: ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very dissatisfied']
+  },
+  {
+    key: 'deliveryExperience',
+    label: 'Delivery experience rating',
+    type: 'select',
+    options: ['Excellent', 'Good', 'Average', 'Poor', 'Very poor']
+  },
+  {
+    key: 'issues',
+    label: 'Any issues or concerns?',
+    type: 'text',
+    placeholder: 'Document any issues or positive feedback from customer...'
+  }
+]
 
 const daysSinceDelivery = computed(() => {
   // Find delivery activity
@@ -48,6 +78,18 @@ const daysSinceDelivery = computed(() => {
 
 const handleDeliveryFeedback = () => {
   emit('delivery-feedback', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 

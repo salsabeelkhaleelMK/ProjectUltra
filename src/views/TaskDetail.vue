@@ -109,10 +109,71 @@
         </div>
       </div>
       
-      <TaskDetailContent
+      <TaskShell
         v-else
         :task="currentTask"
-      />
+        :type="currentTask.type"
+        :management-widget="managementWidget"
+        :store-adapter="storeAdapter"
+        :add-new-config="addNewConfig"
+      >
+        <template #pinned-extra="{ task }">
+          <!-- Requested Vehicle Widget - Always show on overview tab -->
+          <VehicleWidget
+            v-if="task.type === 'lead' && task.requestedCar"
+            :brand="task.requestedCar.brand"
+            :model="task.requestedCar.model"
+            :year="task.requestedCar.year"
+            :image="task.requestedCar.image || ''"
+            :price="task.requestedCar.price || null"
+            :request-message="task.requestedCar.requestMessage || ''"
+            :request-type="task.requestedCar.requestType || ''"
+            :source="task.source || ''"
+            :dealership="task.requestedCar.dealership || ''"
+            :registration="task.requestedCar.registration || ''"
+            :kilometers="task.requestedCar.kilometers || null"
+            :fuel-type="task.requestedCar.fuelType || ''"
+            :gear-type="task.requestedCar.gearType || ''"
+            :vin="task.requestedCar.vin || ''"
+            :stock-days="task.requestedCar.stockDays !== undefined ? task.requestedCar.stockDays : null"
+            :channel="task.requestedCar.channel || 'Email'"
+            :ad-campaign="task.requestedCar.adCampaign || ''"
+            :expected-purchase-date="task.requestedCar.expectedPurchaseDate || ''"
+            :fiscal-entity="task.requestedCar.fiscalEntity || ''"
+            :source-details="task.requestedCar.sourceDetails || ''"
+            :ad-medium="task.requestedCar.adMedium || ''"
+            :ad-source="task.requestedCar.adSource || ''"
+            label="Requested Car"
+          />
+          
+          <VehicleWidget
+            v-if="task.type === 'opportunity' && task.vehicle"
+            :brand="task.vehicle.brand"
+            :model="task.vehicle.model"
+            :year="task.vehicle.year"
+            :image="task.vehicle.image || ''"
+            :price="task.vehicle.price || null"
+            :request-message="task.vehicle.requestMessage || ''"
+            :request-type="task.vehicle.requestType || ''"
+            :source="task.source || ''"
+            :dealership="task.vehicle.dealership || ''"
+            :registration="task.vehicle.registration || ''"
+            :kilometers="task.vehicle.kilometers || null"
+            :fuel-type="task.vehicle.fuelType || ''"
+            :gear-type="task.vehicle.gearType || ''"
+            :vin="task.vehicle.vin || ''"
+            :stock-days="task.vehicle.stockDays !== undefined ? task.vehicle.stockDays : null"
+            :channel="task.vehicle.channel || 'Email'"
+            :ad-campaign="task.vehicle.adCampaign || ''"
+            :expected-purchase-date="task.vehicle.expectedPurchaseDate || ''"
+            :fiscal-entity="task.vehicle.fiscalEntity || ''"
+            :source-details="task.vehicle.sourceDetails || ''"
+            :ad-medium="task.vehicle.adMedium || ''"
+            :ad-source="task.vehicle.adSource || ''"
+            label="Vehicle"
+          />
+        </template>
+      </TaskShell>
     </div>
     
     <!-- Right Sidebar - Activity Timeline -->
@@ -134,7 +195,10 @@ import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import EntityListSidebar from '@/components/shared/EntityListSidebar.vue'
 import ActivitySummarySidebar from '@/components/shared/ActivitySummarySidebar.vue'
-import TaskDetailContent from '@/components/tasks/TaskDetailContent.vue'
+import TaskShell from '@/components/shared/TaskShell.vue'
+import VehicleWidget from '@/components/shared/VehicleWidget.vue'
+import LeadManagementWidget from '@/components/leads/LeadManagementWidget.vue'
+import OpportunityManagementWidget from '@/components/opportunities/OpportunityManagementWidget.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -192,6 +256,52 @@ const currentActivities = computed(() => {
     return leadsStore.currentLeadActivities
   } else {
     return opportunitiesStore.currentOpportunityActivities
+  }
+})
+
+// Management widget based on task type
+const managementWidget = computed(() => {
+  if (!currentTask.value) return null
+  return currentTask.value.type === 'lead' 
+    ? LeadManagementWidget 
+    : OpportunityManagementWidget
+})
+
+// Store adapter for TaskShell
+const storeAdapter = computed(() => {
+  if (!currentTask.value) return null
+  
+  if (currentTask.value.type === 'lead') {
+    return {
+      currentActivities: computed(() => leadsStore.currentLeadActivities),
+      addActivity: (activity) => leadsStore.addLeadActivity(currentTask.value.id, activity),
+      updateActivity: (activityId, updates) => leadsStore.updateLeadActivity(currentTask.value.id, activityId, updates),
+      deleteActivity: (activityId) => leadsStore.deleteLeadActivity(currentTask.value.id, activityId)
+    }
+  } else {
+    return {
+      currentActivities: computed(() => opportunitiesStore.currentOpportunityActivities),
+      addActivity: (activity) => opportunitiesStore.addOpportunityActivity(currentTask.value.id, activity),
+      updateActivity: (activityId, updates) => opportunitiesStore.updateOpportunityActivity(currentTask.value.id, activityId, updates),
+      deleteActivity: (activityId) => opportunitiesStore.deleteOpportunityActivity(currentTask.value.id, activityId)
+    }
+  }
+})
+
+// Add new config for TaskShell
+const addNewConfig = computed(() => {
+  if (!currentTask.value) return { overviewActions: [], tabActions: [] }
+  
+  if (currentTask.value.type === 'lead') {
+    return {
+      overviewActions: ['appointment', 'reschedule'],
+      tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
+    }
+  } else {
+    return {
+      overviewActions: ['appointment', 'reschedule', 'vehicle', 'offer', 'financing', 'trade-in', 'purchase'],
+      tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
+    }
   }
 })
 
@@ -263,8 +373,9 @@ const toggleCardMenu = (taskId) => {
 }
 
 const reassignTask = (task) => {
+  // Placeholder: in a real implementation this would open a modal
+  // to change the assignee. For now we only close the menu.
   openCardMenu.value = null
-  console.log('Reassign task', task.id, task.type)
 }
 
 const markAsHot = async (task) => {
@@ -290,10 +401,13 @@ const getStageBadgeClass = (stage) => {
     'Open': 'bg-blue-100 text-blue-700 border-blue-200',
     'Open Opportunities': 'bg-blue-100 text-blue-700 border-blue-200',
     'Open opportunity': 'bg-blue-100 text-blue-700 border-blue-200',
+    'Qualified': 'bg-purple-100 text-purple-700 border-purple-200',
     'In Negotiation': 'bg-orange-100 text-orange-700 border-orange-200',
     'Opportunity in negotiation': 'bg-orange-100 text-orange-700 border-orange-200',
+    'Registration': 'bg-indigo-100 text-indigo-700 border-indigo-200',
     'Closed': 'bg-gray-100 text-gray-700 border-gray-200',
     'Closed opportunity': 'bg-gray-100 text-gray-700 border-gray-200',
+    'Closed Lost': 'bg-red-100 text-red-700 border-red-200',
     'Won': 'bg-green-100 text-green-700 border-green-200',
     'Lost': 'bg-red-100 text-red-700 border-red-200'
   }

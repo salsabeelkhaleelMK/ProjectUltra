@@ -3,7 +3,7 @@
     <div class="flex justify-between items-start mb-3">
       <div>
         <h4 class="font-bold text-slate-800 text-sm">Unsold Feedback</h4>
-        <p class="text-xs text-gray-500 mt-0.5">This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. The previous follow-up didn't result in progress. Consider creating a contract or closing the opportunity.</p>
+        <p class="text-xs text-gray-500 mt-0.5">This opportunity has been open for {{ daysOpen }} days without any offer. This is a follow-up to ensure progress. Consider creating an offer or closing the opportunity.</p>
       </div>
     </div>
     <div class="flex gap-3 flex-wrap">
@@ -11,20 +11,29 @@
         @click="handleCreateContract"
         class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
-        Create Contract
+        Create Offer
       </button>
       <button
         @click="handleMarkUnsold"
         class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
-        Mark as Unsold
+        Close as Lost
       </button>
     </div>
+    
+    <!-- Survey Widget -->
+    <SurveyWidget
+      :questions="surveyQuestions"
+      @survey-completed="handleSurveyCompleted"
+      @survey-refused="handleSurveyRefused"
+      @not-responding="handleNotResponding"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SurveyWidget from '@/components/shared/SurveyWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -33,25 +42,57 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-contract', 'mark-unsold'])
+const emit = defineEmits(['create-offer', 'mark-unsold', 'survey-completed', 'survey-refused', 'not-responding'])
 
-const daysInNegotiation = computed(() => {
-  // Calculate days since opportunity entered negotiation stage
-  const date = props.opportunity.lastActivity || props.opportunity.createdAt
-  if (!date) return 0
-  const negotiationDate = new Date(date)
+const surveyQuestions = [
+  {
+    key: 'lostInterest',
+    label: 'Has customer lost interest?',
+    type: 'radio',
+    options: ['Yes', 'Maybe', 'No', 'Unknown']
+  },
+  {
+    key: 'blockers',
+    label: 'What are the blockers?',
+    type: 'select',
+    options: ['Pricing', 'Availability', 'Financing', 'No response', 'Changed mind', 'Found competitor', 'Other']
+  },
+  {
+    key: 'notes',
+    label: 'Additional feedback',
+    type: 'text',
+    placeholder: 'Describe the situation and any relevant details...'
+  }
+]
+
+const daysOpen = computed(() => {
+  // Calculate days since opportunity was created
+  if (!props.opportunity.createdAt) return 0
+  const created = new Date(props.opportunity.createdAt)
   const now = new Date()
-  const diffTime = Math.abs(now - negotiationDate)
+  const diffTime = Math.abs(now - created)
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return diffDays
 })
 
 const handleCreateContract = () => {
-  emit('create-contract', props.opportunity)
+  emit('create-offer', props.opportunity)
 }
 
 const handleMarkUnsold = () => {
   emit('mark-unsold', props.opportunity)
+}
+
+const handleSurveyCompleted = (responses) => {
+  emit('survey-completed', { opportunity: props.opportunity, responses })
+}
+
+const handleSurveyRefused = () => {
+  emit('survey-refused', { opportunity: props.opportunity })
+}
+
+const handleNotResponding = () => {
+  emit('not-responding', { opportunity: props.opportunity })
 }
 </script>
 
