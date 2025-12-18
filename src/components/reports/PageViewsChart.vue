@@ -2,7 +2,7 @@
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-lg md:text-xl font-bold text-gray-900">Page Views: Organic vs. Paid</h2>
-      <select class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-blue-500">
+      <select class="input text-sm w-auto">
         <option>This month</option>
         <option>Last month</option>
         <option>This quarter</option>
@@ -31,7 +31,7 @@
               :title="`Paid: ${day.paid}`"
             ></div>
           </div>
-          <span class="text-xs text-gray-500 mt-2">{{ day.day }}</span>
+          <span class="text-meta mt-2">{{ day.day }}</span>
         </div>
       </div>
       
@@ -39,11 +39,11 @@
       <div class="flex items-center justify-center gap-6 pt-4 border-t border-gray-200">
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 bg-blue-600 rounded"></div>
-          <span class="text-xs text-gray-600">Organic</span>
+          <span class="text-meta text-gray-600">Organic</span>
         </div>
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 bg-orange-500 rounded"></div>
-          <span class="text-xs text-gray-600">Paid</span>
+          <span class="text-meta text-gray-600">Paid</span>
         </div>
       </div>
     </div>

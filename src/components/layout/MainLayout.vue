@@ -3,8 +3,8 @@
     <!-- Left Icon Sidebar -->
     <IconSidebar />
     
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col ml-16 min-w-0">
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col md:ml-16 min-w-0">
       <!-- Top Header -->
       <TopHeader />
       

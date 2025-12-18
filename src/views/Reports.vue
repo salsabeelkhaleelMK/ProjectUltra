@@ -7,7 +7,7 @@
           <h1 class="page-header-title">Reports</h1>
         </div>
         <div class="flex items-center gap-3">
-          <select class="text-xs md:text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-blue-500">
+          <select class="input text-sm w-auto">
             <option>This month</option>
             <option>Last month</option>
             <option>This quarter</option>
@@ -19,7 +19,7 @@
     
     <!-- Content -->
     <div class="p-4 md:p-8">
-      <div class="max-w-7xl mx-auto">
+      <div>
         <!-- Dashboard KPIs -->
         <DashboardKPIs :kpis="dashboardKPIs" />
         

@@ -274,16 +274,16 @@ const storeAdapter = computed(() => {
   if (currentTask.value.type === 'lead') {
     return {
       currentActivities: computed(() => leadsStore.currentLeadActivities),
-      addActivity: (activity) => leadsStore.addLeadActivity(currentTask.value.id, activity),
-      updateActivity: (activityId, updates) => leadsStore.updateLeadActivity(currentTask.value.id, activityId, updates),
-      deleteActivity: (activityId) => leadsStore.deleteLeadActivity(currentTask.value.id, activityId)
+      addActivity: (taskId, activity) => leadsStore.addActivity(taskId, activity),
+      updateActivity: (taskId, activityId, updates) => leadsStore.updateActivity(taskId, activityId, updates),
+      deleteActivity: (taskId, activityId) => leadsStore.deleteActivity(taskId, activityId)
     }
   } else {
     return {
       currentActivities: computed(() => opportunitiesStore.currentOpportunityActivities),
-      addActivity: (activity) => opportunitiesStore.addOpportunityActivity(currentTask.value.id, activity),
-      updateActivity: (activityId, updates) => opportunitiesStore.updateOpportunityActivity(currentTask.value.id, activityId, updates),
-      deleteActivity: (activityId) => opportunitiesStore.deleteOpportunityActivity(currentTask.value.id, activityId)
+      addActivity: (taskId, activity) => opportunitiesStore.addActivity(taskId, activity),
+      updateActivity: (taskId, activityId, updates) => opportunitiesStore.updateActivity(taskId, activityId, updates),
+      deleteActivity: (taskId, activityId) => opportunitiesStore.deleteActivity(taskId, activityId)
     }
   }
 })
@@ -294,12 +294,12 @@ const addNewConfig = computed(() => {
   
   if (currentTask.value.type === 'lead') {
     return {
-      overviewActions: ['appointment', 'reschedule'],
+      overviewActions: ['financing', 'tradein', 'purchase'],
       tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
     }
   } else {
     return {
-      overviewActions: ['appointment', 'reschedule', 'vehicle', 'offer', 'financing', 'trade-in', 'purchase'],
+      overviewActions: ['financing', 'tradein', 'purchase'],
       tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
     }
   }

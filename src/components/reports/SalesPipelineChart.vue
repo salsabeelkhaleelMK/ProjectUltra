@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-lg md:text-xl font-bold text-gray-900">Sales Pipeline</h2>
-      <select class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-blue-500">
+      <h2 class="section-title mb-0">Sales Pipeline</h2>
+      <select class="input text-sm w-auto">
         <option>This month</option>
         <option>Last month</option>
         <option>This quarter</option>
@@ -16,9 +16,9 @@
         :key="stage.name"
         class="flex items-center gap-2"
       >
-        <span class="text-xs font-semibold text-gray-500 uppercase">{{ stage.name }}:</span>
-        <span class="text-sm font-bold text-gray-900">{{ stage.percentage }}%</span>
-        <span class="text-xs text-gray-500">({{ stage.count }})</span>
+        <span class="label-upper">{{ stage.name }}:</span>
+        <span class="text-content-bold">{{ stage.percentage }}%</span>
+        <span class="text-meta">({{ stage.count }})</span>
       </div>
     </div>
 
@@ -62,7 +62,7 @@
               'bg-gray-500': source.color === 'gray'
             }"
           ></div>
-          <span class="text-xs text-gray-600">{{ source.name }}</span>
+          <span class="text-meta">{{ source.name }}</span>
         </div>
       </div>
     </div>
@@ -74,9 +74,9 @@
         :key="stage.name"
         class="text-center"
       >
-        <div class="text-xs font-semibold text-gray-500 uppercase mb-1">{{ stage.name }}</div>
-        <div class="text-sm font-bold text-gray-900">{{ stage.avgTime }}</div>
-        <div class="text-xs text-gray-500">on avg.</div>
+        <div class="label-upper mb-1">{{ stage.name }}</div>
+        <div class="text-content-bold">{{ stage.avgTime }}</div>
+        <div class="text-meta">on avg.</div>
       </div>
     </div>
   </div>

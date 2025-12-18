@@ -1,5 +1,5 @@
 <template>
-  <div class="w-16 bg-[#1a1a1a] flex flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0">
+  <div class="hidden md:flex w-16 bg-[#1a1a1a] flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0">
     <!-- Logo/Brand -->
     <div 
       class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-900 mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
@@ -24,7 +24,7 @@
       <transition name="dropdown">
         <div 
           v-if="showAddMenu"
-          class="absolute left-full ml-2 top-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
+          class="absolute md:left-full md:ml-2 md:top-0 left-0 top-full mt-2 md:mt-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
           @click.stop
         >
           <button 
@@ -120,7 +120,7 @@
         <transition name="dropdown">
           <div 
             v-if="showListsMenu"
-            class="absolute left-full ml-2 bottom-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
+            class="absolute md:left-full md:ml-2 md:bottom-0 left-0 top-full mt-2 md:mt-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
             @click.stop
           >
             <router-link 
@@ -190,21 +190,8 @@ const toggleListsMenu = () => {
 
 const handleAddItem = (type) => {
   showAddMenu.value = false
-  // For now, we navigate to relevant pages. In the future this can
-  // be extended to open specific creation modals per entity type.
-  switch (type) {
-    case 'lead':
-    case 'opportunity':
-      // Navigate to tasks page
-      router.push('/tasks/1')
-      break
-    case 'contact':
-      router.push('/contacts')
-      break
-    case 'account':
-      router.push('/contacts')
-      break
-  }
+  // TODO: Open creation modals for each entity type
+  // For now, just close the menu without navigation
 }
 
 const handleClickOutside = (event) => {

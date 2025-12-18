@@ -3,22 +3,22 @@
     <div
       v-for="kpi in kpis"
       :key="kpi.id"
-      class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow"
+      class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5 hover:shadow-md transition-shadow"
     >
       <div class="flex items-start justify-between mb-3">
         <div class="flex-1">
           <h3 class="label-upper mb-1">{{ kpi.title }}</h3>
           <div class="flex items-baseline gap-2">
-            <span class="text-2xl md:text-3xl font-bold text-gray-900">{{ kpi.value }}</span>
+            <span class="text-xl md:text-2xl font-bold text-gray-900">{{ kpi.value }}</span>
             <span
-              class="text-xs font-semibold flex items-center gap-1"
+              class="text-meta-bold flex items-center gap-1"
               :class="kpi.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
             >
               <i :class="kpi.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'"></i>
               {{ Math.abs(kpi.change) }}%
             </span>
           </div>
-          <p class="text-xs text-gray-500 mt-1">vs Last month</p>
+          <p class="text-meta mt-1">vs Last month</p>
         </div>
       </div>
       <!-- Mini Line Chart -->

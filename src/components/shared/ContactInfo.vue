@@ -20,32 +20,8 @@
         </div>
       </div>
       
-      <!-- Contact actions + Expander Arrow -->
+      <!-- Expander Arrow -->
       <div class="flex items-center gap-1 ml-2">
-        <button 
-          class="btn-action-circle"
-          title="Call"
-        >
-          <i class="fa-solid fa-phone text-xs"></i>
-        </button>
-        <button 
-          class="btn-action-circle"
-          title="Email"
-        >
-          <i class="fa-regular fa-envelope text-xs"></i>
-        </button>
-        <button 
-          class="btn-action-circle"
-          title="WhatsApp"
-        >
-          <i class="fa-brands fa-whatsapp text-xs"></i>
-        </button>
-        <button 
-          class="btn-action-circle"
-          title="SMS"
-        >
-          <i class="fa-regular fa-comment-dots text-xs"></i>
-        </button>
         <button 
           @click="showContactInfo = !showContactInfo" 
           class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
@@ -157,8 +133,6 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action'])
-
 const showContactInfo = ref(false)
 const copiedField = ref(null)
 
@@ -172,12 +146,5 @@ const copyToClipboard = async (text, field) => {
   } catch (err) {
     console.error('Failed to copy:', err)
   }
-}
-
-const handleAction = (action) => {
-  emit('action', action, {
-    email: props.email,
-    phone: props.phone
-  })
 }
 </script>

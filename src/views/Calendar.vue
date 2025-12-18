@@ -1,14 +1,13 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden bg-gray-50">
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
-      <div class="px-4 md:px-8 py-4 md:py-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 class="text-xl md:text-2xl font-bold text-gray-900">Calendar</h1>
-            <p class="text-gray-500 mt-1 text-sm md:text-base">Manage appointments, test drives, and follow-ups</p>
-          </div>
-          <div class="flex items-center gap-2 self-start sm:self-auto">
+    <header class="page-header">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="page-header-title">Calendar</h1>
+          <p class="page-header-subtitle">Manage appointments, test drives, and follow-ups</p>
+        </div>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
             <!-- Connect Calendar Button -->
             <button 
               @click="showConnectModal = true"
@@ -47,17 +46,17 @@
             >
               <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Event</span>
             </button>
-          </div>
         </div>
-        
-        <!-- Filter Panel (Collapsible) -->
+      </div>
+      
+      <!-- Filter Panel (Collapsible) -->
         <div 
           v-if="showFilters"
           class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4 animate-fade-in"
         >
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-gray-700">Filters</span>
+              <span class="label-upper">Filters</span>
               <i class="fa-solid fa-filter text-gray-400 text-xs"></i>
             </div>
             <button 
@@ -71,7 +70,7 @@
           
           <!-- Quick Filters -->
           <div class="mb-4 pb-4 border-b border-gray-200">
-            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Quick filters</p>
+            <p class="label-upper mb-3">Quick filters</p>
             <div class="flex flex-wrap gap-4">
               <label class="flex items-center gap-2 cursor-pointer group">
                 <div 
@@ -84,7 +83,7 @@
                     :class="filters.mostRelevant ? 'left-[18px]' : 'left-0.5'"
                   ></div>
                 </div>
-                <span class="text-xs text-gray-600 group-hover:text-gray-900">Most relevant</span>
+                <span class="text-meta group-hover:text-gray-900">Most relevant</span>
               </label>
               
               <label class="flex items-center gap-2 cursor-pointer group">
@@ -98,7 +97,7 @@
                     :class="filters.includeCancelled ? 'left-[18px]' : 'left-0.5'"
                   ></div>
                 </div>
-                <span class="text-xs text-gray-600 group-hover:text-gray-900">Include cancelled</span>
+                <span class="text-meta group-hover:text-gray-900">Include cancelled</span>
               </label>
               
               <label class="flex items-center gap-2 cursor-pointer group">
@@ -112,7 +111,7 @@
                     :class="filters.noShowsOnly ? 'left-[18px]' : 'left-0.5'"
                   ></div>
                 </div>
-                <span class="text-xs text-gray-600 group-hover:text-gray-900">No-shows only</span>
+                <span class="text-meta group-hover:text-gray-900">No-shows only</span>
               </label>
             </div>
           </div>
@@ -159,7 +158,7 @@
                       v-model="filters.eventTypes"
                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     >
-                    <span class="text-xs text-gray-700">{{ type.label }}</span>
+                    <span class="text-meta text-gray-700">{{ type.label }}</span>
                   </label>
                 </div>
               </div>
@@ -199,7 +198,7 @@
                       v-model="filters.dealerships"
                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     >
-                    <span class="text-xs text-gray-700">{{ d }}</span>
+                    <span class="text-meta text-gray-700">{{ d }}</span>
                   </label>
                 </div>
               </div>
@@ -239,7 +238,7 @@
                       v-model="filters.teams"
                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     >
-                    <span class="text-xs text-gray-700">{{ t }}</span>
+                    <span class="text-meta text-gray-700">{{ t }}</span>
                   </label>
                 </div>
               </div>
@@ -279,7 +278,7 @@
                       v-model="filters.users"
                       class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     >
-                    <span class="text-xs text-gray-700">{{ u.name }}</span>
+                    <span class="text-meta text-gray-700">{{ u.name }}</span>
                   </label>
                 </div>
               </div>
@@ -290,13 +289,13 @@
           <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
             <button 
               @click="showFilters = false"
-              class="btn-secondary text-sm"
+              class="btn-secondary"
             >
               Cancel
             </button>
             <button 
               @click="applyFilters"
-              class="btn-primary text-sm"
+              class="btn-primary"
             >
               <i class="fa-solid fa-check mr-1"></i> Apply Filters
             </button>
@@ -308,7 +307,7 @@
           v-if="!showFilters && appliedFilterChips.length > 0"
           class="mt-4 flex flex-wrap items-center gap-2"
         >
-          <span class="text-xs text-gray-500 font-medium">Active filters:</span>
+          <span class="text-meta font-medium">Active filters:</span>
           <button
             v-for="chip in appliedFilterChips"
             :key="chip.key"
@@ -320,17 +319,16 @@
           </button>
           <button
             @click="clearAllAppliedFilters"
-            class="text-xs text-gray-500 hover:text-red-600 font-medium ml-2"
+            class="text-meta hover:text-red-600 font-medium ml-2"
           >
             Clear all
           </button>
         </div>
-      </div>
     </header>
     
     <!-- Calendar Content -->
-    <div class="flex-1 overflow-y-auto p-4 md:p-8">
-      <div class="max-w-7xl mx-auto">
+    <div class="flex-1 overflow-y-auto p-4 md:p-6">
+      <div>
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
           <FullCalendar :options="calendarOptions" />
         </div>
@@ -353,14 +351,14 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
         @click.self="showCreateEventModal = false"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 my-4 max-h-[90vh] overflow-y-auto animate-fade-in">
           <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="font-bold text-lg text-gray-900">Create New Event</h3>
-            <p class="text-xs text-gray-500 mt-1">Fill in the details for the new event.</p>
+            <h3 class="modal-title">Create New Event</h3>
+            <p class="modal-subtitle">Fill in the details for the new event.</p>
           </div>
           <div class="p-5 space-y-4">
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Event Type</label>
+              <label class="block label-upper mb-2">Event Type</label>
               <select v-model="newEvent.type" class="input">
                 <option value="test-drive">Test Drive</option>
                 <option value="appointment">Dealership Visit</option>
@@ -372,7 +370,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Title</label>
+              <label class="block label-upper mb-2">Title</label>
               <input 
                 v-model="newEvent.title"
                 type="text" 
@@ -382,7 +380,7 @@
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Date</label>
+                <label class="block label-upper mb-2">Date</label>
                 <input 
                   v-model="newEvent.date"
                   type="date" 
@@ -390,7 +388,7 @@
                 >
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Time</label>
+                <label class="block label-upper mb-2">Time</label>
                 <input 
                   v-model="newEvent.time"
                   type="time" 
@@ -399,7 +397,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Customer</label>
+              <label class="block label-upper mb-2">Customer</label>
               <input 
                 v-model="newEvent.customer"
                 type="text" 
@@ -408,7 +406,7 @@
               >
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Dealership</label>
+              <label class="block label-upper mb-2">Dealership</label>
               <select v-model="newEvent.dealership" class="input">
                 <option value="">Select dealership...</option>
                 <option v-for="d in dealerships" :key="d" :value="d">{{ d }}</option>
@@ -418,13 +416,13 @@
           <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
             <button 
               @click="showCreateEventModal = false"
-              class="btn-secondary text-sm"
+              class="btn-secondary"
             >
               Cancel
             </button>
             <button 
               @click="createEvent"
-              class="btn-primary text-sm"
+              class="btn-primary"
             >
               Create Event
             </button>
@@ -440,31 +438,31 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
         @click.self="showQuickViewModal = false"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 my-4 max-h-[90vh] overflow-y-auto animate-fade-in">
           <!-- Header with event type color -->
-          <div class="p-5 border-b border-gray-100" :class="getEventTypeHeaderClass(selectedEvent.type)">
+          <div class="p-5" :class="getEventTypeHeaderClass(selectedEvent.type)">
             <div class="flex items-start justify-between">
               <div>
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">
+                  <span class="badge-ui" :class="getEventTypeBadgeClass(selectedEvent.type)">
                     {{ getEventTypeLabel(selectedEvent.type) }}
                   </span>
                   <span 
                     v-if="selectedEvent.status === 'cancelled'"
-                    class="px-2 py-0.5 bg-red-500 rounded text-xs font-medium text-white"
+                    class="badge-ui bg-red-100 text-red-700 border-red-200"
                   >
                     Cancelled
                   </span>
                   <span 
                     v-else-if="selectedEvent.status === 'no-show'"
-                    class="px-2 py-0.5 bg-orange-500 rounded text-xs font-medium text-white"
+                    class="badge-ui bg-orange-100 text-orange-700 border-orange-200"
                   >
                     No-show
                   </span>
                 </div>
-                <h3 class="font-bold text-lg text-white">{{ selectedEvent.title }}</h3>
+                <h3 class="font-bold text-lg" :class="getEventTypeTextClass(selectedEvent.type)">{{ selectedEvent.title }}</h3>
               </div>
-              <button @click="showQuickViewModal = false" class="text-white/80 hover:text-white">
+              <button @click="showQuickViewModal = false" class="text-gray-400 hover:text-gray-600">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
@@ -478,8 +476,8 @@
                 <i class="fa-regular fa-calendar text-blue-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ formatEventDate(selectedEvent.start) }}</p>
-                <p class="text-xs text-gray-500">{{ formatEventTime(selectedEvent.start) }} - {{ formatEventTime(selectedEvent.end) }}</p>
+                <p class="text-content-bold">{{ formatEventDate(selectedEvent.start) }}</p>
+                <p class="text-meta">{{ formatEventTime(selectedEvent.start) }} - {{ formatEventTime(selectedEvent.end) }}</p>
               </div>
             </div>
             
@@ -489,8 +487,8 @@
                 <i class="fa-regular fa-user text-green-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ selectedEvent.customer }}</p>
-                <p class="text-xs text-gray-500">Customer</p>
+                <p class="text-content-bold">{{ selectedEvent.customer }}</p>
+                <p class="text-meta">Customer</p>
               </div>
             </div>
             
@@ -500,8 +498,8 @@
                 <i class="fa-solid fa-car text-purple-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ selectedEvent.vehicle }}</p>
-                <p class="text-xs text-gray-500">Vehicle</p>
+                <p class="text-content-bold">{{ selectedEvent.vehicle }}</p>
+                <p class="text-meta">Vehicle</p>
               </div>
             </div>
             
@@ -511,8 +509,8 @@
                 <i class="fa-solid fa-building text-orange-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ selectedEvent.dealership }}</p>
-                <p class="text-xs text-gray-500">Dealership</p>
+                <p class="text-content-bold">{{ selectedEvent.dealership }}</p>
+                <p class="text-meta">Dealership</p>
               </div>
             </div>
             
@@ -522,8 +520,8 @@
                 <i class="fa-regular fa-id-badge text-indigo-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ selectedEvent.assignee }}</p>
-                <p class="text-xs text-gray-500">Assigned to</p>
+                <p class="text-content-bold">{{ selectedEvent.assignee }}</p>
+                <p class="text-meta">Assigned to</p>
               </div>
             </div>
             
@@ -533,8 +531,8 @@
                 <i class="fa-solid fa-users text-teal-600 text-sm"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ selectedEvent.team }}</p>
-                <p class="text-xs text-gray-500">Team</p>
+                <p class="text-content-bold">{{ selectedEvent.team }}</p>
+                <p class="text-meta">Team</p>
               </div>
             </div>
           </div>
@@ -550,13 +548,13 @@
             <div class="flex gap-2">
               <button 
                 @click="showQuickViewModal = false"
-                class="btn-secondary text-sm"
+                class="btn-secondary"
               >
                 Close
               </button>
               <button 
                 @click="openEditModal"
-                class="btn-primary text-sm"
+                class="btn-primary"
               >
                 <i class="fa-regular fa-pen-to-square mr-1"></i> Edit
               </button>
@@ -573,14 +571,14 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
         @click.self="showEditEventModal = false"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 my-4 max-h-[90vh] overflow-y-auto animate-fade-in">
           <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="font-bold text-lg text-gray-900">Edit Event</h3>
-            <p class="text-xs text-gray-500 mt-1">Update the event details.</p>
+            <h3 class="modal-title">Edit Event</h3>
+            <p class="modal-subtitle">Update the event details.</p>
           </div>
           <div class="p-5 space-y-4">
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Event Type</label>
+              <label class="block label-upper mb-2">Event Type</label>
               <select v-model="editingEvent.type" class="input">
                 <option value="test-drive">Test Drive</option>
                 <option value="appointment">Dealership Visit</option>
@@ -599,7 +597,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Title</label>
+              <label class="block label-upper mb-2">Title</label>
               <input 
                 v-model="editingEvent.title"
                 type="text" 
@@ -609,7 +607,7 @@
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Date</label>
+                <label class="block label-upper mb-2">Date</label>
                 <input 
                   v-model="editingEvent.date"
                   type="date" 
@@ -617,7 +615,7 @@
                 >
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Time</label>
+                <label class="block label-upper mb-2">Time</label>
                 <input 
                   v-model="editingEvent.time"
                   type="time" 
@@ -626,7 +624,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Customer</label>
+              <label class="block label-upper mb-2">Customer</label>
               <input 
                 v-model="editingEvent.customer"
                 type="text" 
@@ -635,7 +633,7 @@
               >
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Vehicle</label>
+              <label class="block label-upper mb-2">Vehicle</label>
               <input 
                 v-model="editingEvent.vehicle"
                 type="text" 
@@ -644,14 +642,14 @@
               >
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Dealership</label>
+              <label class="block label-upper mb-2">Dealership</label>
               <select v-model="editingEvent.dealership" class="input">
                 <option value="">Select dealership...</option>
                 <option v-for="d in dealerships" :key="d" :value="d">{{ d }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+              <label class="block label-upper mb-2">Status</label>
               <select v-model="editingEvent.status" class="input">
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
@@ -662,13 +660,13 @@
           <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
             <button 
               @click="showEditEventModal = false"
-              class="btn-secondary text-sm"
+              class="btn-secondary"
             >
               Cancel
             </button>
             <button 
               @click="saveEditedEvent"
-              class="btn-primary text-sm"
+              class="btn-primary"
             >
               Save Changes
             </button>
@@ -925,15 +923,25 @@ const calendarOptions = ref({
   select: handleDateSelect,
   eventClick: handleEventClick,
   eventsSet: handleEvents,
-  eventColor: '#3b82f6',
+  eventColor: '#dbeafe',
   eventClassNames: (arg) => {
     const typeColors = {
-      'test-drive': 'bg-blue-500',
-      'appointment': 'bg-green-500',
-      'call': 'bg-orange-500',
-      'meeting': 'bg-purple-500'
+      'test-drive': 'event-blue',
+      'appointment': 'event-green',
+      'offsite': 'event-emerald',
+      'workshop': 'event-indigo',
+      'call': 'event-orange',
+      'delivery': 'event-teal',
+      'meeting': 'event-purple',
+      'training': 'event-pink',
+      'marketing': 'event-yellow',
+      'leave': 'event-red',
+      'memo': 'event-gray',
+      'recall': 'event-cyan',
+      'absence': 'event-rose',
+      'other': 'event-slate'
     }
-    return typeColors[arg.event.extendedProps.type] || 'bg-blue-500'
+    return typeColors[arg.event.extendedProps.type] || 'event-blue'
   }
 })
 
@@ -980,22 +988,62 @@ const getEventTypeLabel = (type) => {
 
 const getEventTypeHeaderClass = (type) => {
   const colorMap = {
-    'test-drive': 'bg-blue-600',
-    'appointment': 'bg-green-600',
-    'offsite': 'bg-emerald-600',
-    'workshop': 'bg-indigo-600',
-    'call': 'bg-orange-500',
-    'delivery': 'bg-teal-600',
-    'meeting': 'bg-purple-600',
-    'training': 'bg-pink-600',
-    'marketing': 'bg-yellow-500',
-    'leave': 'bg-red-500',
-    'memo': 'bg-gray-500',
-    'recall': 'bg-cyan-600',
-    'absence': 'bg-rose-500',
-    'other': 'bg-slate-500'
+    'test-drive': 'bg-blue-50 border-b border-blue-200',
+    'appointment': 'bg-green-50 border-b border-green-200',
+    'offsite': 'bg-emerald-50 border-b border-emerald-200',
+    'workshop': 'bg-indigo-50 border-b border-indigo-200',
+    'call': 'bg-orange-50 border-b border-orange-200',
+    'delivery': 'bg-teal-50 border-b border-teal-200',
+    'meeting': 'bg-purple-50 border-b border-purple-200',
+    'training': 'bg-pink-50 border-b border-pink-200',
+    'marketing': 'bg-yellow-50 border-b border-yellow-200',
+    'leave': 'bg-red-50 border-b border-red-200',
+    'memo': 'bg-gray-50 border-b border-gray-200',
+    'recall': 'bg-cyan-50 border-b border-cyan-200',
+    'absence': 'bg-rose-50 border-b border-rose-200',
+    'other': 'bg-slate-50 border-b border-slate-200'
   }
-  return colorMap[type] || 'bg-blue-600'
+  return colorMap[type] || 'bg-blue-50 border-b border-blue-200'
+}
+
+const getEventTypeBadgeClass = (type) => {
+  const colorMap = {
+    'test-drive': 'bg-blue-100 text-blue-700 border-blue-200',
+    'appointment': 'bg-green-100 text-green-700 border-green-200',
+    'offsite': 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    'workshop': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    'call': 'bg-orange-100 text-orange-700 border-orange-200',
+    'delivery': 'bg-teal-100 text-teal-700 border-teal-200',
+    'meeting': 'bg-purple-100 text-purple-700 border-purple-200',
+    'training': 'bg-pink-100 text-pink-700 border-pink-200',
+    'marketing': 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    'leave': 'bg-red-100 text-red-700 border-red-200',
+    'memo': 'bg-gray-100 text-gray-700 border-gray-200',
+    'recall': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    'absence': 'bg-rose-100 text-rose-700 border-rose-200',
+    'other': 'bg-slate-100 text-slate-700 border-slate-200'
+  }
+  return colorMap[type] || 'bg-blue-100 text-blue-700 border-blue-200'
+}
+
+const getEventTypeTextClass = (type) => {
+  const colorMap = {
+    'test-drive': 'text-blue-900',
+    'appointment': 'text-green-900',
+    'offsite': 'text-emerald-900',
+    'workshop': 'text-indigo-900',
+    'call': 'text-orange-900',
+    'delivery': 'text-teal-900',
+    'meeting': 'text-purple-900',
+    'training': 'text-pink-900',
+    'marketing': 'text-yellow-900',
+    'leave': 'text-red-900',
+    'memo': 'text-gray-900',
+    'recall': 'text-cyan-900',
+    'absence': 'text-rose-900',
+    'other': 'text-slate-900'
+  }
+  return colorMap[type] || 'text-blue-900'
 }
 
 const formatEventDate = (dateStr) => {
@@ -1124,7 +1172,7 @@ async function createEvent() {
 }
 
 .fc .fc-toolbar-title {
-  @apply text-lg md:text-xl font-bold text-gray-900;
+  @apply text-base md:text-lg font-bold text-gray-900;
 }
 
 .fc .fc-col-header-cell {
@@ -1185,5 +1233,49 @@ async function createEvent() {
 
 .fc .fc-timegrid-axis-cushion {
   @apply text-xs text-gray-500;
+}
+
+/* Custom event type colors with light backgrounds */
+.fc .fc-event.event-blue {
+  @apply bg-blue-50 border border-blue-200 text-blue-700;
+}
+.fc .fc-event.event-green {
+  @apply bg-green-50 border border-green-200 text-green-700;
+}
+.fc .fc-event.event-emerald {
+  @apply bg-emerald-50 border border-emerald-200 text-emerald-700;
+}
+.fc .fc-event.event-indigo {
+  @apply bg-indigo-50 border border-indigo-200 text-indigo-700;
+}
+.fc .fc-event.event-orange {
+  @apply bg-orange-50 border border-orange-200 text-orange-700;
+}
+.fc .fc-event.event-teal {
+  @apply bg-teal-50 border border-teal-200 text-teal-700;
+}
+.fc .fc-event.event-purple {
+  @apply bg-purple-50 border border-purple-200 text-purple-700;
+}
+.fc .fc-event.event-pink {
+  @apply bg-pink-50 border border-pink-200 text-pink-700;
+}
+.fc .fc-event.event-yellow {
+  @apply bg-yellow-50 border border-yellow-200 text-yellow-700;
+}
+.fc .fc-event.event-red {
+  @apply bg-red-50 border border-red-200 text-red-700;
+}
+.fc .fc-event.event-gray {
+  @apply bg-gray-50 border border-gray-200 text-gray-700;
+}
+.fc .fc-event.event-cyan {
+  @apply bg-cyan-50 border border-cyan-200 text-cyan-700;
+}
+.fc .fc-event.event-rose {
+  @apply bg-rose-50 border border-rose-200 text-rose-700;
+}
+.fc .fc-event.event-slate {
+  @apply bg-slate-50 border border-slate-200 text-slate-700;
 }
 </style>

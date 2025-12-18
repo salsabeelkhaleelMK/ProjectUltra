@@ -16,7 +16,7 @@
       </div>
       
       <!-- Search & Filters -->
-      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div class="flex-1 min-w-0 sm:max-w-md">
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -70,34 +70,34 @@
                 :key="contact.id"
                 class="hover:bg-gray-50 cursor-pointer transition-colors"
               >
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
                   <input type="checkbox" class="rounded">
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2 md:gap-3">
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
                       {{ contact.initials }}
                     </div>
                     <div class="min-w-0">
-                      <div class="font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none">{{ contact.name }}</div>
+                      <div class="text-content-bold truncate max-w-[120px] md:max-w-none">{{ contact.name }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 text-content text-gray-600 whitespace-nowrap">
                   <span class="truncate block max-w-[100px]">{{ contact.company || '-' }}</span>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
-                  <div class="text-xs text-gray-600 truncate max-w-[150px]">{{ contact.email }}</div>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
+                  <div class="text-content text-gray-600 truncate max-w-[150px]">{{ contact.email }}</div>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs text-gray-600 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 text-content text-gray-600 whitespace-nowrap">
                   {{ contact.phone }}
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <span class="badge-ui bg-gray-100 text-gray-700 font-semibold">
                     {{ contact.source }}
                   </span>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap hidden xl:table-cell">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap hidden xl:table-cell">
                   <div class="flex flex-wrap gap-1">
                     <span 
                       v-for="tag in contact.tags" 
@@ -109,7 +109,7 @@
                     <span v-if="!contact.tags || contact.tags.length === 0" class="text-xs text-gray-400">-</span>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
                   <button class="text-gray-400 hover:text-gray-600">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>

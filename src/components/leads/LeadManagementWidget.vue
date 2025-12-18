@@ -222,6 +222,13 @@
         </button>
       </div>
     </div>
+
+    <!-- Disqualify Modal -->
+    <DisqualifyModal
+      :show="showDisqualifyModal"
+      @confirm="handleDisqualify"
+      @cancel="showDisqualifyModal = false"
+    />
   </div>
 </template>
 
@@ -230,6 +237,7 @@ import { ref } from 'vue'
 import { useLeadsStore } from '@/stores/leads'
 import RescheduleWidget from '@/components/shared/RescheduleWidget.vue'
 import ScheduleAppointmentWidget from '@/components/shared/ScheduleAppointmentWidget.vue'
+import DisqualifyModal from '@/components/shared/DisqualifyModal.vue'
 
 const props = defineProps({
   lead: {
@@ -420,6 +428,31 @@ const handleRequalify = async () => {
     await leadsStore.loadLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to requalify lead:', err)
+  }
+}
+
+const handleDisqualify = async (data) => {
+  try {
+    await leadsStore.modifyLead(props.lead.id, {
+      isDisqualified: true,
+      disqualifyReason: data.reason,
+      status: 'Disqualified'
+    })
+    
+    // Add activity log
+    await leadsStore.addActivity(props.lead.id, {
+      type: 'note',
+      user: 'You',
+      action: 'disqualified lead',
+      content: `Lead disqualified - Category: ${data.category}, Reason: ${data.reason}`
+    })
+    
+    showDisqualifyModal.value = false
+    
+    // Reload lead to get updated state
+    await leadsStore.loadLeadById(props.lead.id)
+  } catch (err) {
+    console.error('Failed to disqualify lead:', err)
   }
 }
 </script>

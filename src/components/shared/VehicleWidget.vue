@@ -4,10 +4,10 @@
       <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
       <h3 class="font-bold text-gray-800 text-sm">{{ label }}</h3>
     </div>
-    <details 
-      class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 group overflow-hidden"
-    >
-      <summary class="block p-4 cursor-pointer select-none bg-white hover:bg-gray-50 transition-colors">
+    
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 overflow-hidden">
+      <!-- Always visible content -->
+      <div class="p-4">
         <!-- Request message at the top -->
         <div v-if="requestMessage" class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
           <div class="text-xs font-medium text-gray-500 mb-1">Request message</div>
@@ -40,23 +40,37 @@
               </div>
             </div>
           </div>
-        <div class="flex items-center gap-4">
-          <button 
-            v-if="showOpenAd && price" 
-            class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
-          >
-            Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
-          </button>
-          <div v-if="price" class="text-right">
-            <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
-            <div class="font-bold text-slate-800">€ {{ formatCurrency(price) }}</div>
+          <div class="flex items-center gap-4">
+            <button 
+              v-if="showOpenAd && price" 
+              class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
+            >
+              Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
+            </button>
+            <div v-if="price" class="text-right">
+              <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
+              <div class="font-bold text-slate-800">€ {{ formatCurrency(price) }}</div>
+            </div>
           </div>
-          <i class="fa-solid fa-chevron-down chevron-car text-gray-400 text-sm ml-2"></i>
         </div>
       </div>
-    </summary>
-    
-    <div class="border-t border-gray-100 p-6 bg-gray-50/30 content-sweep text-sm">
+      
+      <!-- Separator and toggle button -->
+      <div class="border-t border-gray-200">
+        <button
+          @click="isExpanded = !isExpanded"
+          class="w-full p-3 flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+        >
+          <span class="font-medium">{{ isExpanded ? 'Hide' : 'View' }} Details</span>
+          <i 
+            class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+            :class="{ 'rotate-180': isExpanded }"
+          ></i>
+        </button>
+      </div>
+      
+      <!-- Expandable details -->
+      <div v-if="isExpanded" class="border-t border-gray-100 p-6 bg-gray-50/30 text-sm animate-fade-in">
       <!-- REQUEST DETAILS -->
       <div class="mb-6">
         <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">REQUEST DETAILS</h4>
@@ -145,13 +159,15 @@
           </button>
         </div>
       </div>
+      </div>
     </div>
-    </details>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+
+const isExpanded = ref(false)
 
 const props = defineProps({
   show: {
@@ -269,38 +285,3 @@ const formatNumber = (value) => {
 }
 </script>
 
-<style scoped>
-/* Accordion Animations */
-details > summary {
-  list-style: none;
-}
-
-details > summary::-webkit-details-marker {
-  display: none;
-}
-
-/* Animation for the car widget content */
-details[open] summary ~ .content-sweep {
-  animation: sweep 0.2s ease-in-out;
-}
-
-/* Specific rotation for car widget chevron */
-details summary .chevron-car {
-  transition: transform 0.2s;
-}
-
-details[open] summary .chevron-car {
-  transform: rotate(180deg);
-}
-
-@keyframes sweep {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

@@ -21,22 +21,6 @@ const routes = [
         component: () => import('@/views/TaskDetail.vue')
       },
       {
-        path: 'leads',
-        redirect: '/tasks/1?type=lead'
-      },
-      {
-        path: 'leads/:id',
-        redirect: to => `/tasks/${to.params.id}?type=lead`
-      },
-      {
-        path: 'opportunities',
-        redirect: '/tasks/1?type=opportunity'
-      },
-      {
-        path: 'opportunities/:id',
-        redirect: to => `/tasks/${to.params.id}?type=opportunity`
-      },
-      {
         path: 'vehicles',
         name: 'vehicles',
         component: () => import('@/views/Vehicles.vue')

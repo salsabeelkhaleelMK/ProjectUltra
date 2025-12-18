@@ -13,7 +13,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="label-upper mb-1 text-gray-400">{{ event.time }}</div>
-            <div class="text-sm font-bold text-gray-900 mb-0.5">{{ event.type }}</div>
+            <div class="text-content-bold mb-0.5">{{ event.type }}</div>
             <div class="text-[11px] text-gray-600 leading-tight">{{ event.customer }}</div>
             <div class="text-[10px] text-gray-400 mt-0.5">{{ event.location }}</div>
           </div>

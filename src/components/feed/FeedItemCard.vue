@@ -12,21 +12,34 @@
         <span class="text-[10px] text-gray-400">{{ item.action || 'added' }}</span>
         <span class="text-[10px] text-gray-400">• {{ formatTime(item.timestamp) }}</span>
         <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-[9px] px-1.5 py-0.5 rounded border border-blue-100">Auto-detected</span>
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto relative">
           <button 
-            @click="$emit('edit', item)"
-            class="text-gray-400 hover:text-blue-600 transition-colors p-1"
-            title="Edit"
+            @click.stop="showMenu = !showMenu"
+            class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+            title="More actions"
           >
-            <i class="fa-solid fa-pencil text-xs"></i>
+            <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
           </button>
-          <button 
-            @click="handleDelete"
-            class="text-gray-400 hover:text-red-600 transition-colors p-1"
-            title="Delete"
+          
+          <!-- Dropdown Menu -->
+          <div 
+            v-if="showMenu"
+            v-click-outside="() => showMenu = false"
+            class="absolute right-0 top-full mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden"
           >
-            <i class="fa-solid fa-trash text-xs"></i>
-          </button>
+            <button 
+              @click="handleEdit"
+              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-pencil text-gray-400"></i> Edit
+            </button>
+            <button 
+              @click="handleDelete"
+              class="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-trash text-red-400"></i> Delete
+            </button>
+          </div>
         </div>
       </div>
       <div v-if="item.content" class="text-sm text-slate-700">{{ item.content }}</div>
@@ -39,19 +52,55 @@
           <AppointmentWidget :appointment-data="item.data" />
         </div>
         <div v-else class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-          <div v-if="item.type === 'tradein'" class="flex justify-between items-start">
-            <div>
-              <h4 class="text-sm font-bold text-slate-800">{{ item.data.brand }} {{ item.data.model }}</h4>
-              <div class="text-xs text-gray-500 mt-1 flex gap-3">
-                <span v-if="item.data.year"><i class="fa-regular fa-calendar mr-1"></i>{{ item.data.year }}</span>
-                <span v-if="item.data.km"><i class="fa-solid fa-road mr-1"></i>{{ item.data.km }} km</span>
+          <div v-if="item.type === 'tradein'">
+            <h4 class="text-sm font-bold text-slate-800">{{ item.data.brand }} {{ item.data.model }}</h4>
+            <p v-if="item.data.version" class="text-xs text-gray-600 mt-0.5">{{ item.data.version }}</p>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500 mt-2">
+              <div v-if="item.data.year">
+                <i class="fa-regular fa-calendar mr-1"></i>{{ item.data.year }}
+              </div>
+              <div v-if="item.data.km">
+                <i class="fa-solid fa-road mr-1"></i>{{ item.data.km }} km
+              </div>
+              <div v-if="item.data.plate">
+                <i class="fa-solid fa-id-card mr-1"></i>{{ item.data.plate }}
+              </div>
+              <div v-if="item.data.date">
+                <i class="fa-regular fa-calendar-check mr-1"></i>{{ formatDate(item.data.date) }}
+              </div>
+              <div v-if="item.data.class">
+                <i class="fa-solid fa-car mr-1"></i>{{ item.data.class }}
               </div>
             </div>
-            <span class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded">Pending Eval</span>
           </div>
-          <div v-else-if="item.type === 'financing'" class="flex justify-between items-center mb-2">
-            <h4 class="text-sm font-bold text-slate-800">{{ item.data.product }}</h4>
-            <span class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded">Draft</span>
+          <div v-else-if="item.type === 'financing'">
+            <h4 class="text-sm font-bold text-slate-800 mb-2">{{ item.data.product }}</h4>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+              <div v-if="item.data.provider">
+                <span class="text-gray-500">Provider:</span>
+                <span class="text-slate-700 font-medium ml-1">{{ item.data.provider }}</span>
+              </div>
+              <div v-if="item.data.total">
+                <span class="text-gray-500">Total:</span>
+                <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.total) }}</span>
+              </div>
+              <div v-if="item.data.monthly">
+                <span class="text-gray-500">Monthly:</span>
+                <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.monthly) }}</span>
+              </div>
+              <div v-if="item.data.deposit">
+                <span class="text-gray-500">Deposit:</span>
+                <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.deposit) }}</span>
+              </div>
+              <div v-if="item.data.startDate">
+                <span class="text-gray-500">Start:</span>
+                <span class="text-slate-700 font-medium ml-1">{{ formatDate(item.data.startDate) }}</span>
+              </div>
+              <div v-if="item.data.expDate">
+                <span class="text-gray-500">Expires:</span>
+                <span class="text-slate-700 font-medium ml-1">{{ formatDate(item.data.expDate) }}</span>
+              </div>
+            </div>
           </div>
           <div v-else-if="item.type === 'offer'" class="flex items-center gap-3">
             <div v-if="item.data.image" class="w-16 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
@@ -98,7 +147,25 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete'])
 
-const showDeleteConfirm = ref(false)
+const showMenu = ref(false)
+
+// Click outside directive
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value()
+      }
+    }
+    // Use setTimeout to ensure the click that opened the menu doesn't immediately close it
+    setTimeout(() => {
+      document.addEventListener('click', el.clickOutsideEvent)
+    }, 0)
+  },
+  unmounted(el) {
+    document.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
 
 const getItemIcon = (type) => {
   const icons = {
@@ -162,7 +229,13 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+const handleEdit = () => {
+  showMenu.value = false
+  emit('edit', props.item)
+}
+
 const handleDelete = () => {
+  showMenu.value = false
   if (confirm('Are you sure you want to delete this item?')) {
     emit('delete', props.item)
   }

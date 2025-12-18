@@ -120,11 +120,65 @@
         />
       </div>
     </main>
+
+    <!-- Overview Modal Widgets (Financing, Trade-in, Purchase) -->
+    <Teleport to="body">
+      <div 
+        v-if="showOverviewModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+        @click.self="closeOverviewModal"
+      >
+        <div 
+          v-if="overviewModalType === 'financing' || overviewModalType === 'tradein'"
+          class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h5 class="text-sm font-bold text-slate-800">
+                {{ overviewModalType === 'financing' ? 'Add Financing' : 'Add Trade-in' }}
+              </h5>
+              <button @click="closeOverviewModal" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <FinancingWidget
+              v-if="overviewModalType === 'financing'"
+              :item="null"
+              :task-type="type"
+              :task-id="task.id"
+              @save="handleOverviewModalSave"
+              @cancel="closeOverviewModal"
+            />
+            <TradeInWidget
+              v-if="overviewModalType === 'tradein'"
+              :item="null"
+              :task-type="type"
+              :task-id="task.id"
+              @save="handleOverviewModalSave"
+              @cancel="closeOverviewModal"
+            />
+          </div>
+        </div>
+        
+        <div 
+          v-if="overviewModalType === 'purchase'"
+          class="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
+          <PurchaseWidget
+            :item="null"
+            :task-type="type"
+            :task-id="task.id"
+            @save="handleOverviewModalSave"
+            @cancel="closeOverviewModal"
+          />
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ContactInfo from '@/components/shared/ContactInfo.vue'
 import Tabs from '@/components/shared/Tabs.vue'
 import StageOwnerBar from '@/components/shared/StageOwnerBar.vue'
@@ -133,6 +187,9 @@ import FeedItemCard from '@/components/feed/FeedItemCard.vue'
 import CommunicationWidget from '@/components/widgets/CommunicationWidget.vue'
 import NoteWidget from '@/components/widgets/NoteWidget.vue'
 import AttachmentWidget from '@/components/widgets/AttachmentWidget.vue'
+import FinancingWidget from '@/components/widgets/FinancingWidget.vue'
+import TradeInWidget from '@/components/widgets/TradeInWidget.vue'
+import PurchaseWidget from '@/components/widgets/PurchaseWidget.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 
@@ -149,6 +206,10 @@ const props = defineProps({
 
 const taskId = computed(() => props.task.id)
 
+// Modal state for overview actions (financing, tradein, purchase)
+const showOverviewModal = ref(false)
+const overviewModalType = ref(null)
+
 const {
   activeTab,
   showInlineWidget,
@@ -156,7 +217,7 @@ const {
   communicationType,
   inlineContent,
   filteredInlineContent,
-  handleAddNewAction,
+  handleAddNewAction: handleAddNewActionBase,
   handleWidgetSave,
   handleWidgetCancel,
   handleEditItem,
@@ -168,6 +229,29 @@ const {
   isOverviewModalAction: (action) =>
     activeTab.value === 'overview' && props.addNewConfig.overviewActions.includes(action)
 })
+
+// Wrapper to handle modal actions
+const handleAddNewAction = (action) => {
+  const result = handleAddNewActionBase(action)
+  
+  // Check if it's a modal action
+  if (result && result.modalAction) {
+    overviewModalType.value = result.modalAction
+    showOverviewModal.value = true
+  }
+}
+
+// Close modal
+const closeOverviewModal = () => {
+  showOverviewModal.value = false
+  overviewModalType.value = null
+}
+
+// Handle modal save
+const handleOverviewModalSave = async (data) => {
+  await handleWidgetSave(data)
+  closeOverviewModal()
+}
 
 const tabs = computed(() => {
   const allItems = [...props.storeAdapter.currentActivities.value, ...inlineContent.value]

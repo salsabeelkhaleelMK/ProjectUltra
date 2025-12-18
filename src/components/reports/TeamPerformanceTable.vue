@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-    <div class="p-4 md:p-6 border-b border-gray-200">
+    <div class="p-4 md:p-5 border-b border-gray-200">
       <h2 class="heading-main">Team Performance</h2>
     </div>
     
@@ -22,27 +22,27 @@
             :key="member.name"
             class="hover:bg-gray-50 transition-colors"
           >
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-semibold text-gray-900">{{ member.name }}</div>
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content-bold">{{ member.name }}</div>
             </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ member.leads }}</div>
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content">{{ member.leads }}</div>
             </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content">
                 {{ member.qualifiedLeads }} <span class="text-gray-500">({{ member.qualifiedPercentage }}%)</span>
               </div>
             </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ member.opportunities }}</div>
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content">{{ member.opportunities }}</div>
             </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content">
                 {{ member.inNegotiation }} <span class="text-gray-500">({{ member.inNegotiationPercentage }}%)</span>
               </div>
             </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
+            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+              <div class="text-content">
                 {{ member.won }} <span class="text-gray-500">({{ member.wonPercentage }}%)</span>
               </div>
             </td>

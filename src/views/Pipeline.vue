@@ -4,40 +4,24 @@
     <div class="page-header">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div class="flex-1 min-w-0">
-          <h1 class="page-header-title">Sales Pipeline</h1>
-          <!-- Stage Cards (Tabs) -->
-          <div class="flex items-center gap-2 md:gap-4 mt-3 md:mt-4 overflow-x-auto pb-2 scrollbar-hide">
-            <div
+          <h1 class="page-header-title">Pipeline</h1>
+          <!-- Stage Tabs -->
+          <div class="flex items-center gap-3 mt-3 md:mt-4 overflow-x-auto pb-2 scrollbar-hide">
+            <button
               v-for="tab in stageTabs"
               :key="tab.key"
               @click="setTab(tab.key)"
-              class="bg-white rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-all min-w-[120px] md:min-w-[140px] shrink-0"
-              :class="activeTab === tab.key ? 'ring-2 ring-blue-500' : ''"
+              class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
+              :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
             >
-              <!-- Colored Bar -->
-              <div 
-                class="h-1 rounded-t-lg"
-                :class="tab.barColor"
-              ></div>
-              <!-- Content -->
-              <div class="p-3">
-                <div class="label-upper mb-1">{{ tab.label }}</div>
-                <div class="flex items-center gap-2">
-                  <span 
-                    class="text-sm font-bold text-gray-900"
-                    :class="tab.key === 'open-leads' ? 'text-blue-600' : ''"
-                  >
-                    {{ tab.count }}
-                  </span>
-                  <span 
-                    v-if="tab.key === 'open-leads'"
-                    class="badge-ui bg-gray-100 text-gray-700 font-semibold"
-                  >
-                    {{ tab.count }}
-                  </span>
-                </div>
-              </div>
-            </div>
+              <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
+              <span 
+                class="px-2.5 py-1 text-sm font-semibold rounded-full min-w-[32px] text-center"
+                :class="activeTab === tab.key ? tab.badgeColor : 'bg-muted text-muted-foreground'"
+              >
+                {{ tab.count }}
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -49,8 +33,8 @@
       <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <!-- Left: search + basic filters -->
-          <div class="flex flex-1 flex-wrap items-center gap-2 md:gap-3">
-            <div class="flex-1 min-w-[200px] md:min-w-[260px] max-w-full md:max-w-md">
+          <div class="flex flex-wrap items-center gap-2 md:gap-3">
+            <div class="w-full sm:w-auto sm:min-w-[260px] sm:max-w-md">
               <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <input 
@@ -63,7 +47,7 @@
               </div>
             </div>
             
-            <select v-model="filters.status" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+            <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto shrink-0">
               <option value="">Status</option>
               <option value="Valid">Valid</option>
               <option value="Not valid">Not valid</option>
@@ -71,26 +55,26 @@
               <option value="Not interested">Not interested</option>
             </select>
             
-            <select v-model="filters.priority" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+            <select v-model="filters.priority" @change="applyFilters" class="input text-sm w-auto shrink-0">
               <option value="">Priority</option>
               <option value="Hot">Hot</option>
               <option value="Normal">Normal</option>
             </select>
             
-            <select v-model="filters.source" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+            <select v-model="filters.source" @change="applyFilters" class="input text-sm w-auto shrink-0">
               <option value="">Source</option>
               <option value="Marketing">Marketing</option>
             </select>
             
-            <button class="btn-secondary text-xs md:text-sm">
+            <button class="btn-secondary text-sm">
               <i class="fa-solid fa-plus mr-1"></i> More filters
             </button>
             
-            <button @click="clearFilters" class="btn-secondary text-xs md:text-sm">
+            <button @click="clearFilters" class="btn-secondary text-sm">
               Clear
             </button>
             
-            <button class="btn-secondary text-xs md:text-sm">
+            <button class="btn-secondary text-sm">
               Save
             </button>
           </div>
@@ -139,54 +123,54 @@
                 class="hover:bg-gray-50 cursor-pointer transition-colors"
                 @click="handleRowClick(row)"
               >
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
                   <input type="checkbox" class="rounded">
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2 md:gap-3">
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0">
+                    <div class="w-9 h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0">
                       {{ row.initials }}
                     </div>
                     <div class="min-w-0">
-                      <div class="font-semibold text-gray-900 truncate">{{ row.customer }}</div>
-                      <div class="text-xs text-gray-500 truncate hidden sm:block">{{ row.email }}</div>
+                      <div class="text-content-bold truncate">{{ row.customer }}</div>
+                      <div class="text-meta truncate hidden sm:block">{{ row.email }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <span 
-                    class="text-xs md:text-sm font-medium"
+                    class="text-content font-medium"
                     :class="row.priority === 'Hot' ? 'text-red-600' : 'text-gray-600'"
                   >
                     {{ row.nextAction }}
                   </span>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <i class="fa-brands fa-volkswagen text-gray-400 text-xs md:text-sm"></i>
-                    <span class="text-xs md:text-sm font-medium text-gray-900 truncate max-w-[120px]">{{ row.car }}</span>
+                    <i class="fa-brands fa-volkswagen text-gray-400 text-sm"></i>
+                    <span class="text-content font-medium truncate max-w-[120px]">{{ row.car }}</span>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <span class="badge-ui font-semibold" :class="row.carStatusClass">
                     {{ row.carStatus }}
                   </span>
                 </td>
-                <td class="px-3 md:px-6 py-4 text-xs md:text-sm text-gray-600 whitespace-nowrap">{{ row.source }}</td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 text-content text-gray-600 whitespace-nowrap">{{ row.source }}</td>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gray-100 flex items-center justify-center text-[9px] md:text-[10px] font-bold text-gray-600 shrink-0">
+                    <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0">
                       {{ row.assigneeInitials }}
                     </div>
-                    <span class="text-xs md:text-sm text-gray-600 truncate max-w-[80px] hidden md:inline">{{ row.assignee }}</span>
+                    <span class="text-content text-gray-600 truncate max-w-[80px] hidden md:inline">{{ row.assignee }}</span>
                   </div>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
                   <span class="badge-ui font-semibold" :class="row.statusClass">
                     {{ row.status }}
                   </span>
                 </td>
-                <td class="px-3 md:px-6 py-4 whitespace-nowrap" @click.stop>
+                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
                   <button class="text-gray-400 hover:text-gray-600">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>
@@ -198,9 +182,9 @@
         
         <!-- Pagination -->
         <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="text-xs md:text-sm text-gray-600 flex items-center">
+          <div class="text-sm text-gray-600 flex items-center">
             Rows per page: 
-            <select class="ml-2 px-2 py-1 border border-gray-200 rounded text-xs md:text-sm">
+            <select class="ml-2 input text-sm w-auto">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -208,12 +192,12 @@
             </select>
           </div>
           <div class="flex items-center gap-1 md:gap-2 flex-wrap">
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Previous</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm bg-blue-600 text-white rounded">1</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50">2</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 hidden sm:inline-block">3</button>
-            <span class="px-1 md:px-2 text-xs md:text-sm text-gray-500 hidden sm:inline">...</span>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Next</button>
+            <button class="btn-secondary text-sm whitespace-nowrap">Previous</button>
+            <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">1</button>
+            <button class="btn-secondary text-sm">2</button>
+            <button class="btn-secondary text-sm hidden sm:inline-block">3</button>
+            <span class="px-2 text-sm text-gray-500 hidden sm:inline">...</span>
+            <button class="btn-secondary text-sm whitespace-nowrap">Next</button>
           </div>
         </div>
       </div>
@@ -226,16 +210,16 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
         @click.self="showAddModal = false"
       >
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 my-4 max-h-[90vh] overflow-y-auto animate-fade-in">
           <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="font-bold text-lg text-gray-900">{{ getModalTitle() }}</h3>
-            <p class="label-upper mt-1">Fill in the details below</p>
+            <h3 class="modal-title">{{ getModalTitle() }}</h3>
+            <p class="modal-subtitle">Fill in the details below</p>
           </div>
           
           <div class="p-5 space-y-4">
             <!-- Form fields based on active tab -->
             <div v-if="activeTab === 'open-leads'">
-              <label class="block label-upper mb-1">Customer Name</label>
+              <label class="block label-upper mb-2">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -243,7 +227,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Email</label>
+              <label class="block label-upper mb-2 mt-4">Email</label>
               <input 
                 v-model="newItem.email"
                 type="email" 
@@ -251,7 +235,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Requested Vehicle</label>
+              <label class="block label-upper mb-2 mt-4">Requested Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -261,7 +245,7 @@
             </div>
             
             <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'">
-              <label class="block label-upper mb-1">Customer Name</label>
+              <label class="block label-upper mb-2">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -269,7 +253,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Vehicle</label>
+              <label class="block label-upper mb-2 mt-4">Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -277,7 +261,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Opportunity Value</label>
+              <label class="block label-upper mb-2 mt-4">Opportunity Value</label>
               <input 
                 v-model="newItem.value"
                 type="number" 
@@ -285,7 +269,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Probability (%)</label>
+              <label class="block label-upper mb-2 mt-4">Probability (%)</label>
               <input 
                 v-model="newItem.probability"
                 type="number" 
@@ -297,7 +281,7 @@
             </div>
             
             <div v-else>
-              <label class="block label-upper mb-1">Customer Name</label>
+              <label class="block label-upper mb-2">Customer Name</label>
               <input 
                 v-model="newItem.customerName"
                 type="text" 
@@ -305,7 +289,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Vehicle</label>
+              <label class="block label-upper mb-2 mt-4">Vehicle</label>
               <input 
                 v-model="newItem.vehicle"
                 type="text" 
@@ -313,7 +297,7 @@
                 class="input"
               >
               
-              <label class="block label-upper mb-1 mt-4">Reason</label>
+              <label class="block label-upper mb-2 mt-4">Reason</label>
               <textarea 
                 v-model="newItem.reason"
                 rows="3"
@@ -332,7 +316,7 @@
             </button>
             <button 
               @click="handleAdd"
-              class="btn-primary text-sm"
+              class="btn-primary"
             >
               Create {{ getItemType() }}
             </button>
@@ -374,31 +358,36 @@ const stageTabs = computed(() => [
     key: 'open-leads', 
     label: 'Open Leads', 
     count: stats.value.openLeads,
-    barColor: 'bg-gray-300'
+    borderColor: 'border-t-blue-600',
+    badgeColor: 'bg-blue-600 text-white'
   },
   { 
     key: 'open-opportunities', 
     label: 'Open opportunities', 
     count: stats.value.openOpportunities,
-    barColor: 'bg-orange-500'
+    borderColor: 'border-t-orange-500',
+    badgeColor: 'bg-orange-500 text-white'
   },
   { 
     key: 'in-negotiation', 
     label: 'In negotiation', 
     count: stats.value.inNegotiation,
-    barColor: 'bg-blue-500'
+    borderColor: 'border-t-blue-500',
+    badgeColor: 'bg-blue-500 text-white'
   },
   { 
     key: 'won', 
     label: 'Won', 
     count: stats.value.won,
-    barColor: 'bg-green-500'
+    borderColor: 'border-t-green-500',
+    badgeColor: 'bg-green-500 text-white'
   },
   { 
     key: 'lost', 
     label: 'Lost', 
     count: stats.value.lost,
-    barColor: 'bg-red-500'
+    borderColor: 'border-t-red-500',
+    badgeColor: 'bg-red-500 text-white'
   }
 ])
 
