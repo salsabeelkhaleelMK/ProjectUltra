@@ -1,32 +1,58 @@
 <template>
   <div class="w-full">
-    <!-- Row 1: Header with customer info and expander arrow -->
-    <div class="flex items-center gap-3 md:gap-4">
-      <!-- Customer Avatar -->
-      <div 
-        class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold border-2 border-white shadow-sm shrink-0"
-        :class="avatarColorClass"
-      >
-        {{ initials }}
-      </div>
-      
-      <!-- Name & Tags -->
-      <div class="min-w-0 flex-1">
-        <div class="flex items-center gap-2">
+    <!-- Row 1: Header with customer info, actions, and expander arrow -->
+    <div class="flex items-center justify-between gap-3 md:gap-4">
+      <div class="flex items-center gap-3 md:gap-4 flex-1">
+        <!-- Customer Avatar -->
+        <div 
+          class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold border-2 border-white shadow-sm shrink-0"
+          :class="avatarColorClass"
+        >
+          {{ initials }}
+        </div>
+        
+        <!-- Name & Tags -->
+        <div class="min-w-0 flex-1">
           <h1 class="text-lg md:text-xl font-bold text-gray-900 truncate">{{ name }}</h1>
-        </div>
-        <div class="flex flex-wrap items-center gap-2 mt-1">
-          <slot name="tags"></slot>
+          <div class="flex flex-wrap items-center gap-2 mt-1">
+            <slot name="tags"></slot>
+          </div>
         </div>
       </div>
       
-      <!-- Expander Arrow -->
-      <button 
-        @click="showContactInfo = !showContactInfo" 
-        class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0 ml-auto"
-      >
-        <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
-      </button>
+      <!-- Contact actions + Expander Arrow -->
+      <div class="flex items-center gap-1 ml-2">
+        <button 
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          title="Call"
+        >
+          <i class="fa-solid fa-phone text-xs"></i>
+        </button>
+        <button 
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          title="Email"
+        >
+          <i class="fa-regular fa-envelope text-xs"></i>
+        </button>
+        <button 
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          title="WhatsApp"
+        >
+          <i class="fa-brands fa-whatsapp text-xs"></i>
+        </button>
+        <button 
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 transition-colors"
+          title="SMS"
+        >
+          <i class="fa-regular fa-comment-dots text-xs"></i>
+        </button>
+        <button 
+          @click="showContactInfo = !showContactInfo" 
+          class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
+        >
+          <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
+        </button>
+      </div>
     </div>
     
     <!-- Row 2: Expanded Contact Details -->
@@ -34,7 +60,7 @@
       v-if="showContactInfo" 
       class="mt-4 pt-4 border-t-2 border-dashed border-gray-300 animate-fade-in relative"
     >
-      <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
         <!-- Contact Details -->
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <!-- Email -->
@@ -75,38 +101,6 @@
             </div>
             <span class="text-xs text-gray-900 font-medium">{{ thirdFieldValue }}</span>
           </div>
-        </div>
-        
-        <!-- Action Icons - Far Right -->
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button 
-            @click="handleAction('call')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
-            title="Call"
-          >
-            <i class="fa-solid fa-phone text-xs"></i>
-          </button>
-          <button 
-            @click="handleAction('email')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
-            title="Send Email"
-          >
-            <i class="fa-regular fa-envelope text-xs"></i>
-          </button>
-          <button 
-            @click="handleAction('whatsapp')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
-            title="WhatsApp"
-          >
-            <i class="fa-brands fa-whatsapp text-sm"></i>
-          </button>
-          <button 
-            @click="handleAction('sms')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
-            title="Send SMS"
-          >
-            <i class="fa-solid fa-comment-sms text-xs"></i>
-          </button>
         </div>
       </div>
       

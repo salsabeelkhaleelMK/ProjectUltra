@@ -80,6 +80,18 @@
               Configure vehicle
             </button>
             <button
+              @click="$emit('add-tradein')"
+              class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+            >
+              Add trade-in
+            </button>
+            <button
+              @click="$emit('add-financing')"
+              class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+            >
+              Add financing
+            </button>
+            <button
               @click="handleCreateOffer"
               class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
             >

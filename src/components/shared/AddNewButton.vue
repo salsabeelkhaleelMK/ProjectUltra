@@ -1,10 +1,14 @@
 <template>
-  <div v-if="show" class="relative flex items-center py-1 mb-4">
-    <div class="flex-grow border-t border-gray-200"></div>
-    <div class="relative mx-4">
+  <div 
+    v-if="show" 
+    class="relative flex items-center"
+    :class="inline ? 'justify-end mb-0 py-0' : 'py-1 mb-4'"
+  >
+    <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
+    <div class="relative" :class="inline ? 'mx-0' : 'mx-4'">
       <button 
         @click.stop="showMenu = !showMenu"
-        class="bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium px-4 py-1.5 rounded-full text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative"
+        :class="buttonClass"
       >
         <i class="fa-solid fa-plus text-xs"></i> Add new
       </button>
@@ -58,6 +62,20 @@
             Trade-in
           </button>
           <button 
+            v-if="filteredActions.includes('requestedCar')"
+            @click="handleAction('requestedCar')" 
+            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+          >
+            Requested car
+          </button>
+          <button 
+            v-if="filteredActions.includes('purchase')"
+            @click="handleAction('purchase')" 
+            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+          >
+            Purchase
+          </button>
+          <button 
             v-if="filteredActions.includes('attachment')"
             @click="handleAction('attachment')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
@@ -93,7 +111,7 @@
         </template>
       </div>
     </div>
-    <div class="flex-grow border-t border-gray-200"></div>
+    <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
   </div>
 </template>
 
@@ -127,12 +145,25 @@ const props = defineProps({
   activeTab: {
     type: String,
     default: 'overview'
+  },
+  inline: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['action'])
 
 const showMenu = ref(false)
+
+const buttonClass = computed(() => {
+  if (props.inline) {
+    // Overview usage: blue, square-corner button
+    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-1.5 text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative'
+  }
+  // Default usage (other tabs): original gray rounded pill with separators
+  return 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium px-4 py-1.5 rounded-full text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative'
+})
 
 // Map actions to their owning tab (if any)
 // Actions without a mapping are considered \"overview-only\"
@@ -168,7 +199,7 @@ const hasVehicleActions = computed(() => {
 })
 
 const hasCommonActions = computed(() => {
-  return filteredActions.value.some(action => ['note', 'financing', 'tradein', 'attachment'].includes(action))
+  return filteredActions.value.some(action => ['note', 'financing', 'tradein', 'attachment', 'requestedCar', 'purchase'].includes(action))
 })
 
 const handleAction = (action) => {

@@ -1,10 +1,5 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6 animate-fade-in relative">
-    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
-    <div class="flex justify-between items-center mb-4">
-      <h5 class="text-sm font-bold text-slate-800">{{ item ? 'Edit Trade-in' : 'Add Trade-in' }}</h5>
-      <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+  <div class="animate-fade-in">
     <div class="space-y-4">
       <div>
         <label class="block text-xs font-medium text-slate-700 mb-1">Class</label>

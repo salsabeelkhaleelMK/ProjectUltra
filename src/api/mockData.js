@@ -119,7 +119,7 @@ export const mockLeads = [
 export const mockOpportunities = [
   {
     id: 1,
-    customer: { id: 4, name: 'Grace Thompson', initials: 'GT', email: 'grace.thompson@example.com', phone: '+4901987654321' },
+    customer: { id: 4, name: 'Grace Thompson', initials: 'GT', email: 'grace.thompson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze' },
     vehicle: { 
       brand: 'Audi', 
       model: 'e-tron GT', 
@@ -134,6 +134,7 @@ export const mockOpportunities = [
       requestMessage: 'Looking for a new e-tron GT. What are the financing options?'
     },
     stage: 'Qualified',
+    tags: ['Premium'],
     probability: 40,
     value: 98000,
     expectedCloseDate: '2025-04-30',
@@ -157,7 +158,7 @@ export const mockOpportunities = [
   },
   {
     id: 2,
-    customer: { id: 5, name: 'Oliver Brown', initials: 'OB', email: 'oliver.brown@example.com', phone: '+4901123456789' },
+    customer: { id: 5, name: 'Oliver Brown', initials: 'OB', email: 'oliver.brown@example.com', phone: '+4901123456789', address: 'Corso Buenos Aires 22, 20124 Milano' },
     vehicle: { 
       brand: 'Porsche', 
       model: 'Taycan', 
@@ -172,6 +173,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in a Taycan. Do you have any in a specific color?'
     },
     stage: 'Qualified',
+    tags: [],
     probability: 50,
     value: 120000,
     expectedCloseDate: '2025-05-15',
@@ -181,7 +183,7 @@ export const mockOpportunities = [
   },
   {
     id: 3,
-    customer: { id: 6, name: 'Sophia Martinez', initials: 'SM', email: 'sophia.martinez@example.com', phone: '+4901555666777' },
+    customer: { id: 6, name: 'Sophia Martinez', initials: 'SM', email: 'sophia.martinez@example.com', phone: '+4901555666777', address: 'Piazza Navona 8, 00186 Roma' },
     vehicle: { 
       brand: 'BMW', 
       model: 'iX', 
@@ -196,6 +198,7 @@ export const mockOpportunities = [
       requestMessage: 'Looking for an iX. What are the delivery times?'
     },
     stage: 'Closed',
+    tags: ['Automation'],
     probability: 100,
     value: 105000,
     expectedCloseDate: '2025-03-20',
@@ -206,7 +209,7 @@ export const mockOpportunities = [
   },
   {
     id: 4,
-    customer: { id: 7, name: 'Alexander Chen', initials: 'AC', email: 'alexander.chen@example.com', phone: '+4901999888777' },
+    customer: { id: 7, name: 'Alexander Chen', initials: 'AC', email: 'alexander.chen@example.com', phone: '+4901999888777', address: 'Via Montenapoleone 3, 20121 Milano' },
     vehicle: { 
       brand: 'Tesla', 
       model: 'Model S', 
@@ -225,6 +228,7 @@ export const mockOpportunities = [
       sourceDetails: 'Website Inquiry'
     },
     stage: 'In Negotiation',
+    tags: ['Premium'],
     probability: 65,
     value: 95000,
     expectedCloseDate: '2025-05-01',
@@ -235,7 +239,7 @@ export const mockOpportunities = [
   },
   {
     id: 5,
-    customer: { id: 8, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901234567890' },
+    customer: { id: 8, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901234567890', address: 'Kurfürstendamm 30, 10719 Berlin' },
     vehicle: { 
       brand: 'Mercedes-Benz', 
       model: 'EQS', 
@@ -250,6 +254,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in EQS. Need more information about features.'
     },
     stage: 'Qualified',
+    tags: [],
     probability: 35,
     value: 110000,
     expectedCloseDate: '2025-06-01',
@@ -261,7 +266,7 @@ export const mockOpportunities = [
   },
   {
     id: 6,
-    customer: { id: 9, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901987654321' },
+    customer: { id: 9, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901987654321', address: 'Leipziger Platz 1, 10117 Berlin' },
     vehicle: { 
       brand: 'Volkswagen', 
       model: 'ID.4', 
@@ -276,6 +281,7 @@ export const mockOpportunities = [
       requestMessage: 'Looking for an ID.4. What are the available options?'
     },
     stage: 'Qualified',
+    tags: [],
     probability: 30,
     value: 45000,
     expectedCloseDate: '2025-07-01',
@@ -287,7 +293,7 @@ export const mockOpportunities = [
   },
   {
     id: 7,
-    customer: { id: 10, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456' },
+    customer: { id: 10, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456', address: 'Marienplatz 5, 80331 München' },
     vehicle: { 
       brand: 'BMW', 
       model: 'i4', 
@@ -302,6 +308,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in BMW i4. Need financing details.'
     },
     stage: 'In Negotiation',
+    tags: ['Premium'],
     probability: 70,
     value: 65000,
     expectedCloseDate: '2025-04-15',
@@ -313,7 +320,7 @@ export const mockOpportunities = [
   },
   {
     id: 8,
-    customer: { id: 11, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766' },
+    customer: { id: 11, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766', address: 'Schildergasse 18, 50667 Köln' },
     vehicle: { 
       brand: 'Audi', 
       model: 'Q4 e-tron', 
@@ -328,6 +335,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in Q4 e-tron. When can I test drive?'
     },
     stage: 'In Negotiation',
+    tags: [],
     probability: 60,
     value: 55000,
     expectedCloseDate: '2025-05-20',
@@ -340,7 +348,7 @@ export const mockOpportunities = [
   },
   {
     id: 9,
-    customer: { id: 12, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666' },
+    customer: { id: 12, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666', address: 'Königsallee 70, 40212 Düsseldorf' },
     vehicle: { 
       brand: 'Porsche', 
       model: 'Macan Electric', 
@@ -355,6 +363,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in Macan Electric. Ready to proceed.'
     },
     stage: 'Closed',
+    tags: ['Premium'],
     probability: 100,
     value: 85000,
     expectedCloseDate: '2025-01-15',
@@ -367,7 +376,7 @@ export const mockOpportunities = [
   },
   {
     id: 10,
-    customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888' },
+    customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888', address: 'Spitalerstraße 12, 20095 Hamburg' },
     vehicle: { 
       brand: 'Mercedes-Benz', 
       model: 'EQC', 
@@ -382,6 +391,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in EQC. Need information about charging infrastructure.'
     },
     stage: 'In Negotiation',
+    tags: [],
     probability: 75,
     value: 75000,
     expectedCloseDate: '2025-05-10',
@@ -394,7 +404,7 @@ export const mockOpportunities = [
   },
   {
     id: 11,
-    customer: { id: 14, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666' },
+    customer: { id: 14, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666', address: 'Zeil 90, 60313 Frankfurt am Main' },
     vehicle: { 
       brand: 'BMW', 
       model: 'iX3', 
@@ -409,6 +419,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in iX3. What are the warranty terms?'
     },
     stage: 'In Negotiation',
+    tags: ['Automation'],
     probability: 80,
     value: 68000,
     expectedCloseDate: '2025-04-20',
@@ -421,7 +432,7 @@ export const mockOpportunities = [
   },
   {
     id: 12,
-    customer: { id: 15, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901999888777' },
+    customer: { id: 15, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901999888777', address: 'Piazzo San Marco 4, 30124 Venezia' },
     vehicle: { 
       brand: 'Audi', 
       model: 'A6 e-tron', 
@@ -436,6 +447,7 @@ export const mockOpportunities = [
       requestMessage: 'Interested in A6 e-tron. When can I schedule a test drive?'
     },
     stage: 'In Negotiation',
+    tags: [],
     probability: 70,
     value: 90000,
     expectedCloseDate: '2025-05-05',

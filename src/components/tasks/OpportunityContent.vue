@@ -9,22 +9,42 @@
           avatar-color-class="bg-purple-100 text-purple-600"
           :email="opportunity.customer.email"
           :phone="opportunity.customer.phone"
-          :third-field-value="formatDate(opportunity.expectedCloseDate)"
+          :third-field-value="opportunity.customer.address"
           email-label="Email"
           phone-label="Phone"
-          third-field-label="Expected Close"
+          third-field-label="Address"
         >
           <template #tags>
             <span 
-              class="px-2 py-0.5 rounded-full border bg-purple-50 border-purple-100 text-purple-700 text-xs font-semibold"
-            >
-              Opportunity
-            </span>
-            <span 
+              v-for="tag in opportunity.tags" 
+              :key="tag"
               class="px-2 py-0.5 rounded-full border bg-blue-50 border-blue-100 text-blue-700 text-xs font-semibold"
             >
-              €{{ formatCurrency(opportunity.value) }}
+              {{ tag }}
             </span>
+            <div class="relative ml-1">
+              <button 
+                @click.stop="showTagMenu = !showTagMenu"
+                class="text-[10px] md:text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 transition-colors outline-none"
+              >
+                + Add tag
+              </button>
+              <div 
+                v-if="showTagMenu"
+                class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-1 overflow-hidden"
+                v-click-outside="() => showTagMenu = false"
+              >
+                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 py-2">Select Tag</div>
+                <button 
+                  v-for="availableTag in availableTags" 
+                  :key="availableTag.name"
+                  @click="addTag(availableTag.name)"
+                  class="w-full text-left px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-gray-50 rounded flex items-center gap-2 transition-colors"
+                >
+                  <span class="w-2 h-2 rounded-full" :class="availableTag.color"></span> {{ availableTag.name }}
+                </button>
+              </div>
+            </div>
           </template>
         </ContactInfo>
       </div>
@@ -32,22 +52,24 @@
     
     <!-- Scrollable Content -->
     <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
-      <!-- Tabs -->
-      <Tabs 
-        v-model="activeTab"
-        :tabs="opportunityTabs"
-        class="mb-4"
-      />
+      <!-- Tabs + Add New (overview only) -->
+      <div class="flex items-center justify-between mb-4">
+        <Tabs 
+          v-model="activeTab"
+          :tabs="opportunityTabs"
+          class="mb-0"
+        />
+        
+        <AddNewButton
+          v-if="activeTab === 'overview'"
+          :actions="overviewOpportunityActions"
+          :active-tab="activeTab"
+          :inline="true"
+          @action="handleAddNewAction"
+        />
+      </div>
       
-      <!-- Add New Button (only on overview tab) -->
-      <AddNewButton
-        v-if="activeTab === 'overview'"
-        :actions="availableActions"
-        :active-tab="activeTab"
-        @action="handleAddNewAction"
-      />
-      
-      <!-- Stage & Owner Bar - Under Add New button -->
+      <!-- Stage & Owner Bar - Under tabs -->
       <div v-if="activeTab === 'overview'" class="mb-6">
         <div class="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden w-full">
           <div class="flex items-center gap-2 px-3 py-1.5">
@@ -156,12 +178,41 @@
         @action="handleAddNewAction"
       />
       
-      <!-- Schedule Appointment Widget - Inline below AddNewButton when triggered (non-overview tabs) -->
-      <div v-if="showScheduleAppointment && activeTab !== 'overview'" class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 mb-6">
-        <ScheduleAppointmentWidget
-          :show="showScheduleAppointment"
-          @confirm="handleScheduleAppointment"
-          @cancel="showScheduleAppointment = false"
+      <!-- Inline Widgets - Right after Add New Button (non-overview tabs only) -->
+      <div v-if="activeTab !== 'overview'">
+        <div v-if="showScheduleAppointment" class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 mb-6">
+          <ScheduleAppointmentWidget
+            :show="showScheduleAppointment"
+            @confirm="handleScheduleAppointment"
+            @cancel="showScheduleAppointment = false"
+          />
+        </div>
+        
+        <CommunicationWidget
+          v-if="showInlineWidget === 'communication'"
+          :type="communicationType"
+          :task-type="'opportunity'"
+          :task-id="opportunity.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <NoteWidget
+          v-if="showInlineWidget === 'note'"
+          :item="editingItem"
+          :task-type="'opportunity'"
+          :task-id="opportunity.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <AttachmentWidget
+          v-if="showInlineWidget === 'attachment'"
+          :item="editingItem"
+          :task-type="'opportunity'"
+          :task-id="opportunity.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
         />
       </div>
       
@@ -172,41 +223,71 @@
           :key="item.id"
           :item="item"
           :task-type="'opportunity'"
-          :customer-initials="opportunity.customer.initials"
+          :customer-initials="'SK'"
           @edit="handleEditItem"
           @delete="handleDeleteItem"
         />
       </div>
-      
-      <!-- Inline Widgets - Right after Add New Button -->
-      <CommunicationWidget
-        v-if="showInlineWidget === 'communication'"
-        :type="communicationType"
-        :task-type="'opportunity'"
-        :task-id="opportunity.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <NoteWidget
-        v-if="showInlineWidget === 'note'"
-        :item="editingItem"
-        :task-type="'opportunity'"
-        :task-id="opportunity.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <AttachmentWidget
-        v-if="showInlineWidget === 'attachment'"
-        :item="editingItem"
-        :task-type="'opportunity'"
-        :task-id="opportunity.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      
+
+      <!-- Trade-in & Financing Modals (overview + other triggers) -->
+      <Teleport to="body">
+        <!-- Trade-in Modal -->
+        <div 
+          v-if="showTradeInModal"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          @click.self="() => { showTradeInModal = false; editingItem = null }"
+        >
+          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-slate-900">Add trade-in</h3>
+                <button
+                  class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                  @click="() => { showTradeInModal = false; editingItem = null }"
+                >
+                  <i class="fa-solid fa-xmark text-sm text-gray-500"></i>
+                </button>
+              </div>
+              <TradeInWidget
+                :item="editingItem && editingItem.type === 'tradein' ? editingItem : null"
+                :task-type="'opportunity'"
+                :task-id="opportunity.id"
+                @save="(data) => handleWidgetSave({ ...data, type: 'tradein' })"
+                @cancel="() => { showTradeInModal = false; editingItem = null }"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Financing Modal -->
+        <div 
+          v-if="showFinancingModal"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          @click.self="() => { showFinancingModal = false; editingItem = null }"
+        >
+          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-slate-900">Add financing</h3>
+                <button
+                  class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                  @click="() => { showFinancingModal = false; editingItem = null }"
+                >
+                  <i class="fa-solid fa-xmark text-sm text-gray-500"></i>
+                </button>
+              </div>
+              <FinancingWidget
+                :item="editingItem && editingItem.type === 'financing' ? editingItem : null"
+                :task-type="'opportunity'"
+                :task-id="opportunity.id"
+                @save="(data) => handleWidgetSave({ ...data, type: 'financing' })"
+                @cancel="() => { showFinancingModal = false; editingItem = null }"
+              />
+            </div>
+          </div>
+        </div>
+      </Teleport>
+
     </main>
     
     <!-- Coming Soon Modal -->
@@ -252,6 +333,8 @@ import FeedItemCard from '@/components/feed/FeedItemCard.vue'
 import NoteWidget from '@/components/widgets/NoteWidget.vue'
 import AttachmentWidget from '@/components/widgets/AttachmentWidget.vue'
 import CommunicationWidget from '@/components/widgets/CommunicationWidget.vue'
+import TradeInWidget from '@/components/widgets/TradeInWidget.vue'
+import FinancingWidget from '@/components/widgets/FinancingWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -262,6 +345,7 @@ const props = defineProps({
 
 const opportunitiesStore = useOpportunitiesStore()
 
+const showTagMenu = ref(false)
 const showComingSoonModal = ref(false)
 const comingSoonModalTitle = ref('')
 const showScheduleAppointment = ref(false)
@@ -270,20 +354,41 @@ const showInlineWidget = ref(null)
 const editingItem = ref(null)
 const communicationType = ref('email')
 const inlineContent = ref([])
+const showTradeInModal = ref(false)
+const showFinancingModal = ref(false)
+
+// Map item types to the tab they belong to
+const getTabForItemType = (type) => {
+  if (type === 'note') return 'note'
+  if (['call', 'email', 'sms', 'whatsapp', 'communication'].includes(type)) return 'communication'
+  if (type === 'attachment') return 'attachment'
+  // Default: overview-only items (tradein, financing, appointment, etc.)
+  return 'overview'
+}
+
+const availableTags = [
+  { name: 'Sport', color: 'bg-red-400' },
+  { name: 'Blacklist', color: 'bg-indigo-400' },
+  { name: 'Green', color: 'bg-green-400' },
+  { name: 'Premium', color: 'bg-blue-400' },
+  { name: 'Rent', color: 'bg-purple-400' },
+  { name: 'Automation', color: 'bg-orange-400' },
+  { name: 'Complete Profile', color: 'bg-lime-400' }
+]
 
 const filteredInlineContent = computed(() => {
-  const allItems = [...opportunitiesStore.currentOpportunityActivities, ...inlineContent.value]
+  // Use store activities plus inline-only items (no activityId) to avoid duplicates
+  const baseItems = [
+    ...opportunitiesStore.currentOpportunityActivities,
+    ...inlineContent.value.filter(item => !item.activityId)
+  ]
   
-  if (activeTab.value === 'overview') {
-    return allItems // Show all in overview
-  }
-  
-  // Filter by tab type
-  return allItems.filter(item => {
-    if (activeTab.value === 'communication') {
-      return ['call', 'email', 'sms', 'whatsapp', 'communication'].includes(item.type)
+  return baseItems.filter(item => {
+    const tabKey = getTabForItemType(item.type)
+    if (activeTab.value === 'overview') {
+      return tabKey === 'overview'
     }
-    return item.type === activeTab.value
+    return tabKey === activeTab.value
   })
 })
 
@@ -300,6 +405,12 @@ const opportunityTabs = computed(() => {
     { key: 'communication', label: 'Communication', count: communicationCount },
     { key: 'attachment', label: 'Attachments', count: attachmentCount }
   ]
+})
+
+// Actions available on overview Add New button for opportunities
+const overviewOpportunityActions = computed(() => {
+  // Mirror lead overview actions but without requestedCar for now
+  return ['tradein', 'financing']
 })
 
 const availableActions = computed(() => {
@@ -322,26 +433,48 @@ const formatDate = (dateString) => {
 
 const handleAddNewAction = (action) => {
   editingItem.value = null
-  if (action === 'scheduleAppointment') {
-    // Toggle: if already showing, close it; otherwise open it
-    if (showScheduleAppointment.value) {
-      showScheduleAppointment.value = false
-    } else {
-      showScheduleAppointment.value = true
+  // On overview: open modals instead of inline widgets (reusing lead behavior)
+  if (activeTab.value === 'overview') {
+    if (action === 'tradein') {
+      showTradeInModal.value = true
+      showFinancingModal.value = false
+    } else if (action === 'financing') {
+      showFinancingModal.value = true
+      showTradeInModal.value = false
     }
-  } else if (['addVehicle', 'configureVehicle'].includes(action)) {
-    comingSoonModalTitle.value = action.replace(/([A-Z])/g, ' $1').trim()
-    showComingSoonModal.value = true
-  } else if (['email', 'whatsapp', 'sms'].includes(action)) {
-    communicationType.value = action
-    showInlineWidget.value = 'communication'
   } else {
-    showInlineWidget.value = action
+    if (action === 'scheduleAppointment') {
+      // Toggle: if already showing, close it; otherwise open it
+      if (showScheduleAppointment.value) {
+        showScheduleAppointment.value = false
+      } else {
+        showScheduleAppointment.value = true
+      }
+    } else if (['addVehicle', 'configureVehicle'].includes(action)) {
+      comingSoonModalTitle.value = action.replace(/([A-Z])/g, ' $1').trim()
+      showComingSoonModal.value = true
+    } else if (['email', 'whatsapp', 'sms'].includes(action)) {
+      communicationType.value = action
+      showInlineWidget.value = 'communication'
+    } else {
+      showInlineWidget.value = action
+    }
   }
 }
 
 const handleEditItem = (item) => {
   editingItem.value = item
+  // For trade-in/financing, open the corresponding modal on overview; otherwise inline widgets
+  if (activeTab.value === 'overview') {
+    if (item.type === 'tradein') {
+      showTradeInModal.value = true
+      return
+    }
+    if (item.type === 'financing') {
+      showFinancingModal.value = true
+      return
+    }
+  }
   showInlineWidget.value = item.type
 }
 
@@ -407,7 +540,7 @@ const handleWidgetSave = async (data) => {
     // Link the activity ID
     newItem.activityId = activity.id
     
-    // If an offer was created and opportunity is still "Open", move to "In Negotiation"
+    // If an offer was created and opportunity is still \"Qualified\", move to \"In Negotiation\"
     if (itemType === 'offer' && opportunity.stage === 'Qualified') {
       await opportunitiesStore.modifyOpportunity(opportunity.id, {
         stage: 'In Negotiation',
@@ -426,6 +559,14 @@ const handleWidgetSave = async (data) => {
 const handleWidgetCancel = () => {
   showInlineWidget.value = null
   editingItem.value = null
+}
+
+const addTag = async (tagName) => {
+  if (!props.opportunity.tags.includes(tagName)) {
+    const updatedTags = [...(props.opportunity.tags || []), tagName]
+    await opportunitiesStore.modifyOpportunity(props.opportunity.id, { tags: updatedTags })
+  }
+  showTagMenu.value = false
 }
 
 // Reset inline widgets when switching tabs

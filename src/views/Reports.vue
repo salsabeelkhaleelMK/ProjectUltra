@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="page-header-title">Dashboard</h1>
+          <h1 class="page-header-title">Reports</h1>
         </div>
         <div class="flex items-center gap-3">
           <select class="text-xs md:text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-blue-500">

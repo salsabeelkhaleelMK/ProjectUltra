@@ -83,22 +83,20 @@
         >
           <i class="fa-solid fa-share text-gray-400"></i> Reassign
         </button>
-        <template v-if="task.type === 'lead'">
-          <button 
-            v-if="task.priority !== 'Hot'"
-            @click.stop="markAsHot(task.id)"
-            class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
-          >
-            <i class="fa-solid fa-fire text-orange-500"></i> Mark as hot
-          </button>
-          <button 
-            v-else
-            @click.stop="unmarkAsHot(task.id)"
-            class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
-          >
-            <i class="fa-regular fa-snowflake text-gray-400"></i> Unmark as hot
-          </button>
-        </template>
+        <button 
+          v-if="task.priority !== 'Hot'"
+          @click.stop="markAsHot(task)"
+          class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+        >
+          <i class="fa-solid fa-fire text-orange-500"></i> Mark as hot
+        </button>
+        <button 
+          v-else
+          @click.stop="unmarkAsHot(task)"
+          class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+        >
+          <i class="fa-regular fa-snowflake text-gray-400"></i> Unmark as hot
+        </button>
       </template>
     </EntityListSidebar>
     
@@ -269,14 +267,22 @@ const reassignTask = (task) => {
   console.log('Reassign task', task.id, task.type)
 }
 
-const markAsHot = (leadId) => {
+const markAsHot = async (task) => {
   openCardMenu.value = null
-  console.log('Mark as hot', leadId)
+  if (task.type === 'lead') {
+    await leadsStore.modifyLead(task.id, { priority: 'Hot' })
+  } else if (task.type === 'opportunity') {
+    await opportunitiesStore.modifyOpportunity(task.id, { priority: 'Hot' })
+  }
 }
 
-const unmarkAsHot = (leadId) => {
+const unmarkAsHot = async (task) => {
   openCardMenu.value = null
-  console.log('Unmark as hot', leadId)
+  if (task.type === 'lead') {
+    await leadsStore.modifyLead(task.id, { priority: 'Normal' })
+  } else if (task.type === 'opportunity') {
+    await opportunitiesStore.modifyOpportunity(task.id, { priority: 'Normal' })
+  }
 }
 
 const getStageBadgeClass = (stage) => {

@@ -52,20 +52,22 @@
     
     <!-- Scrollable Content -->
     <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
-      <!-- Tabs -->
-      <Tabs 
-        v-model="activeTab"
-        :tabs="leadTabs"
-        class="mb-4"
-      />
-      
-      <!-- Add New Button (only on overview tab) -->
-      <AddNewButton
-        v-if="activeTab === 'overview'"
-        :actions="['note', 'tradein', 'financing', 'attachment', 'email', 'whatsapp', 'sms']"
-        :active-tab="activeTab"
-        @action="handleAddNewAction"
-      />
+      <!-- Tabs + Add New (overview only) -->
+      <div class="flex items-center justify-between mb-4">
+        <Tabs 
+          v-model="activeTab"
+          :tabs="leadTabs"
+          class="mb-0"
+        />
+        
+        <AddNewButton
+          v-if="activeTab === 'overview'"
+          :actions="overviewActions"
+          :active-tab="activeTab"
+          :inline="true"
+          @action="handleAddNewAction"
+        />
+      </div>
       
       <!-- Stage & Owner Bar - Under Add New button -->
       <div v-if="activeTab === 'overview'" class="mb-6">
@@ -380,6 +382,19 @@
         />
       </div>
       
+      <!-- Feed Items Container -->
+      <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
+        <FeedItemCard
+          v-for="item in filteredInlineContent" 
+          :key="item.id"
+          :item="item"
+          :task-type="'lead'"
+          :customer-initials="'SK'"
+          @edit="handleEditItem"
+          @delete="handleDeleteItem"
+        />
+      </div>
+      
       <!-- Closed Lead Widget -->
       <div 
         v-if="activeTab === 'overview' && lead.isDisqualified"
@@ -614,13 +629,67 @@
           :key="item.id"
           :item="item"
           :task-type="'lead'"
-          :customer-initials="lead.customer.initials"
+          :customer-initials="'SK'"
           @edit="handleEditItem"
           @delete="handleDeleteItem"
         />
       </div>
 
     </main>
+    
+    <!-- Trade-in Modal (Overview) -->
+    <teleport to="body">
+      <div 
+        v-if="showTradeInModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in"
+        @click.self="showTradeInModal = false"
+      >
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all scale-100">
+          <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+            <h3 class="font-bold text-slate-800 text-lg">
+              {{ editingItem && editingItem.type === 'tradein' ? 'Edit Trade-in' : 'Add Trade-in' }}
+            </h3>
+            <p class="text-xs text-gray-500 mt-1">Capture trade-in details for this lead.</p>
+          </div>
+          <div class="p-5">
+            <TradeInWidget
+              :item="editingItem && editingItem.type === 'tradein' ? editingItem : null"
+              :task-type="'lead'"
+              :task-id="lead.id"
+              @save="handleWidgetSave"
+              @cancel="handleWidgetCancel"
+            />
+          </div>
+        </div>
+      </div>
+    </teleport>
+    
+    <!-- Financing Modal (Overview) -->
+    <teleport to="body">
+      <div 
+        v-if="showFinancingModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in"
+        @click.self="showFinancingModal = false"
+      >
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all scale-100">
+          <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+            <h3 class="font-bold text-slate-800 text-lg">
+              {{ editingItem && editingItem.type === 'financing' ? 'Edit Financing Proposal' : 'Add Financing Proposal' }}
+            </h3>
+            <p class="text-xs text-gray-500 mt-1">Create a financing proposal for this lead.</p>
+          </div>
+          <div class="p-5">
+            <FinancingWidget
+              :item="editingItem && editingItem.type === 'financing' ? editingItem : null"
+              :task-type="'lead'"
+              :task-id="lead.id"
+              @save="handleWidgetSave"
+              @cancel="handleWidgetCancel"
+            />
+          </div>
+        </div>
+      </div>
+    </teleport>
     
     <!-- Disqualify Modal -->
     <teleport to="body">
@@ -735,6 +804,10 @@ const callEnded = ref(false)
 const extractedItems = ref([])
 const extractingInfo = ref(false)
 
+// Overview modals for trade-in and financing
+const showTradeInModal = ref(false)
+const showFinancingModal = ref(false)
+
 const conversation = [
   { speaker: 'Sales', text: 'Good morning, am I speaking with Mr. Adams?' },
   { speaker: 'Lead', text: 'Yes, this is Josh Adams speaking.' },
@@ -748,19 +821,28 @@ const conversation = [
   { speaker: 'Lead', text: 'Sounds amazing. Let\'s proceed with the paperwork.' }
 ]
 
+// Map item types to the tab they belong to
+const getTabForItemType = (type) => {
+  if (type === 'note') return 'note'
+  if (['call', 'email', 'sms', 'whatsapp', 'communication'].includes(type)) return 'communication'
+  if (type === 'attachment') return 'attachment'
+  // Default: overview-only items (tradein, financing, appointment, etc.)
+  return 'overview'
+}
+
 const filteredInlineContent = computed(() => {
-  const allItems = [...leadsStore.currentLeadActivities, ...inlineContent.value]
+  // Use store activities plus inline-only items (no activityId) to avoid duplicates
+  const baseItems = [
+    ...leadsStore.currentLeadActivities,
+    ...inlineContent.value.filter(item => !item.activityId)
+  ]
   
-  if (activeTab.value === 'overview') {
-    return allItems // Show all in overview
-  }
-  
-  // Filter by tab type
-  return allItems.filter(item => {
-    if (activeTab.value === 'communication') {
-      return ['call', 'email', 'sms', 'whatsapp', 'communication'].includes(item.type)
+  return baseItems.filter(item => {
+    const tabKey = getTabForItemType(item.type)
+    if (activeTab.value === 'overview') {
+      return tabKey === 'overview'
     }
-    return item.type === activeTab.value
+    return tabKey === activeTab.value
   })
 })
 
@@ -779,6 +861,15 @@ const leadTabs = computed(() => {
   ]
 })
 
+// Actions available on overview Add New button
+const overviewActions = computed(() => {
+  const actions = ['tradein', 'financing']
+  if (!props.lead?.requestedCar) {
+    actions.push('requestedCar')
+  }
+  return actions
+})
+
 const availableTags = [
   { name: 'Sport', color: 'bg-red-400' },
   { name: 'Blacklist', color: 'bg-indigo-400' },
@@ -791,16 +882,42 @@ const availableTags = [
 
 const handleAddNewAction = (action) => {
   editingItem.value = null
-  if (['email', 'whatsapp', 'sms'].includes(action)) {
-    communicationType.value = action
-    showInlineWidget.value = 'communication'
+  // On overview: open modals instead of inline widgets
+  if (activeTab.value === 'overview') {
+    if (action === 'tradein') {
+      showTradeInModal.value = true
+    } else if (action === 'financing') {
+      showFinancingModal.value = true
+    } else if (action === 'requestedCar') {
+      // Placeholder: requested car creation can be implemented later
+      showInlineWidget.value = null
+    }
   } else {
-    showInlineWidget.value = action
+    if (['email', 'whatsapp', 'sms'].includes(action)) {
+      communicationType.value = action
+      showInlineWidget.value = 'communication'
+    } else {
+      showInlineWidget.value = action
+    }
   }
 }
 
 const handleEditItem = (item) => {
   editingItem.value = item
+  // On overview, open modals again for trade-in and financing
+  if (activeTab.value === 'overview') {
+    if (item.type === 'tradein') {
+      showTradeInModal.value = true
+      showFinancingModal.value = false
+      return
+    }
+    if (item.type === 'financing') {
+      showFinancingModal.value = true
+      showTradeInModal.value = false
+      return
+    }
+  }
+  // Default: inline widgets for other types / tabs
   showInlineWidget.value = item.type
 }
 
@@ -819,15 +936,17 @@ const handleDeleteItem = async (item) => {
 
 const handleWidgetSave = async (data) => {
   if (data.isEdit) {
-    // Update existing item
+    // Edit existing item
+    // If this was an inline-only item (auto-detected), update inlineContent
     const index = inlineContent.value.findIndex(i => i.id === data.id)
     if (index > -1) {
       inlineContent.value[index] = { ...inlineContent.value[index], ...data }
     }
     
-    // Update in store if it has an activity ID
-    if (editingItem.value?.activityId) {
-      await leadsStore.updateActivity(props.lead.id, editingItem.value.activityId, {
+    // Update store-based activities (notes/attachments/financing/tradein created via forms)
+    const activityId = editingItem.value?.activityId || editingItem.value?.id || data.id
+    if (activityId) {
+      await leadsStore.updateActivity(props.lead.id, activityId, {
         type: data.communicationType || data.type,
         user: 'You',
         action: data.action,
@@ -837,24 +956,10 @@ const handleWidgetSave = async (data) => {
       })
     }
   } else {
-    // Add new item
+    // Add new item – rely on store activities instead of duplicating in inlineContent
     const itemType = data.communicationType || data.type
-    const newItem = {
-      id: data.id,
-      type: itemType === 'email' || itemType === 'whatsapp' || itemType === 'sms' ? 'communication' : itemType,
-      action: data.action,
-      content: data.content,
-      fileName: data.fileName,
-      data: data.data,
-      timestamp: data.timestamp,
-      autoDetected: data.autoDetected || false,
-      communicationType: data.communicationType
-    }
     
-    inlineContent.value.push(newItem)
-    
-    // Also add to store
-    const activity = await leadsStore.addActivity(props.lead.id, {
+    await leadsStore.addActivity(props.lead.id, {
       type: itemType === 'email' || itemType === 'whatsapp' || itemType === 'sms' ? itemType : itemType,
       user: 'You',
       action: data.action,
@@ -862,18 +967,19 @@ const handleWidgetSave = async (data) => {
       fileName: data.fileName,
       data: data.data
     })
-    
-    // Link the activity ID
-    newItem.activityId = activity.id
   }
   
   showInlineWidget.value = null
   editingItem.value = null
+  showTradeInModal.value = false
+  showFinancingModal.value = false
 }
 
 const handleWidgetCancel = () => {
   showInlineWidget.value = null
   editingItem.value = null
+  showTradeInModal.value = false
+  showFinancingModal.value = false
 }
 
 // Reset inline widgets when switching tabs
