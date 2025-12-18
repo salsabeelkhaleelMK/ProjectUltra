@@ -332,51 +332,53 @@
         @action="handleAddNewAction"
       />
       
-      <!-- Inline Widgets - Right after Add New Button -->
-      <CommunicationWidget
-        v-if="showInlineWidget === 'communication'"
-        :type="communicationType"
-        :task-type="'lead'"
-        :task-id="lead.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <NoteWidget
-        v-if="showInlineWidget === 'note'"
-        :item="editingItem"
-        :task-type="'lead'"
-        :task-id="lead.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <AttachmentWidget
-        v-if="showInlineWidget === 'attachment'"
-        :item="editingItem"
-        :task-type="'lead'"
-        :task-id="lead.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <TradeInWidget
-        v-if="showInlineWidget === 'tradein'"
-        :item="editingItem"
-        :task-type="'lead'"
-        :task-id="lead.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
-      
-      <FinancingWidget
-        v-if="showInlineWidget === 'financing'"
-        :item="editingItem"
-        :task-type="'lead'"
-        :task-id="lead.id"
-        @save="handleWidgetSave"
-        @cancel="handleWidgetCancel"
-      />
+      <!-- Inline Widgets - Right after Add New Button (non-overview tabs only) -->
+      <div v-if="activeTab !== 'overview'">
+        <CommunicationWidget
+          v-if="showInlineWidget === 'communication'"
+          :type="communicationType"
+          :task-type="'lead'"
+          :task-id="lead.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <NoteWidget
+          v-if="showInlineWidget === 'note'"
+          :item="editingItem"
+          :task-type="'lead'"
+          :task-id="lead.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <AttachmentWidget
+          v-if="showInlineWidget === 'attachment'"
+          :item="editingItem"
+          :task-type="'lead'"
+          :task-id="lead.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <TradeInWidget
+          v-if="showInlineWidget === 'tradein'"
+          :item="editingItem"
+          :task-type="'lead'"
+          :task-id="lead.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+        
+        <FinancingWidget
+          v-if="showInlineWidget === 'financing'"
+          :item="editingItem"
+          :task-type="'lead'"
+          :task-id="lead.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
+      </div>
       
       <!-- Closed Lead Widget -->
       <div 
@@ -682,7 +684,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import ContactInfo from '@/components/shared/ContactInfo.vue'
@@ -873,6 +875,12 @@ const handleWidgetCancel = () => {
   showInlineWidget.value = null
   editingItem.value = null
 }
+
+// Reset inline widgets when switching tabs
+watch(activeTab, () => {
+  showInlineWidget.value = null
+  editingItem.value = null
+})
 
 const handleReschedule = (data) => {
   showRescheduleWidget.value = false

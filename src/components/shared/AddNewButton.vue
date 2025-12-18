@@ -134,19 +134,28 @@ const emit = defineEmits(['action'])
 
 const showMenu = ref(false)
 
+// Map actions to their owning tab (if any)
+// Actions without a mapping are considered \"overview-only\"
+const actionToTab = {
+  note: 'note',
+  attachment: 'attachment',
+  email: 'communication',
+  whatsapp: 'communication',
+  sms: 'communication'
+}
+
 // Filter actions based on active tab
 const filteredActions = computed(() => {
+  // Overview: only allow actions that are NOT owned by any specific tab
   if (!props.activeTab || props.activeTab === 'overview') {
-    return props.actions
+    return props.actions.filter(action => !actionToTab[action])
   }
   
-  const tabActionMap = {
-    'note': ['note'],
-    'communication': ['email', 'whatsapp', 'sms'],
-    'attachment': ['attachment']
-  }
-  
-  const allowedActions = tabActionMap[props.activeTab] || []
+  // Non-overview tabs: only allow actions mapped to this tab
+  const allowedActions = Object.entries(actionToTab)
+    .filter(([, tab]) => tab === props.activeTab)
+    .map(([action]) => action)
+
   return props.actions.filter(action => allowedActions.includes(action))
 })
 

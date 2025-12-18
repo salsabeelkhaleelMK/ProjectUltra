@@ -238,8 +238,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Teleport } from 'vue'
+import { ref, computed, watch, Teleport } from 'vue'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import ContactInfo from '@/components/shared/ContactInfo.vue'
 import Tabs from '@/components/shared/Tabs.vue'
@@ -428,6 +427,13 @@ const handleWidgetCancel = () => {
   showInlineWidget.value = null
   editingItem.value = null
 }
+
+// Reset inline widgets when switching tabs
+watch(activeTab, () => {
+  showInlineWidget.value = null
+  editingItem.value = null
+  showScheduleAppointment.value = false
+})
 
 const handleScheduleAppointment = async (appointmentData) => {
   showScheduleAppointment.value = false

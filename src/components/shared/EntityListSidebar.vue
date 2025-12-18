@@ -50,12 +50,12 @@
       </div>
     </div>
     
-    <div class="flex-1 overflow-y-auto px-4 space-y-3 pb-4 scrollbar-hide">
+    <div class="flex-1 overflow-y-auto px-4 space-y-4 pb-4 scrollbar-hide">
       <div 
         v-for="item in filteredItems" 
         :key="item.id"
         @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
-        class="rounded-xl p-3 cursor-pointer transition-all relative group"
+        class="rounded-xl px-4 py-3.5 cursor-pointer transition-all relative group"
         :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
       >
         <!-- Top right menu button -->
@@ -77,7 +77,7 @@
         </div>
         
         <!-- Main content: Avatar, Name, Vehicle, Amount/Due -->
-        <div class="flex items-start gap-3 pr-6">
+        <div class="flex items-start gap-3.5 pr-6">
           <!-- Avatar -->
           <div 
             class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
@@ -88,8 +88,8 @@
           
           <!-- Name and Vehicle -->
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-gray-800 text-sm leading-tight truncate">{{ getName(item) }}</div>
-            <div class="text-gray-600 text-xs mt-0.5 truncate">{{ getVehicleInfo(item) }}</div>
+            <div class="font-bold text-gray-800 text-sm leading-snug truncate">{{ getName(item) }}</div>
+            <div class="text-gray-600 text-xs mt-1 truncate">{{ getVehicleInfo(item) }}</div>
           </div>
           
           <!-- Right side: Amount/Due time -->
@@ -100,7 +100,7 @@
         </div>
         
         <!-- Tags at bottom -->
-        <div class="flex items-center gap-1.5 flex-wrap mt-2.5">
+        <div class="flex items-center gap-2 flex-wrap mt-3">
           <slot name="badges" :item="item"></slot>
         </div>
       </div>
