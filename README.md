@@ -1,10 +1,45 @@
-Project Overview
+# ProjectUltra CRM
+
+## Project Overview
+
 A Vue 3-based CRM application for automotive dealerships with unified task management for leads and opportunities, including vehicle tracking, offer management, appointment scheduling, and sales workflow automation.
-Tech Stack
-Frontend: Vue 3 (Composition API with <script setup>), Pinia, Vue Router, Tailwind CSS
-Calendar: FullCalendar Vue component
-Deployment: Netlify (builds from source: npm run build)
-Architecture: Component-based with centralized mock data layer, reusable widgets, composables for shared logic
+
+## Tech Stack
+
+- **Frontend**: Vue 3 (Composition API with `<script setup>`), Pinia, Vue Router, Tailwind CSS
+- **Calendar**: FullCalendar Vue component
+- **Deployment**: Netlify (builds from source: `npm run build`)
+- **Architecture**: Component-based with centralized mock data layer, reusable widgets, composables for shared logic
+- **Icons**: Font Awesome
+- **Build Tool**: Vite
+
+## Quick Start
+
+### Starting the App
+```bash
+npm install
+npm run dev
+# Visit: http://localhost:5173/
+```
+
+### Building for Production
+```bash
+npm run build
+# Creates dist/ folder for deployment
+```
+
+### Navigation
+- **Left Sidebar**: Icon-based navigation between sections
+- **Tasks**: Unified view for leads and opportunities (`/tasks`)
+- **Pipeline**: Kanban-style sales funnel (`/pipeline`)
+- **Calendar**: FullCalendar integration (`/calendar`)
+- **Reports**: Dashboard with KPIs (`/reports`)
+
+### Testing Different Views
+- **Tasks**: Click any task in the left sidebar to view details
+- **Pipeline**: View sales stages and conversion metrics
+- **Calendar**: Create events, drag-and-drop scheduling
+- **Reports**: View team performance and analytics
 Key Architecture Patterns
 1. Unified Task System
 Single View: TaskDetail.vue handles both leads and opportunities
@@ -122,12 +157,68 @@ Created composables (useTaskInlineWidgets, useTaskTabs) for shared logic
 Deleted redundant views: Leads.vue, Opportunities.vue, LeadDetail.vue, OpportunityDetail.vue, LeadContent.vue, OpportunityContent.vue, old dashboard files
 Removed console.log statements and unused code across the project
 Calendar refactor: Extracted CalendarConnectModal.vue
-Build & Deploy
-Local: npm run build (creates dist/)
-Netlify: Configured in netlify.toml to run npm run build on deploy
-.gitignore: Excludes node_modules, dist/, log files
-Next Steps / Notes
-Calendar filter panel extraction was attempted but reverted due to build errors
-All cursor project rules are documented in .cursor/rules/project-ultra-rules.mdc
-Opportunity lifecycle workflow is fully implemented with time-based task triggers
-Hot flag functionality works for both leads and opportunities
+## Data Layer
+
+All sample entities are in `src/api/mockData.js`:
+- `mockLeads` - Lead data with customer info and requested vehicles
+- `mockOpportunities` - Opportunity data with stages and vehicles
+- `mockVehicles` - Vehicle inventory
+- `mockContacts` - Contact database
+- `mockCalendarEvents` - Calendar appointments and events
+
+### Replacing Mock Data with Real API
+
+The API layer is ready for backend integration. Simply replace functions in `src/api/*.js` files:
+
+```javascript
+// Example: src/api/leads.js
+export const fetchLeads = async (filters) => {
+  // Replace mock data with real API call
+  return axios.get('/api/leads', { params: filters })
+}
+```
+
+No changes needed in components or stores - they already use the API layer.
+
+## Build & Deploy
+
+- **Local**: `npm run build` (creates `dist/`)
+- **Netlify**: Configured in `netlify.toml` to run `npm run build` on deploy
+- **.gitignore**: Excludes `node_modules`, `dist/`, log files
+
+## Troubleshooting
+
+### If server isn't running:
+```bash
+npm run dev
+```
+
+### If you see errors:
+```bash
+npm install
+npm run dev
+```
+
+### To rebuild from scratch:
+```bash
+rm -rf node_modules
+npm install
+npm run dev
+```
+
+## Project Status
+
+- ✅ Unified task system (leads + opportunities)
+- ✅ Time-based task widgets (OOFB, UFB, NFU, OFB, CFB, DFB, NS)
+- ✅ Survey/feedback system
+- ✅ Close as Lost functionality
+- ✅ Requalify/Reopen CTAs
+- ✅ Registration stage workflow
+- ✅ Hot flag functionality for leads and opportunities
+- ✅ Mock data layer ready for API replacement
+
+## Notes
+
+- All cursor project rules are documented in `.cursor/rules/project-ultra-rules.mdc`
+- Opportunity lifecycle workflow is fully implemented with time-based task triggers
+- Component architecture follows Vue 3 Composition API best practices
