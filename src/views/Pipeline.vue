@@ -41,66 +41,74 @@
           </div>
         </div>
       </div>
-      
-      <!-- Search, Filters & Add New -->
-      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 flex-wrap">
-        <div class="flex-1 min-w-0 sm:min-w-[200px] md:min-w-[300px] max-w-full md:max-w-md">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input 
-              v-model="searchQuery"
-              @input="handleSearch"
-              type="text" 
-              placeholder="Search or ask a question" 
-              class="input-with-icon"
-            >
-          </div>
-        </div>
-        
-        <select v-model="filters.status" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
-          <option value="">Status</option>
-          <option value="Valid">Valid</option>
-          <option value="Not valid">Not valid</option>
-          <option value="Qualified">Qualified</option>
-          <option value="Not interested">Not interested</option>
-        </select>
-        
-        <select v-model="filters.priority" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
-          <option value="">Priority</option>
-          <option value="Hot">Hot</option>
-          <option value="Normal">Normal</option>
-        </select>
-        
-        <select v-model="filters.source" @change="applyFilters" class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
-          <option value="">Source</option>
-          <option value="Marketing">Marketing</option>
-        </select>
-        
-        <button class="btn-secondary text-sm">
-          <i class="fa-solid fa-plus mr-1"></i> More filters
-        </button>
-        
-        <button @click="clearFilters" class="btn-secondary text-sm">
-          Clear
-        </button>
-        
-        <button class="btn-secondary text-sm">
-          Save
-        </button>
-
-        <!-- Add New Button: visible for Open Leads & Open Opportunities -->
-        <button 
-          v-if="activeTab === 'open-leads' || activeTab === 'open-opportunities'"
-          @click="showAddModal = true"
-          class="btn-primary-lg"
-        >
-          <i class="fa-solid fa-plus"></i> Add new
-        </button>
-      </div>
     </div>
     
-    <!-- Table -->
+    <!-- Filters + Table -->
     <div class="p-4 md:p-8">
+      <!-- Filters row in gray background above table -->
+      <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <!-- Left: search + basic filters -->
+          <div class="flex flex-1 flex-wrap items-center gap-2 md:gap-3">
+            <div class="flex-1 min-w-[200px] md:min-w-[260px] max-w-full md:max-w-md">
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input 
+                  v-model="searchQuery"
+                  @input="handleSearch"
+                  type="text" 
+                  placeholder="Search or ask a question" 
+                  class="input-with-icon"
+                >
+              </div>
+            </div>
+            
+            <select v-model="filters.status" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+              <option value="">Status</option>
+              <option value="Valid">Valid</option>
+              <option value="Not valid">Not valid</option>
+              <option value="Qualified">Qualified</option>
+              <option value="Not interested">Not interested</option>
+            </select>
+            
+            <select v-model="filters.priority" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+              <option value="">Priority</option>
+              <option value="Hot">Hot</option>
+              <option value="Normal">Normal</option>
+            </select>
+            
+            <select v-model="filters.source" @change="applyFilters" class="px-3 py-2 text-xs md:text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-500">
+              <option value="">Source</option>
+              <option value="Marketing">Marketing</option>
+            </select>
+            
+            <button class="btn-secondary text-xs md:text-sm">
+              <i class="fa-solid fa-plus mr-1"></i> More filters
+            </button>
+            
+            <button @click="clearFilters" class="btn-secondary text-xs md:text-sm">
+              Clear
+            </button>
+            
+            <button class="btn-secondary text-xs md:text-sm">
+              Save
+            </button>
+          </div>
+
+          <!-- Right: Add New button aligned to the far right -->
+          <div class="flex justify-end">
+            <button 
+              v-if="activeTab === 'open-leads' || activeTab === 'open-opportunities'"
+              @click="showAddModal = true"
+              class="btn-primary-lg"
+            >
+              <i class="fa-solid fa-plus"></i> Add new
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
       <div v-if="filteredRows.length === 0" class="empty-state">
         <i class="fa-solid fa-inbox empty-state-icon"></i>
         <p class="empty-state-text">No records found</p>
