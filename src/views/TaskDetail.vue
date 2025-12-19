@@ -22,7 +22,7 @@
         @menu-click="toggleCardMenu"
         @menu-close="openCardMenu = null"
         @close="showTaskListMobile = false"
-        :show-type-filter="true"
+        :show-type-filter="shouldShowTypeFilter"
         @filter-change="typeFilter = $event"
       >
       <template #badges="{ item: task }">
@@ -238,6 +238,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
+import { useUserStore } from '@/stores/user'
 import EntityListSidebar from '@/components/shared/EntityListSidebar.vue'
 import ActivitySummarySidebar from '@/components/shared/ActivitySummarySidebar.vue'
 import TaskShell from '@/components/shared/TaskShell.vue'
@@ -249,6 +250,7 @@ const route = useRoute()
 const router = useRouter()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
+const userStore = useUserStore()
 
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const openCardMenu = ref(null)
@@ -256,12 +258,26 @@ const showTaskListMobile = ref(false)
 const showActivityMobile = ref(false)
 
 // Combine leads and opportunities with type property and composite key
+// Filter based on user role
 const allTasks = computed(() => {
   const leads = leadsStore.leads.map(lead => ({ ...lead, type: 'lead', compositeId: `lead-${lead.id}` }))
   const opportunities = opportunitiesStore.opportunities.map(opp => ({ ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }))
   
+  // Filter by role
+  let tasks = []
+  if (userStore.isOperator()) {
+    // Operators only see leads
+    tasks = leads
+  } else if (userStore.isSalesman()) {
+    // Salesmen only see opportunities
+    tasks = opportunities
+  } else {
+    // Managers see everything
+    tasks = [...leads, ...opportunities]
+  }
+  
   // Sort by lastActivity or createdAt (most recent first)
-  return [...leads, ...opportunities].sort((a, b) => {
+  return tasks.sort((a, b) => {
     const dateA = new Date(a.lastActivity || a.createdAt || 0)
     const dateB = new Date(b.lastActivity || b.createdAt || 0)
     return dateB - dateA
@@ -272,6 +288,13 @@ const allTasks = computed(() => {
 const filteredTasks = computed(() => {
   if (typeFilter.value === 'all') return allTasks.value
   return allTasks.value.filter(task => task.type === typeFilter.value)
+})
+
+// Check if user has both leads and opportunities (only show filter if they have both types)
+const shouldShowTypeFilter = computed(() => {
+  const hasLeads = allTasks.value.some(task => task.type === 'lead')
+  const hasOpportunities = allTasks.value.some(task => task.type === 'opportunity')
+  return hasLeads && hasOpportunities
 })
 
 // Get current task based on route ID and query param type

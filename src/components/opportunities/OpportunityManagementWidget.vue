@@ -22,15 +22,23 @@
         <div class="flex justify-between items-start mb-3">
           <div>
             <h4 class="font-bold text-slate-800 text-sm">Opportunity Closed</h4>
-            <p class="text-xs text-gray-500 mt-0.5">This opportunity has been closed. Reopen it to restart the management process.</p>
+            <p class="text-xs text-gray-500 mt-0.5">This opportunity has been closed. Reopen it to restart the management process, or requalify as a lead.</p>
           </div>
         </div>
-        <button
-          @click="handleReopen"
-          class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
-        >
-          Reopen <i class="fa-solid fa-rotate-left"></i>
-        </button>
+        <div class="flex gap-3">
+          <button
+            @click="handleReopen"
+            class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+          >
+            Reopen <i class="fa-solid fa-rotate-left"></i>
+          </button>
+          <button
+            @click="showRequalifyModal = true"
+            class="bg-white hover:bg-yellow-50 text-yellow-700 border border-yellow-300 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+          >
+            Requalify as Lead <i class="fa-solid fa-arrow-left"></i>
+          </button>
+        </div>
       </div>
       
       <!-- Risk Warning (when appointment exists but opportunity is taking longer than expected) - Show at top -->
@@ -278,6 +286,14 @@
         @survey-refused="handleSurveyRefused"
         @not-responding="handleNotResponding"
       />
+      
+      <!-- Close Opportunity Widget (shows for all non-closed stages) -->
+      <CloseOpportunityWidget
+        v-if="shouldShowCloseOpportunity"
+        :opportunity="opportunity"
+        @close-won="handleCloseWon"
+        @close-lost="handleCloseAsLost"
+      />
     </div>
 
     <ComingSoonModal
@@ -291,6 +307,13 @@
       :show="showCloseAsLostModal"
       @confirm="handleCloseAsLostConfirm"
       @cancel="showCloseAsLostModal = false"
+    />
+    
+    <!-- Requalify as Lead Modal -->
+    <RequalifyAsLeadModal
+      :show="showRequalifyModal"
+      @confirm="handleRequalifyAsLead"
+      @cancel="showRequalifyModal = false"
     />
     
     <!-- Contract Date Modal -->
@@ -354,7 +377,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Teleport } from 'vue'
+import { useRouter } from 'vue-router'
 import { useOpportunitiesStore } from '@/stores/opportunities'
+import { useUserStore } from '@/stores/user'
 import { mockVehicles } from '@/api/mockData'
 import RescheduleWidget from '@/components/shared/RescheduleWidget.vue'
 import ScheduleAppointmentWidget from '@/components/shared/ScheduleAppointmentWidget.vue'
@@ -362,6 +387,7 @@ import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
 import CloseAsLostModal from '@/components/shared/CloseAsLostModal.vue'
 import ContractDateModal from '@/components/shared/ContractDateModal.vue'
 import DeliveryModal from '@/components/shared/DeliveryModal.vue'
+import RequalifyAsLeadModal from '@/components/shared/RequalifyAsLeadModal.vue'
 import OfferWidget from '@/components/widgets/OfferWidget.vue'
 import RecommendedCarsSlider from '@/components/opportunities/RecommendedCarsSlider.vue'
 import OOFBWidget from '@/components/opportunities/tasks/OOFBWidget.vue'
@@ -371,6 +397,7 @@ import NFUWidget from '@/components/opportunities/tasks/NFUWidget.vue'
 import NSWidget from '@/components/opportunities/tasks/NSWidget.vue'
 import CFBWidget from '@/components/opportunities/tasks/CFBWidget.vue'
 import DFBWidget from '@/components/opportunities/tasks/DFBWidget.vue'
+import CloseOpportunityWidget from '@/components/opportunities/tasks/CloseOpportunityWidget.vue'
 
 const props = defineProps({
   opportunity: {
@@ -405,9 +432,12 @@ const showOfferModal = ref(false)
 const showCloseAsLostModal = ref(false)
 const showContractDateModal = ref(false)
 const showDeliveryModal = ref(false)
+const showRequalifyModal = ref(false)
 const recommendedCars = ref([])
 
+const router = useRouter()
 const opportunitiesStore = useOpportunitiesStore()
+const userStore = useUserStore()
 
 onMounted(() => {
   // Load recommended cars (in-stock vehicles)
@@ -652,6 +682,11 @@ const shouldShowNS = computed(() => {
   return !isCompleted && !isMarkedNoShow
 })
 
+// Show Close Opportunity Widget for all non-closed stages
+const shouldShowCloseOpportunity = computed(() => {
+  return !isClosed.value
+})
+
 // Show Closed Won CTA when:
 // - Opportunity is In Negotiation
 // - Contract date exists (contract signed)
@@ -817,6 +852,10 @@ const handleDeliveryFeedback = (opportunity) => {
   openModal('Delivery Feedback')
 }
 
+const handleCloseWon = () => {
+  handleMarkAsClosedWon()
+}
+
 const handleCloseAsLost = () => {
   showCloseAsLostModal.value = true
 }
@@ -856,6 +895,27 @@ const handleReopen = async () => {
     await opportunitiesStore.loadOpportunityById(props.opportunity.id)
   } catch (err) {
     console.error('Failed to reopen opportunity:', err)
+  }
+}
+
+const handleRequalifyAsLead = async () => {
+  try {
+    showRequalifyModal.value = false
+    
+    // Convert opportunity to lead
+    const leadId = await opportunitiesStore.convertOpportunityToLead(props.opportunity.id)
+    
+    // Check user permissions and navigate accordingly
+    if (userStore.canAccessLeads()) {
+      // Operator or Manager - redirect to the new lead
+      router.push({ path: `/tasks/${leadId}`, query: { type: 'lead' } })
+    } else {
+      // Salesman - no access to leads, navigate to tasks list
+      router.push('/tasks/1')
+    }
+  } catch (err) {
+    console.error('Failed to convert opportunity to lead:', err)
+    showRequalifyModal.value = false
   }
 }
 

@@ -1,51 +1,58 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader 
-      title="Vehicles Inventory" 
-      :subtitle="`${vehiclesStore.totalVehicles} vehicles in inventory`"
-    >
-      <template #actions>
-        <button 
-          class="btn-primary"
-        >
-          <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Vehicle</span><span class="sm:hidden">Add</span>
-        </button>
-      </template>
-      <template #bottom>
-        <!-- Search & Filters -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div class="flex-1 min-w-0 sm:max-w-md">
-            <div class="relative">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-              <input 
-                v-model="searchQuery"
-                @input="handleSearch"
-                type="text" 
-                placeholder="Search vehicles..." 
-                class="input-with-icon"
-              >
-            </div>
-          </div>
-          <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto">
-            <option value="">All Status</option>
-            <option value="Available">Available</option>
-            <option value="In Stock">In Stock</option>
-            <option value="Sold">Sold</option>
-          </select>
-          <select v-model="filters.brand" @change="applyFilters" class="input text-sm w-auto">
-            <option value="">All Brands</option>
-            <option value="Volkswagen">Volkswagen</option>
-            <option value="Mercedes-Benz">Mercedes-Benz</option>
-            <option value="Audi">Audi</option>
-            <option value="Porsche">Porsche</option>
-          </select>
-        </div>
-      </template>
-    </PageHeader>
+    <PageHeader title="Vehicles Inventory" :subtitle="`${vehiclesStore.totalVehicles} vehicles in inventory`" />
     
-    <!-- Vehicles Table -->
+    <!-- Filters + Table -->
     <div class="p-4 md:p-8">
+      <!-- Filters row in gray background above table -->
+      <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <!-- Left: search + basic filters -->
+          <div class="flex flex-wrap items-center gap-2 md:gap-3">
+            <div class="w-full sm:w-auto sm:min-w-[260px] sm:max-w-md">
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input 
+                  v-model="searchQuery"
+                  @input="handleSearch"
+                  type="text" 
+                  placeholder="Search vehicles..." 
+                  class="input-with-icon"
+                >
+              </div>
+            </div>
+            
+            <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto shrink-0">
+              <option value="">All Status</option>
+              <option value="Available">Available</option>
+              <option value="In Stock">In Stock</option>
+              <option value="Sold">Sold</option>
+            </select>
+            
+            <select v-model="filters.brand" @change="applyFilters" class="input text-sm w-auto shrink-0">
+              <option value="">All Brands</option>
+              <option value="Volkswagen">Volkswagen</option>
+              <option value="Mercedes-Benz">Mercedes-Benz</option>
+              <option value="Audi">Audi</option>
+              <option value="Porsche">Porsche</option>
+            </select>
+            
+            <button @click="clearFilters" class="btn-secondary text-sm">
+              Clear
+            </button>
+          </div>
+
+          <!-- Right: Add New button aligned to the far right -->
+          <div class="flex justify-end">
+            <button class="btn-primary-lg">
+              <i class="fa-solid fa-plus"></i> Add new
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
       <div v-if="vehiclesStore.loading" class="empty-state">
         <i class="fa-solid fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
         <p class="empty-state-text">Loading vehicles...</p>
@@ -146,10 +153,10 @@
             Showing {{ vehiclesStore.vehicles.length }} of {{ vehiclesStore.totalVehicles }} vehicles
           </div>
           <div class="flex items-center gap-2 flex-wrap">
-            <button class="btn-secondary whitespace-nowrap">Previous</button>
+            <button class="btn-secondary text-sm whitespace-nowrap">Previous</button>
             <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">1</button>
-            <button class="btn-secondary">2</button>
-            <button class="btn-secondary whitespace-nowrap">Next</button>
+            <button class="btn-secondary text-sm">2</button>
+            <button class="btn-secondary text-sm whitespace-nowrap">Next</button>
           </div>
         </div>
       </div>
@@ -180,6 +187,15 @@ const handleSearch = () => {
 
 const applyFilters = () => {
   vehiclesStore.setFilters(filters.value)
+}
+
+const clearFilters = () => {
+  filters.value = {
+    status: '',
+    brand: ''
+  }
+  searchQuery.value = ''
+  vehiclesStore.setFilters({})
 }
 
 const formatCurrency = (value) => {

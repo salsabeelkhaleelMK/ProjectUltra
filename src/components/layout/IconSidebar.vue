@@ -85,6 +85,7 @@
     </router-link>
     
     <router-link 
+      v-if="userStore.canAccessReports()"
       to="/reports" 
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/reports') }"
@@ -97,6 +98,7 @@
     <div class="mt-auto pb-4 flex flex-col gap-6 items-center w-full">
       <!-- Marketing Icon -->
       <router-link 
+        v-if="userStore.canAccessMarketing()"
         to="/marketing" 
         class="nav-icon"
         :class="{ 'nav-icon-active': isActive('/marketing') }"
@@ -145,6 +147,7 @@
       
       <!-- Settings Icon -->
       <button
+        v-if="userStore.canAccessSettings()"
         class="nav-icon"
         title="Settings"
       >
@@ -158,10 +161,12 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
 const leadsStore = useLeadsStore()
+const userStore = useUserStore()
 
 const showAddMenu = ref(false)
 const showListsMenu = ref(false)

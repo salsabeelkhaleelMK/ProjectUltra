@@ -1,42 +1,50 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader 
-      title="Contacts & Accounts" 
-      :subtitle="`${contactsStore.totalContacts} contacts`"
-    >
-      <template #actions>
-        <button 
-          @click="showCreateModal = true"
-          class="btn-primary"
-        >
-          <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Contact</span><span class="sm:hidden">New</span>
-        </button>
-      </template>
-      <template #bottom>
-        <!-- Search & Filters -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div class="flex-1 min-w-0 sm:max-w-md">
-            <div class="relative">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-              <input 
-                v-model="searchQuery"
-                @input="handleSearch"
-                type="text" 
-                placeholder="Search contacts..." 
-                class="input-with-icon"
-              >
-            </div>
-          </div>
-          <button class="btn-secondary text-sm">
-            <i class="fa-solid fa-filter mr-2"></i> Filters
-          </button>
-        </div>
-      </template>
-    </PageHeader>
+    <PageHeader title="Contacts & Accounts" :subtitle="`${contactsStore.totalContacts} contacts`" />
     
-    <!-- Contacts Table -->
+    <!-- Filters + Table -->
     <div class="p-4 md:p-8">
+      <!-- Filters row in gray background above table -->
+      <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <!-- Left: search + basic filters -->
+          <div class="flex flex-wrap items-center gap-2 md:gap-3">
+            <div class="w-full sm:w-auto sm:min-w-[260px] sm:max-w-md">
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input 
+                  v-model="searchQuery"
+                  @input="handleSearch"
+                  type="text" 
+                  placeholder="Search contacts..." 
+                  class="input-with-icon"
+                >
+              </div>
+            </div>
+            
+            <button class="btn-secondary text-sm">
+              <i class="fa-solid fa-filter mr-1"></i> Filters
+            </button>
+            
+            <button class="btn-secondary text-sm">
+              Clear
+            </button>
+          </div>
+
+          <!-- Right: Add New button aligned to the far right -->
+          <div class="flex justify-end">
+            <button 
+              @click="showCreateModal = true"
+              class="btn-primary-lg"
+            >
+              <i class="fa-solid fa-plus"></i> Add new
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
       <div v-if="contactsStore.loading" class="empty-state">
         <i class="fa-solid fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
         <p class="empty-state-text">Loading contacts...</p>
@@ -121,14 +129,14 @@
         
         <!-- Pagination -->
         <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="text-xs text-gray-600">
+          <div class="text-sm text-gray-600">
             Showing {{ contactsStore.contacts.length }} of {{ contactsStore.totalContacts }} contacts
           </div>
-          <div class="flex items-center gap-1 md:gap-2 flex-wrap">
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Previous</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm bg-blue-600 text-white rounded">1</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50">2</button>
-            <button class="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-200 rounded hover:bg-gray-50 whitespace-nowrap">Next</button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button class="btn-secondary text-sm whitespace-nowrap">Previous</button>
+            <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">1</button>
+            <button class="btn-secondary text-sm">2</button>
+            <button class="btn-secondary text-sm whitespace-nowrap">Next</button>
           </div>
         </div>
       </div>

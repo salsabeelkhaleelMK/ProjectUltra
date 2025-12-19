@@ -109,3 +109,50 @@ export const deleteOpportunityActivity = async (opportunityId, activityId) => {
   mockActivities.splice(index, 1)
   return { success: true }
 }
+
+// Conversion helpers
+export const generateOpportunityId = () => {
+  return mockOpportunities.length > 0 ? Math.max(...mockOpportunities.map(o => o.id)) + 1 : 1
+}
+
+export const createOpportunityFromLead = async (leadData, activities) => {
+  await delay()
+  
+  const newOpportunity = {
+    id: generateOpportunityId(),
+    customer: leadData.customer,
+    requestedCar: leadData.requestedCar,
+    vehicle: { ...leadData.requestedCar }, // Copy requestedCar to vehicle
+    stage: 'Qualified',
+    tags: leadData.tags || [],
+    probability: 50,
+    value: leadData.requestedCar?.price || 0,
+    expectedCloseDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 90 days from now
+    assignee: leadData.assignee || 'Michael Thomas',
+    source: leadData.source || 'Marketing',
+    fiscalEntity: leadData.fiscalEntity || '',
+    sourceDetails: leadData.sourceDetails || '',
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString()
+  }
+  
+  mockOpportunities.unshift(newOpportunity)
+  
+  // Migrate activities
+  for (const activity of activities) {
+    const newActivity = {
+      id: mockActivities.length + 1,
+      opportunityId: newOpportunity.id,
+      leadId: undefined, // Remove lead reference
+      timestamp: activity.timestamp,
+      type: activity.type,
+      user: activity.user,
+      action: activity.action,
+      content: activity.content,
+      data: activity.data
+    }
+    mockActivities.push(newActivity)
+  }
+  
+  return newOpportunity
+}

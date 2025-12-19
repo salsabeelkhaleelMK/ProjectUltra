@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity } from '@/api/leads'
+import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity, createLeadFromOpportunity as apiCreateLeadFromOpportunity } from '@/api/leads'
 
 export const useLeadsStore = defineStore('leads', () => {
   // State
@@ -180,6 +180,48 @@ export const useLeadsStore = defineStore('leads', () => {
     }
   }
   
+  async function convertLeadToOpportunity(leadId) {
+    loading.value = true
+    error.value = null
+    try {
+      // Get full lead data and activities
+      const lead = await fetchLeadById(leadId)
+      const activities = await fetchLeadActivities(leadId)
+      
+      // Import opportunities store dynamically to avoid circular dependency
+      const { useOpportunitiesStore } = await import('./opportunities')
+      const opportunitiesStore = useOpportunitiesStore()
+      
+      // Create opportunity from lead
+      const newOpportunity = await opportunitiesStore.createOpportunityFromLead(lead, activities)
+      
+      // Remove lead from leads store
+      await removeLead(leadId)
+      
+      return newOpportunity.id
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function createLeadFromOpportunity(opportunityData, activities) {
+    loading.value = true
+    error.value = null
+    try {
+      const newLead = await apiCreateLeadFromOpportunity(opportunityData, activities)
+      leads.value.unshift(newLead)
+      return newLead
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     leads,
     currentLead,
@@ -200,6 +242,8 @@ export const useLeadsStore = defineStore('leads', () => {
     deleteActivity,
     setFilters,
     clearFilters,
-    requalifyLead
+    requalifyLead,
+    convertLeadToOpportunity,
+    createLeadFromOpportunity
   }
 })

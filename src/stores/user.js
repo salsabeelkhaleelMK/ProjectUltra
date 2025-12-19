@@ -11,6 +11,22 @@ export const useUserStore = defineStore('user', () => {
   const userRole = () => currentUser.value.role
   const isSalesman = () => currentUser.value.role === 'salesman'
   const isOperator = () => currentUser.value.role === 'operator'
+  const isManager = () => currentUser.value.role === 'manager'
+  
+  // Permission getters
+  const canAccessLeads = () => {
+    const role = currentUser.value.role
+    return role === 'operator' || role === 'manager'
+  }
+  
+  const canAccessOpportunities = () => {
+    const role = currentUser.value.role
+    return role === 'salesman' || role === 'manager'
+  }
+  
+  const canAccessMarketing = () => currentUser.value.role === 'manager'
+  const canAccessReports = () => currentUser.value.role === 'manager'
+  const canAccessSettings = () => currentUser.value.role === 'manager'
   
   // Actions
   function setUser(user) {
@@ -35,6 +51,12 @@ export const useUserStore = defineStore('user', () => {
     userRole,
     isSalesman,
     isOperator,
+    isManager,
+    canAccessLeads,
+    canAccessOpportunities,
+    canAccessMarketing,
+    canAccessReports,
+    canAccessSettings,
     setUser,
     switchRole,
     logout

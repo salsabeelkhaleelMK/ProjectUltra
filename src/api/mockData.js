@@ -2,7 +2,7 @@
 // This layer can be easily replaced with real API calls
 
 export const mockUsers = [
-  { id: 1, name: 'Salsabeel Khaleel', initials: 'SK', role: 'salesman', email: 'salsabeel.khaleel@example.com' },
+  { id: 1, name: 'Salsabeel Khaleel', initials: 'SK', role: 'manager', email: 'salsabeel.khaleel@example.com' },
   { id: 2, name: 'Sarah Jenkins', initials: 'SJ', role: 'salesman', email: 'sarah.jenkins@example.com' },
   { id: 3, name: 'David Miller', initials: 'DM', role: 'operator', email: 'david.miller@example.com' },
   { id: 4, name: 'Natalia Sung', initials: 'NS', role: 'operator', email: 'natalia.sung@example.com' }
@@ -120,6 +120,19 @@ export const mockOpportunities = [
   {
     id: 1,
     customer: { id: 4, name: 'Grace Thompson', initials: 'GT', email: 'grace.thompson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze' },
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'e-tron GT', 
+      year: 2024,
+      price: 98000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 12,
+      requestMessage: 'Looking for a new e-tron GT. What are the financing options?'
+    },
     vehicle: { 
       brand: 'Audi', 
       model: 'e-tron GT', 
@@ -159,6 +172,19 @@ export const mockOpportunities = [
   {
     id: 2,
     customer: { id: 5, name: 'Oliver Brown', initials: 'OB', email: 'oliver.brown@example.com', phone: '+4901123456789', address: 'Corso Buenos Aires 22, 20124 Milano' },
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: 'Taycan', 
+      year: 2024,
+      price: 120000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Interested in a Taycan. Do you have any in a specific color?'
+    },
     vehicle: { 
       brand: 'Porsche', 
       model: 'Taycan', 
@@ -184,6 +210,19 @@ export const mockOpportunities = [
   {
     id: 3,
     customer: { id: 6, name: 'Sophia Martinez', initials: 'SM', email: 'sophia.martinez@example.com', phone: '+4901555666777', address: 'Piazza Navona 8, 00186 Roma' },
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'iX', 
+      year: 2024,
+      price: 105000,
+      image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 15,
+      requestMessage: 'Looking for an iX. What are the delivery times?'
+    },
     vehicle: { 
       brand: 'BMW', 
       model: 'iX', 
@@ -210,6 +249,23 @@ export const mockOpportunities = [
   {
     id: 4,
     customer: { id: 7, name: 'Alexander Chen', initials: 'AC', email: 'alexander.chen@example.com', phone: '+4901999888777', address: 'Via Montenapoleone 3, 20121 Milano' },
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model S', 
+      year: 2024,
+      price: 95000,
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      vin: 'TSLA2024MODELS123',
+      kilometers: 5000,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '04/2024',
+      dealership: 'Milano',
+      stockDays: 8,
+      requestMessage: 'Interested in purchasing a Model S. What are the available financing options and delivery timeline?',
+      fiscalEntity: 'MotorK',
+      sourceDetails: 'Website Inquiry'
+    },
     vehicle: { 
       brand: 'Tesla', 
       model: 'Model S', 
@@ -240,6 +296,19 @@ export const mockOpportunities = [
   {
     id: 5,
     customer: { id: 8, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901234567890', address: 'Kurfürstendamm 30, 10719 Berlin' },
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'EQS', 
+      year: 2024,
+      price: 110000,
+      image: 'https://images.unsplash.com/photo-1599912027765-a69c78bfa3aa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fG1lcmNlZGVzfGVufDB8fDB8fHww',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 20,
+      requestMessage: 'Interested in EQS. Need more information about features.'
+    },
     vehicle: { 
       brand: 'Mercedes-Benz', 
       model: 'EQS', 
@@ -267,6 +336,19 @@ export const mockOpportunities = [
   {
     id: 6,
     customer: { id: 9, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901987654321', address: 'Leipziger Platz 1, 10117 Berlin' },
+    requestedCar: { 
+      brand: 'Volkswagen', 
+      model: 'ID.4', 
+      year: 2024,
+      price: 45000,
+      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Looking for an ID.4. What are the available options?'
+    },
     vehicle: { 
       brand: 'Volkswagen', 
       model: 'ID.4', 
@@ -294,6 +376,19 @@ export const mockOpportunities = [
   {
     id: 7,
     customer: { id: 10, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456', address: 'Marienplatz 5, 80331 München' },
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'i4', 
+      year: 2024,
+      price: 65000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 10,
+      requestMessage: 'Interested in BMW i4. Need financing details.'
+    },
     vehicle: { 
       brand: 'BMW', 
       model: 'i4', 
@@ -321,6 +416,19 @@ export const mockOpportunities = [
   {
     id: 8,
     customer: { id: 11, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766', address: 'Schildergasse 18, 50667 Köln' },
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'Q4 e-tron', 
+      year: 2024,
+      price: 55000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 18,
+      requestMessage: 'Interested in Q4 e-tron. When can I test drive?'
+    },
     vehicle: { 
       brand: 'Audi', 
       model: 'Q4 e-tron', 
@@ -349,6 +457,19 @@ export const mockOpportunities = [
   {
     id: 9,
     customer: { id: 12, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666', address: 'Königsallee 70, 40212 Düsseldorf' },
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: 'Macan Electric', 
+      year: 2024,
+      price: 85000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 5,
+      requestMessage: 'Interested in Macan Electric. Ready to proceed.'
+    },
     vehicle: { 
       brand: 'Porsche', 
       model: 'Macan Electric', 
@@ -377,6 +498,19 @@ export const mockOpportunities = [
   {
     id: 10,
     customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888', address: 'Spitalerstraße 12, 20095 Hamburg' },
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'EQC', 
+      year: 2024,
+      price: 75000,
+      image: 'https://images.unsplash.com/photo-1605822102629-918beea85679?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDh8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 14,
+      requestMessage: 'Interested in EQC. Need information about charging infrastructure.'
+    },
     vehicle: { 
       brand: 'Mercedes-Benz', 
       model: 'EQC', 
@@ -405,6 +539,19 @@ export const mockOpportunities = [
   {
     id: 11,
     customer: { id: 14, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666', address: 'Zeil 90, 60313 Frankfurt am Main' },
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'iX3', 
+      year: 2024,
+      price: 68000,
+      image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 22,
+      requestMessage: 'Interested in iX3. What are the warranty terms?'
+    },
     vehicle: { 
       brand: 'BMW', 
       model: 'iX3', 
@@ -433,6 +580,19 @@ export const mockOpportunities = [
   {
     id: 12,
     customer: { id: 15, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901999888777', address: 'Piazzo San Marco 4, 30124 Venezia' },
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'A6 e-tron', 
+      year: 2024,
+      price: 90000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Interested in A6 e-tron. When can I schedule a test drive?'
+    },
     vehicle: { 
       brand: 'Audi', 
       model: 'A6 e-tron', 
@@ -475,6 +635,19 @@ export const mockOpportunities = [
   {
     id: 13,
     customer: { id: 16, name: 'Rachel Green', initials: 'RG', email: 'rachel.green@example.com', phone: '+4901555444333' },
+    requestedCar: { 
+      brand: 'Volkswagen', 
+      model: 'ID.3', 
+      year: 2024,
+      price: 40000,
+      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Roma',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 16,
+      requestMessage: 'Interested in ID.3. What financing options are available?'
+    },
     vehicle: { 
       brand: 'Volkswagen', 
       model: 'ID.3', 
@@ -501,6 +674,19 @@ export const mockOpportunities = [
   {
     id: 14,
     customer: { id: 17, name: 'Monica Geller', initials: 'MG', email: 'monica.geller@example.com', phone: '+4901444333222', address: 'Beethovenstraße 8, 80336 München' },
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model 3', 
+      year: 2024,
+      price: 48000,
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      dealership: 'Milano',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 8,
+      requestMessage: 'Interested in Model 3. Need to test drive.'
+    },
     vehicle: { 
       brand: 'Tesla', 
       model: 'Model 3', 
@@ -542,6 +728,19 @@ export const mockOpportunities = [
   {
     id: 15,
     customer: { id: 18, name: 'Ross Geller', initials: 'RG', email: 'ross.geller@example.com', phone: '+4901222333444', address: 'Unter den Linden 77, 10117 Berlin' },
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'i5', 
+      year: 2024,
+      price: 72000,
+      image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJtd3xlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: null,
+      requestMessage: 'Looking for BMW i5. Interested in test drive.'
+    },
     vehicle: { 
       brand: 'BMW', 
       model: 'i5', 

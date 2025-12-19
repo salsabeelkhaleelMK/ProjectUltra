@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities, addOpportunityActivity, updateOpportunityActivity, deleteOpportunityActivity } from '@/api/opportunities'
+import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities, addOpportunityActivity, updateOpportunityActivity, deleteOpportunityActivity, createOpportunityFromLead as apiCreateOpportunityFromLead } from '@/api/opportunities'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
   // State
@@ -248,6 +248,48 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
   
+  async function createOpportunityFromLead(leadData, activities) {
+    loading.value = true
+    error.value = null
+    try {
+      const newOpportunity = await apiCreateOpportunityFromLead(leadData, activities)
+      opportunities.value.unshift(newOpportunity)
+      return newOpportunity
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function convertOpportunityToLead(opportunityId) {
+    loading.value = true
+    error.value = null
+    try {
+      // Get full opportunity data and activities
+      const opportunity = await fetchOpportunityById(opportunityId)
+      const activities = await fetchOpportunityActivities(opportunityId)
+      
+      // Import leads store dynamically to avoid circular dependency
+      const { useLeadsStore } = await import('./leads')
+      const leadsStore = useLeadsStore()
+      
+      // Create lead from opportunity
+      const newLead = await leadsStore.createLeadFromOpportunity(opportunity, activities)
+      
+      // Remove opportunity from opportunities store
+      await removeOpportunity(opportunityId)
+      
+      return newLead.id
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     opportunities,
     currentOpportunity,
@@ -269,7 +311,9 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     setFilters,
     reopenOpportunity,
     markAsRegistration,
-    markAsClosedWon
+    markAsClosedWon,
+    createOpportunityFromLead,
+    convertOpportunityToLead
   }
 })
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/components/layout/MainLayout.vue'
+import { useUserStore } from '@/stores/user'
 
 const routes = [
   {
@@ -16,7 +17,7 @@ const routes = [
         component: () => import('@/views/Contacts.vue')
       },
       {
-        path: 'tasks/:id',
+        path: 'tasks/:id?',
         name: 'task-detail',
         component: () => import('@/views/TaskDetail.vue')
       },
@@ -38,12 +39,33 @@ const routes = [
       {
         path: 'marketing',
         name: 'marketing',
-        component: () => import('@/views/Marketing.vue')
+        component: () => import('@/views/Marketing.vue'),
+        beforeEnter: (to, from, next) => {
+          const userStore = useUserStore()
+          if (userStore.canAccessMarketing()) {
+            next()
+          } else {
+            next('/access-denied')
+          }
+        }
       },
       {
         path: 'reports',
         name: 'reports',
-        component: () => import('@/views/Reports.vue')
+        component: () => import('@/views/Reports.vue'),
+        beforeEnter: (to, from, next) => {
+          const userStore = useUserStore()
+          if (userStore.canAccessReports()) {
+            next()
+          } else {
+            next('/access-denied')
+          }
+        }
+      },
+      {
+        path: 'access-denied',
+        name: 'access-denied',
+        component: () => import('@/views/AccessDenied.vue')
       }
     ]
   }

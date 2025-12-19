@@ -234,7 +234,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
+import { useUserStore } from '@/stores/user'
 import RescheduleWidget from '@/components/shared/RescheduleWidget.vue'
 import ScheduleAppointmentWidget from '@/components/shared/ScheduleAppointmentWidget.vue'
 import DisqualifyModal from '@/components/shared/DisqualifyModal.vue'
@@ -246,7 +248,9 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
 const leadsStore = useLeadsStore()
+const userStore = useUserStore()
 
 const showRescheduleWidget = ref(false)
 const showOpportunityWidget = ref(false)
@@ -416,9 +420,24 @@ const handleScheduleAppointment = (appointmentData) => {
   showOpportunityWidget.value = false
 }
 
-const createOpportunity = () => {
-  // Future: hook into leadsStore to actually create an opportunity.
-  showOpportunityWidget.value = false
+const createOpportunity = async () => {
+  try {
+    // Convert lead to opportunity
+    const opportunityId = await leadsStore.convertLeadToOpportunity(props.lead.id)
+    
+    showOpportunityWidget.value = false
+    
+    // Check user permissions and navigate accordingly
+    if (userStore.canAccessOpportunities()) {
+      // Salesman or Manager - redirect to the new opportunity
+      router.push({ path: `/tasks/${opportunityId}`, query: { type: 'opportunity' } })
+    } else {
+      // Operator - no access to opportunities, navigate to tasks list
+      router.push('/tasks/1')
+    }
+  } catch (err) {
+    console.error('Failed to convert lead to opportunity:', err)
+  }
 }
 
 const handleRequalify = async () => {

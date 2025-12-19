@@ -101,3 +101,54 @@ export const deleteLeadActivity = async (leadId, activityId) => {
   mockActivities.splice(index, 1)
   return { success: true }
 }
+
+// Conversion helpers
+export const generateLeadId = () => {
+  return mockLeads.length > 0 ? Math.max(...mockLeads.map(l => l.id)) + 1 : 1
+}
+
+export const createLeadFromOpportunity = async (opportunityData, activities) => {
+  await delay()
+  
+  const newLead = {
+    id: generateLeadId(),
+    customer: opportunityData.customer,
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: opportunityData.requestedCar,
+    carStatus: opportunityData.requestedCar?.stockDays !== null && opportunityData.requestedCar?.stockDays !== undefined ? 'In Stock' : 'Not available',
+    requestType: 'Generic Sales',
+    source: opportunityData.source || 'Marketing',
+    fiscalEntity: opportunityData.fiscalEntity || '',
+    sourceDetails: opportunityData.sourceDetails || '',
+    assignee: opportunityData.assignee || 'Michael Thomas',
+    assigneeInitials: opportunityData.assigneeInitials || 'MT',
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString(),
+    nextActionDue: '1h',
+    tags: opportunityData.tags || [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null
+  }
+  
+  mockLeads.unshift(newLead)
+  
+  // Migrate activities
+  for (const activity of activities) {
+    const newActivity = {
+      id: mockActivities.length + 1,
+      leadId: newLead.id,
+      opportunityId: undefined, // Remove opportunity reference
+      timestamp: activity.timestamp,
+      type: activity.type,
+      user: activity.user,
+      action: activity.action,
+      content: activity.content,
+      data: activity.data
+    }
+    mockActivities.push(newActivity)
+  }
+  
+  return newLead
+}

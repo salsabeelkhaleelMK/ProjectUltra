@@ -326,8 +326,10 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { pipelineStats, mockLeads, mockOpportunities } from '@/api/mockData'
 import PageHeader from '@/components/shared/PageHeader.vue'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const stats = ref(pipelineStats)
 const activeTab = ref('open-leads')
@@ -348,43 +350,57 @@ const newItem = ref({
   reason: ''
 })
 
-const stageTabs = computed(() => [
-  { 
-    key: 'open-leads', 
-    label: 'Open Leads', 
-    count: stats.value.openLeads,
-    borderColor: 'border-t-blue-600',
-    badgeColor: 'bg-blue-600 text-white'
-  },
-  { 
-    key: 'open-opportunities', 
-    label: 'Open opportunities', 
-    count: stats.value.openOpportunities,
-    borderColor: 'border-t-orange-500',
-    badgeColor: 'bg-orange-500 text-white'
-  },
-  { 
-    key: 'in-negotiation', 
-    label: 'In negotiation', 
-    count: stats.value.inNegotiation,
-    borderColor: 'border-t-blue-500',
-    badgeColor: 'bg-blue-500 text-white'
-  },
-  { 
-    key: 'won', 
-    label: 'Won', 
-    count: stats.value.won,
-    borderColor: 'border-t-green-500',
-    badgeColor: 'bg-green-500 text-white'
-  },
-  { 
-    key: 'lost', 
-    label: 'Lost', 
-    count: stats.value.lost,
-    borderColor: 'border-t-red-500',
-    badgeColor: 'bg-red-500 text-white'
+const stageTabs = computed(() => {
+  const allTabs = [
+    { 
+      key: 'open-leads', 
+      label: 'Open Leads', 
+      count: stats.value.openLeads,
+      borderColor: 'border-t-blue-600',
+      badgeColor: 'bg-blue-600 text-white'
+    },
+    { 
+      key: 'open-opportunities', 
+      label: 'Open opportunities', 
+      count: stats.value.openOpportunities,
+      borderColor: 'border-t-orange-500',
+      badgeColor: 'bg-orange-500 text-white'
+    },
+    { 
+      key: 'in-negotiation', 
+      label: 'In negotiation', 
+      count: stats.value.inNegotiation,
+      borderColor: 'border-t-blue-500',
+      badgeColor: 'bg-blue-500 text-white'
+    },
+    { 
+      key: 'won', 
+      label: 'Won', 
+      count: stats.value.won,
+      borderColor: 'border-t-green-500',
+      badgeColor: 'bg-green-500 text-white'
+    },
+    { 
+      key: 'lost', 
+      label: 'Lost', 
+      count: stats.value.lost,
+      borderColor: 'border-t-red-500',
+      badgeColor: 'bg-red-500 text-white'
+    }
+  ]
+  
+  // Filter tabs based on user role
+  if (userStore.isOperator()) {
+    // Operators only see "Open Leads" tab
+    return allTabs.filter(tab => tab.key === 'open-leads')
+  } else if (userStore.isSalesman()) {
+    // Salesmen see all tabs EXCEPT "Open Leads"
+    return allTabs.filter(tab => tab.key !== 'open-leads')
+  } else {
+    // Managers see all tabs
+    return allTabs
   }
-])
+})
 
 const getAddButtonLabel = () => {
   const labels = {
