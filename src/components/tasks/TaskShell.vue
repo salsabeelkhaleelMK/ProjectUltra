@@ -56,17 +56,18 @@
           :opportunity="type === 'opportunity' ? task : undefined"
           :activities="allActivities"
         />
+        
+        <!-- Add New (overview tab - after next steps widget) -->
+        <AddNewButton
+          v-if="addNewConfig.overviewActions.length"
+          :actions="addNewConfig.overviewActions"
+          :active-tab="activeTab"
+          @action="handleAddNewAction"
+        />
+        
         <!-- Type-specific extra pinned widgets -->
         <slot name="pinned-extra" :task="task" />
       </div>
-
-      <!-- Add New (overview tab - below pinned widgets) -->
-      <AddNewButton
-        v-if="activeTab === 'overview' && addNewConfig.overviewActions.length"
-        :actions="addNewConfig.overviewActions"
-        :active-tab="activeTab"
-        @action="handleAddNewAction"
-      />
 
       <!-- Add New (non-overview tabs) -->
       <AddNewButton

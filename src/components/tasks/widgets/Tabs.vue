@@ -41,7 +41,7 @@ defineEmits(['update:modelValue'])
 
 // Icon mapping for each tab type
 const iconMap = {
-  overview: 'fa-solid fa-grid-2',
+  overview: 'fa-solid fa-house',
   note: 'fa-solid fa-note-sticky',
   communication: 'fa-solid fa-comments',
   attachment: 'fa-solid fa-paperclip'

@@ -6,7 +6,7 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-clipboard-check text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Lead Management</h3>
+        <h3 class="font-bold text-slate-800 text-sm">Manage Next Steps</h3>
       </div>
     </div>
 
