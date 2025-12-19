@@ -57,7 +57,7 @@
     
     <!-- Primary -->
     <router-link 
-      to="/tasks/1" 
+      to="/tasks" 
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/tasks') }"
       title="Tasks"

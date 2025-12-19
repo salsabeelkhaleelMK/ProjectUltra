@@ -29,33 +29,12 @@
 
     <!-- Scrollable Content -->
     <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
-      <!-- Tabs + Add New (overview only) -->
+      <!-- Tabs -->
       <div class="mb-4">
-        <div class="flex items-center justify-between gap-2 mb-3 md:mb-0">
-          <Tabs 
-            v-model="activeTab"
-            :tabs="tabs"
-            class="mb-0 flex-1 min-w-0"
-          />
-
-          <AddNewButton
-            v-if="activeTab === 'overview' && addNewConfig.overviewActions.length"
-            :actions="addNewConfig.overviewActions"
-            :active-tab="activeTab"
-            :inline="true"
-            class="hidden md:flex"
-            @action="handleAddNewAction"
-          />
-        </div>
-        
-        <!-- Add New button on separate row for mobile -->
-        <AddNewButton
-          v-if="activeTab === 'overview' && addNewConfig.overviewActions.length"
-          :actions="addNewConfig.overviewActions"
-          :active-tab="activeTab"
-          :inline="true"
-          class="flex md:hidden w-full"
-          @action="handleAddNewAction"
+        <Tabs 
+          v-model="activeTab"
+          :tabs="tabs"
+          class="mb-0"
         />
       </div>
 
@@ -65,7 +44,6 @@
           :stage="task.stage"
           :owner="task.assignee"
           :source="task.source || ''"
-          :probability="task.probability"
         />
       </div>
 
@@ -81,6 +59,14 @@
         <!-- Type-specific extra pinned widgets -->
         <slot name="pinned-extra" :task="task" />
       </div>
+
+      <!-- Add New (overview tab - below pinned widgets) -->
+      <AddNewButton
+        v-if="activeTab === 'overview' && addNewConfig.overviewActions.length"
+        :actions="addNewConfig.overviewActions"
+        :active-tab="activeTab"
+        @action="handleAddNewAction"
+      />
 
       <!-- Add New (non-overview tabs) -->
       <AddNewButton

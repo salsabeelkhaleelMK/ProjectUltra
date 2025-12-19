@@ -403,13 +403,27 @@ onMounted(() => {
   const taskId = route.params.id
   if (taskId) {
     loadTaskById(taskId)
+  } else {
+    // Auto-select first task if no task is selected
+    selectFirstTask()
   }
 })
+
+// Auto-select first task
+const selectFirstTask = () => {
+  const firstTask = filteredTasks.value[0]
+  if (firstTask) {
+    router.replace({ path: `/tasks/${firstTask.id}`, query: { type: firstTask.type } })
+  }
+}
 
 // Watch for route changes
 watch(() => route.params.id, (newId) => {
   if (newId) {
     loadTaskById(newId)
+  } else {
+    // Auto-select first task if navigated to /tasks without an ID
+    selectFirstTask()
   }
 })
 
