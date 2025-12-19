@@ -167,7 +167,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useVehiclesStore } from '@/stores/vehicles'
-import PageHeader from '@/components/shared/PageHeader.vue'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 const vehiclesStore = useVehiclesStore()
 

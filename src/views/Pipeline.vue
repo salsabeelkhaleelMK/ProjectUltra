@@ -71,6 +71,17 @@
             <button class="btn-secondary text-sm">
               Save
             </button>
+            
+            <!-- Disqualified Filter (only show for leads tab) -->
+            <button
+              v-if="activeTab === 'open-leads'"
+              @click="showDisqualified = !showDisqualified"
+              class="btn-secondary text-sm flex items-center gap-2 transition-colors"
+              :class="showDisqualified ? 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100' : ''"
+            >
+              <i class="fa-solid fa-ban"></i>
+              {{ showDisqualified ? 'Hide Disqualified' : 'Show Disqualified' }}
+            </button>
           </div>
 
           <!-- Right: Add New button aligned to the far right -->
@@ -325,8 +336,9 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { pipelineStats, mockLeads, mockOpportunities } from '@/api/mockData'
-import PageHeader from '@/components/shared/PageHeader.vue'
+import PageHeader from '@/components/layout/PageHeader.vue'
 import { useUserStore } from '@/stores/user'
+import { formatDueDate } from '@/utils/formatters'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -335,6 +347,7 @@ const stats = ref(pipelineStats)
 const activeTab = ref('open-leads')
 const searchQuery = ref('')
 const showAddModal = ref(false)
+const showDisqualified = ref(false)
 const filters = ref({
   status: '',
   priority: '',
@@ -451,13 +464,21 @@ const handleAdd = () => {
 }
 
 const rows = computed(() => {
-  const leadRows = mockLeads.map((lead) => ({
+  // Filter leads based on disqualified toggle
+  let filteredLeads = mockLeads
+  if (showDisqualified.value) {
+    filteredLeads = mockLeads.filter(lead => lead.isDisqualified === true)
+  } else {
+    filteredLeads = mockLeads.filter(lead => !lead.isDisqualified)
+  }
+  
+  const leadRows = filteredLeads.map((lead) => ({
     id: `lead-${lead.id}`,
     stageKey: 'open-leads',
     customer: lead.customer.name,
     email: lead.customer.email,
     initials: lead.customer.initials || lead.customer.name.slice(0,2).toUpperCase(),
-    nextAction: lead.nextActionDue || '1h 12m',
+    nextAction: formatDueDate(lead.nextActionDue) || 'No due date',
     car: `${lead.requestedCar.brand} ${lead.requestedCar.model}`,
     carStatus: lead.carStatus || 'New',
     carStatusClass: lead.carStatus === 'New' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',

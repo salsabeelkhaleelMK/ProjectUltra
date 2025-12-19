@@ -38,11 +38,12 @@ export const mockLeads = [
     assigneeInitials: 'MT',
     createdAt: '2025-03-21T08:17:00',
     lastActivity: '2025-03-25T14:30:00',
-    nextActionDue: '1h 12m',
+    nextActionDue: '2025-12-19T15:42:00',
     tags: ['Premium', 'Automation'],
     stage: 'Open Lead',
     isDisqualified: false,
-    disqualifyReason: null
+    disqualifyReason: null,
+    scheduledAppointment: null
   },
   {
     id: 2,
@@ -69,15 +70,16 @@ export const mockLeads = [
     source: 'Marketing',
     fiscalEntity: '',
     sourceDetails: '',
-    assignee: 'Emma Watson',
-    assigneeInitials: 'EW',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
     createdAt: '2025-03-20T10:15:00',
     lastActivity: '2025-03-24T16:20:00',
-    nextActionDue: '4h 20m',
+    nextActionDue: '2025-12-19T18:50:00',
     tags: [],
     stage: 'Open Lead',
     isDisqualified: false,
-    disqualifyReason: null
+    disqualifyReason: null,
+    scheduledAppointment: null
   },
   {
     id: 3,
@@ -104,11 +106,11 @@ export const mockLeads = [
     source: 'Marketing',
     fiscalEntity: '',
     sourceDetails: '',
-    assignee: 'Liam Johnson',
-    assigneeInitials: 'LJ',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
     createdAt: '2025-03-19T13:52:00',
     lastActivity: '2025-03-19T13:52:00',
-    nextActionDue: '2 days',
+    nextActionDue: '2025-12-21T14:30:00',
     tags: [],
     stage: 'Open Lead',
     isDisqualified: false,
@@ -927,50 +929,6 @@ export const calendarTeams = [
 
 export const mockCalendarEvents = [
   {
-    id: 1,
-    title: 'Test Drive - Josh Adams',
-    start: '2025-12-17T10:00:00',
-    end: '2025-12-17T11:00:00',
-    type: 'test-drive',
-    customer: 'Josh Adams',
-    customerId: 1,
-    vehicle: 'Audi A6 Allroad',
-    assignee: 'Salsabeel Khaleel',
-    assigneeId: 1,
-    dealership: 'Firenze',
-    team: 'Sales (Used)',
-    status: 'confirmed'
-  },
-  {
-    id: 2,
-    title: 'Dealership Visit - Emma Watson',
-    start: '2025-12-18T14:00:00',
-    end: '2025-12-18T15:00:00',
-    type: 'appointment',
-    customer: 'Emma Watson',
-    customerId: 2,
-    vehicle: 'Mercedes-Benz EQS',
-    assignee: 'Sarah Jenkins',
-    assigneeId: 2,
-    dealership: 'Milano',
-    team: 'Sales (New)',
-    status: 'confirmed'
-  },
-  {
-    id: 3,
-    title: 'Follow-up Call - Liam Johnson',
-    start: '2025-12-19T09:00:00',
-    end: '2025-12-19T09:30:00',
-    type: 'call',
-    customer: 'Liam Johnson',
-    customerId: 3,
-    assignee: 'Salsabeel Khaleel',
-    assigneeId: 1,
-    dealership: 'Roma',
-    team: 'BDC',
-    status: 'confirmed'
-  },
-  {
     id: 4,
     title: 'Meeting - Oliver Brown',
     start: '2025-12-20T11:00:00',
@@ -978,12 +936,15 @@ export const mockCalendarEvents = [
     type: 'meeting',
     customer: 'Oliver Brown',
     customerId: 5,
+    opportunityId: 2,
     vehicle: 'Porsche Taycan',
     assignee: 'Sarah Jenkins',
     assigneeId: 2,
     dealership: 'Milano',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0,
+    previousAppointmentId: null
   },
   {
     id: 5,
@@ -993,12 +954,15 @@ export const mockCalendarEvents = [
     type: 'test-drive',
     customer: 'Grace Thompson',
     customerId: 4,
+    opportunityId: 1,
     vehicle: 'Audi e-tron GT',
     assignee: 'Salsabeel Khaleel',
     assigneeId: 1,
     dealership: 'Firenze',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0,
+    previousAppointmentId: null
   },
   {
     id: 6,
@@ -1067,12 +1031,15 @@ export const mockCalendarEvents = [
     type: 'appointment',
     customer: 'Grace Thompson',
     customerId: 4,
+    opportunityId: 1,
     vehicle: 'Audi e-tron GT',
     assignee: 'Salsabeel Khaleel',
     assigneeId: 1,
     dealership: 'Firenze',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0,
+    previousAppointmentId: null
   },
   {
     id: 11,
@@ -1723,7 +1690,7 @@ export const mockDashboardKPIs = [
 export const mockSalesPipeline = {
   stages: [
     { name: 'Lead generated', percentage: 100, count: 1000, avgTime: '12h' },
-    { name: 'Contacted', percentage: 87.2, count: 872, avgTime: '12h' },
+    { name: 'Validated', percentage: 87.2, count: 872, avgTime: '12h' },
     { name: 'Qualified', percentage: 63.4, count: 634, avgTime: '12h' },
     { name: 'Offer created', percentage: 17.2, count: 172, avgTime: '7d 9h' },
     { name: 'Won', percentage: 11.2, count: 112, avgTime: '12h' }

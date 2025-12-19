@@ -5,135 +5,68 @@ alwaysApply: true
 
 ## 1. Architecture & Data
 
-- Use the **mock data layer** only for sample data.
-  - All sample entities, filters, and calendar events must live in `src/api/mockData.js` (and related API wrappers), not inside components.
-  - When adding a new feature, first extend:
-    - `mockData` → API wrapper (`src/api/*.js`) → Pinia store (`src/stores/*.js`) → then use in components.
-
+- Use **mock data layer** only for sample data in `src/api/mockData.js`
+- When adding features: `mockData` → API wrapper (`src/api/*.js`) → Pinia store (`src/stores/*.js`) → components
 
 ## 2. Components & Reuse
 
-- Always **reuse shared widgets**, do not fork duplicates.
-
+- Always **reuse shared widgets**, never fork duplicates
+- Check for existing components before creating new ones
 
 ## 3. Styling & Layout
 
-- **Responsive rules**:
-  - Tables must not rely on horizontal scroll; remove non-essential columns instead.
-  - Filters headers (like on Pipeline/Calendar) stay in main page container **above** the table or grid.
-  - “Add new” buttons in list/grid views:
-    - Are aligned to the **far right** of the filter bar, responsive on smaller screens.
+- **Responsive**: Tables remove columns (no horizontal scroll); filters above content; buttons aligned right
+- **Tailwind**: 
+  - NO arbitrary values (`w-[350px]`, `text-[14px]`) - use semantic classes only
+  - Use semantic tokens: `text-primary`, `bg-surface`, `border-border` (from `tailwind.config.js`)
+  - Mobile-first: `class="flex flex-col md:flex-row"` (not `max-md:`)
+  - Use Flexbox/Grid for layout, avoid floats/hardcoded heights
 
-## 4. Netlify & Builds
+## 4. Build & Deploy
 
-- Netlify should build the app itself:
-  - `netlify.toml`:
-    - `[build].publish = "dist"`
-    - `[build].command = "npm run build"`
-- Do **not** commit `dist/` or use “echo Skipping build” for this project.
-- Before pushing to any branch that Netlify deploys, ensure `npm run build` passes locally.
+- Run `npm run build` before pushing
+- Never commit `dist/`
+- Netlify builds from source via `netlify.toml`
 
-## 5. Clean Code & Logging
+## 5. Clean Code
 
-- Remove unused views/components as soon as they’re replaced (e.g., legacy dashboards, old leads/opportunities detail pages).
-- Don’t add long‑term `console.log` in:
-  - Stores, widgets, or shared components.
-  - Use them only while debugging, then delete before commit.
-- When removing a view, route, or component:
-  - Delete the old file.
-  - Remove all imports, routes, and references.
-  - Prefer a clean, minimal codebase over leaving commented-out or unused code.
+- Remove unused components immediately
+- No `console.log` in stores/widgets/shared components (debug only, then delete)
+- Delete old files + imports + routes when refactoring
+- No commented-out code
 
-## 6. When Adding New Features
+## 6. Component Style (Vue 3)
 
-- Prefer this order:
-  1. **Data**: Extend mock data + API wrappers + Pinia stores.
-  2. **Shared component**: Reuse an existing shared widget or create a new one in `components/shared` or `components/widgets`.
-  3. **No duplication**: If a new feature looks like something we already have, always check for a reusable component before creating a new file.
+- Use `<script setup>` for all components
+- Naming: Components `PascalCase.vue`, composables `useSomething.js`, stores `useXStore`
+- Prefer alias imports: `@/components/...`, `@/stores/...`
+- All shared state through Pinia stores only
 
-## 7. Tooling & Plans
+## 7. Refactoring
 
-- After a dedicated plan file (e.g. `*.plan.md`) has been executed and is no longer useful, delete it to keep the repo clean.
-- Avoid leaving old, unused planning documents in the root or feature folders.
+- Files >200 lines with mixed responsibilities → extract subcomponents or composables
+- Prefer composition over adding to large files
 
-## 8. README Maintenance
+## 8. Modals & Placeholders
 
-- Keep `README.md` roughly in sync with major app functionality.
-- When adding or changing a significant feature or view, update a short high-level description in `README.md` (no need to document every small UI tweak).
+- **Always wrap modals** with `ModalShell.vue` from `@/components/shared/ModalShell.vue`
+- **Unimplemented features**: Open `ComingSoonModal` from `@/components/shared/ComingSoonModal.vue`
 
-## 9. .gitignore Hygiene
+Example:
+```vue
+<template>
+  <ModalShell :show="show" @close="$emit('close')" title="Title">
+    <!-- content -->
+  </ModalShell>
+  <!-- For unimplemented: -->
+  <ComingSoonModal :show="showComingSoon" @close="showComingSoon = false" />
+</template>
 
-- Ensure `.gitignore` is present and correctly excludes:
-  - `node_modules`, log files, local environment files, and other build artifacts.
-- For this project, `dist/` should remain ignored (since Netlify builds from source).
+<script setup>
+import { ref } from 'vue'
+import ModalShell from '@/components/shared/ModalShell.vue'
+import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
 
-## 10. Global Styling & Theme
-
-- Prefer using global Tailwind utility patterns and existing theme classes over defining ad-hoc styles in each component.
-- If a style pattern is reused in multiple components (layout, padding, typography), promote it into the global theme (shared classes, base styles, or small shared layout components).
-# Tailwind CSS & Global Theme Guidelines
-
-You are an expert Frontend Developer and UI/UX Designer specializing in Tailwind CSS. Your primary objective is to generate code that strictly adheres to the project's global design system, ensuring consistency, scalability, and maintainability.
-
-## Global Theming Strategy
-* **No Arbitrary Values:** STRICTLY FORBIDDEN to use square bracket notation (e.g., `w-[350px]`, `bg-[#F5F5F5]`, `text-[14px]`) unless dealing with a unique, one-off asset like a specific pixel-perfect SVG.
-* **Semantic Tokens Only:** Always use the semantic classes defined in `tailwind.config.js`.
-    * Use `text-primary` instead of `text-blue-600`.
-    * Use `bg-surface` instead of `bg-white`.
-    * Use `border-border` instead of `border-gray-200`.
-* **Spacing Scale:** Stick rigidly to the standard Tailwind spacing scale (e.g., `p-4`, `m-6`, `gap-8`). Do not invent custom spacing unless it is defined in the config.
-
-## Tailwind Best Practices
-* **Mobile-First Approach:** Define styles for mobile (default) first, then layer on breakpoints for larger screens.
-    * *Correct:* `class="flex flex-col md:flex-row"`
-    * *Incorrect:* `class="flex flex-row max-md:flex-col"`
-* **Layout Engines:** exclusively use Flexbox (`flex`) and CSS Grid (`grid`) for layout. Avoid using floats or hardcoded heights for structural elements.
-* **Component Composition:** If a utility pattern is complex and repeated, suggest abstracting it into a React/Vue component or a standard utility set rather than repeating long class strings.
-
-## Color & Typography
-* **Color Usage:** Rely on the project's CSS variables (via Tailwind classes) for all coloring to ensure dark mode and theming compatibility.
-* **Typography:** Use the preset type scale classes (e.g., `text-xl`, `font-semibold`, `leading-tight`). Do not hardcode font sizes or line heights.
-
-## Code Generation Verification
-Before outputting code, verify:
-* Does this use a hardcoded hex code? If yes, replace it with a semantic Tailwind class.
-* Does this use a magic pixel number? If yes, replace it with a spacing utility.
-* Is the design consistent with the surrounding code style?
-
-## Bad Code Example (Avoid)
-```jsx
-<div className="bg-[#ffffff] text-[#000000] p-[20px] rounded-[10px] w-[300px] border-[1px] border-gray-300">
-  <h2 className="text-[18px] font-bold">Title</h2>
-</div>
-## Good Code Example (Follow) JavaScript
-
-<div className="bg-card text-card-foreground p-6 rounded-xl w-full md:w-80 border border-border shadow-sm">
-  <h2 className="text-lg font-semibold tracking-tight">Title</h2>
-</div>
-
-## 11. Refactoring Large Files
-
-- When a single component or view exceeds ~200–250 lines and mixes multiple responsibilities (layout + business logic + many widgets), consider refactoring by:
-  - Extracting reusable subcomponents, and/or
-  - Moving shared logic into composables.
-- New features should prefer composition over adding more code to already large files.
-
-## 12. Component & Code Style (Vue 3)
-
-- Use `<script setup>` for all new Vue components.
-- Naming:
-  - Components: `PascalCase.vue` (e.g. `LeadContent.vue`, `OpportunityManagementWidget.vue`).
-  - Composables: `useSomething.js` (e.g. `useTaskInlineWidgets.js`).
-  - Stores: `useXStore` pattern in `src/stores` (e.g. `useLeadsStore`, `useOpportunitiesStore`).
-- Imports:
-  - Prefer alias imports (`@/components/...`, `@/stores/...`) over long relative paths.
-- State:
-  - All shared/global state must go through Pinia stores; do not introduce ad-hoc global event buses.
-
-## 13. Documentation & Context
-
-- For complex flows (e.g. opportunity task triggers, transcription extraction, time-based widgets), add short inline comments that explain **why**, not just what.
-- Add a brief file-level comment only where the purpose is not obvious from the name and folder (e.g. non-trivial composables or helpers).
-- JSDoc-style comments are optional and should be used mainly for:
-  - Shared utilities/composables that are reused in many places.
-  - Functions with non-obvious parameters or return shapes.
+const showComingSoon = ref(false)
+</script>
+```

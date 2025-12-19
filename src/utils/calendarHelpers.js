@@ -1,0 +1,121 @@
+// Calendar event type helpers and formatters
+
+export const getEventTypeLabel = (type) => {
+  const typeMap = {
+    'test-drive': 'Test Drive',
+    'appointment': 'Dealership Visit',
+    'offsite': 'Offsite Visit',
+    'workshop': 'Workshop',
+    'call': 'Call',
+    'delivery': 'Delivery',
+    'meeting': 'Meeting',
+    'training': 'Training',
+    'marketing': 'Marketing Event',
+    'leave': 'Leave',
+    'memo': 'Memo',
+    'recall': 'Recall',
+    'absence': 'Absence',
+    'other': 'Other'
+  }
+  return typeMap[type] || type
+}
+
+export const getEventTypeHeaderClass = (type) => {
+  const colorMap = {
+    'test-drive': 'bg-blue-50 border-b border-blue-200',
+    'appointment': 'bg-green-50 border-b border-green-200',
+    'offsite': 'bg-emerald-50 border-b border-emerald-200',
+    'workshop': 'bg-indigo-50 border-b border-indigo-200',
+    'call': 'bg-orange-50 border-b border-orange-200',
+    'delivery': 'bg-teal-50 border-b border-teal-200',
+    'meeting': 'bg-purple-50 border-b border-purple-200',
+    'training': 'bg-pink-50 border-b border-pink-200',
+    'marketing': 'bg-yellow-50 border-b border-yellow-200',
+    'leave': 'bg-red-50 border-b border-red-200',
+    'memo': 'bg-gray-50 border-b border-gray-200',
+    'recall': 'bg-cyan-50 border-b border-cyan-200',
+    'absence': 'bg-rose-50 border-b border-rose-200',
+    'other': 'bg-slate-50 border-b border-slate-200'
+  }
+  return colorMap[type] || 'bg-blue-50 border-b border-blue-200'
+}
+
+export const getEventTypeBadgeClass = (type) => {
+  const colorMap = {
+    'test-drive': 'bg-blue-100 text-blue-700 border-blue-200',
+    'appointment': 'bg-green-100 text-green-700 border-green-200',
+    'offsite': 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    'workshop': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    'call': 'bg-orange-100 text-orange-700 border-orange-200',
+    'delivery': 'bg-teal-100 text-teal-700 border-teal-200',
+    'meeting': 'bg-purple-100 text-purple-700 border-purple-200',
+    'training': 'bg-pink-100 text-pink-700 border-pink-200',
+    'marketing': 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    'leave': 'bg-red-100 text-red-700 border-red-200',
+    'memo': 'bg-gray-100 text-gray-700 border-gray-200',
+    'recall': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    'absence': 'bg-rose-100 text-rose-700 border-rose-200',
+    'other': 'bg-slate-100 text-slate-700 border-slate-200'
+  }
+  return colorMap[type] || 'bg-blue-100 text-blue-700 border-blue-200'
+}
+
+export const getEventTypeTextClass = (type) => {
+  const colorMap = {
+    'test-drive': 'text-blue-900',
+    'appointment': 'text-green-900',
+    'offsite': 'text-emerald-900',
+    'workshop': 'text-indigo-900',
+    'call': 'text-orange-900',
+    'delivery': 'text-teal-900',
+    'meeting': 'text-purple-900',
+    'training': 'text-pink-900',
+    'marketing': 'text-yellow-900',
+    'leave': 'text-red-900',
+    'memo': 'text-gray-900',
+    'recall': 'text-cyan-900',
+    'absence': 'text-rose-900',
+    'other': 'text-slate-900'
+  }
+  return colorMap[type] || 'text-blue-900'
+}
+
+export const getEventCalendarClass = (type) => {
+  const colorMap = {
+    'test-drive': 'event-blue',
+    'appointment': 'event-green',
+    'offsite': 'event-emerald',
+    'workshop': 'event-indigo',
+    'call': 'event-orange',
+    'delivery': 'event-teal',
+    'meeting': 'event-purple',
+    'training': 'event-pink',
+    'marketing': 'event-yellow',
+    'leave': 'event-red',
+    'memo': 'event-gray',
+    'recall': 'event-cyan',
+    'absence': 'event-rose',
+    'other': 'event-slate'
+  }
+  return colorMap[type] || 'event-blue'
+}
+
+export const formatEventDate = (dateStr) => {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+}
+
+export const formatEventTime = (dateStr) => {
+  const date = new Date(dateStr)
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true
+  })
+}
+

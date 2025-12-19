@@ -147,7 +147,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useContactsStore } from '@/stores/contacts'
-import PageHeader from '@/components/shared/PageHeader.vue'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 const contactsStore = useContactsStore()
 const searchQuery = ref('')

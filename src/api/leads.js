@@ -1,7 +1,12 @@
-import { mockLeads, mockActivities } from './mockData'
+import { mockLeads, mockActivities, mockCalendarEvents } from './mockData'
 
 // Simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
+
+// ID generation helpers
+export const generateLeadId = () => {
+  return mockLeads.length > 0 ? Math.max(...mockLeads.map(l => l.id)) + 1 : 1
+}
 
 export const fetchLeads = async (filters = {}) => {
   await delay()
@@ -45,7 +50,7 @@ export const fetchLeadActivities = async (leadId) => {
 export const createLead = async (leadData) => {
   await delay()
   const newLead = {
-    id: mockLeads.length + 1,
+    id: generateLeadId(),
     ...leadData,
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString()
@@ -102,11 +107,45 @@ export const deleteLeadActivity = async (leadId, activityId) => {
   return { success: true }
 }
 
-// Conversion helpers
-export const generateLeadId = () => {
-  return mockLeads.length > 0 ? Math.max(...mockLeads.map(l => l.id)) + 1 : 1
+// Schedule follow-up appointment for lead
+export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
+  await delay()
+  const lead = mockLeads.find(l => l.id === parseInt(leadId))
+  if (!lead) throw new Error('Lead not found')
+  
+  // Create calendar event
+  const eventId = mockCalendarEvents.length > 0 ? Math.max(...mockCalendarEvents.map(e => e.id)) + 1 : 1
+  const appointmentStart = new Date(appointmentData.dateTime)
+  const appointmentEnd = new Date(appointmentStart.getTime() + 30 * 60000) // +30 minutes
+  
+  const calendarEvent = {
+    id: eventId,
+    title: `Follow-up Call - ${lead.customer.name}`,
+    start: appointmentStart.toISOString(),
+    end: appointmentEnd.toISOString(),
+    type: 'call',
+    customer: lead.customer.name,
+    customerId: lead.customer.id,
+    leadId: lead.id,
+    opportunityId: null,
+    assignee: appointmentData.assignee || lead.assignee,
+    assigneeId: appointmentData.assigneeId || 1,
+    dealership: lead.fiscalEntity || 'Main',
+    team: 'BDC',
+    status: 'scheduled'
+  }
+  
+  mockCalendarEvents.push(calendarEvent)
+  
+  // Update lead with appointment reference and due date
+  lead.scheduledAppointment = calendarEvent
+  lead.nextActionDue = appointmentStart.toISOString()
+  lead.lastActivity = new Date().toISOString()
+  
+  return calendarEvent
 }
 
+// Conversion helpers
 export const createLeadFromOpportunity = async (opportunityData, activities) => {
   await delay()
   

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity, createLeadFromOpportunity as apiCreateLeadFromOpportunity } from '@/api/leads'
+import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity, createLeadFromOpportunity as apiCreateLeadFromOpportunity, scheduleLeadFollowUp } from '@/api/leads'
 
 export const useLeadsStore = defineStore('leads', () => {
   // State
@@ -222,6 +222,21 @@ export const useLeadsStore = defineStore('leads', () => {
     }
   }
   
+  async function scheduleFollowUp(leadId, appointmentData) {
+    loading.value = true
+    error.value = null
+    try {
+      const event = await scheduleLeadFollowUp(leadId, appointmentData)
+      await loadLeadById(leadId) // Reload to get updated lead
+      return event
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     leads,
     currentLead,
@@ -244,6 +259,7 @@ export const useLeadsStore = defineStore('leads', () => {
     clearFilters,
     requalifyLead,
     convertLeadToOpportunity,
-    createLeadFromOpportunity
+    createLeadFromOpportunity,
+    scheduleFollowUp
   }
 })

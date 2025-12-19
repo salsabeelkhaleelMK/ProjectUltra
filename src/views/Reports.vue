@@ -55,7 +55,7 @@ import TodaysEventsSidebar from '@/components/reports/TodaysEventsSidebar.vue'
 import AIInsightsSidebar from '@/components/reports/AIInsightsSidebar.vue'
 import PageViewsByVehicle from '@/components/reports/PageViewsByVehicle.vue'
 import PageViewsChart from '@/components/reports/PageViewsChart.vue'
-import PageHeader from '@/components/shared/PageHeader.vue'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 const dashboardKPIs = ref([])
 const salesPipeline = ref({ stages: [], leadSources: [] })
