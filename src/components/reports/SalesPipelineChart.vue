@@ -1,30 +1,32 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="section-title mb-0">Sales Pipeline</h2>
-      <select class="input text-sm w-auto">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="section-title !mb-0">Sales Pipeline</h2>
+      <select class="input !py-1.5 !px-3 text-sm w-auto">
         <option>This month</option>
         <option>Last month</option>
         <option>This quarter</option>
       </select>
     </div>
 
-    <!-- Stage Stats -->
-    <div class="flex flex-wrap gap-4 mb-6 pb-6 border-b border-gray-200">
-      <div
-        v-for="stage in pipeline.stages"
-        :key="stage.name"
-        class="flex items-center gap-2"
-      >
-        <span class="label-upper">{{ stage.name }}:</span>
-        <span class="text-content-bold">{{ stage.percentage }}%</span>
-        <span class="text-meta">({{ stage.count }})</span>
+    <!-- Stage Stats - Horizontal Flow -->
+    <div class="mb-4 pb-4 border-b border-gray-200">
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div
+          v-for="stage in pipeline.stages"
+          :key="stage.name"
+          class="flex items-center gap-2"
+        >
+          <span class="text-sm text-gray-600">{{ stage.name }}</span>
+          <span class="text-base font-bold text-gray-900">{{ stage.percentage }}%</span>
+          <span class="text-xs text-gray-400">({{ stage.count }})</span>
+        </div>
       </div>
     </div>
 
     <!-- Pipeline Visualization -->
-    <div class="mb-6">
-      <div class="relative h-64 md:h-80">
+    <div class="mb-4">
+      <div class="relative h-40 md:h-48 lg:h-56">
         <!-- Area Chart using SVG -->
         <svg class="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="none">
           <!-- Background grid lines -->
@@ -62,21 +64,21 @@
               'bg-gray-500': source.color === 'gray'
             }"
           ></div>
-          <span class="text-meta">{{ source.name }}</span>
+          <span class="text-xs text-gray-600">{{ source.name }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Average Times -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-6 border-t border-gray-200">
+    <!-- Average Times per Lead Source -->
+    <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-200">
       <div
-        v-for="stage in pipeline.stages"
-        :key="stage.name"
-        class="text-center"
+        v-for="source in pipeline.leadSources"
+        :key="source.name"
+        class="flex items-center gap-2"
       >
-        <div class="label-upper mb-1">{{ stage.name }}</div>
-        <div class="text-content-bold">{{ stage.avgTime }}</div>
-        <div class="text-meta">on avg.</div>
+        <i class="fa-regular fa-clock text-xs text-gray-400"></i>
+        <span class="text-sm font-bold text-gray-700">{{ getSourceAvgTime(source.name) }}</span>
+        <span class="text-xs text-gray-500">on avg.</span>
       </div>
     </div>
   </div>
@@ -106,47 +108,60 @@ const getSourceColor = (color) => {
   return colors[color] || '#6b7280'
 }
 
+const getSourceAvgTime = (sourceName) => {
+  const avgTimes = {
+    'Coches.net': '12h',
+    'Autoscout24': '12h',
+    'OLX': '7d 9h',
+    'Cars.com': '12h'
+  }
+  return avgTimes[sourceName] || '12h'
+}
+
 const generateAreaPath = (data, index) => {
   const width = 800
   const height = 300
   const maxValue = Math.max(...props.pipeline.leadSources[0].data)
-  const points = data.length
-  const stepX = width / (points - 1)
+  const pointsCount = data.length
+  const stepX = width / (pointsCount - 1)
   
   // Calculate cumulative values for stacking
-  let cumulativeBottom = Array(points).fill(height)
-  
-  // Calculate bottom positions by summing all previous sources
+  let cumulativeBottom = Array(pointsCount).fill(height)
   for (let i = 0; i < index; i++) {
     const prevData = props.pipeline.leadSources[i].data
-    for (let j = 0; j < points; j++) {
+    for (let j = 0; j < pointsCount; j++) {
       cumulativeBottom[j] -= (prevData[j] / maxValue) * height
     }
   }
   
-  // Calculate top positions (bottom - current value)
   const yTopPositions = data.map((value, i) => {
     return cumulativeBottom[i] - (value / maxValue) * height
   })
+
+  // Generate smooth top path using cubic bezier
+  let path = `M 0,${yTopPositions[0]}`
+  for (let i = 0; i < pointsCount - 1; i++) {
+    const currX = i * stepX
+    const nextX = (i + 1) * stepX
+    const cp1x = currX + (nextX - currX) / 2
+    const cp2x = currX + (nextX - currX) / 2
+    path += ` C ${cp1x},${yTopPositions[i]} ${cp2x},${yTopPositions[i+1]} ${nextX},${yTopPositions[i+1]}`
+  }
+
+  // Connect to bottom and go back
+  path += ` L ${width},${cumulativeBottom[pointsCount-1]}`
   
-  // Create path points
-  const topPoints = data.map((value, i) => {
-    const x = i * stepX
-    const y = yTopPositions[i]
-    return `${x},${y}`
-  })
+  // Generate smooth bottom path (going backwards)
+  for (let i = pointsCount - 1; i > 0; i--) {
+    const currX = i * stepX
+    const prevX = (i - 1) * stepX
+    const cp1x = currX - (currX - prevX) / 2
+    const cp2x = currX - (currX - prevX) / 2
+    path += ` C ${cp1x},${cumulativeBottom[i]} ${cp2x},${cumulativeBottom[i-1]} ${prevX},${cumulativeBottom[i-1]}`
+  }
   
-  const bottomPoints = data.map((value, i) => {
-    const x = i * stepX
-    const y = cumulativeBottom[i]
-    return `${x},${y}`
-  })
-  
-  // Create area path (closed shape)
-  const topPath = topPoints.join(' L ')
-  const bottomPath = bottomPoints.reverse().join(' L ')
-  
-  return `M ${topPoints[0]} L ${topPath} L ${bottomPath} Z`
+  path += ' Z'
+  return path
 }
 </script>
 

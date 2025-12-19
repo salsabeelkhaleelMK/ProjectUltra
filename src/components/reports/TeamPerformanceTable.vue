@@ -8,12 +8,12 @@
       <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Name</th>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Leads</th>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Qualified leads</th>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Opportunities</th>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">In negotiation</th>
-            <th class="px-4 md:px-6 py-3 text-left label-upper whitespace-nowrap">Won</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Name</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Leads</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Qualified</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Opportunities</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">In Negotiation</th>
+            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Won</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -22,28 +22,28 @@
             :key="member.name"
             class="hover:bg-gray-50 transition-colors"
           >
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content-bold">{{ member.name }}</div>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm font-bold text-gray-900">{{ member.name }}</div>
             </td>
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content">{{ member.leads }}</div>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-700">{{ member.leads }}</div>
             </td>
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content">
-                {{ member.qualifiedLeads }} <span class="text-gray-500">({{ member.qualifiedPercentage }}%)</span>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-700">
+                {{ member.qualifiedLeads }} <span class="text-gray-500 text-xs">({{ member.qualifiedPercentage }}%)</span>
               </div>
             </td>
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content">{{ member.opportunities }}</div>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-700">{{ member.opportunities }}</div>
             </td>
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content">
-                {{ member.inNegotiation }} <span class="text-gray-500">({{ member.inNegotiationPercentage }}%)</span>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-700">
+                {{ member.inNegotiation }} <span class="text-gray-500 text-xs">({{ member.inNegotiationPercentage }}%)</span>
               </div>
             </td>
-            <td class="px-4 md:px-6 py-3 whitespace-nowrap">
-              <div class="text-content">
-                {{ member.won }} <span class="text-gray-500">({{ member.wonPercentage }}%)</span>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-700">
+                {{ member.won }} <span class="text-gray-500 text-xs">({{ member.wonPercentage }}%)</span>
               </div>
             </td>
           </tr>

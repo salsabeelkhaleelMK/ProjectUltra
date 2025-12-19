@@ -1,313 +1,35 @@
 <template>
-  <div class="h-full flex flex-col overflow-hidden bg-gray-50">
+  <div class="page-container">
     <!-- Header -->
-    <header class="page-header">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="page-header-title">Calendar</h1>
-          <p class="page-header-subtitle">Manage appointments, test drives, and follow-ups</p>
-        </div>
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-            <!-- Connect Calendar Button -->
-            <button 
-              @click="showConnectModal = true"
-              class="btn-secondary flex items-center gap-2"
-              :class="{ 'bg-green-50 border-green-200 text-green-700': connectedCalendars.length > 0 }"
-            >
-              <i class="fa-solid fa-link text-xs"></i>
-              <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
-              <span 
-                v-if="connectedCalendars.length > 0" 
-                class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] font-bold flex items-center justify-center"
-              >
-                {{ connectedCalendars.length }}
-              </span>
-            </button>
-            
-            <!-- Filter Toggle Button -->
-            <button 
-              @click="showFilters = !showFilters"
-              class="btn-secondary flex items-center gap-2"
-              :class="{ 'bg-blue-50 border-blue-200 text-blue-700': appliedFilterChips.length > 0 }"
-            >
-              <i class="fa-solid fa-filter text-xs"></i>
-              <span class="hidden sm:inline">Filters</span>
-              <span 
-                v-if="appliedFilterChips.length > 0" 
-                class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
-              >
-                {{ appliedFilterChips.length }}
-              </span>
-            </button>
-            
-            <button 
-              @click="showCreateEventModal = true"
-              class="btn-primary"
-            >
-              <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Event</span>
-            </button>
-        </div>
-      </div>
-      
-      <!-- Filter Panel (Collapsible) -->
-        <div 
-          v-if="showFilters"
-          class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4 animate-fade-in"
+    <PageHeader title="Calendar" subtitle="Appointments & Events">
+      <template #actions>
+        <!-- Connect Calendar Button -->
+        <button 
+          @click="showConnectModal = true"
+          class="btn-secondary flex items-center gap-2"
+          :class="{ 'bg-green-50 border-green-200 text-green-700': connectedCalendars.length > 0 }"
         >
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
-              <span class="label-upper">Filters</span>
-              <i class="fa-solid fa-filter text-gray-400 text-xs"></i>
-            </div>
-            <button 
-              v-if="hasActiveFilters"
-              @click="clearAllFilters"
-              class="text-xs text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Clear all
-            </button>
-          </div>
-          
-          <!-- Quick Filters -->
-          <div class="mb-4 pb-4 border-b border-gray-200">
-            <p class="label-upper mb-3">Quick filters</p>
-            <div class="flex flex-wrap gap-4">
-              <label class="flex items-center gap-2 cursor-pointer group">
-                <div 
-                  class="w-9 h-5 rounded-full transition-colors relative"
-                  :class="filters.mostRelevant ? 'bg-blue-600' : 'bg-gray-300'"
-                  @click="filters.mostRelevant = !filters.mostRelevant"
-                >
-                  <div 
-                    class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-                    :class="filters.mostRelevant ? 'left-[18px]' : 'left-0.5'"
-                  ></div>
-                </div>
-                <span class="text-meta group-hover:text-gray-900">Most relevant</span>
-              </label>
-              
-              <label class="flex items-center gap-2 cursor-pointer group">
-                <div 
-                  class="w-9 h-5 rounded-full transition-colors relative"
-                  :class="filters.includeCancelled ? 'bg-blue-600' : 'bg-gray-300'"
-                  @click="filters.includeCancelled = !filters.includeCancelled"
-                >
-                  <div 
-                    class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-                    :class="filters.includeCancelled ? 'left-[18px]' : 'left-0.5'"
-                  ></div>
-                </div>
-                <span class="text-meta group-hover:text-gray-900">Include cancelled</span>
-              </label>
-              
-              <label class="flex items-center gap-2 cursor-pointer group">
-                <div 
-                  class="w-9 h-5 rounded-full transition-colors relative"
-                  :class="filters.noShowsOnly ? 'bg-blue-600' : 'bg-gray-300'"
-                  @click="filters.noShowsOnly = !filters.noShowsOnly"
-                >
-                  <div 
-                    class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-                    :class="filters.noShowsOnly ? 'left-[18px]' : 'left-0.5'"
-                  ></div>
-                </div>
-                <span class="text-meta group-hover:text-gray-900">No-shows only</span>
-              </label>
-            </div>
-          </div>
-          
-          <!-- Filter Sections Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Event Type Filter -->
-            <div class="relative" ref="eventTypeRef">
-              <button 
-                @click="openDropdown = openDropdown === 'eventType' ? null : 'eventType'"
-                class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:border-gray-300 transition-colors"
-              >
-                <span class="text-gray-700 font-medium">Event Type</span>
-                <div class="flex items-center gap-2">
-                  <span 
-                    v-if="filters.eventTypes.length > 0" 
-                    class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium"
-                  >
-                    {{ filters.eventTypes.length }}
-                  </span>
-                  <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform" :class="{ 'rotate-180': openDropdown === 'eventType' }"></i>
-                </div>
-              </button>
-              
-              <div 
-                v-if="openDropdown === 'eventType'"
-                class="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 max-h-64 overflow-y-auto"
-              >
-                <input 
-                  v-model="eventTypeSearch"
-                  type="text" 
-                  placeholder="Search..." 
-                  class="w-full px-2 py-1.5 text-xs border border-gray-200 rounded-lg mb-2 focus:outline-none focus:border-blue-500"
-                >
-                <div class="space-y-1">
-                  <label 
-                    v-for="type in filteredEventTypes" 
-                    :key="type.value"
-                    class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-                  >
-                    <input 
-                      type="checkbox" 
-                      :value="type.value"
-                      v-model="filters.eventTypes"
-                      class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    >
-                    <span class="text-meta text-gray-700">{{ type.label }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Dealership Filter -->
-            <div class="relative" ref="dealershipRef">
-              <button 
-                @click="openDropdown = openDropdown === 'dealership' ? null : 'dealership'"
-                class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:border-gray-300 transition-colors"
-              >
-                <span class="text-gray-700 font-medium">Dealership</span>
-                <div class="flex items-center gap-2">
-                  <span 
-                    v-if="filters.dealerships.length > 0" 
-                    class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium"
-                  >
-                    {{ filters.dealerships.length }}
-                  </span>
-                  <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform" :class="{ 'rotate-180': openDropdown === 'dealership' }"></i>
-                </div>
-              </button>
-              
-              <div 
-                v-if="openDropdown === 'dealership'"
-                class="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 max-h-64 overflow-y-auto"
-              >
-                <div class="space-y-1">
-                  <label 
-                    v-for="d in dealerships" 
-                    :key="d"
-                    class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-                  >
-                    <input 
-                      type="checkbox" 
-                      :value="d"
-                      v-model="filters.dealerships"
-                      class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    >
-                    <span class="text-meta text-gray-700">{{ d }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Team Filter -->
-            <div class="relative" ref="teamRef">
-              <button 
-                @click="openDropdown = openDropdown === 'team' ? null : 'team'"
-                class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:border-gray-300 transition-colors"
-              >
-                <span class="text-gray-700 font-medium">Team</span>
-                <div class="flex items-center gap-2">
-                  <span 
-                    v-if="filters.teams.length > 0" 
-                    class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium"
-                  >
-                    {{ filters.teams.length }}
-                  </span>
-                  <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform" :class="{ 'rotate-180': openDropdown === 'team' }"></i>
-                </div>
-              </button>
-              
-              <div 
-                v-if="openDropdown === 'team'"
-                class="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 max-h-64 overflow-y-auto"
-              >
-                <div class="space-y-1">
-                  <label 
-                    v-for="t in teams" 
-                    :key="t"
-                    class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-                  >
-                    <input 
-                      type="checkbox" 
-                      :value="t"
-                      v-model="filters.teams"
-                      class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    >
-                    <span class="text-meta text-gray-700">{{ t }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Users Filter -->
-            <div class="relative" ref="usersRef">
-              <button 
-                @click="openDropdown = openDropdown === 'users' ? null : 'users'"
-                class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:border-gray-300 transition-colors"
-              >
-                <span class="text-gray-700 font-medium">Users</span>
-                <div class="flex items-center gap-2">
-                  <span 
-                    v-if="filters.users.length > 0" 
-                    class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium"
-                  >
-                    {{ filters.users.length }}
-                  </span>
-                  <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform" :class="{ 'rotate-180': openDropdown === 'users' }"></i>
-                </div>
-              </button>
-              
-              <div 
-                v-if="openDropdown === 'users'"
-                class="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 max-h-64 overflow-y-auto"
-              >
-                <div class="space-y-1">
-                  <label 
-                    v-for="u in users" 
-                    :key="u.id"
-                    class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-                  >
-                    <input 
-                      type="checkbox" 
-                      :value="u.id"
-                      v-model="filters.users"
-                      class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    >
-                    <span class="text-meta text-gray-700">{{ u.name }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Apply Button -->
-          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
-            <button 
-              @click="showFilters = false"
-              class="btn-secondary"
-            >
-              Cancel
-            </button>
-            <button 
-              @click="applyFilters"
-              class="btn-primary"
-            >
-              <i class="fa-solid fa-check mr-1"></i> Apply Filters
-            </button>
-          </div>
-        </div>
+          <i class="fa-solid fa-link text-xs"></i>
+          <span>{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
+          <span 
+            v-if="connectedCalendars.length > 0" 
+            class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] font-bold flex items-center justify-center"
+          >
+            {{ connectedCalendars.length }}
+          </span>
+        </button>
         
-        <!-- Applied Filter Chips -->
-        <div 
-          v-if="!showFilters && appliedFilterChips.length > 0"
-          class="mt-4 flex flex-wrap items-center gap-2"
+        <button 
+          @click="showCreateEventModal = true"
+          class="btn-primary"
         >
-          <span class="text-meta font-medium">Active filters:</span>
+          <i class="fa-solid fa-plus"></i> New Event
+        </button>
+      </template>
+      <template v-if="appliedFilterChips.length > 0" #bottom>
+        <!-- Applied Filter Chips -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="label-upper">Active filters:</span>
           <button
             v-for="chip in appliedFilterChips"
             :key="chip.key"
@@ -319,18 +41,179 @@
           </button>
           <button
             @click="clearAllAppliedFilters"
-            class="text-meta hover:text-red-600 font-medium ml-2"
+            class="text-xs hover:text-red-600 font-medium"
           >
             Clear all
           </button>
         </div>
-    </header>
+      </template>
+    </PageHeader>
     
-    <!-- Calendar Content -->
-    <div class="flex-1 overflow-y-auto p-4 md:p-6">
-      <div>
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-          <FullCalendar :options="calendarOptions" />
+    <!-- Main Content Grid: Calendar (3/4) + Filters Sidebar (1/4) -->
+    <div class="p-4 md:p-6">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Calendar Area (3/4) -->
+        <div class="lg:col-span-3 overflow-y-auto">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4">
+            <FullCalendar :options="calendarOptions" />
+          </div>
+        </div>
+        
+        <!-- Filters Sidebar (1/3) -->
+        <div class="overflow-y-auto space-y-4">
+          <!-- Quick Filters Card -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="label-upper">Quick Filters</h3>
+              <button 
+                v-if="hasActiveFilters"
+                @click="clearAllFilters"
+                class="text-xs text-blue-600 hover:text-blue-700 font-bold uppercase"
+              >
+                Clear
+              </button>
+            </div>
+            
+            <div class="space-y-2.5">
+              <label class="flex items-center justify-between cursor-pointer group">
+                <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Most relevant</span>
+                <div 
+                  class="w-8 h-4 rounded-full transition-colors relative"
+                  :class="filters.mostRelevant ? 'bg-blue-600' : 'bg-gray-300'"
+                  @click="filters.mostRelevant = !filters.mostRelevant"
+                >
+                  <div 
+                    class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
+                    :class="filters.mostRelevant ? 'left-[17px]' : 'left-0.5'"
+                  ></div>
+                </div>
+              </label>
+              
+              <label class="flex items-center justify-between cursor-pointer group">
+                <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Include cancelled</span>
+                <div 
+                  class="w-8 h-4 rounded-full transition-colors relative"
+                  :class="filters.includeCancelled ? 'bg-blue-600' : 'bg-gray-300'"
+                  @click="filters.includeCancelled = !filters.includeCancelled"
+                >
+                  <div 
+                    class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
+                    :class="filters.includeCancelled ? 'left-[17px]' : 'left-0.5'"
+                  ></div>
+                </div>
+              </label>
+              
+              <label class="flex items-center justify-between cursor-pointer group">
+                <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">No-shows only</span>
+                <div 
+                  class="w-8 h-4 rounded-full transition-colors relative"
+                  :class="filters.noShowsOnly ? 'bg-blue-600' : 'bg-gray-300'"
+                  @click="filters.noShowsOnly = !filters.noShowsOnly"
+                >
+                  <div 
+                    class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
+                    :class="filters.noShowsOnly ? 'left-[17px]' : 'left-0.5'"
+                  ></div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Event Type Filter Card -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <h3 class="label-upper mb-3">Event Types</h3>
+            <input 
+              v-model="eventTypeSearch"
+              type="text" 
+              placeholder="Search..." 
+              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg mb-2 focus:outline-none focus:border-blue-500"
+            >
+            <div class="space-y-1 max-h-48 overflow-y-auto">
+              <label 
+                v-for="type in filteredEventTypes" 
+                :key="type.value"
+                class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              >
+                <input 
+                  type="checkbox" 
+                  :value="type.value"
+                  v-model="filters.eventTypes"
+                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                >
+                <span class="text-sm text-gray-700">{{ type.label }}</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Dealership Filter Card -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <h3 class="label-upper mb-3">Dealerships</h3>
+            <div class="space-y-1 max-h-40 overflow-y-auto">
+              <label 
+                v-for="d in dealerships" 
+                :key="d"
+                class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              >
+                <input 
+                  type="checkbox" 
+                  :value="d"
+                  v-model="filters.dealerships"
+                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                >
+                <span class="text-sm text-gray-700">{{ d }}</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Team Filter Card -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <h3 class="label-upper mb-3">Teams</h3>
+            <div class="space-y-1 max-h-40 overflow-y-auto">
+              <label 
+                v-for="t in teams" 
+                :key="t"
+                class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              >
+                <input 
+                  type="checkbox" 
+                  :value="t"
+                  v-model="filters.teams"
+                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                >
+                <span class="text-sm text-gray-700">{{ t }}</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Users Filter Card -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <h3 class="label-upper mb-3">Users</h3>
+            <div class="space-y-1 max-h-40 overflow-y-auto">
+              <label 
+                v-for="u in users" 
+                :key="u.id"
+                class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              >
+                <input 
+                  type="checkbox" 
+                  :value="u.id"
+                  v-model="filters.users"
+                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                >
+                <span class="text-sm text-gray-700">{{ u.name }}</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Apply Filters Button -->
+          <div class="sticky bottom-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3">
+            <button 
+              @click="applyFilters"
+              class="btn-primary w-full justify-center"
+            >
+              <i class="fa-solid fa-check"></i> Apply Filters
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -685,15 +568,14 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { fetchCalendarEvents, fetchCalendarFilterOptions, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/api/calendar'
 import CalendarConnectModal from '@/components/calendar/CalendarConnectModal.vue'
+import PageHeader from '@/components/shared/PageHeader.vue'
 
 const showCreateEventModal = ref(false)
 const showConnectModal = ref(false)
-const showFilters = ref(false)
 const showQuickViewModal = ref(false)
 const showEditEventModal = ref(false)
 const selectedEvent = ref(null)
 const editingEvent = ref(null)
-const openDropdown = ref(null)
 const eventTypeSearch = ref('')
 const events = ref([])
 const connectingTo = ref(null)
@@ -803,8 +685,6 @@ const appliedFilterChips = computed(() => {
 
 const applyFilters = () => {
   appliedFilters.value = JSON.parse(JSON.stringify(filters.value))
-  showFilters.value = false
-  openDropdown.value = null
 }
 
 const removeFilterChip = (chip) => {
@@ -871,13 +751,6 @@ const disconnectCalendar = (calendarId) => {
   connectedCalendars.value = connectedCalendars.value.filter(c => c.id !== calendarId)
 }
 
-// Close dropdown on click outside
-const handleClickOutside = (e) => {
-  if (openDropdown.value && !e.target.closest('.relative')) {
-    openDropdown.value = null
-  }
-}
-
 onMounted(async () => {
   // Load filter options from data layer
   const filterOptions = await fetchCalendarFilterOptions()
@@ -890,11 +763,6 @@ onMounted(async () => {
   const result = await fetchCalendarEvents()
   events.value = result
   calendarOptions.value.events = events.value
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 
 const newEvent = ref({
@@ -1154,13 +1022,13 @@ async function createEvent() {
 </script>
 
 <style>
-/* FullCalendar custom styles */
+/* FullCalendar custom styles - Improved readability */
 .fc {
-  @apply font-sans;
+  @apply font-sans text-sm;
 }
 
 .fc .fc-button {
-  @apply bg-blue-600 border-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg text-sm transition-colors;
+  @apply bg-blue-600 border-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded-lg text-sm transition-colors;
 }
 
 .fc .fc-button-primary:not(:disabled).fc-button-active {
@@ -1172,27 +1040,27 @@ async function createEvent() {
 }
 
 .fc .fc-toolbar-title {
-  @apply text-base md:text-lg font-bold text-gray-900;
+  @apply text-base font-bold text-gray-900;
 }
 
 .fc .fc-col-header-cell {
-  @apply bg-gray-50 border-b border-gray-200;
+  @apply bg-gray-50/50 border-b border-gray-100;
 }
 
 .fc .fc-col-header-cell-cushion {
-  @apply text-xs font-semibold text-gray-700 py-2;
+  @apply text-sm font-bold uppercase tracking-wide text-gray-500 py-1.5;
 }
 
 .fc .fc-daygrid-day {
-  @apply border-r border-b border-gray-200;
+  @apply border-r border-b border-gray-100;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
-  @apply bg-blue-50;
+  @apply bg-blue-50/30;
 }
 
 .fc .fc-daygrid-day-number {
-  @apply text-sm text-gray-700 p-2;
+  @apply text-sm text-gray-700 p-1.5 font-medium;
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
@@ -1200,7 +1068,7 @@ async function createEvent() {
 }
 
 .fc .fc-event {
-  @apply cursor-pointer border-0 rounded-md px-2 py-1 text-xs font-medium;
+  @apply cursor-pointer border-0 rounded px-1.5 py-0.5 text-sm font-medium;
 }
 
 .fc .fc-event-title {
@@ -1208,31 +1076,31 @@ async function createEvent() {
 }
 
 .fc .fc-daygrid-event {
-  @apply mb-1;
+  @apply mb-0.5;
 }
 
 .fc .fc-scrollgrid {
-  @apply border-gray-200;
+  @apply border-gray-100;
 }
 
 .fc .fc-scrollgrid-section-header {
-  @apply border-gray-200;
+  @apply border-gray-100;
 }
 
 .fc .fc-timegrid-slot {
-  @apply border-gray-200;
+  @apply border-gray-100;
 }
 
 .fc .fc-timegrid-col {
-  @apply border-gray-200;
+  @apply border-gray-100;
 }
 
 .fc .fc-timegrid-axis {
-  @apply border-gray-200;
+  @apply border-gray-100;
 }
 
 .fc .fc-timegrid-axis-cushion {
-  @apply text-xs text-gray-500;
+  @apply text-sm text-gray-500;
 }
 
 /* Custom event type colors with light backgrounds */

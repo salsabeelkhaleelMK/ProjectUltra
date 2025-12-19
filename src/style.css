@@ -17,6 +17,7 @@
   /* Page Header */
   .page-header {
     @apply bg-white border-b border-gray-200 px-4 md:px-8 py-4 md:py-6;
+    min-height: fit-content;
   }
   
   .page-header-title {
@@ -90,7 +91,7 @@
   }
   
   .label-upper {
-    @apply text-[10px] font-bold uppercase tracking-wider text-gray-400;
+    @apply text-xs font-bold uppercase tracking-wider text-gray-400;
   }
   
   .badge-ui {
@@ -111,19 +112,19 @@
   
   /* Content Text Classes */
   .text-content {
-    @apply text-sm text-gray-900;
+    @apply text-sm md:text-base text-gray-900;
   }
   
   .text-content-bold {
-    @apply text-sm font-semibold text-gray-900;
+    @apply text-sm md:text-base font-semibold text-gray-900;
   }
   
   .text-meta {
-    @apply text-xs text-gray-500;
+    @apply text-xs md:text-sm text-gray-500;
   }
   
   .text-meta-bold {
-    @apply text-xs font-semibold text-gray-600;
+    @apply text-xs md:text-sm font-semibold text-gray-600;
   }
   
   /* Section Headings */

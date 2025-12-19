@@ -1,9 +1,19 @@
 <template>
   <div 
-    class="bg-white border-r border-gray-200 flex flex-col shrink-0 w-full lg:w-80 max-h-[40vh] lg:max-h-none"
+    class="bg-white border-r border-gray-200 flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
     <div class="h-16 px-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <h2 class="font-bold text-lg text-gray-800">{{ title }}</h2>
+      <div class="flex items-center gap-3">
+        <!-- Close button (mobile only) -->
+        <button 
+          v-if="showMobileClose"
+          @click="$emit('close')"
+          class="lg:hidden w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <h2 class="font-bold text-lg text-gray-800">{{ title }}</h2>
+      </div>
       <div class="flex items-center gap-2">
         <button class="text-xs font-medium bg-white hover:bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
           Urgent first <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
@@ -182,10 +192,14 @@ const props = defineProps({
   showTypeFilter: {
     type: Boolean,
     default: false
+  },
+  showMobileClose: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'close'])
 
 const searchQuery = ref('')
 

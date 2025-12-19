@@ -1,48 +1,48 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <div class="page-header">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="page-header-title">Vehicles Inventory</h1>
-          <p class="page-header-subtitle">{{ vehiclesStore.totalVehicles }} vehicles in inventory</p>
-        </div>
+    <PageHeader 
+      title="Vehicles Inventory" 
+      :subtitle="`${vehiclesStore.totalVehicles} vehicles in inventory`"
+    >
+      <template #actions>
         <button 
-          class="btn-primary self-start sm:self-auto"
+          class="btn-primary"
         >
           <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Vehicle</span><span class="sm:hidden">Add</span>
         </button>
-      </div>
-      
-      <!-- Search & Filters -->
-      <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div class="flex-1 min-w-0 sm:max-w-md">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input 
-              v-model="searchQuery"
-              @input="handleSearch"
-              type="text" 
-              placeholder="Search vehicles..." 
-              class="input-with-icon"
-            >
+      </template>
+      <template #bottom>
+        <!-- Search & Filters -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div class="flex-1 min-w-0 sm:max-w-md">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input 
+                v-model="searchQuery"
+                @input="handleSearch"
+                type="text" 
+                placeholder="Search vehicles..." 
+                class="input-with-icon"
+              >
+            </div>
           </div>
+          <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto">
+            <option value="">All Status</option>
+            <option value="Available">Available</option>
+            <option value="In Stock">In Stock</option>
+            <option value="Sold">Sold</option>
+          </select>
+          <select v-model="filters.brand" @change="applyFilters" class="input text-sm w-auto">
+            <option value="">All Brands</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="Mercedes-Benz">Mercedes-Benz</option>
+            <option value="Audi">Audi</option>
+            <option value="Porsche">Porsche</option>
+          </select>
         </div>
-        <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto">
-          <option value="">All Status</option>
-          <option value="Available">Available</option>
-          <option value="In Stock">In Stock</option>
-          <option value="Sold">Sold</option>
-        </select>
-        <select v-model="filters.brand" @change="applyFilters" class="input text-sm w-auto">
-          <option value="">All Brands</option>
-          <option value="Volkswagen">Volkswagen</option>
-          <option value="Mercedes-Benz">Mercedes-Benz</option>
-          <option value="Audi">Audi</option>
-          <option value="Porsche">Porsche</option>
-        </select>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
     
     <!-- Vehicles Table -->
     <div class="p-4 md:p-8">
@@ -160,6 +160,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useVehiclesStore } from '@/stores/vehicles'
+import PageHeader from '@/components/shared/PageHeader.vue'
 
 const vehiclesStore = useVehiclesStore()
 

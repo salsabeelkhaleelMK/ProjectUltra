@@ -1,12 +1,15 @@
 <template>
   <div class="h-screen flex overflow-hidden bg-gray-50">
-    <!-- Left Icon Sidebar -->
+    <!-- Left Icon Sidebar (Desktop Only) -->
     <IconSidebar />
     
-      <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col md:ml-16 min-w-0">
+    <!-- Mobile Sidebar Drawer -->
+    <MobileSidebar :is-open="isMobileSidebarOpen" @close="isMobileSidebarOpen = false" />
+    
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col md:ml-16 min-w-0">
       <!-- Top Header -->
-      <TopHeader />
+      <TopHeader @toggle-sidebar="isMobileSidebarOpen = !isMobileSidebarOpen" />
       
       <!-- Page Content -->
       <main class="flex-1 overflow-hidden">
@@ -17,7 +20,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import IconSidebar from './IconSidebar.vue'
 import TopHeader from './TopHeader.vue'
+import MobileSidebar from './MobileSidebar.vue'
+
+const isMobileSidebarOpen = ref(false)
 </script>
 

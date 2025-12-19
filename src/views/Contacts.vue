@@ -1,39 +1,39 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <div class="page-header">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="page-header-title">Contacts & Accounts</h1>
-          <p class="page-header-subtitle">{{ contactsStore.totalContacts }} contacts</p>
-        </div>
+    <PageHeader 
+      title="Contacts & Accounts" 
+      :subtitle="`${contactsStore.totalContacts} contacts`"
+    >
+      <template #actions>
         <button 
           @click="showCreateModal = true"
-          class="btn-primary self-start sm:self-auto"
+          class="btn-primary"
         >
           <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Contact</span><span class="sm:hidden">New</span>
         </button>
-      </div>
-      
-      <!-- Search & Filters -->
-      <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div class="flex-1 min-w-0 sm:max-w-md">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input 
-              v-model="searchQuery"
-              @input="handleSearch"
-              type="text" 
-              placeholder="Search contacts..." 
-              class="input-with-icon"
-            >
+      </template>
+      <template #bottom>
+        <!-- Search & Filters -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div class="flex-1 min-w-0 sm:max-w-md">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input 
+                v-model="searchQuery"
+                @input="handleSearch"
+                type="text" 
+                placeholder="Search contacts..." 
+                class="input-with-icon"
+              >
+            </div>
           </div>
+          <button class="btn-secondary text-sm">
+            <i class="fa-solid fa-filter mr-2"></i> Filters
+          </button>
         </div>
-        <button class="btn-secondary text-sm">
-          <i class="fa-solid fa-filter mr-2"></i> Filters
-        </button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
     
     <!-- Contacts Table -->
     <div class="p-4 md:p-8">
@@ -139,6 +139,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useContactsStore } from '@/stores/contacts'
+import PageHeader from '@/components/shared/PageHeader.vue'
 
 const contactsStore = useContactsStore()
 const searchQuery = ref('')

@@ -1,51 +1,44 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <div class="page-header">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="page-header-title">Reports</h1>
-        </div>
-        <div class="flex items-center gap-3">
-          <select class="input text-sm w-auto">
-            <option>This month</option>
-            <option>Last month</option>
-            <option>This quarter</option>
-            <option>This year</option>
-          </select>
-        </div>
-      </div>
-    </div>
+    <PageHeader title="Reports" subtitle="Performance tracking and insights">
+      <template #actions>
+        <select class="input text-sm w-auto">
+          <option>This month</option>
+          <option>Last month</option>
+          <option>This quarter</option>
+          <option>This year</option>
+        </select>
+      </template>
+    </PageHeader>
     
     <!-- Content -->
-    <div class="p-4 md:p-8">
-      <div>
-        <!-- Dashboard KPIs -->
-        <DashboardKPIs :kpis="dashboardKPIs" />
+    <div class="p-4 md:p-6 lg:p-8">
+      <!-- Main Content Grid - 2/3 vs 1/3 starting from top -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-start">
         
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <!-- Left Column - Sales Pipeline -->
-          <div class="lg:col-span-2">
-            <SalesPipelineChart :pipeline="salesPipeline" />
-          </div>
+        <!-- Left Column - Main Content (2/3 width) -->
+        <div class="lg:col-span-2 space-y-4 md:space-y-6">
+          <!-- Dashboard KPIs -->
+          <DashboardKPIs :kpis="dashboardKPIs" />
           
-          <!-- Right Column - Sidebar -->
-          <div class="space-y-6">
-            <TodaysEventsSidebar :events="todaysEvents" />
-            <AIInsightsSidebar />
+          <!-- Sales Pipeline -->
+          <SalesPipelineChart :pipeline="salesPipeline" />
+          
+          <!-- Team Performance -->
+          <TeamPerformanceTable :team-members="teamPerformance" />
+          
+          <!-- Page Views Section -->
+          <div class="space-y-4 md:space-y-6">
+            <PageViewsByVehicle :vehicles="pageViewsByVehicle" />
+            <PageViewsChart :data="pageViewsOrganicPaid" />
           </div>
         </div>
         
-        <!-- Team Performance -->
-        <div class="mb-6">
-          <TeamPerformanceTable :team-members="teamPerformance" />
-        </div>
-        
-        <!-- Page Views Section -->
-        <div class="space-y-6">
-          <PageViewsByVehicle :vehicles="pageViewsByVehicle" />
-          <PageViewsChart :data="pageViewsOrganicPaid" />
+        <!-- Right Column - Sidebar (1/3 width) -->
+        <div class="space-y-4 md:space-y-6">
+          <AIInsightsSidebar />
+          <TodaysEventsSidebar :events="todaysEvents" />
         </div>
       </div>
     </div>
@@ -62,6 +55,7 @@ import TodaysEventsSidebar from '@/components/reports/TodaysEventsSidebar.vue'
 import AIInsightsSidebar from '@/components/reports/AIInsightsSidebar.vue'
 import PageViewsByVehicle from '@/components/reports/PageViewsByVehicle.vue'
 import PageViewsChart from '@/components/reports/PageViewsChart.vue'
+import PageHeader from '@/components/shared/PageHeader.vue'
 
 const dashboardKPIs = ref([])
 const salesPipeline = ref({ stages: [], leadSources: [] })

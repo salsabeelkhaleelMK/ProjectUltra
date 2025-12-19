@@ -1,5 +1,13 @@
 <template>
   <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-8 shrink-0 gap-4">
+    <!-- Hamburger Menu (Mobile Only) -->
+    <button 
+      @click="$emit('toggle-sidebar')"
+      class="md:hidden w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+    >
+      <i class="fa-solid fa-bars text-lg"></i>
+    </button>
+    
     <!-- Search Bar -->
     <div class="flex-1 min-w-0 max-w-lg">
       <div class="relative">

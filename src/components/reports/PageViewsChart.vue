@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-lg md:text-xl font-bold text-gray-900">Page Views: Organic vs. Paid</h2>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="heading-main">Page Views: Organic vs. Paid</h2>
       <select class="input text-sm w-auto">
         <option>This month</option>
         <option>Last month</option>
@@ -11,7 +11,7 @@
     
     <div class="space-y-4">
       <!-- Chart -->
-      <div class="flex items-end gap-2 h-48">
+      <div class="flex items-end gap-2 h-36">
         <div
           v-for="(day, index) in data"
           :key="index"

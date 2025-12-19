@@ -1,19 +1,33 @@
 <template>
   <div 
     class="bg-white border-l border-gray-200 shrink-0 flex flex-col transition-all duration-300"
-    :class="collapsed ? 'w-16' : 'w-80'"
+    :class="[
+      collapsed ? 'w-16' : 'w-80',
+      mobileFullscreen ? 'xl:relative xl:border-l' : ''
+    ]"
     v-if="show"
   >
-    <div class="h-16 px-5 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
-      <button 
-        v-if="showCollapse"
-        @click="$emit('toggle-collapse')"
-        class="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors shrink-0"
-        title="Toggle Sidebar"
-      >
-        <i class="fa-solid fa-arrow-right-from-bracket transition-transform duration-300" :class="collapsed ? 'rotate-180' : ''"></i>
-      </button>
-      <h2 v-if="!collapsed" class="font-bold text-lg text-gray-800">{{ title }}</h2>
+    <div class="h-16 px-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- Mobile close button -->
+        <button 
+          v-if="mobileFullscreen"
+          @click="$emit('close')"
+          class="xl:hidden w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <!-- Desktop collapse button -->
+        <button 
+          v-else-if="showCollapse"
+          @click="$emit('toggle-collapse')"
+          class="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors shrink-0"
+          title="Toggle Sidebar"
+        >
+          <i class="fa-solid fa-arrow-right-from-bracket transition-transform duration-300" :class="collapsed ? 'rotate-180' : ''"></i>
+        </button>
+        <h2 v-if="!collapsed" class="font-bold text-lg text-gray-800">{{ title }}</h2>
+      </div>
     </div>
     
     <div v-if="!collapsed" class="flex-1 overflow-y-auto px-5 py-6 scrollbar-hide relative">
@@ -78,10 +92,14 @@ const props = defineProps({
   show: {
     type: Boolean,
     default: true
+  },
+  mobileFullscreen: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['toggle-collapse'])
+const emit = defineEmits(['toggle-collapse', 'close'])
 
 const getActivityIcon = (type) => {
   const icons = {

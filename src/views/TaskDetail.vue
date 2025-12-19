@@ -1,24 +1,30 @@
 <template>
   <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-gray-50">
-    <!-- Left Sidebar - Unified Task Cards -->
-    <EntityListSidebar
-      title="Tasks"
-      :items="filteredTasks"
-      :selected-id="currentTask?.compositeId"
-      :type-filter="typeFilter"
-      :selected-class="(task) => task.type === 'lead' ? 'bg-white border-2 border-blue-500 shadow-md' : 'bg-white border-2 border-purple-500 shadow-md'"
-      :unselected-class="getUnselectedClass"
-      :open-menu-id="openCardMenu"
-      :getName="(task) => task.customer.name"
-      :getInitials="(task) => task.customer.initials"
-      :getVehicleInfo="(task) => task.type === 'lead' ? `${task.requestedCar.brand} ${task.requestedCar.model}` : `${task.vehicle.brand} ${task.vehicle.model}`"
-      :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
-      @select="selectTask"
-      @menu-click="toggleCardMenu"
-      @menu-close="openCardMenu = null"
-      :show-type-filter="true"
-      @filter-change="typeFilter = $event"
+    <!-- Left Sidebar - Unified Task Cards (Full-screen overlay on mobile) -->
+    <div 
+      class="lg:relative lg:block"
+      :class="showTaskListMobile ? 'fixed inset-0 z-[60] md:relative md:z-auto' : 'hidden lg:block'"
     >
+      <EntityListSidebar
+        title="Tasks"
+        :items="filteredTasks"
+        :selected-id="currentTask?.compositeId"
+        :type-filter="typeFilter"
+        :selected-class="(task) => task.type === 'lead' ? 'bg-white border-2 border-blue-500 shadow-md' : 'bg-white border-2 border-purple-500 shadow-md'"
+        :unselected-class="getUnselectedClass"
+        :open-menu-id="openCardMenu"
+        :getName="(task) => task.customer.name"
+        :getInitials="(task) => task.customer.initials"
+        :getVehicleInfo="(task) => task.type === 'lead' ? `${task.requestedCar.brand} ${task.requestedCar.model}` : `${task.vehicle.brand} ${task.vehicle.model}`"
+        :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
+        :show-mobile-close="true"
+        @select="selectTask"
+        @menu-click="toggleCardMenu"
+        @menu-close="openCardMenu = null"
+        @close="showTaskListMobile = false"
+        :show-type-filter="true"
+        @filter-change="typeFilter = $event"
+      >
       <template #badges="{ item: task }">
         <!-- Type Badge -->
         <span 
@@ -99,9 +105,31 @@
         </button>
       </template>
     </EntityListSidebar>
+    </div>
     
     <!-- Main Content - Task Details -->
     <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Mobile Floating Action Buttons -->
+      <div v-if="currentTask" class="lg:hidden xl:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
+        <!-- Activity Summary Button -->
+        <button
+          @click="showActivityMobile = !showActivityMobile"
+          class="w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:scale-110"
+          title="Activity"
+        >
+          <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+        </button>
+        
+        <!-- Task List Button -->
+        <button
+          @click="showTaskListMobile = !showTaskListMobile"
+          class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110"
+          title="Tasks"
+        >
+          <i class="fa-solid fa-list text-lg"></i>
+        </button>
+      </div>
+      
       <div v-if="!currentTask" class="flex-1 flex items-center justify-center">
         <div class="text-center">
           <i class="fa-solid fa-tasks text-6xl text-gray-300 mb-4"></i>
@@ -176,7 +204,24 @@
       </TaskShell>
     </div>
     
-    <!-- Right Sidebar - Activity Timeline -->
+    <!-- Right Sidebar - Activity Timeline (Full-screen overlay on mobile) -->
+    <div 
+      v-if="showActivityMobile && currentTask"
+      class="xl:hidden fixed inset-0 z-[60] bg-white"
+    >
+      <ActivitySummarySidebar
+        :title="'Activity summary'"
+        :activities="currentActivities"
+        :collapsed="false"
+        :show-collapse="false"
+        :show="true"
+        :mobile-fullscreen="true"
+        @close="showActivityMobile = false"
+        class="flex w-full h-full"
+      />
+    </div>
+    
+    <!-- Desktop Activity Sidebar -->
     <ActivitySummarySidebar
       :title="'Activity summary'"
       :activities="currentActivities"
@@ -207,6 +252,8 @@ const opportunitiesStore = useOpportunitiesStore()
 
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const openCardMenu = ref(null)
+const showTaskListMobile = ref(false)
+const showActivityMobile = ref(false)
 
 // Combine leads and opportunities with type property and composite key
 const allTasks = computed(() => {
@@ -362,6 +409,7 @@ const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
   router.push({ path: `/tasks/${id}`, query: { type } })
+  showTaskListMobile.value = false // Close mobile list after selection
 }
 
 const formatCurrency = (value) => {

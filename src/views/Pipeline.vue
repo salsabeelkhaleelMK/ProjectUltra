@@ -1,34 +1,28 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <div class="page-header">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div class="flex-1 min-w-0">
-          <h1 class="page-header-title">Pipeline</h1>
-          <!-- Stage Tabs -->
-          <div class="flex items-center gap-3 mt-3 md:mt-4 overflow-x-auto pb-2 scrollbar-hide">
-            <button
-              v-for="tab in stageTabs"
-              :key="tab.key"
-              @click="setTab(tab.key)"
-              class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
-              :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
-            >
-              <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
-              <span 
-                class="px-2.5 py-1 text-sm font-semibold rounded-full min-w-[32px] text-center"
-                :class="activeTab === tab.key ? tab.badgeColor : 'bg-muted text-muted-foreground'"
-              >
-                {{ tab.count }}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PageHeader title="Pipeline" subtitle="Manage your opportunities and deals" />
     
     <!-- Filters + Table -->
     <div class="p-4 md:p-8">
+      <!-- Stage Tabs -->
+      <div class="flex items-center gap-3 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        <button
+          v-for="tab in stageTabs"
+          :key="tab.key"
+          @click="setTab(tab.key)"
+          class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
+          :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
+        >
+          <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
+          <span 
+            class="px-2.5 py-1 text-sm font-semibold rounded-full min-w-[32px] text-center"
+            :class="activeTab === tab.key ? tab.badgeColor : 'bg-muted text-muted-foreground'"
+          >
+            {{ tab.count }}
+          </span>
+        </button>
+      </div>
       <!-- Filters row in gray background above table -->
       <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
@@ -331,6 +325,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { pipelineStats, mockLeads, mockOpportunities } from '@/api/mockData'
+import PageHeader from '@/components/shared/PageHeader.vue'
 
 const router = useRouter()
 

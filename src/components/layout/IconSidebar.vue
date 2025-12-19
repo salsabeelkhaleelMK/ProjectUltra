@@ -2,10 +2,10 @@
   <div class="hidden md:flex w-16 bg-[#1a1a1a] flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0">
     <!-- Logo/Brand -->
     <div 
-      class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-900 mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
+      class="w-10 h-10 bg-[#F90032] rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
       @click="router.push('/')"
     >
-      <span class="font-bold text-lg">L</span>
+      <span class="font-bold text-lg">PU</span>
     </div>
     
     <!-- Navigation Icons -->
@@ -120,7 +120,7 @@
         <transition name="dropdown">
           <div 
             v-if="showListsMenu"
-            class="absolute md:left-full md:ml-2 md:bottom-0 left-0 top-full mt-2 md:mt-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
+            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
             @click.stop
           >
             <router-link 
@@ -129,7 +129,7 @@
               class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
               :class="{ 'bg-blue-50 text-blue-700': isActive('/contacts') }"
             >
-              <i class="fa-solid fa-users w-5 text-gray-400"></i> Contacts & Accounts
+              <i class="fa-solid fa-users w-5 text-gray-400" :class="{ 'text-blue-600': isActive('/contacts') }"></i> Contacts & Accounts
             </router-link>
             <router-link 
               to="/vehicles"
@@ -137,7 +137,7 @@
               class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 border-t border-gray-100"
               :class="{ 'bg-blue-50 text-blue-700': isActive('/vehicles') }"
             >
-              <i class="fa-solid fa-car w-5 text-gray-400"></i> Vehicles
+              <i class="fa-solid fa-car w-5 text-gray-400" :class="{ 'text-blue-600': isActive('/vehicles') }"></i> Vehicles
             </router-link>
           </div>
         </transition>
