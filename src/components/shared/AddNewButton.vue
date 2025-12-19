@@ -10,13 +10,14 @@
         @click.stop="showMenu = !showMenu"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-xs"></i> Add new
+        <i class="fa-solid fa-plus text-[10px] md:text-xs"></i> 
+        <span class="text-xs md:text-sm">Add new</span>
       </button>
       
       <!-- Dropdown Menu -->
       <div 
         v-if="showMenu"
-        class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
+        class="absolute top-full right-0 md:left-1/2 md:-translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
         v-click-outside="() => showMenu = false"
       >
         <!-- Vehicle Actions (at the top, only for opportunities) -->
@@ -158,8 +159,8 @@ const showMenu = ref(false)
 
 const buttonClass = computed(() => {
   if (props.inline) {
-    // Overview usage: blue, square-corner button
-    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-1.5 text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative'
+    // Overview usage: blue button with rounded corners, responsive padding
+    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 md:px-4 py-2 md:py-2 text-xs md:text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 md:gap-2 z-20 relative whitespace-nowrap'
   }
   // Default usage (other tabs): original gray rounded pill with separators
   return 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium px-4 py-1.5 rounded-full text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative'
