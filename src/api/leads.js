@@ -1,4 +1,4 @@
-import { mockLeads, mockActivities, mockCalendarEvents } from './mockData'
+import { mockLeads, mockActivities, mockCalendarEvents, mockUsers } from './mockData'
 
 // Simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
@@ -190,4 +190,52 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
   }
   
   return newLead
+}
+
+// Detect urgent leads that need qualification
+export const detectUrgentLeads = async (userId) => {
+  await delay()
+  
+  const user = mockUsers.find(u => u.id === userId)
+  if (!user) return []
+  
+  const questions = []
+  const now = new Date()
+  const THRESHOLD_DAYS = 7
+  
+  // Get all leads assigned to this user
+  const userLeads = mockLeads.filter(lead => {
+    const userByName = mockUsers.find(u => u.name === lead.assignee)
+    return userByName && userByName.id === userId
+  })
+  
+  // Find leads in "Open Lead" stage for 7-14 days without conversion (urgent window)
+  for (const lead of userLeads) {
+    // Check if lead is in Open Lead stage
+    if (lead.stage !== 'Open Lead') continue
+    
+    // Check if lead is disqualified
+    if (lead.isDisqualified) continue
+    
+    // Calculate days since creation
+    const createdDate = new Date(lead.createdAt)
+    const daysSinceCreation = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24))
+    
+    // Only show if 7-14 days old (urgent actionable window)
+    if (daysSinceCreation >= THRESHOLD_DAYS && daysSinceCreation <= 14) {
+      questions.push({
+        id: `lead-qualification-urgency-${lead.id}`,
+        type: 'lead-qualification-urgency',
+        priority: 1, // Critical
+        question: `This lead from ${lead.customer.name} has been in the system for ${daysSinceCreation} days without qualification. Have you been able to contact them?`,
+        customer: lead.customer,
+        leadId: lead.id,
+        lead: lead,
+        createdAt: lead.createdAt,
+        daysOld: daysSinceCreation
+      })
+    }
+  }
+  
+  return questions
 }

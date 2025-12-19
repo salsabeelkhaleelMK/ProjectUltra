@@ -24,6 +24,21 @@
     
     <!-- Right Side Actions -->
     <div class="flex items-center gap-2 md:gap-4 ml-0 md:ml-8 shrink-0">
+      <!-- Action Items Icon -->
+      <router-link 
+        to="/action-items"
+        class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        title="Action Items"
+      >
+        <i class="fa-solid fa-bell text-lg text-gray-600"></i>
+        <span 
+          v-if="actionItemsCount > 0"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center"
+        >
+          {{ actionItemsCount > 9 ? '9+' : actionItemsCount }}
+        </span>
+      </router-link>
+      
       <!-- User Menu -->
       <div class="relative" ref="userMenuContainer">
         <button 
@@ -79,16 +94,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useActionableQuestions } from '@/composables/useActionableQuestions'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { totalQuestionsCount, loadQuestions } = useActionableQuestions()
 
 const searchQuery = ref('')
 const showUserMenu = ref(false)
 const userMenuContainer = ref(null)
+
+const actionItemsCount = computed(() => totalQuestionsCount.value)
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
@@ -104,7 +123,7 @@ const toggleUserMenu = () => {
 const switchRole = (role) => {
   userStore.switchRole(role)
   showUserMenu.value = false
-  router.push('/')
+  router.push('/tasks')
 }
 
 // Click outside handler
@@ -116,6 +135,8 @@ const handleClickOutside = (event) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  // Load action items count
+  loadQuestions()
 })
 
 onUnmounted(() => {

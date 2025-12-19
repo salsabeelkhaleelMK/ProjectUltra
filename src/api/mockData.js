@@ -34,13 +34,21 @@ export const mockLeads = [
     source: 'Marketing',
     fiscalEntity: 'MotorK',
     sourceDetails: 'ADD 2024',
-    assignee: 'Michael Thomas',
-    assigneeInitials: 'MT',
-    createdAt: '2025-03-21T08:17:00',
-    lastActivity: '2025-03-25T14:30:00',
+    assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
+    assigneeInitials: 'SK',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10) // 10 days ago - triggers Lead Qualification Urgency
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
     nextActionDue: '2025-12-19T15:42:00',
     tags: ['Premium', 'Automation'],
-    stage: 'Open Lead',
+    stage: 'Open Lead', // Still in Open Lead stage
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null
@@ -153,14 +161,24 @@ export const mockOpportunities = [
     probability: 40,
     value: 98000,
     expectedCloseDate: '2025-04-30',
-    assignee: 'Michael Thomas',
+    assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
     createdAt: '2025-03-10T14:20:00',
     lastActivity: '2025-03-24T09:15:00',
     scheduledAppointment: {
       id: 10,
       title: 'Dealership Visit - Grace Thompson',
-      start: '2025-12-28T11:00:00',
-      end: '2025-12-28T12:00:00',
+      start: (() => {
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 2) // 2 days ago to trigger action item
+        yesterday.setHours(11, 0, 0, 0)
+        return yesterday.toISOString()
+      })(),
+      end: (() => {
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 2)
+        yesterday.setHours(12, 0, 0, 0)
+        return yesterday.toISOString()
+      })(),
       type: 'appointment',
       customer: 'Grace Thompson',
       vehicle: 'Audi e-tron GT',
@@ -168,7 +186,8 @@ export const mockOpportunities = [
       assigneeId: 1,
       dealership: 'Firenze',
       team: 'Sales (New)',
-      status: 'confirmed'
+      status: 'confirmed',
+      noShowCount: 0
     }
   },
   {
@@ -205,9 +224,40 @@ export const mockOpportunities = [
     probability: 50,
     value: 120000,
     expectedCloseDate: '2025-05-15',
-    assignee: 'Sarah Jenkins',
+    assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
     createdAt: '2025-03-01T09:00:00',
-    lastActivity: '2025-03-25T11:30:00'
+    lastActivity: '2025-03-25T11:30:00',
+    scheduledAppointment: {
+      id: 20,
+      title: 'Meeting - Oliver Brown',
+      start: (() => {
+        const threeDaysAgo = new Date()
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+        threeDaysAgo.setHours(14, 0, 0, 0)
+        return threeDaysAgo.toISOString()
+      })(),
+      end: (() => {
+        const threeDaysAgo = new Date()
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+        threeDaysAgo.setHours(15, 30, 0, 0)
+        return threeDaysAgo.toISOString()
+      })(),
+      type: 'appointment',
+      customer: 'Oliver Brown',
+      vehicle: 'Porsche Taycan',
+      assignee: 'Salsabeel Khaleel',
+      assigneeId: 1,
+      dealership: 'Milano',
+      team: 'Sales (New)',
+      status: 'no-show',
+      noShowCount: 1,
+      nsTaskCreatedAt: (() => {
+        const threeDaysAgo = new Date()
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+        threeDaysAgo.setHours(16, 0, 0, 0)
+        return threeDaysAgo.toISOString()
+      })()
+    }
   },
   {
     id: 3,
@@ -290,10 +340,19 @@ export const mockOpportunities = [
     probability: 65,
     value: 95000,
     expectedCloseDate: '2025-05-01',
-    assignee: 'Salsabeel Khaleel',
+    assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
     source: 'Website',
-    createdAt: '2025-03-15T11:00:00',
-    lastActivity: '2025-03-26T14:20:00'
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 9) // 9 days ago
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 9) // 9 days ago - no recent activity (triggers Stuck Opportunity)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: null // No appointment scheduled
   },
   {
     id: 5,

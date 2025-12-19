@@ -779,7 +779,6 @@ const handleCreateContract = (opportunity) => {
 
 const handleContractDateConfirm = (data) => {
   showContractDateModal.value = false
-  console.log('Contract date set:', data)
   // In real implementation, this would update the opportunity.contractDate field
   // and trigger CFB widget logic
   // emit('contract-date-set', { opportunity: props.opportunity, ...data })
@@ -838,7 +837,6 @@ const handlePreDeliveryChecklist = (opportunity) => {
 
 const handleDeliveryConfirm = (data) => {
   showDeliveryModal.value = false
-  console.log('Vehicle marked as delivered:', data)
   // In real implementation, this would create a delivery activity
   // and trigger DFB widget logic
   // emit('delivery-completed', { opportunity: props.opportunity, ...data })
@@ -858,7 +856,6 @@ const handleCloseAsLost = () => {
 
 const handleAutoCloseLost = (data) => {
   // Auto-close after NS3 - no modal needed
-  console.log('Auto-closing opportunity as lost after NS3:', data)
   // In real implementation, this would:
   // 1. Update opportunity stage to "Closed Lost"
   // 2. Set closedReason to data.reason
@@ -870,8 +867,6 @@ const handleCloseAsLostConfirm = (data) => {
   showCloseAsLostModal.value = false
   // In real implementation, this would update the opportunity stage to "Closed Lost"
   // and store the reason and notes
-  // For now, just log it
-  console.log('Closing opportunity as lost:', data)
   // emit('close-as-lost', { opportunity: props.opportunity, ...data })
 }
 
@@ -880,17 +875,14 @@ const handleContactCustomer = () => {
 }
 
 const handleSurveyCompleted = (data) => {
-  console.log('Survey completed:', data)
   // In real implementation, store survey responses in activities
 }
 
 const handleSurveyRefused = (data) => {
-  console.log('Survey refused:', data)
   // In real implementation, log refusal
 }
 
 const handleNotResponding = (data) => {
-  console.log('Customer not responding:', data)
   // In real implementation, update opportunity status
 }
 

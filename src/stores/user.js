@@ -4,7 +4,7 @@ import { mockUsers } from '@/api/mockData'
 
 export const useUserStore = defineStore('user', () => {
   // State
-  const currentUser = ref(mockUsers[0]) // Default: Michael Thomas (salesman)
+  const currentUser = ref(mockUsers[0]) // Default: Salsabeel Khaleel (manager)
   const isAuthenticated = ref(true)
   
   // Getters

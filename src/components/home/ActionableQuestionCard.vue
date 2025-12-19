@@ -1,0 +1,253 @@
+<template>
+  <div 
+    class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow transition-colors duration-200 mb-3"
+    :class="dismissing ? 'opacity-50' : ''"
+  >
+    <div class="flex items-center gap-2 mb-2">
+      <!-- Priority Badge -->
+      <span
+        class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border whitespace-nowrap"
+        :class="getPriorityBadgeClass(question.priority)"
+      >
+        {{ getPriorityLabel(question.priority) }}
+      </span>
+      
+      <!-- Time -->
+      <span class="text-[10px] text-gray-400">{{ getTimeAgo() }}</span>
+      
+      <!-- Owner -->
+      <span class="text-[10px] text-gray-500">• Owner: {{ getOwnerDisplay() }}</span>
+      
+      <!-- Dismiss Button -->
+      <div class="ml-auto flex items-center gap-2">
+        <button
+          v-if="!showDismissConfirm"
+          @click="showDismissConfirm = true"
+          class="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          title="Dismiss"
+        >
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+        
+        <!-- Dismiss Confirmation -->
+        <div
+          v-else
+          class="bg-white border border-gray-200 rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
+        >
+          <span class="text-[10px] text-gray-600 whitespace-nowrap">Dismiss?</span>
+          <button
+            @click="handleDismiss"
+            class="px-2 py-0.5 text-[10px] font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors"
+          >
+            Yes
+          </button>
+          <button
+            @click="showDismissConfirm = false"
+            class="px-2 py-0.5 text-[10px] font-medium text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Question Text with highlighted customer name -->
+    <div class="pt-4 pb-2 mb-3 px-2" @click="handleQuestionClick">
+      <p class="text-base text-slate-700 leading-relaxed" v-html="getHighlightedQuestion()"></p>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex gap-2 flex-wrap justify-end px-2">
+      <template v-if="question.type === 'appointment-followup'">
+        <button
+          @click="handleYes"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+        >
+          Yes
+        </button>
+        <button
+          @click="handleNo"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+        >
+          No
+        </button>
+      </template>
+      
+      <template v-else-if="question.type === 'ns-followup'">
+        <button
+          @click="handleYes"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+        >
+          Yes
+        </button>
+        <button
+          @click="handleNo"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+        >
+          No
+        </button>
+        <button
+          @click="handleReassign"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+        >
+          Reassign
+        </button>
+      </template>
+      
+      <template v-else-if="question.type === 'offer-followup'">
+        <button
+          @click="handleViewTask"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-colors"
+        >
+          View Opportunity
+        </button>
+      </template>
+      
+      <template v-else-if="question.type === 'stuck-opportunity'">
+        <button
+          @click="handleYes"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+        >
+          Yes
+        </button>
+        <button
+          @click="handleNo"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+        >
+          No
+        </button>
+        <button
+          @click="handleReassign"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+        >
+          Reassign
+        </button>
+      </template>
+      
+      <template v-else-if="question.type === 'lead-qualification-urgency'">
+        <button
+          @click="handleYes"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+        >
+          Yes
+        </button>
+        <button
+          @click="handleNo"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+        >
+          No
+        </button>
+        <button
+          @click="handleReassign"
+          class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+        >
+          Reassign
+        </button>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const props = defineProps({
+  question: {
+    type: Object,
+    required: true
+  }
+})
+
+const emit = defineEmits([
+  'answer-yes', 
+  'answer-no', 
+  'reassign', 
+  'view-task',
+  'dismiss'
+])
+
+const showDismissConfirm = ref(false)
+const dismissing = ref(false)
+
+// Import stores
+import { useUserStore } from '@/stores/user'
+import { useUsersStore } from '@/stores/users'
+
+const userStore = useUserStore()
+const usersStore = useUsersStore()
+
+const getOwnerDisplay = () => {
+  // Get the assignee name from the opportunity or lead
+  const assigneeName = props.question.opportunity?.assignee || props.question.lead?.assignee
+  
+  if (!assigneeName) return 'Unknown'
+  
+  // Check if it's the current user
+  if (assigneeName === userStore.currentUser?.name) {
+    return 'me'
+  }
+  
+  return assigneeName
+}
+
+const getHighlightedQuestion = () => {
+  const customerName = props.question.customer.name
+  const questionText = props.question.question
+  
+  // Make the question clickable to view the task
+  const highlightedName = `<a href="#" class="font-bold text-primary-600 hover:text-primary-700 hover:underline" onclick="event.preventDefault()">${customerName}</a>`
+  
+  // Replace all instances of customer name with highlighted version
+  return questionText.replace(new RegExp(customerName, 'g'), highlightedName)
+}
+
+const getPriorityBadgeClass = (priority) => {
+  if (priority === 1) return 'bg-red-50 text-red-600 border-red-100'
+  if (priority <= 3) return 'bg-amber-50 text-amber-600 border-amber-100'
+  return 'bg-emerald-50 text-emerald-600 border-emerald-100'
+}
+
+const getPriorityLabel = (priority) => {
+  if (priority === 1) return 'CRITICAL'
+  if (priority <= 3) return 'HIGH'
+  return 'MEDIUM'
+}
+
+const getTimeAgo = () => {
+  if (!props.question.createdAt && !props.question.appointmentDate) return 'Just now'
+  
+  const date = new Date(props.question.createdAt || props.question.appointmentDate)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+  
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffHours < 24) return `${diffHours} hours ago`
+  if (diffDays === 1) return '1 day ago'
+  if (diffDays < 7) return `${diffDays} days ago`
+  return `${Math.floor(diffDays / 7)} weeks ago`
+}
+
+const handleYes = () => emit('answer-yes', props.question)
+const handleNo = () => emit('answer-no', props.question)
+const handleReassign = () => emit('reassign', props.question)
+const handleViewTask = () => emit('view-task', props.question)
+
+const handleQuestionClick = (event) => {
+  // Check if clicked on the highlighted customer name link
+  if (event.target.tagName === 'A') {
+    event.preventDefault()
+    handleViewTask()
+  }
+}
+
+const handleDismiss = () => {
+  dismissing.value = true
+  setTimeout(() => {
+    emit('dismiss', props.question)
+  }, 200)
+}
+</script>
