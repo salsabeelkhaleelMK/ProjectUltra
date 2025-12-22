@@ -2,7 +2,7 @@
  * Maps a feed item / activity type to the correct Tasks tab key.
  *
  * Tabs:
- * - 'overview'      : mixed items that are not tied to a dedicated tab (e.g. trade-in, financing, appointment).
+ * - 'overview'      : mixed items that are not tied to a dedicated tab (e.g. trade-in, purchase-method, appointment).
  * - 'note'          : textual notes.
  * - 'communication' : calls, emails, SMS, WhatsApp and generic communication.
  * - 'attachment'    : files and documents.
@@ -13,7 +13,8 @@ export const getTabForItemTypeDefault = (type) => {
   if (type === 'note') return 'note'
   if (['call', 'email', 'sms', 'whatsapp', 'communication'].includes(type)) return 'communication'
   if (type === 'attachment') return 'attachment'
-  // Default: overview-only items (tradein, financing, appointment, etc.)
+  // Default: overview-only items (purchase-method, tradein, appointment, etc.)
+  // Legacy: financing and purchase types also map to overview
   return 'overview'
 }
 

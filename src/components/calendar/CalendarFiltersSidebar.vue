@@ -15,6 +15,20 @@
       
       <div class="space-y-2.5">
         <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Only mine</span>
+          <div 
+            class="w-8 h-4 rounded-full transition-colors relative"
+            :class="modelValue.onlyMine ? 'bg-blue-600' : 'bg-gray-300'"
+            @click="updateFilter('onlyMine', !modelValue.onlyMine)"
+          >
+            <div 
+              class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
+              :class="modelValue.onlyMine ? 'left-[17px]' : 'left-0.5'"
+            ></div>
+          </div>
+        </label>
+        
+        <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Most relevant</span>
           <div 
             class="w-8 h-4 rounded-full transition-colors relative"
@@ -201,7 +215,8 @@ const filteredEventTypes = computed(() => {
 })
 
 const hasActiveFilters = computed(() => {
-  return props.modelValue.mostRelevant || 
+  return props.modelValue.onlyMine ||
+         props.modelValue.mostRelevant || 
          props.modelValue.includeCancelled || 
          props.modelValue.noShowsOnly ||
          props.modelValue.eventTypes.length > 0 ||

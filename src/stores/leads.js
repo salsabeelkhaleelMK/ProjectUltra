@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity, createLeadFromOpportunity as apiCreateLeadFromOpportunity, scheduleLeadFollowUp } from '@/api/leads'
+import { migrateActivities } from '@/utils/activityMigration'
 
 export const useLeadsStore = defineStore('leads', () => {
   // State
@@ -40,7 +41,9 @@ export const useLeadsStore = defineStore('leads', () => {
     error.value = null
     try {
       currentLead.value = await fetchLeadById(id)
-      currentLeadActivities.value = await fetchLeadActivities(id)
+      const activities = await fetchLeadActivities(id)
+      // Migrate legacy financing/purchase activities to purchase-method
+      currentLeadActivities.value = migrateActivities(activities)
     } catch (err) {
       error.value = err.message
     } finally {

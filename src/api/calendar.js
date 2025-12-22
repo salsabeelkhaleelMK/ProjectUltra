@@ -9,6 +9,10 @@ export const fetchCalendarEvents = async (filters = {}) => {
   let results = [...mockCalendarEvents]
   
   // Apply filters
+  if (filters.onlyMine && filters.currentUserId) {
+    results = results.filter(event => event.assigneeId === filters.currentUserId)
+  }
+  
   if (filters.eventTypes && filters.eventTypes.length > 0) {
     results = results.filter(event => filters.eventTypes.includes(event.type))
   }

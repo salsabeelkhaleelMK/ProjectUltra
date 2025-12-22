@@ -120,6 +120,100 @@
               <p v-if="item.data.notes" class="text-xs text-gray-600 mt-1">{{ item.data.notes }}</p>
             </div>
           </div>
+          <div v-else-if="item.type === 'purchase-method'">
+            <!-- Payment Method Badge -->
+            <div class="flex items-center gap-2 mb-2">
+              <span 
+                class="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold rounded"
+                :class="{
+                  'bg-green-50 text-green-700 border border-green-200': item.data.method === 'cash',
+                  'bg-blue-50 text-blue-700 border border-blue-200': item.data.method === 'financing',
+                  'bg-purple-50 text-purple-700 border border-purple-200': item.data.method === 'lease'
+                }"
+              >
+                <i :class="{
+                  'fa-solid fa-money-bill': item.data.method === 'cash',
+                  'fa-solid fa-credit-card': item.data.method === 'financing',
+                  'fa-solid fa-file-contract': item.data.method === 'lease'
+                }"></i>
+                {{ item.data.method === 'cash' ? 'Cash' : item.data.method === 'financing' ? 'Financing' : 'Lease' }}
+              </span>
+            </div>
+            
+            <!-- Vehicle Info -->
+            <h4 class="text-sm font-bold text-slate-800 mb-1">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
+            <p class="text-xs text-gray-500 mb-2">Total: €{{ formatCurrency(item.data.price) }}</p>
+            
+            <!-- Method-specific Details -->
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+              <!-- Cash Method -->
+              <template v-if="item.data.method === 'cash'">
+                <div v-if="item.data.purchaseDate">
+                  <span class="text-gray-500">Purchase Date:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ formatDate(item.data.purchaseDate) }}</span>
+                </div>
+              </template>
+              
+              <!-- Financing Method -->
+              <template v-if="item.data.method === 'financing'">
+                <div v-if="item.data.productName">
+                  <span class="text-gray-500">Product:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ item.data.productName }}</span>
+                </div>
+                <div v-if="item.data.provider">
+                  <span class="text-gray-500">Provider:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ item.data.provider }}</span>
+                </div>
+                <div v-if="item.data.deposit">
+                  <span class="text-gray-500">Deposit:</span>
+                  <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.deposit) }}</span>
+                </div>
+                <div v-if="item.data.monthlyPayment">
+                  <span class="text-gray-500">Monthly:</span>
+                  <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.monthlyPayment) }}</span>
+                </div>
+                <div v-if="item.data.loanTerm">
+                  <span class="text-gray-500">Term:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ item.data.loanTerm }} months</span>
+                </div>
+                <div v-if="item.data.startDate">
+                  <span class="text-gray-500">Start:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ formatDate(item.data.startDate) }}</span>
+                </div>
+              </template>
+              
+              <!-- Lease Method -->
+              <template v-if="item.data.method === 'lease'">
+                <div v-if="item.data.provider">
+                  <span class="text-gray-500">Provider:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ item.data.provider }}</span>
+                </div>
+                <div v-if="item.data.deposit">
+                  <span class="text-gray-500">Down Payment:</span>
+                  <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.deposit) }}</span>
+                </div>
+                <div v-if="item.data.monthlyPayment">
+                  <span class="text-gray-500">Monthly:</span>
+                  <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.monthlyPayment) }}</span>
+                </div>
+                <div v-if="item.data.residualValue">
+                  <span class="text-gray-500">Residual:</span>
+                  <span class="text-slate-700 font-medium ml-1">€{{ formatCurrency(item.data.residualValue) }}</span>
+                </div>
+                <div v-if="item.data.leaseTerm">
+                  <span class="text-gray-500">Term:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ item.data.leaseTerm }} months</span>
+                </div>
+                <div v-if="item.data.startDate">
+                  <span class="text-gray-500">Start:</span>
+                  <span class="text-slate-700 font-medium ml-1">{{ formatDate(item.data.startDate) }}</span>
+                </div>
+              </template>
+            </div>
+            
+            <!-- Notes -->
+            <p v-if="item.data.notes" class="text-xs text-gray-600 mt-2 pt-2 border-t border-gray-200">{{ item.data.notes }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -177,6 +271,7 @@ const getItemIcon = (type) => {
     'attachment': 'fa-solid fa-paperclip',
     'tradein': 'fa-solid fa-car-side',
     'financing': 'fa-solid fa-file-invoice-dollar',
+    'purchase-method': 'fa-solid fa-credit-card',
     'offer': 'fa-solid fa-handshake',
     'purchase': 'fa-solid fa-shopping-cart',
     'appointment': 'fa-solid fa-calendar'
@@ -194,6 +289,7 @@ const getItemIconClass = (type) => {
     'attachment': 'bg-blue-50 text-blue-600 border-blue-100',
     'tradein': 'bg-green-50 text-green-600 border-green-100',
     'financing': 'bg-purple-50 text-purple-600 border-purple-100',
+    'purchase-method': 'bg-blue-50 text-blue-600 border-blue-100',
     'offer': 'bg-indigo-50 text-indigo-600 border-indigo-100',
     'purchase': 'bg-teal-50 text-teal-600 border-teal-100',
     'appointment': 'bg-purple-100 text-purple-600 border-purple-200'

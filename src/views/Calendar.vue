@@ -120,6 +120,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { fetchCalendarEvents, fetchCalendarFilterOptions, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/api/calendar'
 import CalendarConnectModal from '@/components/calendar/CalendarConnectModal.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
+import { useUserStore } from '@/stores/user'
 
 // New sub-components
 import CalendarFiltersSidebar from '@/components/calendar/CalendarFiltersSidebar.vue'
@@ -129,6 +130,8 @@ import EditEventModal from '@/components/calendar/EditEventModal.vue'
 
 // Utilities
 import { getEventCalendarClass } from '@/utils/calendarHelpers'
+
+const userStore = useUserStore()
 
 const showCreateEventModal = ref(false)
 const showConnectModal = ref(false)
@@ -140,6 +143,7 @@ const events = ref([])
 const connectingTo = ref(null)
 const connectedCalendars = ref([])
 const appliedFilters = ref({
+  onlyMine: false,
   mostRelevant: false,
   includeCancelled: false,
   noShowsOnly: false,
@@ -157,6 +161,7 @@ const users = ref([])
 
 // Current filters state
 const filters = ref({
+  onlyMine: false,
   mostRelevant: false,
   includeCancelled: false,
   noShowsOnly: false,
@@ -168,6 +173,7 @@ const filters = ref({
 
 const clearAllFilters = () => {
   filters.value = {
+    onlyMine: false,
     mostRelevant: false,
     includeCancelled: false,
     noShowsOnly: false,
@@ -182,6 +188,9 @@ const clearAllFilters = () => {
 const appliedFilterChips = computed(() => {
   const chips = []
   
+  if (appliedFilters.value.onlyMine) {
+    chips.push({ key: 'onlyMine', label: 'Only mine', type: 'quick' })
+  }
   if (appliedFilters.value.mostRelevant) {
     chips.push({ key: 'mostRelevant', label: 'Most relevant', type: 'quick' })
   }
@@ -213,11 +222,22 @@ const appliedFilterChips = computed(() => {
   return chips
 })
 
-const applyFilters = () => {
+const applyFilters = async () => {
   appliedFilters.value = JSON.parse(JSON.stringify(filters.value))
+  
+  // Add current user ID if "Only mine" is selected
+  const filtersToApply = { ...appliedFilters.value }
+  if (filtersToApply.onlyMine) {
+    filtersToApply.currentUserId = userStore.currentUser?.id
+  }
+  
+  // Reload events with applied filters
+  const result = await fetchCalendarEvents(filtersToApply)
+  events.value = result
+  calendarOptions.value.events = events.value
 }
 
-const removeFilterChip = (chip) => {
+const removeFilterChip = async (chip) => {
   if (chip.type === 'quick') {
     appliedFilters.value[chip.key] = false
     filters.value[chip.key] = false
@@ -234,10 +254,20 @@ const removeFilterChip = (chip) => {
     appliedFilters.value.users = appliedFilters.value.users.filter(v => v !== chip.value)
     filters.value.users = filters.value.users.filter(v => v !== chip.value)
   }
+  
+  // Reload events with updated filters
+  const filtersToApply = { ...appliedFilters.value }
+  if (filtersToApply.onlyMine) {
+    filtersToApply.currentUserId = userStore.currentUser?.id
+  }
+  const result = await fetchCalendarEvents(filtersToApply)
+  events.value = result
+  calendarOptions.value.events = events.value
 }
 
-const clearAllAppliedFilters = () => {
+const clearAllAppliedFilters = async () => {
   const emptyFilters = {
+    onlyMine: false,
     mostRelevant: false,
     includeCancelled: false,
     noShowsOnly: false,
@@ -248,6 +278,11 @@ const clearAllAppliedFilters = () => {
   }
   appliedFilters.value = { ...emptyFilters }
   filters.value = { ...emptyFilters }
+  
+  // Reload events without filters
+  const result = await fetchCalendarEvents()
+  events.value = result
+  calendarOptions.value.events = events.value
 }
 
 // Calendar connection functions

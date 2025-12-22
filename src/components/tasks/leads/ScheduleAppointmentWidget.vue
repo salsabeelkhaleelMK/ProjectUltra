@@ -13,11 +13,10 @@
     </div>
     <div>
       <label class="block text-xs font-medium text-gray-500 mb-1.5">Assign to Salesman</label>
-      <select v-model="appointmentAssignee" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none appearance-none cursor-pointer transition-colors shadow-sm">
-        <option>Michael Thomas (Me)</option>
-        <option>Sarah Jenkins</option>
-        <option>David Miller</option>
-        <option>Jessica Lee</option>
+      <select v-model="selectedUserId" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none appearance-none cursor-pointer transition-colors shadow-sm">
+        <option v-for="user in assignableUsers" :key="user.id" :value="user.id">
+          {{ user.name }}{{ user.id === userStore.currentUser?.id ? ' (Me)' : '' }}
+        </option>
       </select>
     </div>
     <div>
@@ -56,7 +55,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useUsersStore } from '@/stores/users'
 
 const props = defineProps({
   show: {
@@ -67,11 +68,22 @@ const props = defineProps({
 
 const emit = defineEmits(['confirm', 'cancel'])
 
+const userStore = useUserStore()
+const usersStore = useUsersStore()
+
 const appointmentType = ref('')
-const appointmentAssignee = ref('Michael Thomas (Me)')
+const selectedUserId = ref(null)
 const appointmentDate = ref('')
 const showTimeslots = ref(false)
 const selectedTimeSlot = ref('')
+
+// Get assignable users from store
+const assignableUsers = computed(() => usersStore.assignableUsers)
+
+// Set default assignee to current user
+onMounted(() => {
+  selectedUserId.value = userStore.currentUser?.id || 1
+})
 
 // Reset form when component is hidden
 watch(() => props.show, (newVal) => {
@@ -82,7 +94,7 @@ watch(() => props.show, (newVal) => {
 
 const resetForm = () => {
   appointmentType.value = ''
-  appointmentAssignee.value = 'Michael Thomas (Me)'
+  selectedUserId.value = userStore.currentUser?.id || 1
   appointmentDate.value = ''
   showTimeslots.value = false
   selectedTimeSlot.value = ''
@@ -93,9 +105,12 @@ const handleConfirm = () => {
     return
   }
   
+  const selectedUser = usersStore.getUserById(selectedUserId.value)
+  
   emit('confirm', {
     type: appointmentType.value,
-    assignee: appointmentAssignee.value,
+    assignee: selectedUser?.name || 'Unknown',
+    assigneeId: selectedUserId.value,
     date: appointmentDate.value,
     time: selectedTimeSlot.value
   })

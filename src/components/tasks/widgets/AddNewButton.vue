@@ -49,11 +49,11 @@
             Note
           </button>
           <button 
-            v-if="filteredActions.includes('financing')"
-            @click="handleAction('financing')" 
+            v-if="filteredActions.includes('purchase-method')"
+            @click="handleAction('purchase-method')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
-            Financing
+            Purchase Method
           </button>
           <button 
             v-if="filteredActions.includes('tradein')"
@@ -68,13 +68,6 @@
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Requested car
-          </button>
-          <button 
-            v-if="filteredActions.includes('purchase')"
-            @click="handleAction('purchase')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-          >
-            Purchase
           </button>
           <button 
             v-if="filteredActions.includes('attachment')"
@@ -141,7 +134,7 @@ const props = defineProps({
   },
   actions: {
     type: Array,
-    default: () => ['note', 'financing', 'tradein', 'attachment', 'email', 'whatsapp', 'sms']
+    default: () => ['note', 'purchase-method', 'tradein', 'attachment', 'email', 'whatsapp', 'sms']
   },
   activeTab: {
     type: String,
@@ -200,7 +193,7 @@ const hasVehicleActions = computed(() => {
 })
 
 const hasCommonActions = computed(() => {
-  return filteredActions.value.some(action => ['note', 'financing', 'tradein', 'attachment', 'requestedCar', 'purchase'].includes(action))
+  return filteredActions.value.some(action => ['note', 'purchase-method', 'tradein', 'attachment', 'requestedCar'].includes(action))
 })
 
 const handleAction = (action) => {

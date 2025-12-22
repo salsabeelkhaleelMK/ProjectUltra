@@ -373,12 +373,12 @@ const addNewConfig = computed(() => {
   
   if (currentTask.value.type === 'lead') {
     return {
-      overviewActions: ['financing', 'tradein', 'purchase'],
+      overviewActions: ['purchase-method', 'tradein'],
       tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
     }
   } else {
     return {
-      overviewActions: ['financing', 'tradein', 'purchase'],
+      overviewActions: ['purchase-method', 'tradein'],
       tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
     }
   }

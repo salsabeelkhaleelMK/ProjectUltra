@@ -121,7 +121,7 @@
       </div>
     </main>
 
-    <!-- Overview Modal Widgets (Financing, Trade-in, Purchase) -->
+    <!-- Overview Modal Widgets (Purchase Method, Trade-in) -->
     <Teleport to="body">
       <div 
         v-if="showOverviewModal"
@@ -129,20 +129,20 @@
         @click.self="closeOverviewModal"
       >
         <div 
-          v-if="overviewModalType === 'financing' || overviewModalType === 'tradein'"
+          v-if="overviewModalType === 'purchase-method' || overviewModalType === 'tradein'"
           class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         >
           <div class="p-6">
             <div class="flex justify-between items-center mb-4">
               <h5 class="text-sm font-bold text-slate-800">
-                {{ overviewModalType === 'financing' ? 'Add Financing' : 'Add Trade-in' }}
+                {{ overviewModalType === 'purchase-method' ? 'Add Purchase Method' : 'Add Trade-in' }}
               </h5>
               <button @click="closeOverviewModal" class="text-gray-400 hover:text-gray-600">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
-            <FinancingWidget
-              v-if="overviewModalType === 'financing'"
+            <PurchaseMethodWidget
+              v-if="overviewModalType === 'purchase-method'"
               :item="null"
               :task-type="type"
               :task-id="task.id"
@@ -159,19 +159,6 @@
             />
           </div>
         </div>
-        
-        <div 
-          v-if="overviewModalType === 'purchase'"
-          class="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        >
-          <PurchaseWidget
-            :item="null"
-            :task-type="type"
-            :task-id="task.id"
-            @save="handleOverviewModalSave"
-            @cancel="closeOverviewModal"
-          />
-        </div>
       </div>
     </Teleport>
   </div>
@@ -187,9 +174,8 @@ import TaskCard from '@/components/tasks/TaskCard.vue'
 import CommunicationWidget from '@/components/tasks/widgets/CommunicationWidget.vue'
 import NoteWidget from '@/components/tasks/widgets/NoteWidget.vue'
 import AttachmentWidget from '@/components/tasks/widgets/AttachmentWidget.vue'
-import FinancingWidget from '@/components/tasks/widgets/FinancingWidget.vue'
+import PurchaseMethodWidget from '@/components/tasks/widgets/PurchaseMethodWidget.vue'
 import TradeInWidget from '@/components/tasks/widgets/TradeInWidget.vue'
-import PurchaseWidget from '@/components/tasks/widgets/PurchaseWidget.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 

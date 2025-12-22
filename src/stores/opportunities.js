@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities, addOpportunityActivity, updateOpportunityActivity, deleteOpportunityActivity, createOpportunityFromLead as apiCreateOpportunityFromLead } from '@/api/opportunities'
+import { migrateActivities } from '@/utils/activityMigration'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
   // State
@@ -50,7 +51,9 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     error.value = null
     try {
       currentOpportunity.value = await fetchOpportunityById(id)
-      currentOpportunityActivities.value = await fetchOpportunityActivities(id)
+      const activities = await fetchOpportunityActivities(id)
+      // Migrate legacy financing/purchase activities to purchase-method
+      currentOpportunityActivities.value = migrateActivities(activities)
       // Also update in the opportunities list if it exists
       const index = opportunities.value.findIndex(o => o.id === parseInt(id))
       if (index !== -1) {

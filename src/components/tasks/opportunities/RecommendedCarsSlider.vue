@@ -22,16 +22,19 @@
             <p class="text-xs text-gray-500 mb-2">€ {{ formatCurrency(car.price) }}</p>
             <div 
               v-if="car.stockDays !== null && car.stockDays !== undefined"
-              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md mb-2"
+              class="flex items-center justify-between"
             >
-              <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ car.stockDays }} days)
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md">
+                <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ car.stockDays }} days)
+              </div>
+              <button
+                @click="$emit('add-to-opportunity', car)"
+                class="w-6 h-6 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-sm transition-colors"
+                title="Create offer with this car"
+              >
+                <i class="fa-solid fa-plus text-xs"></i>
+              </button>
             </div>
-            <button
-              @click="$emit('add-to-opportunity', car)"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm shadow-sm transition-colors mt-2"
-            >
-              Add to opportunity
-            </button>
           </div>
         </div>
       </div>
