@@ -44,20 +44,20 @@
       </div>
     </div>
 
-    <!-- Actions Row -->
-    <div class="flex gap-3 flex-wrap items-center mb-4">
-      <!-- Phone Number Display with Copy -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-slate-700 font-medium">{{ lead.customer.phone }}</span>
-        <button 
-          @click="copyNumber"
-          class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-          title="Copy phone number"
-        >
-          <i class="fa-regular fa-copy text-xs"></i>
-        </button>
-      </div>
-      
+    <!-- Phone Number Row -->
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-sm text-slate-700 font-medium">{{ lead.customer.phone }}</span>
+      <button 
+        @click="copyNumber"
+        class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+        title="Copy phone number"
+      >
+        <i class="fa-regular fa-copy text-xs"></i>
+      </button>
+    </div>
+    
+    <!-- Call Action Buttons Row -->
+    <div class="flex gap-2 items-center mb-4">
       <!-- Primary: Call Button -->
       <button 
         @click="startCall"
