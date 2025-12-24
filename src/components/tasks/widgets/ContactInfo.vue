@@ -20,8 +20,76 @@
         </div>
       </div>
       
-      <!-- Expander Arrow -->
+      <!-- Quick Action Button and Expander Arrow -->
       <div class="flex items-center gap-1 ml-2">
+        <div class="relative">
+          <button 
+            @click.stop="showQuickActionMenu = !showQuickActionMenu"
+            class="w-9 h-9 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg shrink-0 transition-colors"
+          >
+            <i class="fa-solid fa-plus text-sm"></i>
+          </button>
+          
+          <!-- Quick Action Dropdown Menu -->
+          <div 
+            v-if="showQuickActionMenu"
+            class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
+            v-click-outside="() => showQuickActionMenu = false"
+          >
+            <button 
+              @click="handleAction('note')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Note
+            </button>
+            <button 
+              @click="handleAction('purchase-method')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Purchase Method
+            </button>
+            <button 
+              @click="handleAction('tradein')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Trade-in
+            </button>
+            <button 
+              @click="handleAction('attachment')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Attachment
+            </button>
+            <div class="border-t border-gray-100 my-1"></div>
+            <button 
+              @click="handleAction('whatsapp')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            >
+              <i class="fa-brands fa-whatsapp text-xs text-gray-400"></i> WhatsApp msg
+            </button>
+            <button 
+              @click="handleAction('email')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            >
+              <i class="fa-regular fa-envelope text-xs text-gray-400"></i> Email
+            </button>
+            <button 
+              @click="handleAction('sms')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            >
+              <i class="fa-solid fa-comment-dots text-xs text-gray-400"></i> SMS
+            </button>
+            <div v-if="taskType === 'opportunity'" class="border-t border-gray-100 my-1"></div>
+            <button 
+              v-if="taskType === 'opportunity'"
+              @click="handleAction('appointment')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Appointment
+            </button>
+          </div>
+        </div>
+        
         <button 
           @click="showContactInfo = !showContactInfo" 
           class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
@@ -94,6 +162,21 @@
 <script setup>
 import { ref } from 'vue'
 
+// Click outside directive
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value()
+      }
+    }
+    document.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
+
 const props = defineProps({
   initials: {
     type: String,
@@ -130,11 +213,23 @@ const props = defineProps({
   thirdFieldLabel: {
     type: String,
     default: 'Expected Close'
+  },
+  taskType: {
+    type: String,
+    default: 'lead' // 'lead' or 'opportunity'
   }
 })
 
+const emit = defineEmits(['action'])
+
 const showContactInfo = ref(false)
+const showQuickActionMenu = ref(false)
 const copiedField = ref(null)
+
+const handleAction = (action) => {
+  showQuickActionMenu.value = false
+  emit('action', action)
+}
 
 const copyToClipboard = async (text, field) => {
   try {

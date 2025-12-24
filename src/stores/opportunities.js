@@ -251,11 +251,11 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
   
-  async function createOpportunityFromLead(leadData, activities) {
+  async function createOpportunityFromLead(leadData, activities, options = {}) {
     loading.value = true
     error.value = null
     try {
-      const newOpportunity = await apiCreateOpportunityFromLead(leadData, activities)
+      const newOpportunity = await apiCreateOpportunityFromLead(leadData, activities, options)
       opportunities.value.unshift(newOpportunity)
       return newOpportunity
     } catch (err) {

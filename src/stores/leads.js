@@ -183,7 +183,7 @@ export const useLeadsStore = defineStore('leads', () => {
     }
   }
   
-  async function convertLeadToOpportunity(leadId) {
+  async function convertLeadToOpportunity(leadId, options = {}) {
     loading.value = true
     error.value = null
     try {
@@ -195,8 +195,8 @@ export const useLeadsStore = defineStore('leads', () => {
       const { useOpportunitiesStore } = await import('./opportunities')
       const opportunitiesStore = useOpportunitiesStore()
       
-      // Create opportunity from lead
-      const newOpportunity = await opportunitiesStore.createOpportunityFromLead(lead, activities)
+      // Create opportunity from lead with assignment options
+      const newOpportunity = await opportunitiesStore.createOpportunityFromLead(lead, activities, options)
       
       // Remove lead from leads store
       await removeLead(leadId)

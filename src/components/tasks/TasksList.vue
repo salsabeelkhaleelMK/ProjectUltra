@@ -86,7 +86,7 @@
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <!-- Main content: Avatar, Name, Vehicle, Amount/Due -->
+        <!-- Main content: Avatar, Name, and Car name -->
         <div class="flex items-start gap-3.5 pr-6">
           <!-- Avatar -->
           <div 
@@ -96,22 +96,25 @@
             {{ getInitials(item) }}
           </div>
           
-          <!-- Name and Vehicle -->
+          <!-- Name and Car name -->
           <div class="flex-1 min-w-0">
             <div class="font-bold text-gray-800 text-sm leading-snug truncate">{{ getName(item) }}</div>
             <div class="text-gray-600 text-xs mt-1 truncate">{{ getVehicleInfo(item) }}</div>
           </div>
-          
-          <!-- Right side: Amount/Due time -->
-          <div class="text-right shrink-0">
-            <slot name="meta" :item="item"></slot>
-            <slot name="footer" :item="item"></slot>
-          </div>
         </div>
         
-        <!-- Tags at bottom -->
-        <div class="flex items-center gap-2 flex-wrap mt-3">
-          <slot name="badges" :item="item"></slot>
+        <!-- Tags, Number, and Meta below contact name -->
+        <div class="mt-3">
+          <!-- Tags, Number, and Meta (on the right) -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 flex-wrap flex-1">
+              <slot name="badges" :item="item"></slot>
+            </div>
+            <div class="text-right shrink-0">
+              <slot name="meta" :item="item"></slot>
+              <slot name="footer" :item="item"></slot>
+            </div>
+          </div>
         </div>
       </div>
     </div>

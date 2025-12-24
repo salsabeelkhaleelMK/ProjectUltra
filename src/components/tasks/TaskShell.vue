@@ -10,9 +10,11 @@
           :phone="task.customer.phone"
           :third-field-value="task.customer.address"
           :avatar-color-class="type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
+          :task-type="type"
           email-label="Email"
           phone-label="Phone"
           third-field-label="Address"
+          @action="handleContactInfoAction"
         >
           <template #tags>
             <span 
@@ -55,6 +57,9 @@
           :lead="type === 'lead' ? task : undefined"
           :opportunity="type === 'opportunity' ? task : undefined"
           :activities="allActivities"
+          :trigger-appointment-modal="type === 'opportunity' ? triggerAppointmentModal : false"
+          @open-purchase-method="() => { overviewModalType = 'purchase-method'; showOverviewModal = true }"
+          @open-trade-in="() => { overviewModalType = 'tradein'; showOverviewModal = true }"
         />
         
         <!-- Add New (overview tab - after next steps widget) -->
@@ -79,32 +84,47 @@
 
       <!-- Inline widgets -->
       <div v-if="activeTab !== 'overview'">
-        <CommunicationWidget
+        <InlineFormShell
           v-if="showInlineWidget === 'communication'"
-          :type="communicationType"
-          :task-type="type"
-          :task-id="task.id"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
+          :title="getCommunicationTitle(communicationType)"
+          @close="handleWidgetCancel"
+        >
+          <CommunicationWidget
+            :type="communicationType"
+            :task-type="type"
+            :task-id="task.id"
+            @save="handleWidgetSave"
+            @cancel="handleWidgetCancel"
+          />
+        </InlineFormShell>
 
-        <NoteWidget
+        <InlineFormShell
           v-if="showInlineWidget === 'note'"
-          :item="editingItem"
-          :task-type="type"
-          :task-id="task.id"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
+          :title="editingItem ? 'Edit Note' : 'Add Note'"
+          @close="handleWidgetCancel"
+        >
+          <NoteWidget
+            :item="editingItem"
+            :task-type="type"
+            :task-id="task.id"
+            @save="handleWidgetSave"
+            @cancel="handleWidgetCancel"
+          />
+        </InlineFormShell>
 
-        <AttachmentWidget
+        <InlineFormShell
           v-if="showInlineWidget === 'attachment'"
-          :item="editingItem"
-          :task-type="type"
-          :task-id="task.id"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
+          :title="editingItem ? 'Edit Attachment' : 'Add Attachment'"
+          @close="handleWidgetCancel"
+        >
+          <AttachmentWidget
+            :item="editingItem"
+            :task-type="type"
+            :task-id="task.id"
+            @save="handleWidgetSave"
+            @cancel="handleWidgetCancel"
+          />
+        </InlineFormShell>
       </div>
 
       <!-- Feed -->
@@ -171,6 +191,7 @@ import Tabs from '@/components/tasks/widgets/Tabs.vue'
 import StageOwnerBar from '@/components/tasks/widgets/StageOwnerBar.vue'
 import AddNewButton from '@/components/tasks/widgets/AddNewButton.vue'
 import TaskCard from '@/components/tasks/TaskCard.vue'
+import InlineFormShell from '@/components/tasks/widgets/InlineFormShell.vue'
 import CommunicationWidget from '@/components/tasks/widgets/CommunicationWidget.vue'
 import NoteWidget from '@/components/tasks/widgets/NoteWidget.vue'
 import AttachmentWidget from '@/components/tasks/widgets/AttachmentWidget.vue'
@@ -195,6 +216,7 @@ const taskId = computed(() => props.task.id)
 // Modal state for overview actions (financing, tradein, purchase)
 const showOverviewModal = ref(false)
 const overviewModalType = ref(null)
+const triggerAppointmentModal = ref(false)
 
 const {
   activeTab,
@@ -239,6 +261,51 @@ const handleOverviewModalSave = async (data) => {
   closeOverviewModal()
 }
 
+// Handle ContactInfo quick action
+const handleContactInfoAction = (action) => {
+  // For opportunities, handle appointment differently
+  if (action === 'appointment' && props.type === 'opportunity') {
+    triggerAppointmentModal.value = !triggerAppointmentModal.value
+    return
+  }
+  
+  // Map actions to tabs
+  const actionToTab = {
+    'note': 'note',
+    'attachment': 'attachment',
+    'email': 'communication',
+    'whatsapp': 'communication',
+    'sms': 'communication',
+    'appointment': 'overview'
+  }
+  
+  // Route to appropriate handler
+  if (['purchase-method', 'tradein'].includes(action)) {
+    overviewModalType.value = action
+    showOverviewModal.value = true
+  } else {
+    // For tab-based actions, switch to the appropriate tab
+    const targetTab = actionToTab[action]
+    if (targetTab) {
+      activeTab.value = targetTab
+      // Trigger the action after tab switch
+      setTimeout(() => {
+        handleAddNewAction(action)
+        // Scroll to inline widget after a brief delay
+        setTimeout(() => {
+          const inlineWidget = document.querySelector('.animate-fade-in')
+          if (inlineWidget) {
+            inlineWidget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }, 100)
+      }, 50)
+    } else {
+      // For other actions, use the existing handler
+      handleAddNewAction(action)
+    }
+  }
+}
+
 const tabs = computed(() => {
   const allItems = [...props.storeAdapter.currentActivities.value, ...inlineContent.value]
   const overviewCount = allItems.length
@@ -260,6 +327,15 @@ const allActivities = computed(() => [
   ...props.storeAdapter.currentActivities.value,
   ...inlineContent.value
 ])
+
+const getCommunicationTitle = (type) => {
+  const titles = {
+    email: 'Send Email',
+    whatsapp: 'Send WhatsApp',
+    sms: 'Send SMS'
+  }
+  return titles[type] || 'Send Message'
+}
 </script>
 
 

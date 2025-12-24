@@ -364,7 +364,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Teleport } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOpportunitiesStore } from '@/stores/opportunities'
@@ -372,7 +372,7 @@ import { useUserStore } from '@/stores/user'
 import { mockVehicles } from '@/api/mockData'
 import { createCalendarEvent } from '@/api/calendar'
 import RescheduleWidget from '@/components/tasks/widgets/RescheduleWidget.vue'
-import ScheduleAppointmentWidget from '@/components/tasks/leads/ScheduleAppointmentWidget.vue'
+import ScheduleAppointmentWidget from '@/components/tasks/widgets/ScheduleAppointmentWidget.vue'
 import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
 import CloseAsLostModal from '@/components/tasks/modals/CloseAsLostModal.vue'
 import ContractDateModal from '@/components/tasks/modals/ContractDateModal.vue'
@@ -401,6 +401,10 @@ const props = defineProps({
   activities: {
     type: Array,
     default: () => []
+  },
+  triggerAppointmentModal: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -424,6 +428,14 @@ const showContractDateModal = ref(false)
 const showDeliveryModal = ref(false)
 const showRequalifyModal = ref(false)
 const recommendedCars = ref([])
+
+// Watch for external trigger to open appointment modal
+watch(() => props.triggerAppointmentModal, (newVal) => {
+  if (newVal) {
+    showScheduleAppointment.value = true
+    scheduleAppointmentSource.value = 'contact-info'
+  }
+})
 
 const router = useRouter()
 const opportunitiesStore = useOpportunitiesStore()

@@ -7,7 +7,7 @@
     <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
     <div class="relative" :class="inline ? 'mx-0' : 'mx-4'">
       <button 
-        @click.stop="showMenu = !showMenu"
+        @click.stop="handleClick"
         :class="buttonClass"
       >
         <i class="fa-solid fa-plus text-[10px] md:text-xs"></i> 
@@ -80,7 +80,7 @@
         
         <!-- Communication Actions -->
         <template v-if="hasCommunicationActions">
-          <div class="border-t border-gray-100 my-1"></div>
+          <div v-if="hasCommonActions || hasVehicleActions" class="border-t border-gray-100 my-1"></div>
           <button 
             v-if="filteredActions.includes('email')"
             @click="handleAction('email')" 
@@ -195,6 +195,15 @@ const hasVehicleActions = computed(() => {
 const hasCommonActions = computed(() => {
   return filteredActions.value.some(action => ['note', 'purchase-method', 'tradein', 'attachment', 'requestedCar'].includes(action))
 })
+
+const handleClick = () => {
+  // If only one action, trigger it directly instead of showing dropdown
+  if (filteredActions.value.length === 1) {
+    handleAction(filteredActions.value[0])
+  } else {
+    showMenu.value = !showMenu.value
+  }
+}
 
 const handleAction = (action) => {
   showMenu.value = false

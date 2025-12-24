@@ -33,11 +33,18 @@ export function useTaskInlineWidgets(options) {
       ...store.currentActivities.value,
       ...inlineContent.value.filter(item => !item.activityId)
     ]
-    return baseItems.filter(item => {
-      const tabKey = getTabForItemType(item.type)
-      if (activeTab.value === 'overview') return tabKey === 'overview'
-      return tabKey === activeTab.value
-    })
+    return baseItems
+      .filter(item => {
+        const tabKey = getTabForItemType(item.type)
+        if (activeTab.value === 'overview') return tabKey === 'overview'
+        return tabKey === activeTab.value
+      })
+      .sort((a, b) => {
+        // Sort by timestamp descending (most recent first)
+        const dateA = new Date(a.timestamp || 0)
+        const dateB = new Date(b.timestamp || 0)
+        return dateB - dateA
+      })
   })
 
   const handleAddNewAction = (action) => {

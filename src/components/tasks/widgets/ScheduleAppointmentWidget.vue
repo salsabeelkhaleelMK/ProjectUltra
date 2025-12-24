@@ -102,17 +102,22 @@ const resetForm = () => {
 
 const handleConfirm = () => {
   if (!appointmentType.value || !appointmentDate.value || !selectedTimeSlot.value) {
+    alert('Please fill in all required fields: Type, Date, and Time')
     return
   }
   
   const selectedUser = usersStore.getUserById(selectedUserId.value)
+  const appointmentDateTime = `${appointmentDate.value}T${selectedTimeSlot.value}:00`
   
   emit('confirm', {
     type: appointmentType.value,
     assignee: selectedUser?.name || 'Unknown',
     assigneeId: selectedUserId.value,
     date: appointmentDate.value,
-    time: selectedTimeSlot.value
+    time: selectedTimeSlot.value,
+    datetime: appointmentDateTime,
+    location: '',
+    notes: ''
   })
   
   resetForm()

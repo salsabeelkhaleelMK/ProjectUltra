@@ -60,30 +60,20 @@
         <template v-if="task.type === 'lead'">
           <div 
             class="flex items-center gap-1.5" 
-            :class="formatDueDate(task.nextActionDue) === 'OVERDUE' ? 'text-red-500' : task.priority === 'Hot' ? 'text-orange-500' : 'text-gray-400'"
+            :class="isTaskOverdue(task) ? 'text-red-500' : task.priority === 'Hot' ? 'text-orange-500' : 'text-gray-400'"
           >
             <i 
               class="text-[10px]"
-              :class="formatDueDate(task.nextActionDue) === 'OVERDUE' ? 'fa-solid fa-exclamation-triangle' : 'fa-solid fa-clock'"
+              :class="isTaskOverdue(task) ? 'fa-solid fa-exclamation-triangle' : 'fa-solid fa-clock'"
             ></i>
             <span class="text-[10px] font-bold uppercase tracking-wide">
-              {{ formatDueDate(task.nextActionDue) === 'OVERDUE' ? 'OVERDUE' : `Due in ${formatDueDate(task.nextActionDue)}` }}
+              {{ isTaskOverdue(task) ? 'overdue' : task.nextActionDue ? `Due in ${formatDueDate(task.nextActionDue)}` : 'Pending' }}
             </span>
           </div>
         </template>
         <template v-else>
           <div class="text-right">
             <div class="text-sm font-bold text-gray-900">€{{ formatCurrency(task.value) }}</div>
-            <div class="mt-1.5">
-              <div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <div 
-                  class="h-full rounded-full"
-                  :class="task.probability >= 70 ? 'bg-green-500' : task.probability >= 40 ? 'bg-blue-500' : 'bg-orange-500'"
-                  :style="{ width: `${task.probability}%` }"
-                ></div>
-              </div>
-              <div class="text-[10px] text-gray-500 mt-0.5">{{ task.probability }}% PROB</div>
-            </div>
           </div>
         </template>
       </template>
@@ -116,9 +106,10 @@
     <!-- Main Content - Task Details -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Mobile Floating Action Buttons -->
-      <div v-if="currentTask" class="lg:hidden xl:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
-        <!-- Activity Summary Button -->
+      <div class="lg:hidden xl:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
+        <!-- Activity Summary Button (only when task is selected) -->
         <button
+          v-if="currentTask"
           @click="showActivityMobile = !showActivityMobile"
           class="w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:scale-110"
           title="Activity"
@@ -126,7 +117,7 @@
           <i class="fa-solid fa-clock-rotate-left text-lg"></i>
         </button>
         
-        <!-- Task List Button -->
+        <!-- Task List Button (always visible) -->
         <button
           @click="showTaskListMobile = !showTaskListMobile"
           class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110"
@@ -394,6 +385,17 @@ const getUnselectedClass = computed(() => {
     }
   }
 })
+
+// Check if task has an overdue appointment (not just nextActionDue)
+// Tasks without initial call/appointment should not be marked overdue
+const isTaskOverdue = (task) => {
+  // Only show overdue if there's an appointment that is overdue
+  if (!task.scheduledAppointment) return false
+  
+  const appointmentDate = new Date(task.scheduledAppointment.start)
+  const now = new Date()
+  return appointmentDate < now
+}
 
 // Load data on mount
 onMounted(() => {

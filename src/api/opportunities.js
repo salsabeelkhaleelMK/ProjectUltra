@@ -115,8 +115,17 @@ export const generateOpportunityId = () => {
   return mockOpportunities.length > 0 ? Math.max(...mockOpportunities.map(o => o.id)) + 1 : 1
 }
 
-export const createOpportunityFromLead = async (leadData, activities) => {
+export const createOpportunityFromLead = async (leadData, activities, options = {}) => {
   await delay()
+  
+  // Get assignee name from options if provided
+  let assigneeName = leadData.assignee || 'Michael Thomas'
+  if (options.assigneeId) {
+    const assigneeUser = mockUsers.find(u => u.id === options.assigneeId)
+    if (assigneeUser) {
+      assigneeName = assigneeUser.name
+    }
+  }
   
   const newOpportunity = {
     id: generateOpportunityId(),
@@ -128,10 +137,12 @@ export const createOpportunityFromLead = async (leadData, activities) => {
     probability: 50,
     value: leadData.requestedCar?.price || 0,
     expectedCloseDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 90 days from now
-    assignee: leadData.assignee || 'Michael Thomas',
+    assignee: assigneeName,
+    assigneeId: options.assigneeId || null,
     source: leadData.source || 'Marketing',
     fiscalEntity: leadData.fiscalEntity || '',
     sourceDetails: leadData.sourceDetails || '',
+    customerPreferences: options.preferences || null, // Store customer preferences from call
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString()
   }

@@ -51,7 +51,8 @@ export const mockLeads = [
     stage: 'Open Lead', // Still in Open Lead stage
     isDisqualified: false,
     disqualifyReason: null,
-    scheduledAppointment: null
+    scheduledAppointment: null,
+    contactAttempts: [] // Track call attempts: [{ timestamp, outcome, channel, notes, transcription }]
   },
   {
     id: 2,
@@ -168,25 +169,25 @@ export const mockOpportunities = [
       id: 10,
       title: 'Dealership Visit - Grace Thompson',
       start: (() => {
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 2) // 2 days ago to trigger action item
-        yesterday.setHours(11, 0, 0, 0)
-        return yesterday.toISOString()
+        const future = new Date()
+        future.setDate(future.getDate() + 3) // 3 days in the future
+        future.setHours(14, 0, 0, 0)
+        return future.toISOString()
       })(),
       end: (() => {
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 2)
-        yesterday.setHours(12, 0, 0, 0)
-        return yesterday.toISOString()
+        const future = new Date()
+        future.setDate(future.getDate() + 3)
+        future.setHours(15, 30, 0, 0)
+        return future.toISOString()
       })(),
-      type: 'appointment',
+      type: 'Showroom Visit',
       customer: 'Grace Thompson',
       vehicle: 'Audi e-tron GT',
       assignee: 'Salsabeel Khaleel',
       assigneeId: 1,
       dealership: 'Firenze',
       team: 'Sales (New)',
-      status: 'confirmed',
+      status: 'scheduled',
       noShowCount: 0
     }
   },
