@@ -59,7 +59,7 @@
           </div>
         </div>
         
-        <!-- Filters Sidebar (1/3) -->
+        <!-- Filters Sidebar (1/4) -->
         <CalendarFiltersSidebar
           v-model="filters"
           v-model:event-type-search="eventTypeSearch"
@@ -78,8 +78,8 @@
       :connected-calendars="connectedCalendars"
       :connecting-to="connectingTo"
       @close="showConnectModal = false"
-      @connect="connectCalendar"
-      @disconnect="disconnectCalendar"
+      @connect="handleConnectCalendar"
+      @disconnect="handleDisconnectCalendar"
     />
     
     <!-- Create Event Modal -->
@@ -118,7 +118,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { fetchCalendarEvents, fetchCalendarFilterOptions, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/api/calendar'
-import CalendarConnectModal from '@/components/calendar/CalendarConnectModal.vue'
+import CalendarConnectModal from '@/components/modals/CalendarConnectModal.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { useUserStore } from '@/stores/user'
 
@@ -285,7 +285,7 @@ const clearAllAppliedFilters = async () => {
   calendarOptions.value.events = events.value
 }
 
-// Calendar connection functions
+// Calendar connection functions (keeping our fixed version)
 const connectCalendar = async (provider) => {
   connectingTo.value = provider
   await new Promise(resolve => setTimeout(resolve, 2000))

@@ -1,93 +1,112 @@
-import { mockCalendarEvents, calendarEventTypes, calendarDealerships, calendarTeams, mockUsers } from './mockData'
+import { mockCalendarEvents } from './mockData'
 
-// Simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
-export const fetchCalendarEvents = async (filters = {}) => {
+export const fetchCalendarEvents = async () => {
   await delay()
-  
-  let results = [...mockCalendarEvents]
-  
-  // Apply filters
-  if (filters.onlyMine && filters.currentUserId) {
-    results = results.filter(event => event.assigneeId === filters.currentUserId)
-  }
-  
-  if (filters.eventTypes && filters.eventTypes.length > 0) {
-    results = results.filter(event => filters.eventTypes.includes(event.type))
-  }
-  
-  if (filters.dealerships && filters.dealerships.length > 0) {
-    results = results.filter(event => filters.dealerships.includes(event.dealership))
-  }
-  
-  if (filters.teams && filters.teams.length > 0) {
-    results = results.filter(event => filters.teams.includes(event.team))
-  }
-  
-  if (filters.users && filters.users.length > 0) {
-    results = results.filter(event => filters.users.includes(event.assigneeId))
-  }
-  
-  if (filters.includeCancelled === false) {
-    results = results.filter(event => event.status !== 'cancelled')
-  }
-  
-  if (filters.noShowsOnly) {
-    results = results.filter(event => event.status === 'no-show')
-  }
-  
-  if (filters.start && filters.end) {
-    results = results.filter(event => {
-      const eventStart = new Date(event.start)
-      return eventStart >= new Date(filters.start) && eventStart <= new Date(filters.end)
-    })
-  }
-  
-  return results
-}
-
-export const fetchCalendarFilterOptions = async () => {
-  await delay(100)
-  
-  return {
-    eventTypes: [...calendarEventTypes],
-    dealerships: calendarDealerships.map(d => d.name),
-    teams: calendarTeams.map(t => t.name),
-    users: [...mockUsers]
-  }
+  return [...mockCalendarEvents]
 }
 
 export const createCalendarEvent = async (eventData) => {
   await delay()
-  
   const newEvent = {
     id: mockCalendarEvents.length + 1,
-    ...eventData,
-    status: 'confirmed',
-    createdAt: new Date().toISOString()
+    assigneeId: eventData.assigneeId || null,
+    assigneeType: eventData.assigneeType || 'user',
+    teamId: eventData.teamId || null,
+    team: eventData.team || null,
+    ...eventData
   }
-  
   mockCalendarEvents.push(newEvent)
   return newEvent
 }
 
 export const updateCalendarEvent = async (id, updates) => {
   await delay()
-  
-  const index = mockCalendarEvents.findIndex(e => e.id === parseInt(id))
-  if (index === -1) throw new Error('Event not found')
-  
-  mockCalendarEvents[index] = { ...mockCalendarEvents[index], ...updates }
-  return mockCalendarEvents[index]
+  const index = mockCalendarEvents.findIndex(event => event.id === id)
+  if (index !== -1) {
+    mockCalendarEvents[index] = { ...mockCalendarEvents[index], ...updates }
+    return mockCalendarEvents[index]
+  }
+  return null
 }
 
 export const deleteCalendarEvent = async (id) => {
   await delay()
-  
-  const index = mockCalendarEvents.findIndex(e => e.id === parseInt(id))
-  if (index === -1) throw new Error('Event not found')
-  
-  mockCalendarEvents.splice(index, 1)
-  return { success: true }
+  const index = mockCalendarEvents.findIndex(event => event.id === id)
+  if (index !== -1) {
+    mockCalendarEvents.splice(index, 1)
+    return true
+  }
+  return false
 }
+
+export const fetchTodayAppointments = async () => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  
+  return mockCalendarEvents.filter(event => {
+    const eventDate = new Date(event.start)
+    eventDate.setHours(0, 0, 0, 0)
+    return eventDate >= today && eventDate < tomorrow
+  })
+}
+
+export const fetchUpcomingAppointments = async (days = 7) => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const endDate = new Date(today)
+  endDate.setDate(endDate.getDate() + days)
+  
+  return mockCalendarEvents.filter(event => {
+    const eventDate = new Date(event.start)
+    return eventDate >= today && eventDate < endDate
+  })
+}
+
+export const fetchCalendarFilterOptions = async () => {
+  await delay()
+  
+  // Extract unique values from calendar events
+  const eventTypes = [
+    { value: 'test-drive', label: 'Test Drive' },
+    { value: 'appointment', label: 'Dealership Visit' },
+    { value: 'offsite', label: 'Offsite Visit' },
+    { value: 'workshop', label: 'Workshop' },
+    { value: 'call', label: 'Call' },
+    { value: 'delivery', label: 'Delivery' },
+    { value: 'meeting', label: 'Meeting' },
+    { value: 'training', label: 'Training' },
+    { value: 'marketing', label: 'Marketing Event' },
+    { value: 'leave', label: 'Leave' },
+    { value: 'memo', label: 'Memo' },
+    { value: 'recall', label: 'Recall' },
+    { value: 'absence', label: 'Absence' },
+    { value: 'other', label: 'Other' }
+  ]
+  
+  // Mock dealerships
+  const dealerships = ['Main Dealership', 'Downtown Branch', 'Westside Location']
+  
+  // Mock teams
+  const teams = ['Sales Team A', 'Sales Team B', 'Service Team']
+  
+  // Mock users (would typically come from users API)
+  const users = [
+    { id: 1, name: 'John Doe' },
+    { id: 2, name: 'Jane Smith' },
+    { id: 3, name: 'Mike Johnson' }
+  ]
+  
+  return {
+    eventTypes,
+    dealerships,
+    teams,
+    users
+  }
+}
+

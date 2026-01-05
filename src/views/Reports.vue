@@ -28,17 +28,17 @@
           <!-- Team Performance -->
           <TeamPerformanceTable :team-members="teamPerformance" />
           
-          <!-- Page Views Section -->
-          <div class="space-y-4 md:space-y-6">
-            <PageViewsByVehicle :vehicles="pageViewsByVehicle" />
-            <PageViewsChart :data="pageViewsOrganicPaid" />
-          </div>
+          <!-- Page Views by Vehicle -->
+          <PageViewsByVehicle :vehicles="pageViewsByVehicle" />
         </div>
         
         <!-- Right Column - Sidebar (1/3 width) -->
         <div class="space-y-4 md:space-y-6">
-          <AIInsightsSidebar />
           <TodaysEventsSidebar :events="todaysEvents" />
+          <AIInsightsSidebar />
+          
+          <!-- Page Views Chart -->
+          <PageViewsChart :data="pageViewsOrganicPaid" />
         </div>
       </div>
     </div>

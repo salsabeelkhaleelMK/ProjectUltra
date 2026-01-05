@@ -7,11 +7,10 @@
     <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
     <div class="relative" :class="inline ? 'mx-0' : 'mx-4'">
       <button 
-        @click.stop="handleClick"
+        @click.stop="showMenu = !showMenu"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-[10px] md:text-xs"></i> 
-        <span class="text-xs md:text-sm">Add new</span>
+        <i class="fa-solid fa-plus text-xs"></i>
       </button>
       
       <!-- Dropdown Menu -->
@@ -49,11 +48,11 @@
             Note
           </button>
           <button 
-            v-if="filteredActions.includes('purchase-method')"
-            @click="handleAction('purchase-method')" 
+            v-if="filteredActions.includes('financing')"
+            @click="handleAction('financing')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
-            Purchase Method
+            Financing
           </button>
           <button 
             v-if="filteredActions.includes('tradein')"
@@ -70,6 +69,13 @@
             Requested car
           </button>
           <button 
+            v-if="filteredActions.includes('purchase')"
+            @click="handleAction('purchase')" 
+            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+          >
+            Purchase
+          </button>
+          <button 
             v-if="filteredActions.includes('attachment')"
             @click="handleAction('attachment')" 
             class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
@@ -80,7 +86,7 @@
         
         <!-- Communication Actions -->
         <template v-if="hasCommunicationActions">
-          <div v-if="hasCommonActions || hasVehicleActions" class="border-t border-gray-100 my-1"></div>
+          <div class="border-t border-gray-100 my-1"></div>
           <button 
             v-if="filteredActions.includes('email')"
             @click="handleAction('email')" 
@@ -134,7 +140,7 @@ const props = defineProps({
   },
   actions: {
     type: Array,
-    default: () => ['note', 'purchase-method', 'tradein', 'attachment', 'email', 'whatsapp', 'sms']
+    default: () => ['note', 'financing', 'tradein', 'attachment', 'email', 'whatsapp', 'sms']
   },
   activeTab: {
     type: String,
@@ -152,11 +158,11 @@ const showMenu = ref(false)
 
 const buttonClass = computed(() => {
   if (props.inline) {
-    // Overview usage: blue button with rounded corners, responsive padding
-    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 md:px-4 py-2 md:py-2 text-xs md:text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 md:gap-2 z-20 relative whitespace-nowrap'
+    // Overview usage: blue button with rounded corners, icon only
+    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium w-9 h-9 rounded-lg shadow-sm transition-all flex items-center justify-center z-20 relative'
   }
   // Default usage (other tabs): original gray rounded pill with separators
-  return 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium px-4 py-1.5 rounded-full text-sm shadow-sm transition-all flex items-center gap-2 z-20 relative'
+  return 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium w-9 h-9 rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
 })
 
 // Map actions to their owning tab (if any)
@@ -193,17 +199,8 @@ const hasVehicleActions = computed(() => {
 })
 
 const hasCommonActions = computed(() => {
-  return filteredActions.value.some(action => ['note', 'purchase-method', 'tradein', 'attachment', 'requestedCar'].includes(action))
+  return filteredActions.value.some(action => ['note', 'financing', 'tradein', 'attachment', 'requestedCar', 'purchase'].includes(action))
 })
-
-const handleClick = () => {
-  // If only one action, trigger it directly instead of showing dropdown
-  if (filteredActions.value.length === 1) {
-    handleAction(filteredActions.value[0])
-  } else {
-    showMenu.value = !showMenu.value
-  }
-}
 
 const handleAction = (action) => {
   showMenu.value = false

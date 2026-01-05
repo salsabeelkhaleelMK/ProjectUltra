@@ -5,8 +5,8 @@
       class="lg:relative lg:block"
       :class="showTaskListMobile ? 'fixed inset-0 z-[60] md:relative md:z-auto' : 'hidden lg:block'"
     >
-      <TasksList
-        title="My Tasks"
+      <EntityListSidebar
+        title="Tasks"
         :items="filteredTasks"
         :selected-id="currentTask?.compositeId"
         :type-filter="typeFilter"
@@ -15,7 +15,12 @@
         :open-menu-id="openCardMenu"
         :getName="(task) => task.customer.name"
         :getInitials="(task) => task.customer.initials"
-        :getVehicleInfo="(task) => task.type === 'lead' ? `${task.requestedCar.brand} ${task.requestedCar.model}` : `${task.vehicle.brand} ${task.vehicle.model}`"
+        :getVehicleInfo="(task) => {
+          if (task.type === 'lead') {
+            return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
+          }
+          return task.vehicle ? `${task.vehicle.brand} ${task.vehicle.model}` : 'No vehicle specified'
+        }"
         :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
         :show-mobile-close="true"
         @select="selectTask"
@@ -57,23 +62,29 @@
       </template>
       
       <template #meta="{ item: task }">
-        <template v-if="task.type === 'lead'">
-          <div 
-            class="flex items-center gap-1.5" 
-            :class="isTaskOverdue(task) ? 'text-red-500' : task.priority === 'Hot' ? 'text-orange-500' : 'text-gray-400'"
-          >
-            <i 
-              class="text-[10px]"
-              :class="isTaskOverdue(task) ? 'fa-solid fa-exclamation-triangle' : 'fa-solid fa-clock'"
-            ></i>
-            <span class="text-[10px] font-bold uppercase tracking-wide">
-              {{ isTaskOverdue(task) ? 'overdue' : task.nextActionDue ? `Due in ${formatDueDate(task.nextActionDue)}` : 'Pending' }}
-            </span>
-          </div>
-        </template>
-        <template v-else>
+        <template v-if="task.type === 'opportunity'">
           <div class="text-right">
             <div class="text-sm font-bold text-gray-900">€{{ formatCurrency(task.value) }}</div>
+          </div>
+        </template>
+      </template>
+      
+      <template #dates="{ item: task }">
+        <template v-if="task.type === 'lead' && task.nextActionDue">
+          <div 
+            class="flex items-center gap-1"
+            :class="getDeadlineStatus(task.nextActionDue).textClass"
+          >
+            <i 
+              v-if="getDeadlineStatus(task.nextActionDue).type !== 'overdue'"
+              class="text-[9px]"
+              :class="getDeadlineStatus(task.nextActionDue).iconClass"
+            ></i>
+            <span 
+              class="text-[10px] font-semibold leading-tight"
+            >
+              {{ getDateDisplay(task.nextActionDue) }}
+            </span>
           </div>
         </template>
       </template>
@@ -100,16 +111,15 @@
           <i class="fa-regular fa-snowflake text-gray-400"></i> Unmark as hot
         </button>
       </template>
-    </TasksList>
+    </EntityListSidebar>
     </div>
     
     <!-- Main Content - Task Details -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Mobile Floating Action Buttons -->
-      <div class="lg:hidden xl:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
-        <!-- Activity Summary Button (only when task is selected) -->
+      <div v-if="currentTask" class="lg:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
+        <!-- Activity Summary Button (mobile/tablet only) -->
         <button
-          v-if="currentTask"
           @click="showActivityMobile = !showActivityMobile"
           class="w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:scale-110"
           title="Activity"
@@ -117,7 +127,7 @@
           <i class="fa-solid fa-clock-rotate-left text-lg"></i>
         </button>
         
-        <!-- Task List Button (always visible) -->
+        <!-- Task List Button -->
         <button
           @click="showTaskListMobile = !showTaskListMobile"
           class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110"
@@ -144,7 +154,7 @@
       >
         <template #pinned-extra="{ task }">
           <!-- Requested Vehicle Widget - Always show on overview tab -->
-          <RequestedVehicleWidget
+          <VehicleWidget
             v-if="task.type === 'lead' && task.requestedCar"
             :brand="task.requestedCar.brand"
             :model="task.requestedCar.model"
@@ -171,7 +181,7 @@
             label="Requested Car"
           />
           
-          <RequestedVehicleWidget
+          <VehicleWidget
             v-if="task.type === 'opportunity' && task.vehicle"
             :brand="task.vehicle.brand"
             :model="task.vehicle.model"
@@ -201,10 +211,10 @@
       </TaskShell>
     </div>
     
-    <!-- Right Sidebar - Activity Timeline (Full-screen overlay on mobile) -->
+    <!-- Mobile Activity Timeline (Full-screen overlay) - Shown via floating button -->
     <div 
       v-if="showActivityMobile && currentTask"
-      class="xl:hidden fixed inset-0 z-[60] bg-white"
+      class="lg:hidden fixed inset-0 z-[60] bg-white"
     >
       <ActivitySummarySidebar
         :title="'Activity summary'"
@@ -218,14 +228,11 @@
       />
     </div>
     
-    <!-- Desktop Activity Sidebar -->
-    <ActivitySummarySidebar
-      :title="'Activity summary'"
-      :activities="currentActivities"
-      :collapsed="false"
-      :show-collapse="false"
-      :show="!!currentTask"
-      class="hidden xl:flex"
+    <!-- Reassign Modal -->
+    <ReassignUserModal
+      :show="showReassignModal"
+      @close="showReassignModal = false"
+      @confirm="handleReassignConfirm"
     />
   </div>
 </template>
@@ -236,13 +243,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
-import TasksList from '@/components/tasks/TasksList.vue'
+import EntityListSidebar from '@/components/tasks/TasksList.vue'
 import ActivitySummarySidebar from '@/components/tasks/widgets/ActivitySummarySidebar.vue'
 import TaskShell from '@/components/tasks/TaskShell.vue'
-import RequestedVehicleWidget from '@/components/tasks/widgets/RequestedVehicleWidget.vue'
-import LeadManagementWidget from '@/components/tasks/leads/LeadManagementWidget.vue'
-import OpportunityManagementWidget from '@/components/tasks/opportunities/OpportunityManagementWidget.vue'
-import { formatDueDate, formatCurrency } from '@/utils/formatters'
+import VehicleWidget from '@/components/tasks/widgets/RequestedVehicleWidget.vue'
+import { useTaskShell } from '@/composables/useTaskShell'
+import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -250,10 +257,32 @@ const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 const userStore = useUserStore()
 
+// Helper function to display date with conditional logic (relative if today, absolute if future)
+const getDateDisplay = (isoTimestamp) => {
+  if (!isoTimestamp) return 'No deadline'
+  
+  const deadlineStatus = getDeadlineStatus(isoTimestamp)
+  
+  // If overdue, show "OVERDUE"
+  if (deadlineStatus.type === 'overdue') {
+    return 'OVERDUE'
+  }
+  
+  // If today or urgent (within 2 hours), show relative time
+  if (deadlineStatus.type === 'today' || deadlineStatus.type === 'urgent') {
+    return deadlineStatus.relativeTime
+  }
+  
+  // For future dates (normal), show absolute date/time
+  return formatDeadlineFull(isoTimestamp)
+}
+
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const openCardMenu = ref(null)
 const showTaskListMobile = ref(false)
 const showActivityMobile = ref(false)
+const showReassignModal = ref(false)
+const taskToReassign = ref(null)
 
 // Combine leads and opportunities with type property and composite key
 // Filter based on user role
@@ -329,51 +358,11 @@ const currentActivities = computed(() => {
   }
 })
 
-// Management widget based on task type
-const managementWidget = computed(() => {
-  if (!currentTask.value) return null
-  return currentTask.value.type === 'lead' 
-    ? LeadManagementWidget 
-    : OpportunityManagementWidget
-})
-
-// Store adapter for TaskShell
-const storeAdapter = computed(() => {
-  if (!currentTask.value) return null
-  
-  if (currentTask.value.type === 'lead') {
-    return {
-      currentActivities: computed(() => leadsStore.currentLeadActivities),
-      addActivity: (taskId, activity) => leadsStore.addActivity(taskId, activity),
-      updateActivity: (taskId, activityId, updates) => leadsStore.updateActivity(taskId, activityId, updates),
-      deleteActivity: (taskId, activityId) => leadsStore.deleteActivity(taskId, activityId)
-    }
-  } else {
-    return {
-      currentActivities: computed(() => opportunitiesStore.currentOpportunityActivities),
-      addActivity: (taskId, activity) => opportunitiesStore.addActivity(taskId, activity),
-      updateActivity: (taskId, activityId, updates) => opportunitiesStore.updateActivity(taskId, activityId, updates),
-      deleteActivity: (taskId, activityId) => opportunitiesStore.deleteActivity(taskId, activityId)
-    }
-  }
-})
-
-// Add new config for TaskShell
-const addNewConfig = computed(() => {
-  if (!currentTask.value) return { overviewActions: [], tabActions: [] }
-  
-  if (currentTask.value.type === 'lead') {
-    return {
-      overviewActions: ['purchase-method', 'tradein'],
-      tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
-    }
-  } else {
-    return {
-      overviewActions: ['purchase-method', 'tradein'],
-      tabActions: ['note', 'call', 'email', 'sms', 'whatsapp', 'attachment']
-    }
-  }
-})
+// Use composable to get TaskShell props (same as Lead.vue)
+const taskShellProps = useTaskShell(currentTask)
+const managementWidget = taskShellProps.managementWidget
+const storeAdapter = taskShellProps.storeAdapter
+const addNewConfig = taskShellProps.addNewConfig
 
 // Get unselected class based on task type
 const getUnselectedClass = computed(() => {
@@ -386,17 +375,6 @@ const getUnselectedClass = computed(() => {
   }
 })
 
-// Check if task has an overdue appointment (not just nextActionDue)
-// Tasks without initial call/appointment should not be marked overdue
-const isTaskOverdue = (task) => {
-  // Only show overdue if there's an appointment that is overdue
-  if (!task.scheduledAppointment) return false
-  
-  const appointmentDate = new Date(task.scheduledAppointment.start)
-  const now = new Date()
-  return appointmentDate < now
-}
-
 // Load data on mount
 onMounted(() => {
   leadsStore.loadLeads()
@@ -405,27 +383,13 @@ onMounted(() => {
   const taskId = route.params.id
   if (taskId) {
     loadTaskById(taskId)
-  } else {
-    // Auto-select first task if no task is selected
-    selectFirstTask()
   }
 })
-
-// Auto-select first task
-const selectFirstTask = () => {
-  const firstTask = filteredTasks.value[0]
-  if (firstTask) {
-    router.replace({ path: `/tasks/${firstTask.id}`, query: { type: firstTask.type } })
-  }
-}
 
 // Watch for route changes
 watch(() => route.params.id, (newId) => {
   if (newId) {
     loadTaskById(newId)
-  } else {
-    // Auto-select first task if navigated to /tasks without an ID
-    selectFirstTask()
   }
 })
 
@@ -465,9 +429,33 @@ const toggleCardMenu = (taskId) => {
 }
 
 const reassignTask = (task) => {
-  // Placeholder: in a real implementation this would open a modal
-  // to change the assignee. For now we only close the menu.
+  taskToReassign.value = task
+  showReassignModal.value = true
   openCardMenu.value = null
+}
+
+const handleReassignConfirm = async (assignee) => {
+  if (!taskToReassign.value) return
+  
+  const task = taskToReassign.value
+  const assigneeName = assignee.name
+  
+  if (task.type === 'lead') {
+    await leadsStore.modifyLead(task.id, { 
+      assignee: assigneeName,
+      assigneeType: assignee.type,
+      teamId: assignee.type === 'team' ? assignee.id : null
+    })
+  } else if (task.type === 'opportunity') {
+    await opportunitiesStore.updateOpportunity(task.id, { 
+      assignee: assigneeName,
+      assigneeType: assignee.type,
+      teamId: assignee.type === 'team' ? assignee.id : null
+    })
+  }
+  
+  showReassignModal.value = false
+  taskToReassign.value = null
 }
 
 const markAsHot = async (task) => {

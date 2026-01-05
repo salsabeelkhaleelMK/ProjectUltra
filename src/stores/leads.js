@@ -1,62 +1,70 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchLeads, fetchLeadById, createLead, updateLead, deleteLead, fetchLeadActivities, addLeadActivity, updateLeadActivity, deleteLeadActivity, createLeadFromOpportunity as apiCreateLeadFromOpportunity, scheduleLeadFollowUp } from '@/api/leads'
-import { migrateActivities } from '@/utils/activityMigration'
+import * as leadsApi from '@/api/leads'
+import { mockActivities } from '@/api/mockData'
+import { createOpportunityFromLead } from '@/api/opportunities'
 
 export const useLeadsStore = defineStore('leads', () => {
-  // State
   const leads = ref([])
   const currentLead = ref(null)
-  const currentLeadActivities = ref([])
   const loading = ref(false)
   const error = ref(null)
-  const filters = ref({
-    status: null,
-    priority: null,
-    assignee: null,
-    search: ''
+
+  // Computed: Current lead activities
+  const currentLeadActivities = computed(() => {
+    if (!currentLead.value) return []
+    return mockActivities.filter(activity => activity.leadId === currentLead.value.id)
   })
-  
-  // Getters
-  const totalLeads = computed(() => leads.value.length)
-  const hotLeads = computed(() => leads.value.filter(l => l.priority === 'Hot'))
-  const openLeads = computed(() => leads.value.filter(l => l.status === 'Open'))
-  
-  // Actions
-  async function loadLeads() {
+
+  // Computed: Hot leads (priority === 'Hot')
+  const hotLeads = computed(() => {
+    return leads.value.filter(lead => lead.priority === 'Hot' && !lead.isDisqualified)
+  })
+
+  const loadLeads = async (filters = {}) => {
+    const result = await fetchLeads(filters)
+    return result
+  }
+
+  const fetchLeads = async (filters = {}) => {
     loading.value = true
     error.value = null
     try {
-      const result = await fetchLeads(filters.value)
-      leads.value = result.data
+      const result = await leadsApi.fetchLeads(filters)
+      leads.value = result.data || result
+      return result
     } catch (err) {
       error.value = err.message
+      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function loadLeadById(id) {
+
+  const loadLeadById = async (id) => {
+    return await fetchLeadById(id)
+  }
+
+  const fetchLeadById = async (id) => {
     loading.value = true
     error.value = null
     try {
-      currentLead.value = await fetchLeadById(id)
-      const activities = await fetchLeadActivities(id)
-      // Migrate legacy financing/purchase activities to purchase-method
-      currentLeadActivities.value = migrateActivities(activities)
+      currentLead.value = await leadsApi.fetchLeadById(id)
+      return currentLead.value
     } catch (err) {
       error.value = err.message
+      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function addLead(leadData) {
+
+  const createLead = async (leadData) => {
     loading.value = true
     error.value = null
     try {
-      const newLead = await createLead(leadData)
-      leads.value.unshift(newLead)
+      const newLead = await leadsApi.createLead(leadData)
+      leads.value.push(newLead)
       return newLead
     } catch (err) {
       error.value = err.message
@@ -65,20 +73,24 @@ export const useLeadsStore = defineStore('leads', () => {
       loading.value = false
     }
   }
-  
-  async function modifyLead(id, updates) {
+
+  const modifyLead = async (id, updates) => {
+    return await updateLead(id, updates)
+  }
+
+  const updateLead = async (id, updates) => {
     loading.value = true
     error.value = null
     try {
-      const updatedLead = await updateLead(id, updates)
+      const updated = await leadsApi.updateLead(id, updates)
       const index = leads.value.findIndex(l => l.id === id)
       if (index !== -1) {
-        leads.value[index] = updatedLead
+        leads.value[index] = updated
       }
       if (currentLead.value?.id === id) {
-        currentLead.value = updatedLead
+        currentLead.value = updated
       }
-      return updatedLead
+      return updated
     } catch (err) {
       error.value = err.message
       throw err
@@ -86,12 +98,12 @@ export const useLeadsStore = defineStore('leads', () => {
       loading.value = false
     }
   }
-  
-  async function removeLead(id) {
+
+  const deleteLead = async (id) => {
     loading.value = true
     error.value = null
     try {
-      await deleteLead(id)
+      await leadsApi.deleteLead(id)
       leads.value = leads.value.filter(l => l.id !== id)
     } catch (err) {
       error.value = err.message
@@ -100,137 +112,65 @@ export const useLeadsStore = defineStore('leads', () => {
       loading.value = false
     }
   }
-  
-  async function addActivity(leadId, activity) {
+
+  const addActivity = async (leadId, activity) => {
+    loading.value = true
+    error.value = null
     try {
-      const newActivity = await addLeadActivity(leadId, activity)
-      currentLeadActivities.value.unshift(newActivity)
+      const newActivity = await leadsApi.addLeadActivity(leadId, activity)
+      if (currentLead.value?.id === parseInt(leadId)) {
+        // Trigger reactivity by reloading
+        await loadLeadById(leadId)
+      }
       return newActivity
     } catch (err) {
       error.value = err.message
       throw err
+    } finally {
+      loading.value = false
     }
   }
-  
-  async function updateActivity(leadId, activityId, updates) {
+
+  const updateActivity = async (leadId, activityId, updates) => {
+    loading.value = true
+    error.value = null
     try {
-      const updatedActivity = await updateLeadActivity(leadId, activityId, updates)
-      const index = currentLeadActivities.value.findIndex(a => a.id === parseInt(activityId))
-      if (index !== -1) {
-        currentLeadActivities.value[index] = updatedActivity
+      const updated = await leadsApi.updateLeadActivity(leadId, activityId, updates)
+      if (currentLead.value?.id === parseInt(leadId)) {
+        await loadLeadById(leadId)
       }
-      return updatedActivity
+      return updated
     } catch (err) {
       error.value = err.message
       throw err
+    } finally {
+      loading.value = false
     }
   }
-  
-  async function deleteActivity(leadId, activityId) {
+
+  const deleteActivity = async (leadId, activityId) => {
+    loading.value = true
+    error.value = null
     try {
-      await deleteLeadActivity(leadId, activityId)
-      currentLeadActivities.value = currentLeadActivities.value.filter(a => a.id !== parseInt(activityId))
+      await leadsApi.deleteLeadActivity(leadId, activityId)
+      if (currentLead.value?.id === parseInt(leadId)) {
+        await loadLeadById(leadId)
+      }
       return { success: true }
     } catch (err) {
       error.value = err.message
       throw err
-    }
-  }
-  
-  function setFilters(newFilters) {
-    filters.value = { ...filters.value, ...newFilters }
-    loadLeads()
-  }
-  
-  function clearFilters() {
-    filters.value = {
-      status: null,
-      priority: null,
-      assignee: null,
-      search: ''
-    }
-    loadLeads()
-  }
-  
-  async function requalifyLead(id) {
-    loading.value = true
-    error.value = null
-    try {
-      const updatedLead = await updateLead(id, {
-        isDisqualified: false,
-        status: 'Open'
-      })
-      const index = leads.value.findIndex(l => l.id === id)
-      if (index !== -1) {
-        leads.value[index] = updatedLead
-      }
-      if (currentLead.value?.id === id) {
-        currentLead.value = updatedLead
-      }
-      // Add activity log entry
-      await addActivity(id, {
-        type: 'note',
-        user: 'You',
-        action: 'requalified lead',
-        content: 'Lead has been requalified and reopened for qualification process'
-      })
-      return updatedLead
-    } catch (err) {
-      error.value = err.message
-      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function convertLeadToOpportunity(leadId, options = {}) {
+
+  const scheduleFollowUp = async (leadId, appointmentData) => {
     loading.value = true
     error.value = null
     try {
-      // Get full lead data and activities
-      const lead = await fetchLeadById(leadId)
-      const activities = await fetchLeadActivities(leadId)
-      
-      // Import opportunities store dynamically to avoid circular dependency
-      const { useOpportunitiesStore } = await import('./opportunities')
-      const opportunitiesStore = useOpportunitiesStore()
-      
-      // Create opportunity from lead with assignment options
-      const newOpportunity = await opportunitiesStore.createOpportunityFromLead(lead, activities, options)
-      
-      // Remove lead from leads store
-      await removeLead(leadId)
-      
-      return newOpportunity.id
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  async function createLeadFromOpportunity(opportunityData, activities) {
-    loading.value = true
-    error.value = null
-    try {
-      const newLead = await apiCreateLeadFromOpportunity(opportunityData, activities)
-      leads.value.unshift(newLead)
-      return newLead
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  async function scheduleFollowUp(leadId, appointmentData) {
-    loading.value = true
-    error.value = null
-    try {
-      const event = await scheduleLeadFollowUp(leadId, appointmentData)
-      await loadLeadById(leadId) // Reload to get updated lead
+      const event = await leadsApi.scheduleLeadFollowUp(leadId, appointmentData)
+      await loadLeadById(leadId)
       return event
     } catch (err) {
       error.value = err.message
@@ -239,30 +179,49 @@ export const useLeadsStore = defineStore('leads', () => {
       loading.value = false
     }
   }
-  
+
+  const convertLeadToOpportunity = async (leadId) => {
+    loading.value = true
+    error.value = null
+    try {
+      const lead = await leadsApi.fetchLeadById(leadId)
+      const activities = mockActivities.filter(a => a.leadId === leadId)
+      const opportunity = await createOpportunityFromLead(lead, activities)
+      
+      // Mark lead as converted (or remove it)
+      await leadsApi.updateLead(leadId, { isDisqualified: true, disqualifyReason: 'Converted to opportunity' })
+      
+      // Remove from leads list
+      leads.value = leads.value.filter(l => l.id !== leadId)
+      
+      return opportunity.id
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     leads,
     currentLead,
-    currentLeadActivities,
     loading,
     error,
-    filters,
-    totalLeads,
+    currentLeadActivities,
     hotLeads,
-    openLeads,
     loadLeads,
+    fetchLeads,
     loadLeadById,
-    addLead,
+    fetchLeadById,
+    createLead,
     modifyLead,
-    removeLead,
+    updateLead,
+    deleteLead,
     addActivity,
     updateActivity,
     deleteActivity,
-    setFilters,
-    clearFilters,
-    requalifyLead,
-    convertLeadToOpportunity,
-    createLeadFromOpportunity,
-    scheduleFollowUp
+    scheduleFollowUp,
+    convertLeadToOpportunity
   }
 })

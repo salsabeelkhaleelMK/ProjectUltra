@@ -10,7 +10,7 @@ export const mockUsers = [
 
 export const mockLeads = [
   {
-    id: 1,
+    id: 21,
     customer: { id: 1, name: 'Josh Adams', initials: 'JA', email: 'josh.adams@example.com', phone: '+4901564879300', address: 'Via Torino 56, 20123 Milan' },
     status: 'Open',
     priority: 'Hot',
@@ -38,15 +38,20 @@ export const mockLeads = [
     assigneeInitials: 'SK',
     createdAt: (() => {
       const date = new Date()
-      date.setDate(date.getDate() - 10) // 10 days ago - triggers Lead Qualification Urgency
+      date.setDate(date.getDate() - 1) // 1 day ago - fresh lead
       return date.toISOString()
     })(),
     lastActivity: (() => {
       const date = new Date()
-      date.setDate(date.getDate() - 10)
+      date.setDate(date.getDate() - 1)
       return date.toISOString()
     })(),
-    nextActionDue: '2025-12-19T15:42:00',
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 2) // 2 days in the future - not overdue
+      date.setHours(14, 0, 0, 0)
+      return date.toISOString()
+    })(),
     tags: ['Premium', 'Automation'],
     stage: 'Open Lead', // Still in Open Lead stage
     isDisqualified: false,
@@ -123,14 +128,1199 @@ export const mockLeads = [
     tags: [],
     stage: 'Open Lead',
     isDisqualified: false,
-    disqualifyReason: null
+    disqualifyReason: null,
+    contactAttempts: []
+  },
+  // GROUP A: Validated Stage Leads
+  {
+    id: 4,
+    customer: { id: 4, name: 'Sophie Mueller', initials: 'SM', email: 'sophie.mueller@example.com', phone: '+4901678912345', address: 'Maximilianstraße 10, 80539 Munich' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'iX xDrive50', 
+      year: 2024, 
+      price: 105000, 
+      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=900&auto=format&fit=crop&q=60',
+      vin: 'BMW1234567890',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '01/2024',
+      dealership: 'Munich',
+      stockDays: 5,
+      requestMessage: 'Interested in BMW iX. Ready for test drive this week.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Website',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 5)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 2)
+      return date.toISOString()
+    })(),
+    tags: ['Premium'],
+    stage: 'Validated',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: {
+      id: 101,
+      start: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 2)
+        date.setHours(14, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      end: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 2)
+        date.setHours(15, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      type: 'test-drive',
+      status: 'confirmed'
+    },
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 1)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Customer confirmed interest, validated contact details',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 5,
+    customer: { id: 5, name: 'Marco Rossi', initials: 'MR', email: 'marco.rossi@example.com', phone: '+393401234567', address: 'Via della Repubblica 25, 50123 Florence' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'Q4 e-tron', 
+      year: 2024, 
+      price: 55000, 
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
+      vin: 'AUDI9876543210',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '02/2024',
+      dealership: 'Firenze',
+      stockDays: 12,
+      requestMessage: 'Looking for Q4 e-tron information and pricing.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Referral',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 2)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Validated',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 2)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Validated lead, customer interested but no appointment scheduled yet',
+        transcription: null
+      }
+    ]
+  },
+  // GROUP B: Disqualified States
+  {
+    id: 6,
+    customer: { id: 6, name: 'Klaus Schmidt', initials: 'KS', email: 'klaus.schmidt@example.com', phone: '+4901789123456', address: 'Friedrichstraße 100, 10117 Berlin' },
+    status: 'Disqualified',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Volkswagen', 
+      model: 'ID.4', 
+      year: 2023, 
+      price: 45000, 
+      image: 'https://images.unsplash.com/photo-1622353219448-46a009f0d44f?w=900&auto=format&fit=crop&q=60',
+      vin: 'VW1234567890',
+      kilometers: 8000,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '05/2023',
+      dealership: 'Berlin',
+      stockDays: 45,
+      requestMessage: 'Interested in ID.4 but need to check budget first.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Marketing',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 15)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    nextActionDue: null,
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: true,
+    disqualifyReason: 'Data cleanup',
+    disqualifyCategory: 'Not Valid',
+    scheduledAppointment: null,
+    contactAttempts: []
+  },
+  {
+    id: 7,
+    customer: { id: 7, name: 'Anna Becker', initials: 'AB', email: 'anna.becker@example.com', phone: '+4901890234567', address: 'Reeperbahn 50, 20359 Hamburg' },
+    status: 'Disqualified',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'GLC 300', 
+      year: 2024, 
+      price: 68000, 
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=900&auto=format&fit=crop&q=60',
+      vin: 'MB9876543210',
+      kilometers: 0,
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      registration: '01/2024',
+      dealership: 'Hamburg',
+      stockDays: 8,
+      requestMessage: 'Looking for GLC but considering other brands too.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Website',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 8)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: null,
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: true,
+    disqualifyReason: 'Bought elsewhere',
+    disqualifyCategory: 'Not Interested',
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 5)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Customer informed us they purchased from competitor',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 8,
+    customer: { id: 8, name: 'Thomas Weber', initials: 'TW', email: 'thomas.weber@example.com', phone: '+4901901345678', address: 'Königsallee 60, 40212 Düsseldorf' },
+    status: 'Disqualified',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: 'Taycan', 
+      year: 2024, 
+      price: 95000, 
+      image: 'https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=900&auto=format&fit=crop&q=60',
+      vin: 'POR1234567890',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '02/2024',
+      dealership: 'Munich',
+      stockDays: 3,
+      requestMessage: 'Interested in Taycan specifications.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Phone',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 20)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    nextActionDue: null,
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: true,
+    disqualifyReason: 'Unreachable',
+    disqualifyCategory: 'Not Valid',
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 18)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'No answer, left voicemail',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 15)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'No answer again',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 10)
+          return date.toISOString()
+        })(),
+        outcome: 'left-voicemail',
+        channel: 'phone',
+        notes: 'Left second voicemail',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 6)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Still no response',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 3)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Final attempt - no response, marking as unreachable',
+        transcription: null
+      }
+    ]
+  },
+  // GROUP C: Contact Attempts Progression
+  {
+    id: 9,
+    customer: { id: 9, name: 'Julia Fischer', initials: 'JF', email: 'julia.fischer@example.com', phone: '+4901912456789', address: 'Ludwigstraße 15, 70173 Stuttgart' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'A4 Avant', 
+      year: 2024, 
+      price: 52000, 
+      image: 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=900&auto=format&fit=crop&q=60',
+      vin: 'AUDI4567890123',
+      kilometers: 0,
+      fuelType: 'Diesel',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Stuttgart',
+      stockDays: 10,
+      requestMessage: 'Looking for A4 Avant for family use.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Website',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 3)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 3)
+          return date.toISOString()
+        })(),
+        outcome: 'left-voicemail',
+        channel: 'phone',
+        notes: 'Left voicemail with callback request',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 10,
+    customer: { id: 10, name: 'Michael Hoffmann', initials: 'MH', email: 'michael.hoffmann@example.com', phone: '+4901923567890', address: 'Marienplatz 8, 80331 Munich' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'BMW', 
+      model: '3 Series', 
+      year: 2023, 
+      price: 48000, 
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
+      vin: 'BMW3456789012',
+      kilometers: 12000,
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      registration: '06/2023',
+      dealership: 'Munich',
+      stockDays: 20,
+      requestMessage: 'Interested in pre-owned 3 Series.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Referral',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 7)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 8)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 6)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'No answer on first attempt',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 4)
+          return date.toISOString()
+        })(),
+        outcome: 'busy',
+        channel: 'phone',
+        notes: 'Line was busy',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 1)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Spoke briefly, customer asked to call back tomorrow',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 11,
+    customer: { id: 11, name: 'Laura Zimmermann', initials: 'LZ', email: 'laura.zimmermann@example.com', phone: '+4901934678901', address: 'Kurfürstendamm 100, 10709 Berlin' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model Y', 
+      year: 2024, 
+      price: 62000, 
+      image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&auto=format&fit=crop&q=60',
+      vin: 'TESLA567890123',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Berlin',
+      stockDays: 2,
+      requestMessage: 'Very interested in Model Y, need quick decision.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Walk-in',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 12)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 6)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 2)
+      return date.toISOString()
+    })(),
+    tags: ['Urgent'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 11)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'First attempt - no answer',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 9)
+          return date.toISOString()
+        })(),
+        outcome: 'left-voicemail',
+        channel: 'phone',
+        notes: 'Left voicemail',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 5)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Third attempt - still no answer',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 6)
+          return date.toISOString()
+        })(),
+        outcome: 'busy',
+        channel: 'phone',
+        notes: 'Fourth attempt - line busy. One more attempt before auto-disqualification',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 12,
+    customer: { id: 12, name: 'Stefan Braun', initials: 'SB', email: 'stefan.braun@example.com', phone: '+4901945789012', address: 'Elbchaussee 200, 22605 Hamburg' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: 'Macan', 
+      year: 2023, 
+      price: 72000, 
+      image: 'https://images.unsplash.com/photo-1611859266238-4b98091d9d9b?w=900&auto=format&fit=crop&q=60',
+      vin: 'POR6789012345',
+      kilometers: 8500,
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      registration: '04/2023',
+      dealership: 'Hamburg',
+      stockDays: 35,
+      requestMessage: 'Looking at used Macan options.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Marketing',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 18)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 12)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 4)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 17)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'No answer',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 14)
+          return date.toISOString()
+        })(),
+        outcome: 'left-voicemail',
+        channel: 'phone',
+        notes: 'Left voicemail',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 10)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'No answer again',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 5)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Fourth attempt - no answer',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 12)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Fifth and final attempt - no answer. Ready for auto-disqualification',
+        transcription: null
+      }
+    ]
+  },
+  // GROUP D: Deadline States
+  {
+    id: 13,
+    customer: { id: 13, name: 'Nina Keller', initials: 'NK', email: 'nina.keller@example.com', phone: '+4901956890123', address: 'Bahnhofstraße 45, 60329 Frankfurt' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'e-tron GT', 
+      year: 2024, 
+      price: 115000, 
+      image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=900&auto=format&fit=crop&q=60',
+      vin: 'AUDI7890123456',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Frankfurt',
+      stockDays: 1,
+      requestMessage: 'Urgent - need e-tron GT ASAP for business.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Referral',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 2)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 1)
+      date.setMinutes(date.getMinutes() + 30)
+      return date.toISOString()
+    })(),
+    tags: ['VIP', 'Urgent'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: []
+  },
+  {
+    id: 14,
+    customer: { id: 14, name: 'Oliver Lang', initials: 'OL', email: 'oliver.lang@example.com', phone: '+4901967901234', address: 'Schillerstraße 30, 70173 Stuttgart' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'C-Class', 
+      year: 2024, 
+      price: 58000, 
+      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=900&auto=format&fit=crop&q=60',
+      vin: 'MB8901234567',
+      kilometers: 0,
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      registration: '02/2024',
+      dealership: 'Stuttgart',
+      stockDays: 15,
+      requestMessage: 'Interested in new C-Class hybrid.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Website',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 8)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 4)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 6)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: []
+  },
+  {
+    id: 15,
+    customer: { id: 15, name: 'Petra Schulz', initials: 'PS', email: 'petra.schulz@example.com', phone: '+4901978012345', address: 'Alexanderplatz 5, 10178 Berlin' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'X5', 
+      year: 2023, 
+      price: 78000, 
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
+      vin: 'BMW9012345678',
+      kilometers: 18000,
+      fuelType: 'Diesel',
+      gearType: 'Automatic',
+      registration: '05/2023',
+      dealership: 'Berlin',
+      stockDays: 30,
+      requestMessage: 'Need X5 for family - urgent decision needed.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Walk-in',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 5)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    tags: ['Hot'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 4)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Customer very interested, promised to call back',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 16,
+    customer: { id: 16, name: 'Robert Klein', initials: 'RK', email: 'robert.klein@example.com', phone: '+4901989123456', address: 'Hafenstraße 80, 20359 Hamburg' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: { 
+      brand: 'Volkswagen', 
+      model: 'Passat', 
+      year: 2024, 
+      price: 42000, 
+      image: 'https://images.unsplash.com/photo-1622353219448-46a009f0d44f?w=900&auto=format&fit=crop&q=60',
+      vin: 'VW0123456789',
+      kilometers: 0,
+      fuelType: 'Diesel',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Hamburg',
+      stockDays: 8,
+      requestMessage: 'Looking for reliable company car.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Marketing',
+    fiscalEntity: 'Klein GmbH',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 10)
+      return date.toISOString()
+    })(),
+    tags: ['Corporate'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: []
+  },
+  // GROUP E: Edge Cases
+  {
+    id: 17,
+    customer: { id: 17, name: 'Sabine Vogel', initials: 'SV', email: 'sabine.vogel@example.com', phone: '+4901990234567', address: 'Goethestraße 25, 60313 Frankfurt' },
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: null,
+    carStatus: null,
+    requestType: 'Generic Sales',
+    source: 'Phone',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 5)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 2)
+      return date.toISOString()
+    })(),
+    tags: [],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 5)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Customer called to inquire about general inventory - no specific car yet',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 18,
+    customer: { id: 18, name: 'Dr. Andreas Werner', initials: 'AW', email: 'andreas.werner@example.com', phone: '+4902001345678', address: 'Königsallee 25, 40212 Düsseldorf' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: '911 Carrera', 
+      year: 2024, 
+      price: 135000, 
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&auto=format&fit=crop&q=60',
+      vin: 'POR1357924680',
+      kilometers: 0,
+      fuelType: 'Petrol',
+      gearType: 'Manual',
+      registration: '03/2024',
+      dealership: 'Munich',
+      stockDays: 1,
+      requestMessage: 'VIP customer - interested in 911 Carrera with specific options.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Referral',
+    fiscalEntity: 'Werner Medical GmbH',
+    sourceDetails: 'Referred by existing customer',
+    assignee: 'Salsabeel Khaleel',
+    assigneeInitials: 'SK',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 4)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 2)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      return date.toISOString()
+    })(),
+    tags: ['VIP', 'Referral', 'Premium', 'High-Value'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 2)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'VIP customer, very interested. Discussed custom options.',
+        transcription: 'Customer expressed strong interest in 911 Carrera with Sport Chrono package and custom interior. Budget not an issue. Looking to purchase within 2 weeks.'
+      }
+    ]
+  },
+  {
+    id: 19,
+    customer: { id: 19, name: 'Christina Bauer', initials: 'CB', email: 'christina.bauer@example.com', phone: '+4902012456789', address: 'Leopoldstraße 50, 80802 Munich' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model S', 
+      year: 2024, 
+      price: 98000, 
+      image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=900&auto=format&fit=crop&q=60',
+      vin: 'TESLA246813579',
+      kilometers: 0,
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Munich',
+      stockDays: 4,
+      requestMessage: 'Urgent need for Model S - company car replacement.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Website',
+    fiscalEntity: 'Bauer Consulting AG',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      date.setHours(10, 0, 0, 0)
+      return date.toISOString()
+    })(),
+    tags: ['Corporate', 'Urgent'],
+    stage: 'Validated',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: {
+      id: 102,
+      start: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 1)
+        date.setHours(10, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      end: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 1)
+        date.setHours(11, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      type: 'test-drive',
+      status: 'confirmed'
+    },
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 1)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Initial contact - validated lead',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setHours(date.getHours() - 1)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Confirmed appointment for tomorrow',
+        transcription: null
+      }
+    ]
+  },
+  {
+    id: 20,
+    customer: { id: 20, name: 'Martin Richter', initials: 'MR', email: 'martin.richter@example.com', phone: '+4902023567890', address: 'Mönckebergstraße 15, 20095 Hamburg' },
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: { 
+      brand: 'BMW', 
+      model: 'M4 Competition', 
+      year: 2024, 
+      price: 92000, 
+      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=900&auto=format&fit=crop&q=60',
+      vin: 'BMW1357924680',
+      kilometers: 0,
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      registration: '03/2024',
+      dealership: 'Hamburg',
+      stockDays: 2,
+      requestMessage: 'Very interested in M4 Competition - performance enthusiast.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Test Drive',
+    source: 'Walk-in',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 4)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 3)
+      return date.toISOString()
+    })(),
+    tags: ['Performance', 'Hot'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    disqualifyCategory: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 3)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'First contact - customer very enthusiastic',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 1)
+          return date.toISOString()
+        })(),
+        outcome: 'spoke-to-customer',
+        channel: 'phone',
+        notes: 'Follow-up call - still very interested, needs to check schedule',
+        transcription: null
+      }
+    ]
   }
 ]
 
 export const mockOpportunities = [
   {
     id: 1,
-    customer: { id: 4, name: 'Grace Thompson', initials: 'GT', email: 'grace.thompson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze' },
+    customer: { id: 21, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze' },
     requestedCar: { 
       brand: 'Audi', 
       model: 'e-tron GT', 
@@ -157,37 +1347,49 @@ export const mockOpportunities = [
       stockDays: 12,
       requestMessage: 'Looking for a new e-tron GT. What are the financing options?'
     },
+    selectedVehicle: null, // Vehicle selected for offer (can differ from requested)
     stage: 'Qualified',
     tags: ['Premium'],
-    probability: 40,
     value: 98000,
-    expectedCloseDate: '2025-04-30',
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 30) // 30 days in the future
+      return date.toISOString().split('T')[0]
+    })(),
     assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
-    createdAt: '2025-03-10T14:20:00',
-    lastActivity: '2025-03-24T09:15:00',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1) // 1 day ago - fresh opportunity
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
     scheduledAppointment: {
       id: 10,
-      title: 'Dealership Visit - Grace Thompson',
+      title: 'Dealership Visit - Emma Wilson',
       start: (() => {
-        const future = new Date()
-        future.setDate(future.getDate() + 3) // 3 days in the future
-        future.setHours(14, 0, 0, 0)
-        return future.toISOString()
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 2) // 2 days ago to trigger action item
+        yesterday.setHours(11, 0, 0, 0)
+        return yesterday.toISOString()
       })(),
       end: (() => {
-        const future = new Date()
-        future.setDate(future.getDate() + 3)
-        future.setHours(15, 30, 0, 0)
-        return future.toISOString()
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 2)
+        yesterday.setHours(12, 0, 0, 0)
+        return yesterday.toISOString()
       })(),
-      type: 'Showroom Visit',
-      customer: 'Grace Thompson',
+      type: 'appointment',
+      customer: 'Emma Wilson',
       vehicle: 'Audi e-tron GT',
       assignee: 'Salsabeel Khaleel',
       assigneeId: 1,
       dealership: 'Firenze',
       team: 'Sales (New)',
-      status: 'scheduled',
+      status: 'confirmed',
       noShowCount: 0
     }
   },
@@ -222,7 +1424,6 @@ export const mockOpportunities = [
     },
     stage: 'Qualified',
     tags: [],
-    probability: 50,
     value: 120000,
     expectedCloseDate: '2025-05-15',
     assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
@@ -291,7 +1492,6 @@ export const mockOpportunities = [
     },
     stage: 'Closed',
     tags: ['Automation'],
-    probability: 100,
     value: 105000,
     expectedCloseDate: '2025-03-20',
     assignee: 'David Miller',
@@ -338,7 +1538,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: ['Premium'],
-    probability: 65,
     value: 95000,
     expectedCloseDate: '2025-05-01',
     assignee: 'Salsabeel Khaleel', // Assign to manager so it shows up
@@ -386,7 +1585,6 @@ export const mockOpportunities = [
     },
     stage: 'Qualified',
     tags: [],
-    probability: 35,
     value: 110000,
     expectedCloseDate: '2025-06-01',
     assignee: 'Michael Thomas',
@@ -426,7 +1624,6 @@ export const mockOpportunities = [
     },
     stage: 'Qualified',
     tags: [],
-    probability: 30,
     value: 45000,
     expectedCloseDate: '2025-07-01',
     assignee: 'Sarah Jenkins',
@@ -466,7 +1663,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: ['Premium'],
-    probability: 70,
     value: 65000,
     expectedCloseDate: '2025-04-15',
     assignee: 'David Miller',
@@ -506,7 +1702,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: [],
-    probability: 60,
     value: 55000,
     expectedCloseDate: '2025-05-20',
     assignee: 'Michael Thomas',
@@ -547,7 +1742,6 @@ export const mockOpportunities = [
     },
     stage: 'Closed',
     tags: ['Premium'],
-    probability: 100,
     value: 85000,
     expectedCloseDate: '2025-01-15',
     assignee: 'Sarah Jenkins',
@@ -558,7 +1752,7 @@ export const mockOpportunities = [
     // Closed Won (contract signed) but not delivered yet - perfect for CFB
   },
   {
-    id: 10,
+    id: 16,
     customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888', address: 'Spitalerstraße 12, 20095 Hamburg' },
     requestedCar: { 
       brand: 'Mercedes-Benz', 
@@ -588,7 +1782,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: [],
-    probability: 75,
     value: 75000,
     expectedCloseDate: '2025-05-10',
     assignee: 'David Miller',
@@ -629,7 +1822,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: ['Automation'],
-    probability: 80,
     value: 68000,
     expectedCloseDate: '2025-04-20',
     assignee: 'Michael Thomas',
@@ -670,7 +1862,6 @@ export const mockOpportunities = [
     },
     stage: 'In Negotiation',
     tags: [],
-    probability: 70,
     value: 90000,
     expectedCloseDate: '2025-05-05',
     assignee: 'Sarah Jenkins',
@@ -724,7 +1915,6 @@ export const mockOpportunities = [
       requestMessage: 'Interested in ID.3. What financing options are available?'
     },
     stage: 'Qualified',
-    probability: 40,
     value: 40000,
     expectedCloseDate: '2025-06-15',
     assignee: 'David Miller',
@@ -764,7 +1954,6 @@ export const mockOpportunities = [
     },
     stage: 'Qualified',
     tags: [],
-    probability: 55,
     value: 48000,
     expectedCloseDate: '2025-04-10',
     assignee: 'Michael Thomas',
@@ -818,7 +2007,6 @@ export const mockOpportunities = [
     },
     stage: 'Closed Lost',
     tags: [],
-    probability: 0,
     value: 72000,
     expectedCloseDate: null,
     assignee: 'Sarah Jenkins',
@@ -845,7 +2033,8 @@ export const mockContacts = [
     source: 'Marketing',
     tags: ['Premium', 'Automation'],
     createdAt: '2025-03-21T08:17:00',
-    lastContact: '2025-03-25T14:30:00'
+    lastContact: '2025-03-25T14:30:00',
+    requestedCar: null
   },
   {
     id: 2,
@@ -859,7 +2048,31 @@ export const mockContacts = [
     source: 'Website',
     tags: [],
     createdAt: '2025-03-20T10:15:00',
-    lastContact: '2025-03-24T16:20:00'
+    lastContact: '2025-03-24T16:20:00',
+    requestedCar: null
+  },
+  {
+    id: 999,
+    customerId: 999,
+    name: 'Test Contact with Car',
+    initials: 'TC',
+    email: 'test.contact@example.com',
+    phone: '+4901234567999',
+    address: 'Test Street 123, 10115 Berlin',
+    company: null,
+    source: 'Direct',
+    tags: ['Test'],
+    createdAt: '2025-01-04T10:00:00',
+    lastContact: '2025-01-04T10:00:00',
+    requestedCar: {
+      brand: 'BMW',
+      model: '3 Series',
+      year: 2024,
+      price: 45000,
+      requestType: 'Quotation',
+      requestMessage: 'Interested in this model for company fleet',
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500'
+    }
   }
 ]
 
@@ -1008,12 +2221,12 @@ export const mockCalendarEvents = [
   },
   {
     id: 5,
-    title: 'Test Drive - Grace Thompson',
+    title: 'Test Drive - Emma Wilson',
     start: '2025-12-21T13:00:00',
     end: '2025-12-21T14:00:00',
     type: 'test-drive',
-    customer: 'Grace Thompson',
-    customerId: 4,
+    customer: 'Emma Wilson',
+    customerId: 21,
     opportunityId: 1,
     vehicle: 'Audi e-tron GT',
     assignee: 'Salsabeel Khaleel',
@@ -1085,12 +2298,12 @@ export const mockCalendarEvents = [
   },
   {
     id: 10,
-    title: 'Dealership Visit - Grace Thompson',
+    title: 'Dealership Visit - Emma Wilson',
     start: '2025-12-28T11:00:00',
     end: '2025-12-28T12:00:00',
     type: 'appointment',
-    customer: 'Grace Thompson',
-    customerId: 4,
+    customer: 'Emma Wilson',
+    customerId: 21,
     opportunityId: 1,
     vehicle: 'Audi e-tron GT',
     assignee: 'Salsabeel Khaleel',
@@ -1183,12 +2396,12 @@ export const mockCalendarEvents = [
   },
   {
     id: 17,
-    title: 'Call - Follow-up Grace Thompson',
+    title: 'Call - Follow-up Emma Wilson',
     start: '2026-01-08T10:00:00',
     end: '2026-01-08T10:30:00',
     type: 'call',
-    customer: 'Grace Thompson',
-    customerId: 4,
+    customer: 'Emma Wilson',
+    customerId: 21,
     assignee: 'Salsabeel Khaleel',
     assigneeId: 1,
     dealership: 'Firenze',
@@ -1236,76 +2449,6 @@ export const mockCalendarEvents = [
 ]
 
 export const mockActivities = [
-  {
-    id: 1,
-    type: 'call',
-    user: 'Natalia Sung',
-    action: 'made an unsuccessful call attempt',
-    timestamp: '2025-03-25T08:47:00',
-    leadId: 1
-  },
-  {
-    id: 2,
-    type: 'note',
-    user: 'Natalia Sung',
-    action: 'added a note',
-    content: 'Customer prefers phone contact in the afternoon.',
-    timestamp: '2025-03-24T08:43:00',
-    leadId: 1
-  },
-  {
-    id: 3,
-    type: 'lead-created',
-    user: 'System',
-    action: 'Lead was created coming from Summer Sale Campaign',
-    timestamp: '2025-03-21T07:22:00',
-    leadId: 1
-  },
-  // Opportunity 1 activities
-  {
-    id: 4,
-    type: 'call',
-    user: 'Michael Thomas',
-    action: 'made a call',
-    content: 'Discussed financing options and delivery timeline. Customer is interested in 48-month financing plan.',
-    timestamp: '2025-03-24T09:15:00',
-    opportunityId: 1
-  },
-  {
-    id: 5,
-    type: 'note',
-    user: 'Michael Thomas',
-    action: 'added a note',
-    content: 'Customer requested detailed information about warranty and service packages.',
-    timestamp: '2025-03-22T14:30:00',
-    opportunityId: 1
-  },
-  {
-    id: 22,
-    type: 'note',
-    user: 'Michael Thomas',
-    action: 'added a note',
-    content: 'Follow-up scheduled for next week to discuss final pricing and delivery options.',
-    timestamp: '2025-03-23T10:00:00',
-    opportunityId: 1
-  },
-  {
-    id: 6,
-    type: 'email',
-    user: 'Michael Thomas',
-    action: 'sent an email',
-    content: 'Sent financing options and vehicle specifications.',
-    timestamp: '2025-03-20T11:00:00',
-    opportunityId: 1
-  },
-  {
-    id: 7,
-    type: 'opportunity-created',
-    user: 'System',
-    action: 'Opportunity was created from lead conversion',
-    timestamp: '2025-03-10T14:20:00',
-    opportunityId: 1
-  },
   // Opportunity 2 activities
   {
     id: 8,
@@ -1584,7 +2727,7 @@ export const mockActivities = [
     timestamp: '2024-12-01T09:00:00',
     opportunityId: 9
   },
-  // Opportunity 10 activities (UFB - In Negotiation for 10+ days without contract)
+  // Opportunity 16 activities (UFB - In Negotiation for 10+ days without contract)
   {
     id: 40,
     type: 'offer',
@@ -1592,7 +2735,7 @@ export const mockActivities = [
     action: 'created an offer',
     content: 'Initial offer sent for Mercedes-Benz EQC',
     timestamp: '2024-12-15T11:00:00',
-    opportunityId: 10
+    opportunityId: 16
   },
   {
     id: 41,
@@ -1601,7 +2744,7 @@ export const mockActivities = [
     action: 'made a call',
     content: 'Discussed offer details. Customer reviewing terms.',
     timestamp: '2024-12-14T10:00:00',
-    opportunityId: 10
+    opportunityId: 16
   },
   {
     id: 42,
@@ -1609,7 +2752,7 @@ export const mockActivities = [
     user: 'System',
     action: 'Opportunity was created from website inquiry',
     timestamp: '2024-12-05T10:00:00',
-    opportunityId: 10
+    opportunityId: 16
   },
   // Opportunity 11 activities (In Negotiation with contract date - no task widgets)
   {
@@ -1700,16 +2843,1198 @@ export const mockActivities = [
     action: 'Opportunity was created from marketing campaign',
     timestamp: '2024-12-01T08:00:00',
     opportunityId: 13
-  }
+  },
+  
+  // ========== LEAD ACTIVITIES (Leads 2-22) ==========
+  
+  // Lead 2 (Emma Watson) - Mercedes EQS
+  {
+    id: 53,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call attempt',
+    content: 'No answer. Will try again later.',
+    timestamp: '2025-03-26T10:15:00',
+    leadId: 2
+  },
+  {
+    id: 54,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Customer prefers contact after 2 PM. Interested in EQS test drive.',
+    timestamp: '2025-03-25T16:30:00',
+    leadId: 2
+  },
+  {
+    id: 55,
+    type: 'email',
+    user: 'Sarah Jenkins',
+    action: 'sent an email',
+    content: 'Sent detailed EQS specifications and pricing information.',
+    timestamp: '2025-03-24T14:00:00',
+    leadId: 2
+  },
+  
+  // Lead 3 (Liam Johnson) - Mercedes EQS
+  {
+    id: 56,
+    type: 'sms',
+    user: 'David Miller',
+    action: 'sent an SMS',
+    content: 'Hi Liam! Our Milano dealership is at Via Roma 45. Open Mon-Sat 9-7. Let me know when you can visit!',
+    timestamp: '2025-03-26T09:00:00',
+    leadId: 3
+  },
+  {
+    id: 57,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'Mercedes-Benz EQS brochure and technical specifications',
+    fileName: 'Mercedes_EQS_Brochure_2024.pdf',
+    timestamp: '2025-03-25T11:30:00',
+    leadId: 3
+  },
+  {
+    id: 58,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Customer wants electric vehicle with long range. EQS perfect fit.',
+    timestamp: '2025-03-24T10:00:00',
+    leadId: 3
+  },
+  
+  // Lead 4 (Sophie Mueller) - BMW X5
+  {
+    id: 59,
+    type: 'whatsapp',
+    user: 'Natalia Sung',
+    action: 'sent a WhatsApp message',
+    content: 'Hello Sophie! Thank you for your interest in the BMW X5. Would you like to schedule a test drive this week?',
+    timestamp: '2025-03-26T15:00:00',
+    leadId: 4
+  },
+  {
+    id: 60,
+    type: 'attachment',
+    user: 'Natalia Sung',
+    action: 'uploaded an attachment',
+    content: 'BMW X5 exterior and interior photos',
+    fileName: 'BMW_X5_Photos.jpg',
+    timestamp: '2025-03-25T14:00:00',
+    leadId: 4
+  },
+  {
+    id: 61,
+    type: 'call',
+    user: 'Natalia Sung',
+    action: 'made a call',
+    content: 'Spoke with customer. Very interested in X5 M Sport package. Discussed financing options.',
+    timestamp: '2025-03-24T11:00:00',
+    leadId: 4
+  },
+  
+  // Lead 5 (Marco Rossi) - Volkswagen ID.4
+  {
+    id: 62,
+    type: 'email',
+    user: 'Salsabeel Khaleel',
+    action: 'sent an email',
+    content: 'Sent comparison between ID.4 and ID.5 models with pricing.',
+    timestamp: '2025-03-26T10:00:00',
+    leadId: 5
+  },
+  {
+    id: 63,
+    type: 'call',
+    user: 'Salsabeel Khaleel',
+    action: 'made a call',
+    content: 'Discussed electric vehicle benefits and charging infrastructure in Florence area.',
+    timestamp: '2025-03-25T15:30:00',
+    leadId: 5
+  },
+  {
+    id: 64,
+    type: 'note',
+    user: 'Salsabeel Khaleel',
+    action: 'added a note',
+    content: 'Customer concerned about charging times. Explained fast charging capabilities.',
+    timestamp: '2025-03-24T09:00:00',
+    leadId: 5
+  },
+  
+  // Lead 6 (Klaus Schmidt) - Porsche 911
+  {
+    id: 65,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'Porsche 911 Carrera configuration options',
+    fileName: 'Porsche_911_Configurator.pdf',
+    timestamp: '2025-03-26T11:00:00',
+    leadId: 6
+  },
+  {
+    id: 66,
+    type: 'whatsapp',
+    user: 'Sarah Jenkins',
+    action: 'sent a WhatsApp message',
+    content: 'Hi Klaus! I have prepared a custom 911 configuration based on your preferences. Check the attachment!',
+    timestamp: '2025-03-25T16:00:00',
+    leadId: 6
+  },
+  {
+    id: 67,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Discussed 911 customization options. Customer wants Sport Chrono package.',
+    timestamp: '2025-03-24T14:30:00',
+    leadId: 6
+  },
+  
+  // Lead 7 (Anna Becker) - Tesla Model 3
+  {
+    id: 68,
+    type: 'sms',
+    user: 'David Miller',
+    action: 'sent an SMS',
+    content: 'Hi Anna! Your Tesla Model 3 test drive is confirmed for Friday at 3 PM. See you then!',
+    timestamp: '2025-03-26T12:00:00',
+    leadId: 7
+  },
+  {
+    id: 69,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Customer very enthusiastic about Tesla. Prefers Performance variant.',
+    timestamp: '2025-03-25T10:00:00',
+    leadId: 7
+  },
+  {
+    id: 70,
+    type: 'email',
+    user: 'David Miller',
+    action: 'sent an email',
+    content: 'Sent Tesla Model 3 Performance specs and Autopilot features overview.',
+    timestamp: '2025-03-24T13:00:00',
+    leadId: 7
+  },
+  
+  // Lead 8 (Thomas Weber) - Audi e-tron GT
+  {
+    id: 71,
+    type: 'call',
+    user: 'Natalia Sung',
+    action: 'made a call',
+    content: 'Detailed discussion about e-tron GT performance and luxury features.',
+    timestamp: '2025-03-26T14:00:00',
+    leadId: 8
+  },
+  {
+    id: 72,
+    type: 'attachment',
+    user: 'Natalia Sung',
+    action: 'uploaded an attachment',
+    content: 'Audi e-tron GT RS comparison document',
+    fileName: 'Audi_etron_GT_Comparison.pdf',
+    timestamp: '2025-03-25T11:00:00',
+    leadId: 8
+  },
+  {
+    id: 73,
+    type: 'whatsapp',
+    user: 'Natalia Sung',
+    action: 'sent a WhatsApp message',
+    content: 'Thomas, I found a beautiful e-tron GT in Daytona Gray. Would you like to see it?',
+    timestamp: '2025-03-24T16:00:00',
+    leadId: 8
+  },
+  
+  // Lead 9 (Julia Fischer) - Mercedes-Benz GLE
+  {
+    id: 74,
+    type: 'note',
+    user: 'Salsabeel Khaleel',
+    action: 'added a note',
+    content: 'Customer needs 7-seater SUV. GLE perfect match with third row option.',
+    timestamp: '2025-03-26T09:30:00',
+    leadId: 9
+  },
+  {
+    id: 75,
+    type: 'email',
+    user: 'Salsabeel Khaleel',
+    action: 'sent an email',
+    content: 'Sent GLE 7-seater configuration with family package options.',
+    timestamp: '2025-03-25T14:00:00',
+    leadId: 9
+  },
+  {
+    id: 76,
+    type: 'sms',
+    user: 'Salsabeel Khaleel',
+    action: 'sent an SMS',
+    content: 'Hi Julia! The GLE 450 with 7 seats is available for viewing. When can you visit?',
+    timestamp: '2025-03-24T10:30:00',
+    leadId: 9
+  },
+  
+  // Lead 10 (Michael Hoffmann) - BMW iX
+  {
+    id: 77,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call attempt',
+    content: 'Left voicemail about BMW iX availability and test drive options.',
+    timestamp: '2025-03-26T11:30:00',
+    leadId: 10
+  },
+  {
+    id: 78,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'BMW iX sustainability and technology features',
+    fileName: 'BMW_iX_Technology_Guide.pdf',
+    timestamp: '2025-03-25T09:00:00',
+    leadId: 10
+  },
+  {
+    id: 79,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Customer interested in sustainable mobility. iX perfect for eco-conscious buyers.',
+    timestamp: '2025-03-24T15:00:00',
+    leadId: 10
+  },
+  
+  // Lead 11 (Laura Zimmermann) - Porsche Cayenne
+  {
+    id: 80,
+    type: 'whatsapp',
+    user: 'David Miller',
+    action: 'sent a WhatsApp message',
+    content: 'Laura, we have a stunning Cayenne S in white arriving next week. Interested in first look?',
+    timestamp: '2025-03-26T13:00:00',
+    leadId: 11
+  },
+  {
+    id: 81,
+    type: 'call',
+    user: 'David Miller',
+    action: 'made a call',
+    content: 'Discussed Cayenne variants and performance differences between S and Turbo.',
+    timestamp: '2025-03-25T16:30:00',
+    leadId: 11
+  },
+  {
+    id: 82,
+    type: 'email',
+    user: 'David Miller',
+    action: 'sent an email',
+    content: 'Sent Cayenne S vs Turbo comparison with pricing breakdown.',
+    timestamp: '2025-03-24T12:00:00',
+    leadId: 11
+  },
+  
+  // Lead 12 (Stefan Braun) - Porsche Macan
+  {
+    id: 83,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Multiple contact attempts. Customer seems busy. Will try different times.',
+    timestamp: '2025-03-26T10:00:00',
+    leadId: 12
+  },
+  {
+    id: 84,
+    type: 'sms',
+    user: 'Sarah Jenkins',
+    action: 'sent an SMS',
+    content: 'Hi Stefan! Still interested in the Porsche Macan? We have great financing offers this month!',
+    timestamp: '2025-03-25T14:30:00',
+    leadId: 12
+  },
+  {
+    id: 85,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call attempt',
+    content: 'No answer. Fifth attempt.',
+    timestamp: '2025-03-24T11:00:00',
+    leadId: 12
+  },
+  
+  // Lead 13 (Nina Keller) - Audi e-tron GT (Hot/Urgent)
+  {
+    id: 86,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Urgent inquiry. Customer needs e-tron GT for business event next week.',
+    timestamp: '2025-03-26T16:00:00',
+    leadId: 13
+  },
+  {
+    id: 87,
+    type: 'whatsapp',
+    user: 'Sarah Jenkins',
+    action: 'sent a WhatsApp message',
+    content: 'Nina, I can arrange immediate viewing today at 5 PM. The e-tron GT is ready!',
+    timestamp: '2025-03-26T15:30:00',
+    leadId: 13
+  },
+  {
+    id: 88,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'Express delivery options and expedited paperwork process',
+    fileName: 'Express_Delivery_Process.pdf',
+    timestamp: '2025-03-26T15:00:00',
+    leadId: 13
+  },
+  
+  // Lead 14 (Oliver Lang) - Mercedes C-Class
+  {
+    id: 89,
+    type: 'email',
+    user: 'David Miller',
+    action: 'sent an email',
+    content: 'Sent C-Class hybrid benefits and fuel economy comparison.',
+    timestamp: '2025-03-26T10:30:00',
+    leadId: 14
+  },
+  {
+    id: 90,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Customer interested in hybrid technology for daily commute.',
+    timestamp: '2025-03-25T13:00:00',
+    leadId: 14
+  },
+  {
+    id: 91,
+    type: 'call',
+    user: 'David Miller',
+    action: 'made a call',
+    content: 'Discussed hybrid system and maintenance costs. Customer satisfied with information.',
+    timestamp: '2025-03-24T14:00:00',
+    leadId: 14
+  },
+  
+  // Lead 15 (Petra Schulz) - Volkswagen ID.4
+  {
+    id: 92,
+    type: 'sms',
+    user: 'Natalia Sung',
+    action: 'sent an SMS',
+    content: 'Petra, your ID.4 test drive is scheduled for tomorrow at 11 AM. Looking forward to seeing you!',
+    timestamp: '2025-03-26T17:00:00',
+    leadId: 15
+  },
+  {
+    id: 93,
+    type: 'attachment',
+    user: 'Natalia Sung',
+    action: 'uploaded an attachment',
+    content: 'ID.4 charging network map for Berlin area',
+    fileName: 'ID4_Charging_Network_Berlin.pdf',
+    timestamp: '2025-03-25T10:00:00',
+    leadId: 15
+  },
+  {
+    id: 94,
+    type: 'whatsapp',
+    user: 'Natalia Sung',
+    action: 'sent a WhatsApp message',
+    content: 'Hi Petra! I found a great ID.4 in your preferred color - Moonstone Gray. Want to see photos?',
+    timestamp: '2025-03-24T16:30:00',
+    leadId: 15
+  },
+  
+  // Lead 16 (Robert Klein) - BMW M4
+  {
+    id: 95,
+    type: 'call',
+    user: 'Salsabeel Khaleel',
+    action: 'made a call',
+    content: 'Discussed M4 Competition performance specs and track capabilities.',
+    timestamp: '2025-03-26T14:30:00',
+    leadId: 16
+  },
+  {
+    id: 96,
+    type: 'note',
+    user: 'Salsabeel Khaleel',
+    action: 'added a note',
+    content: 'Performance enthusiast. Interested in M4 Competition with M xDrive.',
+    timestamp: '2025-03-25T11:30:00',
+    leadId: 16
+  },
+  {
+    id: 97,
+    type: 'email',
+    user: 'Salsabeel Khaleel',
+    action: 'sent an email',
+    content: 'Sent M4 Competition performance data and track mode features.',
+    timestamp: '2025-03-24T09:30:00',
+    leadId: 16
+  },
+  
+  // Lead 17 (Sabine Vogel) - Audi Q5
+  {
+    id: 98,
+    type: 'whatsapp',
+    user: 'Sarah Jenkins',
+    action: 'sent a WhatsApp message',
+    content: 'Sabine, the Q5 45 TFSI you asked about is available. Can you visit this week?',
+    timestamp: '2025-03-26T12:30:00',
+    leadId: 17
+  },
+  {
+    id: 99,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'Audi Q5 interior photos and equipment list',
+    fileName: 'Audi_Q5_Interior_Photos.jpg',
+    timestamp: '2025-03-25T15:00:00',
+    leadId: 17
+  },
+  {
+    id: 100,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Spoke about Q5 comfort features and advanced driver assistance systems.',
+    timestamp: '2025-03-24T13:30:00',
+    leadId: 17
+  },
+  
+  // Lead 18 (Dr. Andreas Werner) - Porsche Taycan
+  {
+    id: 101,
+    type: 'email',
+    user: 'David Miller',
+    action: 'sent an email',
+    content: 'Sent Taycan Turbo S specifications and performance comparison with Tesla.',
+    timestamp: '2025-03-26T09:00:00',
+    leadId: 18
+  },
+  {
+    id: 102,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'High-value customer. Interested in Taycan Turbo S for luxury electric performance.',
+    timestamp: '2025-03-25T14:00:00',
+    leadId: 18
+  },
+  {
+    id: 103,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'Porsche Taycan exclusive color options catalog',
+    fileName: 'Taycan_Exclusive_Colors.pdf',
+    timestamp: '2025-03-24T10:00:00',
+    leadId: 18
+  },
+  
+  // Lead 19 (Christina Bauer) - BMW X3
+  {
+    id: 104,
+    type: 'sms',
+    user: 'Natalia Sung',
+    action: 'sent an SMS',
+    content: 'Christina, we have a special offer on X3 xDrive30i this week. Save up to €5,000!',
+    timestamp: '2025-03-26T11:00:00',
+    leadId: 19
+  },
+  {
+    id: 105,
+    type: 'call',
+    user: 'Natalia Sung',
+    action: 'made a call',
+    content: 'Discussed X3 family features and cargo space. Customer has two children.',
+    timestamp: '2025-03-25T16:00:00',
+    leadId: 19
+  },
+  {
+    id: 106,
+    type: 'whatsapp',
+    user: 'Natalia Sung',
+    action: 'sent a WhatsApp message',
+    content: 'Hi Christina! I can arrange a family test drive with car seats installed. Let me know!',
+    timestamp: '2025-03-24T12:00:00',
+    leadId: 19
+  },
+  
+  // Lead 20 (Martin Richter) - BMW M4 Competition (Hot)
+  {
+    id: 107,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Customer very enthusiastic. Wants M4 Competition in Isle of Man Green.',
+    timestamp: '2025-03-26T15:00:00',
+    leadId: 20
+  },
+  {
+    id: 108,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'M4 Competition in Isle of Man Green - exclusive photos',
+    fileName: 'M4_Isle_of_Man_Green.jpg',
+    timestamp: '2025-03-26T14:30:00',
+    leadId: 20
+  },
+  {
+    id: 109,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Performance enthusiast with track experience. Ready to proceed quickly.',
+    timestamp: '2025-03-26T14:00:00',
+    leadId: 20
+  },
+  
+  // ========== OPPORTUNITY ACTIVITIES - MISSING TYPES ==========
+  
+  // Opportunity 1 activities removed - empty for demo
+  
+  // Opportunity 2 (Oliver Brown) - Add financing and SMS
+  {
+    id: 113,
+    type: 'financing',
+    user: 'Salsabeel Khaleel',
+    action: 'submitted financing request',
+    content: 'Financing approved: 60-month term at 3.5% APR',
+    data: {
+      term: 60,
+      apr: 3.5,
+      amount: 120000,
+      downPayment: 30000,
+      monthlyPayment: 1635,
+      status: 'approved'
+    },
+    timestamp: '2025-03-24T14:00:00',
+    opportunityId: 2
+  },
+  {
+    id: 114,
+    type: 'sms',
+    user: 'Salsabeel Khaleel',
+    action: 'sent an SMS',
+    content: 'Oliver, your financing is approved! Ready to finalize the Taycan purchase.',
+    timestamp: '2025-03-24T15:00:00',
+    opportunityId: 2
+  },
+  {
+    id: 115,
+    type: 'attachment',
+    user: 'Salsabeel Khaleel',
+    action: 'uploaded an attachment',
+    content: 'Financing approval letter and payment schedule',
+    fileName: 'Financing_Approval_Oliver_Brown.pdf',
+    timestamp: '2025-03-24T14:30:00',
+    opportunityId: 2
+  },
+  
+  // Opportunity 3 (Sophia Martinez) - Add WhatsApp and attachment
+  {
+    id: 116,
+    type: 'whatsapp',
+    user: 'David Miller',
+    action: 'sent a WhatsApp message',
+    content: 'Sophia, your BMW iX was delivered! Hope you love it. Let me know if you need anything!',
+    timestamp: '2024-12-26T09:00:00',
+    opportunityId: 3
+  },
+  {
+    id: 117,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'Delivery receipt and vehicle handover checklist',
+    fileName: 'Delivery_Receipt_Sophia_Martinez.pdf',
+    timestamp: '2024-12-25T17:00:00',
+    opportunityId: 3
+  },
+  {
+    id: 118,
+    type: 'sms',
+    user: 'David Miller',
+    action: 'sent an SMS',
+    content: 'Delivery confirmed for tomorrow at 4 PM. All paperwork ready!',
+    timestamp: '2024-12-24T16:00:00',
+    opportunityId: 3
+  },
+  
+  // Opportunity 4 (Alexander Chen) - Add trade-in and financing
+  {
+    id: 119,
+    type: 'tradein',
+    user: 'Salsabeel Khaleel',
+    action: 'added trade-in information',
+    content: 'Customer trade-in: 2019 Tesla Model S, valued at €45,000',
+    data: {
+      make: 'Tesla',
+      model: 'Model S',
+      year: 2019,
+      mileage: 38000,
+      condition: 'Very Good',
+      value: 45000
+    },
+    timestamp: '2025-03-25T10:00:00',
+    opportunityId: 4
+  },
+  {
+    id: 120,
+    type: 'financing',
+    user: 'Salsabeel Khaleel',
+    action: 'submitted financing request',
+    content: 'Financing request: 48-month term at 3.9% APR',
+    data: {
+      term: 48,
+      apr: 3.9,
+      amount: 50000,
+      downPayment: 45000,
+      monthlyPayment: 1130,
+      status: 'pending'
+    },
+    timestamp: '2025-03-25T11:00:00',
+    opportunityId: 4
+  },
+  {
+    id: 121,
+    type: 'attachment',
+    user: 'Salsabeel Khaleel',
+    action: 'uploaded an attachment',
+    content: 'Trade-in valuation report and inspection photos',
+    fileName: 'TradeIn_Valuation_Tesla_ModelS.pdf',
+    timestamp: '2025-03-25T09:30:00',
+    opportunityId: 4
+  },
+  
+  // Opportunity 5 (Emma Wilson) - Add attachment and SMS
+  {
+    id: 122,
+    type: 'attachment',
+    user: 'Michael Thomas',
+    action: 'uploaded an attachment',
+    content: 'Insurance documents and registration papers',
+    fileName: 'Insurance_Registration_Emma_Wilson.pdf',
+    timestamp: '2025-03-24T13:00:00',
+    opportunityId: 5
+  },
+  {
+    id: 123,
+    type: 'sms',
+    user: 'Michael Thomas',
+    action: 'sent an SMS',
+    content: 'Emma, reminder: Your Mercedes EQE delivery is scheduled for Friday at 10 AM!',
+    timestamp: '2025-03-23T15:00:00',
+    opportunityId: 5
+  },
+  {
+    id: 124,
+    type: 'whatsapp',
+    user: 'Michael Thomas',
+    action: 'sent a WhatsApp message',
+    content: 'All documents are ready! Looking forward to handing over your new EQE.',
+    timestamp: '2025-03-22T11:00:00',
+    opportunityId: 5
+  },
+  
+  // Opportunity 6 (Robert Taylor) - Full activity history
+  {
+    id: 125,
+    type: 'call',
+    user: 'Sarah Jenkins',
+    action: 'made a call',
+    content: 'Discussed BMW X7 features and luxury options.',
+    timestamp: '2025-03-26T10:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 126,
+    type: 'note',
+    user: 'Sarah Jenkins',
+    action: 'added a note',
+    content: 'Customer wants X7 M60i with Executive Drive Pro package.',
+    timestamp: '2025-03-25T14:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 127,
+    type: 'email',
+    user: 'Sarah Jenkins',
+    action: 'sent an email',
+    content: 'Sent X7 M60i configuration with all requested options.',
+    timestamp: '2025-03-24T11:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 128,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'BMW X7 M60i detailed specification sheet',
+    fileName: 'BMW_X7_M60i_Specs.pdf',
+    timestamp: '2025-03-23T15:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 129,
+    type: 'tradein',
+    user: 'Sarah Jenkins',
+    action: 'added trade-in information',
+    content: 'Customer trade-in: 2021 BMW X5, valued at €55,000',
+    data: {
+      make: 'BMW',
+      model: 'X5',
+      year: 2021,
+      mileage: 28000,
+      condition: 'Excellent',
+      value: 55000
+    },
+    timestamp: '2025-03-22T10:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 130,
+    type: 'financing',
+    user: 'Sarah Jenkins',
+    action: 'submitted financing request',
+    content: 'Financing approved: 36-month term at 2.9% APR',
+    data: {
+      term: 36,
+      apr: 2.9,
+      amount: 65000,
+      downPayment: 55000,
+      monthlyPayment: 1890,
+      status: 'approved'
+    },
+    timestamp: '2025-03-21T14:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 131,
+    type: 'sms',
+    user: 'Sarah Jenkins',
+    action: 'sent an SMS',
+    content: 'Robert, great news! Your financing is approved. Ready to order your X7!',
+    timestamp: '2025-03-21T15:00:00',
+    opportunityId: 6
+  },
+  {
+    id: 132,
+    type: 'whatsapp',
+    user: 'Sarah Jenkins',
+    action: 'sent a WhatsApp message',
+    content: 'I found the perfect X7 in Tanzanite Blue. Want to see photos?',
+    timestamp: '2025-03-20T12:00:00',
+    opportunityId: 6
+  },
+  
+  // Opportunity 7 (Lisa Anderson) - Add missing types
+  {
+    id: 133,
+    type: 'attachment',
+    user: 'Michael Thomas',
+    action: 'uploaded an attachment',
+    content: 'Audi Q8 e-tron brochure and pricing',
+    fileName: 'Audi_Q8_etron_Brochure.pdf',
+    timestamp: '2025-03-24T10:00:00',
+    opportunityId: 7
+  },
+  {
+    id: 134,
+    type: 'sms',
+    user: 'Michael Thomas',
+    action: 'sent an SMS',
+    content: 'Lisa, your Q8 e-tron test drive is confirmed for Saturday at 11 AM!',
+    timestamp: '2025-03-23T16:00:00',
+    opportunityId: 7
+  },
+  {
+    id: 135,
+    type: 'whatsapp',
+    user: 'Michael Thomas',
+    action: 'sent a WhatsApp message',
+    content: 'The Q8 e-tron you liked is still available. Let me know if you want to proceed!',
+    timestamp: '2025-03-22T14:00:00',
+    opportunityId: 7
+  },
+  
+  // Opportunity 8 (James White) - Add missing types
+  {
+    id: 136,
+    type: 'financing',
+    user: 'Michael Thomas',
+    action: 'submitted financing request',
+    content: 'Financing pending: 48-month term at 4.2% APR',
+    data: {
+      term: 48,
+      apr: 4.2,
+      amount: 78000,
+      downPayment: 15000,
+      monthlyPayment: 1445,
+      status: 'pending'
+    },
+    timestamp: '2024-12-24T11:00:00',
+    opportunityId: 8
+  },
+  {
+    id: 137,
+    type: 'attachment',
+    user: 'Michael Thomas',
+    action: 'uploaded an attachment',
+    content: 'Audi Q4 e-tron financing options comparison',
+    fileName: 'Q4_Financing_Options.pdf',
+    timestamp: '2024-12-23T15:00:00',
+    opportunityId: 8
+  },
+  {
+    id: 138,
+    type: 'sms',
+    user: 'Michael Thomas',
+    action: 'sent an SMS',
+    content: 'James, I submitted your financing application. Should hear back in 24-48 hours.',
+    timestamp: '2024-12-24T12:00:00',
+    opportunityId: 8
+  },
+  
+  // Opportunity 9 (Maria Garcia) - Add missing types
+  {
+    id: 139,
+    type: 'tradein',
+    user: 'Sarah Jenkins',
+    action: 'added trade-in information',
+    content: 'Customer trade-in: 2018 Porsche Cayenne, valued at €48,000',
+    data: {
+      make: 'Porsche',
+      model: 'Cayenne',
+      year: 2018,
+      mileage: 52000,
+      condition: 'Good',
+      value: 48000
+    },
+    timestamp: '2024-12-21T10:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 140,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'Final contract and delivery schedule',
+    fileName: 'Contract_Maria_Garcia.pdf',
+    timestamp: '2024-12-22T15:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 141,
+    type: 'whatsapp',
+    user: 'Sarah Jenkins',
+    action: 'sent a WhatsApp message',
+    content: 'Maria, your Macan Electric is being prepared for delivery. So exciting!',
+    timestamp: '2024-12-21T14:00:00',
+    opportunityId: 9
+  },
+  
+  // Opportunity 11 (Jennifer Lee) - Add missing types
+  {
+    id: 142,
+    type: 'attachment',
+    user: 'Michael Thomas',
+    action: 'uploaded an attachment',
+    content: 'BMW iX3 warranty and service package details',
+    fileName: 'BMW_iX3_Warranty.pdf',
+    timestamp: '2024-12-19T11:00:00',
+    opportunityId: 11
+  },
+  {
+    id: 143,
+    type: 'sms',
+    user: 'Michael Thomas',
+    action: 'sent an SMS',
+    content: 'Jennifer, your iX3 contract is ready for signature. Can you come by this week?',
+    timestamp: '2024-12-18T15:00:00',
+    opportunityId: 11
+  },
+  {
+    id: 144,
+    type: 'whatsapp',
+    user: 'Michael Thomas',
+    action: 'sent a WhatsApp message',
+    content: 'Great news! We secured the iX3 in your preferred Sophisto Gray color!',
+    timestamp: '2024-12-17T10:00:00',
+    opportunityId: 11
+  },
+  
+  // Opportunity 12 (Daniel Kim) - Add missing types
+  {
+    id: 145,
+    type: 'tradein',
+    user: 'Sarah Jenkins',
+    action: 'added trade-in information',
+    content: 'Customer trade-in: 2020 Audi A4, valued at €28,000',
+    data: {
+      make: 'Audi',
+      model: 'A4',
+      year: 2020,
+      mileage: 42000,
+      condition: 'Very Good',
+      value: 28000
+    },
+    timestamp: '2024-12-17T14:00:00',
+    opportunityId: 12
+  },
+  {
+    id: 146,
+    type: 'financing',
+    user: 'Sarah Jenkins',
+    action: 'submitted financing request',
+    content: 'Financing approved: 60-month term at 3.8% APR',
+    data: {
+      term: 60,
+      apr: 3.8,
+      amount: 62000,
+      downPayment: 28000,
+      monthlyPayment: 1140,
+      status: 'approved'
+    },
+    timestamp: '2024-12-17T15:00:00',
+    opportunityId: 12
+  },
+  {
+    id: 147,
+    type: 'attachment',
+    user: 'Sarah Jenkins',
+    action: 'uploaded an attachment',
+    content: 'A6 e-tron configuration and financing summary',
+    fileName: 'A6_etron_Config_Daniel_Kim.pdf',
+    timestamp: '2024-12-16T13:00:00',
+    opportunityId: 12
+  },
+  
+  // Opportunity 13 (Rachel Green) - Add missing types
+  {
+    id: 148,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'VW ID.3 charging guide and home charger installation info',
+    fileName: 'ID3_Charging_Guide.pdf',
+    timestamp: '2024-12-01T09:00:00',
+    opportunityId: 13
+  },
+  {
+    id: 149,
+    type: 'sms',
+    user: 'David Miller',
+    action: 'sent an SMS',
+    content: 'Rachel, the ID.3 is available for test drive. When would you like to visit?',
+    timestamp: '2024-12-01T10:00:00',
+    opportunityId: 13
+  },
+  
+  // Opportunity 14 (Monica Geller) - Communication-focused
+  {
+    id: 150,
+    type: 'call',
+    user: 'Michael Thomas',
+    action: 'made a call',
+    content: 'Discussed Tesla Model 3 features and Autopilot capabilities.',
+    timestamp: '2025-03-16T10:00:00',
+    opportunityId: 14
+  },
+  {
+    id: 151,
+    type: 'email',
+    user: 'Michael Thomas',
+    action: 'sent an email',
+    content: 'Sent Model 3 comparison with other electric sedans.',
+    timestamp: '2025-03-15T15:00:00',
+    opportunityId: 14
+  },
+  {
+    id: 152,
+    type: 'whatsapp',
+    user: 'Michael Thomas',
+    action: 'sent a WhatsApp message',
+    content: 'Monica, the Model 3 you test drove is still available. Ready to move forward?',
+    timestamp: '2025-03-14T11:00:00',
+    opportunityId: 14
+  },
+  {
+    id: 153,
+    type: 'sms',
+    user: 'Michael Thomas',
+    action: 'sent an SMS',
+    content: 'Following up on your Model 3 interest. Let me know if you have questions!',
+    timestamp: '2025-03-13T14:00:00',
+    opportunityId: 14
+  },
+  {
+    id: 154,
+    type: 'note',
+    user: 'Michael Thomas',
+    action: 'added a note',
+    content: 'Customer loved the test drive. Considering white vs blue exterior.',
+    timestamp: '2025-03-12T16:00:00',
+    opportunityId: 14
+  },
+  
+  // Opportunity 15 (Ross Geller) - Document-focused
+  {
+    id: 155,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'Mercedes-Benz GLC detailed specifications',
+    fileName: 'Mercedes_GLC_Specs.pdf',
+    timestamp: '2025-03-20T10:00:00',
+    opportunityId: 15
+  },
+  {
+    id: 156,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'GLC financing options and payment calculator',
+    fileName: 'GLC_Financing_Calculator.pdf',
+    timestamp: '2025-03-19T14:00:00',
+    opportunityId: 15
+  },
+  {
+    id: 157,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'GLC warranty and maintenance package details',
+    fileName: 'GLC_Warranty_Package.pdf',
+    timestamp: '2025-03-18T11:00:00',
+    opportunityId: 15
+  },
+  {
+    id: 158,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Customer requested all documentation before making decision.',
+    timestamp: '2025-03-17T15:00:00',
+    opportunityId: 15
+  },
+  {
+    id: 159,
+    type: 'email',
+    user: 'David Miller',
+    action: 'sent an email',
+    content: 'Sent comprehensive GLC information package as requested.',
+    timestamp: '2025-03-17T16:00:00',
+    opportunityId: 15
+  },
+  
+  // Opportunity 16 (Thomas Anderson - formerly duplicate 10) - Add missing types
+  {
+    id: 160,
+    type: 'financing',
+    user: 'David Miller',
+    action: 'submitted financing request',
+    content: 'Financing pending: 48-month term at 4.5% APR',
+    data: {
+      term: 48,
+      apr: 4.5,
+      amount: 75000,
+      downPayment: 0,
+      monthlyPayment: 1715,
+      status: 'pending'
+    },
+    timestamp: '2024-12-14T11:00:00',
+    opportunityId: 16
+  },
+  {
+    id: 161,
+    type: 'attachment',
+    user: 'David Miller',
+    action: 'uploaded an attachment',
+    content: 'Mercedes EQC charging infrastructure guide',
+    fileName: 'EQC_Charging_Guide.pdf',
+    timestamp: '2024-12-13T15:00:00',
+    opportunityId: 16
+  },
+  {
+    id: 162,
+    type: 'whatsapp',
+    user: 'David Miller',
+    action: 'sent a WhatsApp message',
+    content: 'Thomas, I submitted your financing application. Fingers crossed!',
+    timestamp: '2024-12-14T12:00:00',
+    opportunityId: 16
+  },
+  
+  // Purchase activities (for closed/won opportunities)
+  {
+    id: 163,
+    type: 'purchase',
+    user: 'David Miller',
+    action: 'completed a purchase',
+    data: {
+      brand: 'Mercedes-Benz',
+      model: 'GLE 450',
+      year: 2024,
+      price: 78500,
+      purchaseDate: '2025-12-18',
+      notes: 'Full payment received. Customer opted for premium package with panoramic sunroof.'
+    },
+    timestamp: '2025-12-18T16:30:00',
+    opportunityId: 3
+  },
+  {
+    id: 164,
+    type: 'purchase',
+    user: 'Sarah Jenkins',
+    action: 'completed a purchase',
+    data: {
+      brand: 'Audi',
+      model: 'e-tron GT',
+      year: 2024,
+      price: 125000,
+      purchaseDate: '2025-12-20',
+      notes: 'Customer very satisfied with final negotiations. Trade-in processed successfully.'
+    },
+    timestamp: '2025-12-20T14:00:00',
+    opportunityId: 9
+  },
+  {
+    id: 165,
+    type: 'purchase',
+    user: 'Michael Thomas',
+    action: 'completed a purchase',
+    data: {
+      brand: 'BMW',
+      model: 'iX xDrive50',
+      year: 2024,
+      price: 89900,
+      purchaseDate: '2025-12-22',
+      notes: 'Contract finalized. Customer selected midnight blue metallic paint.'
+    },
+    timestamp: '2025-12-22T11:15:00',
+    opportunityId: 11
+  },
 ]
-
-export const pipelineStats = {
-  openLeads: 473,
-  openOpportunities: 321,
-  inNegotiation: 211,
-  won: 127,
-  lost: 3
-}
 
 // Dashboard Mock Data
 export const mockDashboardKPIs = [
@@ -1794,11 +4119,34 @@ export const mockPageViewsByVehicle = [
 ]
 
 export const mockPageViewsOrganicPaid = [
-  { day: 'Mon', organic: 45, paid: 15 },
-  { day: 'Tue', organic: 50, paid: 20 },
-  { day: 'Wed', organic: 35, paid: 20 },
-  { day: 'Thu', organic: 35, paid: 20 },
-  { day: 'Fri', organic: 40, paid: 20 },
-  { day: 'Sat', organic: 60, paid: 30 },
-  { day: 'Sun', organic: 55, paid: 25 }
+  { day: '1', organic: 120, paid: 45 },
+  { day: '2', organic: 135, paid: 52 },
+  { day: '3', organic: 98, paid: 38 },
+  { day: '4', organic: 145, paid: 60 },
+  { day: '5', organic: 160, paid: 68 },
+  { day: '6', organic: 185, paid: 75 },
+  { day: '7', organic: 155, paid: 62 },
+  { day: '8', organic: 125, paid: 48 },
+  { day: '9', organic: 142, paid: 55 },
+  { day: '10', organic: 110, paid: 42 },
+  { day: '11', organic: 138, paid: 58 },
+  { day: '12', organic: 168, paid: 72 },
+  { day: '13', organic: 195, paid: 82 },
+  { day: '14', organic: 165, paid: 70 },
+  { day: '15', organic: 132, paid: 50 },
+  { day: '16', organic: 148, paid: 60 },
+  { day: '17', organic: 115, paid: 45 },
+  { day: '18', organic: 152, paid: 65 },
+  { day: '19', organic: 175, paid: 78 },
+  { day: '20', organic: 205, paid: 88 },
+  { day: '21', organic: 172, paid: 75 },
+  { day: '22', organic: 140, paid: 55 },
+  { day: '23', organic: 155, paid: 65 },
+  { day: '24', organic: 122, paid: 48 },
+  { day: '25', organic: 158, paid: 68 },
+  { day: '26', organic: 182, paid: 82 },
+  { day: '27', organic: 215, paid: 92 },
+  { day: '28', organic: 180, paid: 80 },
+  { day: '29', organic: 145, paid: 58 },
+  { day: '30', organic: 162, paid: 70 }
 ]

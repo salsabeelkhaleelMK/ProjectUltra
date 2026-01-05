@@ -11,27 +11,27 @@
     
     <div class="space-y-4">
       <!-- Chart -->
-      <div class="flex items-end gap-2 h-36">
+      <div class="flex items-end gap-1 h-64 overflow-x-auto pb-2">
         <div
           v-for="(day, index) in data"
           :key="index"
-          class="flex-1 flex flex-col items-center gap-1"
+          class="flex flex-col items-center gap-1 min-w-[20px]"
         >
-          <div class="w-full flex flex-col justify-end h-full gap-0.5">
-            <!-- Organic (bottom) -->
+          <div class="w-full flex items-end justify-center h-full gap-0.5">
+            <!-- Organic bar -->
             <div
-              class="bg-blue-600 rounded-t"
-              :style="{ height: `${(day.organic / maxValue) * 100}%` }"
+              class="bg-blue-600 rounded-t w-2"
+              :style="{ height: `${(day.organic / maxValue) * 100}%`, minHeight: '2px' }"
               :title="`Organic: ${day.organic}`"
             ></div>
-            <!-- Paid (top) -->
+            <!-- Paid bar -->
             <div
-              class="bg-orange-500 rounded-t"
-              :style="{ height: `${(day.paid / maxValue) * 100}%` }"
+              class="bg-orange-500 rounded-t w-2"
+              :style="{ height: `${(day.paid / maxValue) * 100}%`, minHeight: '2px' }"
               :title="`Paid: ${day.paid}`"
             ></div>
           </div>
-          <span class="text-meta mt-2">{{ day.day }}</span>
+          <span class="text-[9px] text-gray-500 mt-1">{{ index + 1 }}</span>
         </div>
       </div>
       

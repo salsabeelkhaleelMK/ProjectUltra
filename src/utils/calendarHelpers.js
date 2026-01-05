@@ -101,7 +101,9 @@ export const getEventCalendarClass = (type) => {
 }
 
 export const formatEventDate = (dateStr) => {
+  if (!dateStr) return 'N/A'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Invalid Date'
   return date.toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
@@ -111,7 +113,9 @@ export const formatEventDate = (dateStr) => {
 }
 
 export const formatEventTime = (dateStr) => {
+  if (!dateStr) return 'N/A'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Invalid Time'
   return date.toLocaleTimeString('en-US', { 
     hour: '2-digit', 
     minute: '2-digit',

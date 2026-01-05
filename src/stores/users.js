@@ -1,44 +1,56 @@
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
-import { mockUsers } from '@/api/mockData'
+import { mockUsers, calendarTeams } from '@/api/mockData'
 
 export const useUsersStore = defineStore('users', () => {
-  // Getters
-  const allUsers = computed(() => mockUsers)
+  // Users list
+  const users = computed(() => mockUsers)
   
-  const salespeople = computed(() => 
-    mockUsers.filter(user => user.role === 'salesman')
-  )
-  
-  const operators = computed(() => 
-    mockUsers.filter(user => user.role === 'operator')
-  )
-  
-  const managers = computed(() => 
-    mockUsers.filter(user => user.role === 'manager')
-  )
+  // Teams list
+  const teams = computed(() => calendarTeams)
   
   // Get user by ID
   const getUserById = (id) => {
-    return mockUsers.find(user => user.id === id)
+    return users.value.find(u => u.id === id)
   }
   
-  // Get user by name
-  const getUserByName = (name) => {
-    return mockUsers.find(user => user.name === name)
+  // Get team by ID
+  const getTeamById = (id) => {
+    return teams.value.find(t => t.id === id)
   }
   
-  // Get assignable users (all users for reassignment)
-  const assignableUsers = computed(() => mockUsers)
+  // Assignable users (all users)
+  const assignableUsers = computed(() => users.value)
   
+  // Assignable teams (all teams)
+  const assignableTeams = computed(() => teams.value)
+  
+  // Mixed assignees (users + teams) for dropdowns
+  const mixedAssignees = computed(() => {
+    const teamItems = teams.value.map(team => ({
+      ...team,
+      type: 'team',
+      icon: 'fa-users',
+      label: team.name
+    }))
+    
+    const userItems = users.value.map(user => ({
+      ...user,
+      type: 'user',
+      icon: 'fa-user',
+      label: user.name
+    }))
+    
+    return [...teamItems, ...userItems]
+  })
+
   return {
-    allUsers,
-    salespeople,
-    operators,
-    managers,
-    assignableUsers,
+    users,
+    teams,
     getUserById,
-    getUserByName
+    getTeamById,
+    assignableUsers,
+    assignableTeams,
+    mixedAssignees
   }
 })
-

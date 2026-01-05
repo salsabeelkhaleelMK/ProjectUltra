@@ -55,7 +55,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { mockVehicles } from '@/api/mockData'
-import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
+import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 
 const showModal = ref(false)
 

@@ -1,77 +1,69 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchOpportunities, fetchOpportunityById, createOpportunity, updateOpportunity, deleteOpportunity, fetchOpportunityActivities, addOpportunityActivity, updateOpportunityActivity, deleteOpportunityActivity, createOpportunityFromLead as apiCreateOpportunityFromLead } from '@/api/opportunities'
-import { migrateActivities } from '@/utils/activityMigration'
+import * as opportunitiesApi from '@/api/opportunities'
+import { mockActivities } from '@/api/mockData'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
-  // State
   const opportunities = ref([])
   const currentOpportunity = ref(null)
-  const currentOpportunityActivities = ref([])
   const loading = ref(false)
   const error = ref(null)
-  const filters = ref({
-    stage: null,
-    assignee: null,
-    search: ''
+
+  // Computed: Current opportunity activities
+  const currentOpportunityActivities = computed(() => {
+    if (!currentOpportunity.value) return []
+    return mockActivities.filter(activity => activity.opportunityId === currentOpportunity.value.id)
   })
-  
-  // Getters
-  const totalOpportunities = computed(() => opportunities.value.length)
-  const opportunitiesByStage = computed(() => {
-    const stages = {}
-    opportunities.value.forEach(opp => {
-      if (!stages[opp.stage]) {
-        stages[opp.stage] = []
-      }
-      stages[opp.stage].push(opp)
-    })
-    return stages
+
+  // Computed: Hot opportunities (priority === 'Hot')
+  const hotOpportunities = computed(() => {
+    return opportunities.value.filter(opp => opp.priority === 'Hot' && opp.stage !== 'Closed Lost')
   })
-  const totalValue = computed(() => 
-    opportunities.value.reduce((sum, opp) => sum + opp.value, 0)
-  )
-  
-  // Actions
-  async function loadOpportunities() {
+
+  const loadOpportunities = async (filters = {}) => {
+    const result = await fetchOpportunities(filters)
+    return result
+  }
+
+  const fetchOpportunities = async (filters = {}) => {
     loading.value = true
     error.value = null
     try {
-      const result = await fetchOpportunities(filters.value)
-      opportunities.value = result.data
+      const result = await opportunitiesApi.fetchOpportunities(filters)
+      opportunities.value = result.data || result
+      return result
     } catch (err) {
       error.value = err.message
+      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function loadOpportunityById(id) {
+
+  const loadOpportunityById = async (id) => {
+    return await fetchOpportunityById(id)
+  }
+
+  const fetchOpportunityById = async (id) => {
     loading.value = true
     error.value = null
     try {
-      currentOpportunity.value = await fetchOpportunityById(id)
-      const activities = await fetchOpportunityActivities(id)
-      // Migrate legacy financing/purchase activities to purchase-method
-      currentOpportunityActivities.value = migrateActivities(activities)
-      // Also update in the opportunities list if it exists
-      const index = opportunities.value.findIndex(o => o.id === parseInt(id))
-      if (index !== -1) {
-        opportunities.value[index] = currentOpportunity.value
-      }
+      currentOpportunity.value = await opportunitiesApi.fetchOpportunityById(id)
+      return currentOpportunity.value
     } catch (err) {
       error.value = err.message
+      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function addOpportunity(opportunityData) {
+
+  const createOpportunity = async (opportunityData) => {
     loading.value = true
     error.value = null
     try {
-      const newOpportunity = await createOpportunity(opportunityData)
-      opportunities.value.unshift(newOpportunity)
+      const newOpportunity = await opportunitiesApi.createOpportunity(opportunityData)
+      opportunities.value.push(newOpportunity)
       return newOpportunity
     } catch (err) {
       error.value = err.message
@@ -80,17 +72,24 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       loading.value = false
     }
   }
-  
-  async function modifyOpportunity(id, updates) {
+
+  const modifyOpportunity = async (id, updates) => {
+    return await updateOpportunity(id, updates)
+  }
+
+  const updateOpportunity = async (id, updates) => {
     loading.value = true
     error.value = null
     try {
-      const updatedOpportunity = await updateOpportunity(id, updates)
+      const updated = await opportunitiesApi.updateOpportunity(id, updates)
       const index = opportunities.value.findIndex(o => o.id === id)
       if (index !== -1) {
-        opportunities.value[index] = updatedOpportunity
+        opportunities.value[index] = updated
       }
-      return updatedOpportunity
+      if (currentOpportunity.value?.id === id) {
+        currentOpportunity.value = updated
+      }
+      return updated
     } catch (err) {
       error.value = err.message
       throw err
@@ -98,12 +97,12 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       loading.value = false
     }
   }
-  
-  async function removeOpportunity(id) {
+
+  const deleteOpportunity = async (id) => {
     loading.value = true
     error.value = null
     try {
-      await deleteOpportunity(id)
+      await opportunitiesApi.deleteOpportunity(id)
       opportunities.value = opportunities.value.filter(o => o.id !== id)
     } catch (err) {
       error.value = err.message
@@ -112,211 +111,120 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       loading.value = false
     }
   }
-  
-  async function addActivity(opportunityId, activity) {
+
+  const addActivity = async (opportunityId, activity) => {
+    loading.value = true
+    error.value = null
     try {
-      const newActivity = await addOpportunityActivity(opportunityId, activity)
-      currentOpportunityActivities.value.unshift(newActivity)
+      const newActivity = await opportunitiesApi.addOpportunityActivity(opportunityId, activity)
+      if (currentOpportunity.value?.id === parseInt(opportunityId)) {
+        // Trigger reactivity by reloading
+        await loadOpportunityById(opportunityId)
+      }
       return newActivity
     } catch (err) {
       error.value = err.message
       throw err
+    } finally {
+      loading.value = false
     }
   }
-  
-  async function updateActivity(opportunityId, activityId, updates) {
+
+  const updateActivity = async (opportunityId, activityId, updates) => {
+    loading.value = true
+    error.value = null
     try {
-      const updatedActivity = await updateOpportunityActivity(opportunityId, activityId, updates)
-      const index = currentOpportunityActivities.value.findIndex(a => a.id === parseInt(activityId))
-      if (index !== -1) {
-        currentOpportunityActivities.value[index] = updatedActivity
+      const updated = await opportunitiesApi.updateOpportunityActivity(opportunityId, activityId, updates)
+      if (currentOpportunity.value?.id === parseInt(opportunityId)) {
+        await loadOpportunityById(opportunityId)
       }
-      return updatedActivity
+      return updated
     } catch (err) {
       error.value = err.message
       throw err
+    } finally {
+      loading.value = false
     }
   }
-  
-  async function deleteActivity(opportunityId, activityId) {
+
+  const addVehicle = async (opportunityId, vehicleData) => {
+    loading.value = true
+    error.value = null
     try {
-      await deleteOpportunityActivity(opportunityId, activityId)
-      currentOpportunityActivities.value = currentOpportunityActivities.value.filter(a => a.id !== parseInt(activityId))
+      const updated = await opportunitiesApi.addVehicleToOpportunity(opportunityId, vehicleData)
+      const index = opportunities.value.findIndex(o => o.id === parseInt(opportunityId))
+      if (index !== -1) {
+        opportunities.value[index] = updated
+      }
+      if (currentOpportunity.value?.id === parseInt(opportunityId)) {
+        currentOpportunity.value = updated
+      }
+      return updated
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const createOffer = async (opportunityId, offerData) => {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await opportunitiesApi.createOfferForOpportunity(opportunityId, offerData)
+      const index = opportunities.value.findIndex(o => o.id === parseInt(opportunityId))
+      if (index !== -1) {
+        opportunities.value[index] = result.opportunity
+      }
+      if (currentOpportunity.value?.id === parseInt(opportunityId)) {
+        currentOpportunity.value = result.opportunity
+      }
+      return result
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteActivity = async (opportunityId, activityId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.deleteOpportunityActivity(opportunityId, activityId)
+      if (currentOpportunity.value?.id === parseInt(opportunityId)) {
+        await loadOpportunityById(opportunityId)
+      }
       return { success: true }
     } catch (err) {
       error.value = err.message
       throw err
-    }
-  }
-  
-  function setFilters(newFilters) {
-    filters.value = { ...filters.value, ...newFilters }
-    loadOpportunities()
-  }
-  
-  async function reopenOpportunity(id) {
-    loading.value = true
-    error.value = null
-    try {
-      const opportunity = opportunities.value.find(o => o.id === id) || currentOpportunity.value
-      const updates = {
-        stage: 'Qualified'
-      }
-      // Reset probability if it was 0 (lost) or 100 (won)
-      if (opportunity?.probability === 0 || opportunity?.probability === 100) {
-        updates.probability = 50 // Reset to neutral probability
-      }
-      const updatedOpportunity = await updateOpportunity(id, updates)
-      const index = opportunities.value.findIndex(o => o.id === id)
-      if (index !== -1) {
-        opportunities.value[index] = updatedOpportunity
-      }
-      if (currentOpportunity.value?.id === id) {
-        currentOpportunity.value = updatedOpportunity
-      }
-      // Add activity log entry
-      await addActivity(id, {
-        type: 'note',
-        user: 'You',
-        action: 'reopened opportunity',
-        content: `Opportunity has been reopened and moved back to ${updatedOpportunity.stage} stage`
-      })
-      return updatedOpportunity
-    } catch (err) {
-      error.value = err.message
-      throw err
     } finally {
       loading.value = false
     }
   }
-  
-  async function markAsRegistration(id) {
-    loading.value = true
-    error.value = null
-    try {
-      const updatedOpportunity = await updateOpportunity(id, {
-        stage: 'Registration'
-      })
-      const index = opportunities.value.findIndex(o => o.id === id)
-      if (index !== -1) {
-        opportunities.value[index] = updatedOpportunity
-      }
-      if (currentOpportunity.value?.id === id) {
-        currentOpportunity.value = updatedOpportunity
-      }
-      // Add activity log entry
-      await addActivity(id, {
-        type: 'note',
-        user: 'You',
-        action: 'marked as registration',
-        content: 'Opportunity moved to Registration stage - administrative phase before delivery'
-      })
-      return updatedOpportunity
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  async function markAsClosedWon(id) {
-    loading.value = true
-    error.value = null
-    try {
-      const updatedOpportunity = await updateOpportunity(id, {
-        stage: 'Closed',
-        probability: 100
-      })
-      const index = opportunities.value.findIndex(o => o.id === id)
-      if (index !== -1) {
-        opportunities.value[index] = updatedOpportunity
-      }
-      if (currentOpportunity.value?.id === id) {
-        currentOpportunity.value = updatedOpportunity
-      }
-      // Add activity log entry
-      await addActivity(id, {
-        type: 'note',
-        user: 'You',
-        action: 'marked as closed won',
-        content: 'Opportunity marked as Closed Won - contract signed and deal completed'
-      })
-      return updatedOpportunity
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  async function createOpportunityFromLead(leadData, activities, options = {}) {
-    loading.value = true
-    error.value = null
-    try {
-      const newOpportunity = await apiCreateOpportunityFromLead(leadData, activities, options)
-      opportunities.value.unshift(newOpportunity)
-      return newOpportunity
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  async function convertOpportunityToLead(opportunityId) {
-    loading.value = true
-    error.value = null
-    try {
-      // Get full opportunity data and activities
-      const opportunity = await fetchOpportunityById(opportunityId)
-      const activities = await fetchOpportunityActivities(opportunityId)
-      
-      // Import leads store dynamically to avoid circular dependency
-      const { useLeadsStore } = await import('./leads')
-      const leadsStore = useLeadsStore()
-      
-      // Create lead from opportunity
-      const newLead = await leadsStore.createLeadFromOpportunity(opportunity, activities)
-      
-      // Remove opportunity from opportunities store
-      await removeOpportunity(opportunityId)
-      
-      return newLead.id
-    } catch (err) {
-      error.value = err.message
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-  
+
   return {
     opportunities,
     currentOpportunity,
-    currentOpportunityActivities,
     loading,
     error,
-    filters,
-    totalOpportunities,
-    opportunitiesByStage,
-    totalValue,
+    currentOpportunityActivities,
+    hotOpportunities,
     loadOpportunities,
+    fetchOpportunities,
     loadOpportunityById,
-    addOpportunity,
+    fetchOpportunityById,
+    createOpportunity,
     modifyOpportunity,
-    removeOpportunity,
+    updateOpportunity,
+    deleteOpportunity,
     addActivity,
     updateActivity,
     deleteActivity,
-    setFilters,
-    reopenOpportunity,
-    markAsRegistration,
-    markAsClosedWon,
-    createOpportunityFromLead,
-    convertOpportunityToLead
+    addVehicle,
+    createOffer
   }
 })
-

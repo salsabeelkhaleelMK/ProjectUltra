@@ -24,7 +24,6 @@ export const useUserStore = defineStore('user', () => {
     return role === 'salesman' || role === 'manager'
   }
   
-  const canAccessMarketing = () => currentUser.value.role === 'manager'
   const canAccessReports = () => currentUser.value.role === 'manager'
   const canAccessSettings = () => currentUser.value.role === 'manager'
   
@@ -54,7 +53,6 @@ export const useUserStore = defineStore('user', () => {
     isManager,
     canAccessLeads,
     canAccessOpportunities,
-    canAccessMarketing,
     canAccessReports,
     canAccessSettings,
     setUser,

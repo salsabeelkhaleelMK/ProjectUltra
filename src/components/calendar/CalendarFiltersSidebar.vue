@@ -238,4 +238,3 @@ const toggleArrayFilter = (key, value) => {
   emit('update:modelValue', { ...props.modelValue, [key]: newArray })
 }
 </script>
-

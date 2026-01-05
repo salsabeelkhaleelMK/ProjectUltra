@@ -2,27 +2,30 @@
   <div 
     class="bg-white border-r border-gray-200 flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
-    <div class="h-16 px-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <div class="flex items-center gap-3">
-        <!-- Close button (mobile only) -->
-        <button 
-          v-if="showMobileClose"
-          @click="$emit('close')"
-          class="lg:hidden w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-        <h2 class="font-bold text-lg text-gray-800">{{ title }}</h2>
-      </div>
-      <div class="flex items-center gap-2">
-        <button class="text-xs font-medium bg-white hover:bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
-          Urgent first <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
-        </button>
+    <!-- Header: Title and Dropdown -->
+    <div class="px-4 md:px-8 py-4 md:py-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <!-- Close button (mobile only) -->
+          <button 
+            v-if="showMobileClose"
+            @click="$emit('close')"
+            class="lg:hidden w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+          <h2 class="page-header-title">{{ title }}</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="text-xs font-medium bg-white hover:bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
+            Urgent first <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+          </button>
+        </div>
       </div>
     </div>
     
     <!-- Type Filter Buttons -->
-    <div v-if="showTypeFilter" class="px-5 py-2 border-b border-gray-100 bg-gray-50/50">
+    <div v-if="showTypeFilter" class="px-5 py-3 bg-white">
       <div class="flex gap-2">
         <button
           @click="$emit('filter-change', 'all')"
@@ -48,6 +51,7 @@
       </div>
     </div>
     
+    <!-- Search Bar -->
     <div class="px-5 py-3">
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
@@ -60,10 +64,11 @@
       </div>
     </div>
     
-    <div class="flex-1 overflow-y-auto px-4 space-y-4 pb-4 scrollbar-hide">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-4 space-y-4 pb-4 scrollbar-hide">
       <div 
         v-for="item in filteredItems" 
         :key="item.id"
+        :ref="el => { if (isSelected(item)) selectedItemRef = el }"
         @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
         class="rounded-xl px-4 py-3.5 cursor-pointer transition-all relative group"
         :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
@@ -86,7 +91,7 @@
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <!-- Main content: Avatar, Name, and Car name -->
+        <!-- Main content: Avatar, Name, Vehicle, Amount/Due -->
         <div class="flex items-start gap-3.5 pr-6">
           <!-- Avatar -->
           <div 
@@ -96,25 +101,27 @@
             {{ getInitials(item) }}
           </div>
           
-          <!-- Name and Car name -->
+          <!-- Name and Vehicle -->
           <div class="flex-1 min-w-0">
             <div class="font-bold text-gray-800 text-sm leading-snug truncate">{{ getName(item) }}</div>
             <div class="text-gray-600 text-xs mt-1 truncate">{{ getVehicleInfo(item) }}</div>
           </div>
+          
+          <!-- Right side: Amount -->
+          <div class="text-right shrink-0">
+            <slot name="meta" :item="item"></slot>
+            <slot name="footer" :item="item"></slot>
+          </div>
         </div>
         
-        <!-- Tags, Number, and Meta below contact name -->
-        <div class="mt-3">
-          <!-- Tags, Number, and Meta (on the right) -->
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2 flex-wrap flex-1">
-              <slot name="badges" :item="item"></slot>
-            </div>
-            <div class="text-right shrink-0">
-              <slot name="meta" :item="item"></slot>
-              <slot name="footer" :item="item"></slot>
-            </div>
-          </div>
+        <!-- Dates row (between customer info and badges) -->
+        <div class="mt-2.5">
+          <slot name="dates" :item="item"></slot>
+        </div>
+        
+        <!-- Tags at bottom -->
+        <div class="flex items-center gap-2 flex-wrap mt-3">
+          <slot name="badges" :item="item"></slot>
         </div>
       </div>
     </div>
@@ -122,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 // Click outside directive
 const vClickOutside = {
@@ -231,5 +238,36 @@ const isSelected = (item) => {
   const itemId = item.compositeId || `${item.type || 'task'}-${item.id}` || item.id
   return props.selectedId === itemId
 }
+
+// Refs for scroll functionality
+const scrollContainer = ref(null)
+const selectedItemRef = ref(null)
+
+// Scroll to selected item when selectedId changes
+watch(() => props.selectedId, async (newId) => {
+  if (newId && selectedItemRef.value) {
+    await nextTick()
+    selectedItemRef.value.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest'
+    })
+  }
+}, { immediate: true })
+
+// Also scroll when filteredItems change (initial load)
+watch(filteredItems, async () => {
+  if (props.selectedId && selectedItemRef.value) {
+    await nextTick()
+    // Small delay to ensure the DOM is fully rendered
+    setTimeout(() => {
+      if (selectedItemRef.value) {
+        selectedItemRef.value.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        })
+      }
+    }, 100)
+  }
+}, { immediate: true })
 </script>
 

@@ -13,7 +13,10 @@
         
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
-          <h1 class="heading-main truncate">{{ name }}</h1>
+          <div class="flex items-center gap-2">
+            <h1 class="heading-main truncate">{{ name }}</h1>
+            <slot name="name-action"></slot>
+          </div>
           <div class="flex flex-wrap items-center gap-2 mt-1">
             <slot name="tags"></slot>
           </div>
@@ -33,7 +36,7 @@
           <!-- Quick Action Dropdown Menu -->
           <div 
             v-if="showQuickActionMenu"
-            class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
+            class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-50 overflow-hidden flex flex-col p-1"
             v-click-outside="() => showQuickActionMenu = false"
           >
             <button 
@@ -43,16 +46,22 @@
               Note
             </button>
             <button 
-              @click="handleAction('purchase-method')" 
+              @click="handleAction('financing')" 
               class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
-              Purchase Method
+              Financing
             </button>
             <button 
               @click="handleAction('tradein')" 
               class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Trade-in
+            </button>
+            <button 
+              @click="handleAction('purchase')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            >
+              Purchase
             </button>
             <button 
               @click="handleAction('attachment')" 
@@ -79,6 +88,12 @@
             >
               <i class="fa-solid fa-comment-dots text-xs text-gray-400"></i> SMS
             </button>
+            <button 
+              @click="handleAction('call')" 
+              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            >
+              <i class="fa-solid fa-phone text-xs text-gray-400"></i> Call
+            </button>
             <div v-if="taskType === 'opportunity'" class="border-t border-gray-100 my-1"></div>
             <button 
               v-if="taskType === 'opportunity'"
@@ -94,7 +109,7 @@
           @click="showContactInfo = !showContactInfo" 
           class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
         >
-          <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
+          <i class="fa-solid fa-chevron-up text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
         </button>
       </div>
     </div>
@@ -216,7 +231,7 @@ const props = defineProps({
   },
   taskType: {
     type: String,
-    default: 'lead' // 'lead' or 'opportunity'
+    default: 'lead' // 'lead' | 'opportunity' | 'contact'
   }
 })
 

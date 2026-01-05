@@ -24,8 +24,9 @@
     
     <!-- Right Side Actions -->
     <div class="flex items-center gap-2 md:gap-4 ml-0 md:ml-8 shrink-0">
-      <!-- Action Items Icon -->
+      <!-- Action Items Icon (hidden) -->
       <router-link 
+        v-if="false"
         to="/action-items"
         class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
         title="Action Items"

@@ -56,8 +56,43 @@ export const createOpportunity = async (opportunityData) => {
   const newOpportunity = {
     id: mockOpportunities.length + 1,
     ...opportunityData,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString(),
+    expectedCloseDate: opportunityData.expectedCloseDate || null,
+    tags: opportunityData.tags || []
   }
+  mockOpportunities.push(newOpportunity)
+  return newOpportunity
+}
+
+export const createOpportunityFromContact = async (contactId, carData) => {
+  await delay()
+  const { mockContacts } = await import('./mockData')
+  const contact = mockContacts.find(c => c.id === parseInt(contactId))
+  if (!contact) throw new Error('Contact not found')
+  
+  const newOpportunity = {
+    id: mockOpportunities.length + 1,
+    customer: {
+      id: contact.id,
+      name: contact.name,
+      initials: contact.initials,
+      email: contact.email,
+      phone: contact.phone,
+      address: contact.address || ''
+    },
+    vehicle: carData,
+    stage: 'Qualified',
+    priority: 'Normal',
+    source: carData.source || 'Direct',
+    assignee: null,
+    assigneeInitials: '',
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString(),
+    expectedCloseDate: null,
+    tags: []
+  }
+  
   mockOpportunities.push(newOpportunity)
   return newOpportunity
 }
@@ -110,6 +145,57 @@ export const deleteOpportunityActivity = async (opportunityId, activityId) => {
   return { success: true }
 }
 
+// Add vehicle to opportunity (without creating offer or transitioning stage)
+export const addVehicleToOpportunity = async (opportunityId, vehicleData) => {
+  await delay()
+  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  if (!opportunity) throw new Error('Opportunity not found')
+  
+  // Store the selected vehicle
+  opportunity.selectedVehicle = {
+    ...vehicleData.vehicle,
+    selectionType: vehicleData.type // 'requested', 'stock', 'recommended', 'custom'
+  }
+  
+  // Update last activity timestamp
+  opportunity.lastActivity = new Date().toISOString()
+  
+  // Add activity to track vehicle selection
+  const activity = await addOpportunityActivity(opportunityId, {
+    type: 'note',
+    user: 'You',
+    action: 'selected a vehicle',
+    content: `Selected ${vehicleData.vehicle.brand} ${vehicleData.vehicle.model} (${vehicleData.vehicle.year}) for this opportunity`
+  })
+  
+  return opportunity
+}
+
+// Create offer for opportunity (triggers stage transition to "In Negotiation")
+export const createOfferForOpportunity = async (opportunityId, offerData) => {
+  await delay()
+  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  if (!opportunity) throw new Error('Opportunity not found')
+  
+  // Create offer activity
+  const offerActivity = await addOpportunityActivity(opportunityId, {
+    type: 'offer',
+    user: 'You',
+    action: 'created an offer',
+    data: offerData.data
+  })
+  
+  // Transition stage from "Qualified" to "In Negotiation" when offer is created
+  if (opportunity.stage === 'Qualified') {
+    opportunity.stage = 'In Negotiation'
+  }
+  
+  // Update last activity timestamp
+  opportunity.lastActivity = new Date().toISOString()
+  
+  return { opportunity, activity: offerActivity }
+}
+
 // Conversion helpers
 export const generateOpportunityId = () => {
   return mockOpportunities.length > 0 ? Math.max(...mockOpportunities.map(o => o.id)) + 1 : 1
@@ -134,7 +220,6 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
     vehicle: { ...leadData.requestedCar }, // Copy requestedCar to vehicle
     stage: 'Qualified',
     tags: leadData.tags || [],
-    probability: 50,
     value: leadData.requestedCar?.price || 0,
     expectedCloseDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 90 days from now
     assignee: assigneeName,
@@ -396,4 +481,39 @@ export const updateOpportunityAssignee = async (opportunityId, assigneeId) => {
   opportunity.assignee = newAssignee.name
   
   return opportunity
+}
+
+export const fetchTasksDueToday = async () => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  
+  // Opportunities don't have nextActionDue, but we can check lastActivity or expectedCloseDate
+  // For now, return opportunities with recent activity or due soon
+  return mockOpportunities.filter(opp => {
+    if (opp.expectedCloseDate) {
+      const closeDate = new Date(opp.expectedCloseDate)
+      closeDate.setHours(0, 0, 0, 0)
+      return closeDate >= today && closeDate < tomorrow
+    }
+    return false
+  })
+}
+
+export const fetchTasksDueUpcoming = async (days = 7) => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const endDate = new Date(today)
+  endDate.setDate(endDate.getDate() + days)
+  
+  return mockOpportunities.filter(opp => {
+    if (opp.expectedCloseDate) {
+      const closeDate = new Date(opp.expectedCloseDate)
+      return closeDate >= today && closeDate < endDate
+    }
+    return false
+  })
 }

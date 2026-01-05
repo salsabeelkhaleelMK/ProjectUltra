@@ -34,43 +34,15 @@
       <div class="py-4">
         <!-- Add New Section -->
         <div class="px-4 mb-4">
-          <button
-            @click="toggleAddMenu"
+          <router-link
+            to="/add-new"
+            @click="$emit('close')"
             class="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-            :class="{ 'text-white bg-gray-700': showAddMenu }"
+            :class="{ 'text-white bg-gray-700': isActive('/add-new') }"
           >
             <i class="fa-solid fa-plus"></i>
             <span class="font-medium">Add New</span>
-            <i class="fa-solid fa-chevron-down ml-auto text-xs" :class="{ 'rotate-180': showAddMenu }"></i>
-          </button>
-          
-          <!-- Add Menu Dropdown -->
-          <div v-if="showAddMenu" class="mt-2 space-y-1 pl-4">
-            <button 
-              @click="handleAddItem('lead')"
-              class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-3 text-sm"
-            >
-              <i class="fa-solid fa-address-book w-5 text-gray-400"></i> Lead
-            </button>
-            <button 
-              @click="handleAddItem('opportunity')"
-              class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-3 text-sm"
-            >
-              <i class="fa-solid fa-gem w-5 text-gray-400"></i> Opportunity
-            </button>
-            <button 
-              @click="handleAddItem('contact')"
-              class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-3 text-sm"
-            >
-              <i class="fa-solid fa-user w-5 text-gray-400"></i> Contact
-            </button>
-            <button 
-              @click="handleAddItem('account')"
-              class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-3 text-sm"
-            >
-              <i class="fa-solid fa-building w-5 text-gray-400"></i> Account
-            </button>
-          </div>
+          </router-link>
         </div>
         
         <!-- Primary Navigation -->
@@ -89,13 +61,13 @@
           </router-link>
           
           <router-link 
-            to="/pipeline" 
+            to="/customers" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
-            :class="{ 'mobile-sidebar-link-active': isActive('/pipeline') }"
+            :class="{ 'mobile-sidebar-link-active': isActive('/customers') }"
           >
-            <i class="fa-solid fa-diagram-project w-5"></i>
-            <span>Pipeline</span>
+            <i class="fa-solid fa-users w-5"></i>
+            <span>Customers</span>
           </router-link>
           
           <router-link 
@@ -124,21 +96,11 @@
         
         <!-- Secondary Navigation -->
         <div class="px-4 space-y-1">
-          <router-link 
-            to="/marketing" 
-            @click="$emit('close')"
-            class="mobile-sidebar-link"
-            :class="{ 'mobile-sidebar-link-active': isActive('/marketing') }"
-          >
-            <i class="fa-solid fa-bullhorn w-5"></i>
-            <span>Marketing</span>
-          </router-link>
-          
           <!-- Lists Submenu -->
           <button
             @click="toggleListsMenu"
             class="mobile-sidebar-link"
-            :class="{ 'mobile-sidebar-link-active': isActive('/contacts') || isActive('/vehicles') }"
+            :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') }"
           >
             <i class="fa-solid fa-list w-5"></i>
             <span>Lists</span>
@@ -147,15 +109,6 @@
           
           <!-- Lists Submenu Items -->
           <div v-if="showListsMenu" class="pl-8 space-y-1 mt-1">
-            <router-link 
-              to="/contacts"
-              @click="$emit('close')"
-              class="mobile-sidebar-link text-sm"
-              :class="{ 'mobile-sidebar-link-active': isActive('/contacts') }"
-            >
-              <i class="fa-solid fa-users w-5 text-gray-500"></i>
-              <span>Contacts</span>
-            </router-link>
             <router-link 
               to="/vehicles"
               @click="$emit('close')"

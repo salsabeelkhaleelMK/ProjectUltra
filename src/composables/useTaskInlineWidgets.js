@@ -1,32 +1,21 @@
 import { ref, computed, watch } from 'vue'
 
 /**
- * Centralised inline-widget state and handlers for task feeds (leads & opportunities).
- *
- * Responsibilities:
- * - Track active tab and which inline widget (note, attachment, communication, etc.) is open.
- * - Orchestrate creation/update/deletion of activities via the provided store API.
- * - Ensure overview-only actions (e.g. trade-in/financing modals) are delegated to the caller.
- *
- * @param {Object} options
- * @param {{ currentActivities: import('vue').ComputedRef<Array>, addActivity: Function, updateActivity: Function, deleteActivity: Function }} options.store
- * @param {import('vue').ComputedRef<string|number>} options.taskId  Reactive task id for store calls.
- * @param {(type: string) => string} options.getTabForItemType       Maps activity type to tab key.
- * @param {(action: string) => boolean} options.isOverviewModalAction Returns true for overview actions handled via modals.
+ * Composable for managing inline widget state and actions in task views
+ * Handles adding, editing, deleting, and canceling inline widgets (notes, communications, etc.)
  */
-export function useTaskInlineWidgets(options) {
-  const {
-    store,
-    taskId,
-    getTabForItemType,
-    isOverviewModalAction
-  } = options
-
-  const activeTab = ref('overview')
+export function useTaskInlineWidgets({ store, taskId, getTabForItemType, isOverviewModalAction }) {
   const showInlineWidget = ref(null)
   const editingItem = ref(null)
+  const activeTab = ref('overview') // Default to overview tab
   const communicationType = ref('email')
   const inlineContent = ref([])
+
+  // Clear inline widget when switching tabs
+  watch(activeTab, () => {
+    showInlineWidget.value = null
+    editingItem.value = null
+  })
 
   const filteredInlineContent = computed(() => {
     const baseItems = [
@@ -47,14 +36,20 @@ export function useTaskInlineWidgets(options) {
       })
   })
 
+  /**
+   * Handle "Add New" action - either show inline widget or emit for overview modal
+   */
   const handleAddNewAction = (action) => {
     editingItem.value = null
 
-    if (activeTab.value === 'overview' && isOverviewModalAction(action)) {
-      return { modalAction: action }
+    if (activeTab.value === 'overview' && isOverviewModalAction && isOverviewModalAction(action)) {
+      // This is an overview action (financing, tradein, purchase) - handled by parent
+      return { type: 'overview-modal', action }
     }
 
-    if (['email', 'whatsapp', 'sms'].includes(action)) {
+    // Map communication actions to 'communication' widget type
+    const communicationActions = ['email', 'sms', 'whatsapp', 'call']
+    if (communicationActions.includes(action)) {
       communicationType.value = action
       showInlineWidget.value = 'communication'
     } else {
@@ -63,6 +58,9 @@ export function useTaskInlineWidgets(options) {
     return null
   }
 
+  /**
+   * Save widget data (create or update)
+   */
   const handleWidgetSave = async (data) => {
     if (data.isEdit) {
       const index = inlineContent.value.findIndex(i => i.id === data.id)
@@ -108,34 +106,43 @@ export function useTaskInlineWidgets(options) {
     editingItem.value = null
   }
 
+  /**
+   * Cancel widget (close without saving)
+   */
   const handleWidgetCancel = () => {
     showInlineWidget.value = null
     editingItem.value = null
   }
 
+  /**
+   * Edit an existing item
+   */
   const handleEditItem = (item) => {
-    editingItem.value = item
-    showInlineWidget.value = item.type
-  }
-
-  const handleDeleteItem = async (item) => {
-    const index = inlineContent.value.findIndex(i => i.id === item.id)
-    if (index > -1) inlineContent.value.splice(index, 1)
-
-    if (item.activityId) {
-      await store.deleteActivity(taskId.value, item.activityId)
+    const tab = getTabForItemType(item.type)
+    if (tab) {
+      showInlineWidget.value = item.type === 'email' || item.type === 'whatsapp' || item.type === 'sms' || item.type === 'communication' ? 'communication' : item.type
+      editingItem.value = item
     }
   }
 
-  watch(activeTab, () => {
-    showInlineWidget.value = null
-    editingItem.value = null
-  })
+  /**
+   * Delete an item
+   */
+  const handleDeleteItem = async (itemId) => {
+    try {
+      await store.deleteActivity(taskId.value, itemId)
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      throw error
+    }
+  }
 
   return {
     activeTab,
     showInlineWidget,
+    inlineWidgetType: computed(() => showInlineWidget.value),
     editingItem,
+    isEditing: computed(() => editingItem.value !== null),
     communicationType,
     inlineContent,
     filteredInlineContent,
@@ -146,5 +153,3 @@ export function useTaskInlineWidgets(options) {
     handleDeleteItem
   }
 }
-
-

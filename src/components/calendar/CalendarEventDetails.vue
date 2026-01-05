@@ -70,7 +70,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { formatEventDate, formatEventTime } from '@/utils/calendarHelpers'
 
 const props = defineProps({
   event: {
@@ -79,8 +78,33 @@ const props = defineProps({
   }
 })
 
-const formattedDate = computed(() => formatEventDate(props.event.start))
-const formattedStartTime = computed(() => formatEventTime(props.event.start))
-const formattedEndTime = computed(() => formatEventTime(props.event.end))
+const formattedDate = computed(() => {
+  if (!props.event?.start) return 'N/A'
+  const date = new Date(props.event.start)
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+})
+
+const formattedStartTime = computed(() => {
+  if (!props.event?.start) return 'N/A'
+  const date = new Date(props.event.start)
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
+})
+
+const formattedEndTime = computed(() => {
+  if (!props.event?.end) return 'N/A'
+  const date = new Date(props.event.end)
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
+})
 </script>
 

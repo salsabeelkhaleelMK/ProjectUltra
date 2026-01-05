@@ -62,3 +62,109 @@ export function formatCurrency(value) {
   return value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') || '0'
 }
 
+/**
+ * Format full deadline with date and time
+ * @param {string} isoTimestamp - ISO timestamp string
+ * @returns {string} Formatted string: "Jan 5, 2:30 PM" or "OVERDUE"
+ */
+export function formatDeadlineFull(isoTimestamp) {
+  if (!isoTimestamp) return 'No deadline'
+  
+  const dueDate = new Date(isoTimestamp)
+  const now = new Date()
+  
+  // Check if overdue
+  if (dueDate < now) {
+    return 'OVERDUE'
+  }
+  
+  // Format as "Jan 5, 2:30 PM"
+  const dateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const timeStr = dueDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  
+  return `${dateStr}, ${timeStr}`
+}
+
+/**
+ * Get deadline status (overdue, urgent, normal)
+ * @param {string} isoTimestamp - ISO timestamp string
+ * @returns {object} Status object with type, styling, and relative time
+ */
+export function getDeadlineStatus(isoTimestamp) {
+  if (!isoTimestamp) {
+    return { 
+      type: 'none', 
+      color: 'gray', 
+      icon: 'fa-clock',
+      relativeTime: 'No deadline',
+      statusText: 'No deadline',
+      bgClass: 'bg-gray-50',
+      textClass: 'text-gray-700',
+      borderClass: 'border-gray-200',
+      iconClass: 'fa-solid fa-clock'
+    }
+  }
+  
+  const dueDate = new Date(isoTimestamp)
+  const now = new Date()
+  const hoursUntil = (dueDate - now) / (1000 * 60 * 60)
+  
+  if (hoursUntil < 0) {
+    return { 
+      type: 'overdue', 
+      color: 'red', 
+      icon: 'fa-exclamation-triangle',
+      relativeTime: 'OVERDUE',
+      statusText: 'OVERDUE',
+      bgClass: 'bg-red-50',
+      textClass: 'text-red-700',
+      borderClass: 'border-red-200',
+      iconClass: 'fa-solid fa-exclamation-triangle'
+    }
+  } else if (hoursUntil < 2) {
+    const minutesUntil = Math.floor((dueDate - now) / (1000 * 60))
+    const hours = Math.floor(minutesUntil / 60)
+    const mins = minutesUntil % 60
+    return { 
+      type: 'urgent', 
+      color: 'orange', 
+      icon: 'fa-clock',
+      relativeTime: hours > 0 ? `${hours}h ${mins}m` : `${mins}m`,
+      statusText: 'URGENT',
+      bgClass: 'bg-orange-50',
+      textClass: 'text-orange-700',
+      borderClass: 'border-orange-200',
+      iconClass: 'fa-solid fa-clock'
+    }
+  } else if (hoursUntil < 24) {
+    const hours = Math.floor(hoursUntil)
+    const minutes = Math.floor((hoursUntil - hours) * 60)
+    return { 
+      type: 'today', 
+      color: 'blue', 
+      icon: 'fa-clock',
+      relativeTime: `${hours}h ${minutes}m`,
+      statusText: 'TODAY',
+      bgClass: 'bg-blue-50',
+      textClass: 'text-blue-700',
+      borderClass: 'border-blue-200',
+      iconClass: 'fa-solid fa-clock'
+    }
+  } else {
+    const daysUntil = Math.ceil(hoursUntil / 24)
+    return { 
+      type: 'normal', 
+      color: 'gray', 
+      icon: 'fa-calendar',
+      relativeTime: `${daysUntil} day${daysUntil !== 1 ? 's' : ''}`,
+      statusText: 'UPCOMING',
+      bgClass: 'bg-gray-50',
+      textClass: 'text-gray-700',
+      borderClass: 'border-gray-200',
+      iconClass: 'fa-solid fa-calendar'
+    }
+  }
+}
+
+
+

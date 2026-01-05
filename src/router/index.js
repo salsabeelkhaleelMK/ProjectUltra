@@ -13,6 +13,11 @@ const routes = [
         redirect: '/tasks'
       },
       {
+        path: 'home',
+        name: 'home-dashboard',
+        component: () => import('@/views/Home.vue')
+      },
+      {
         path: 'action-items',
         name: 'action-items',
         component: () => import('@/views/ActionItems.vue'),
@@ -27,9 +32,9 @@ const routes = [
         }
       },
       {
-        path: 'contacts',
-        name: 'contacts',
-        component: () => import('@/views/Contacts.vue')
+        path: 'add-new',
+        name: 'add-new',
+        component: () => import('@/views/AddNew.vue')
       },
       {
         path: 'tasks/:id?',
@@ -37,32 +42,25 @@ const routes = [
         component: () => import('@/views/Tasks.vue')
       },
       {
+        path: 'lead/:id',
+        name: 'lead-view',
+        component: () => import('@/views/Lead.vue'),
+        props: true
+      },
+      {
         path: 'vehicles',
         name: 'vehicles',
         component: () => import('@/views/Vehicles.vue')
       },
       {
-        path: 'pipeline',
-        name: 'pipeline',
-        component: () => import('@/views/Pipeline.vue')
+        path: 'customers',
+        name: 'customers',
+        component: () => import('@/views/Customers.vue')
       },
       {
         path: 'calendar',
         name: 'calendar',
         component: () => import('@/views/Calendar.vue')
-      },
-      {
-        path: 'marketing',
-        name: 'marketing',
-        component: () => import('@/views/Marketing.vue'),
-        beforeEnter: (to, from, next) => {
-          const userStore = useUserStore()
-          if (userStore.canAccessMarketing()) {
-            next()
-          } else {
-            next('/access-denied')
-          }
-        }
       },
       {
         path: 'reports',

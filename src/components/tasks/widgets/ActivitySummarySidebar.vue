@@ -22,14 +22,16 @@
           v-else-if="showCollapse"
           @click="$emit('toggle-collapse')"
           class="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors shrink-0"
-          title="Toggle Sidebar"
+          :title="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         >
-          <i class="fa-solid fa-arrow-right-from-bracket transition-transform duration-300" :class="collapsed ? 'rotate-180' : ''"></i>
+          <i v-if="collapsed" class="fa-solid fa-arrow-left text-sm"></i>
+          <i v-else class="fa-solid fa-arrow-right text-sm"></i>
         </button>
         <h2 v-if="!collapsed" class="font-bold text-lg text-gray-800">{{ title }}</h2>
       </div>
     </div>
     
+    <!-- Expanded View -->
     <div v-if="!collapsed" class="flex-1 overflow-y-auto px-5 py-6 scrollbar-hide relative">
       <div v-if="activities.length > 0" class="absolute left-[39px] top-0 bottom-0 w-0.5 bg-gray-200 z-0"></div>
       <div v-if="activities.length === 0" class="text-center py-8 text-gray-400 relative z-10">
@@ -60,6 +62,34 @@
             </div>
           </div>
         </template>
+      </div>
+    </div>
+
+    <!-- Collapsed View -->
+    <div v-else class="flex-1 overflow-y-auto py-6 scrollbar-hide relative flex flex-col items-center">
+      <!-- Timeline line -->
+      <div v-if="activities.length > 0" class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 -translate-x-1/2 z-0"></div>
+      
+      <!-- Activity icons -->
+      <div v-if="activities.length > 0" class="space-y-4 relative z-10">
+        <div
+          v-for="activity in activities"
+          :key="activity.id"
+          class="relative"
+        >
+          <div 
+            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-white border-2 border-gray-200"
+            :class="getActivityIconClass(activity.type)"
+            :title="`${activity.user} ${activity.action}`"
+          >
+            <i :class="getActivityIcon(activity.type)" class="text-xs"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state when collapsed -->
+      <div v-else class="text-center py-8 text-gray-400 relative z-10">
+        <i class="fa-solid fa-clock text-2xl mb-2"></i>
       </div>
     </div>
   </div>

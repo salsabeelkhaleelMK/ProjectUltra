@@ -855,6 +855,10 @@ const extractInformation = () => {
   if (extractedData.value.financing) {
     preferences.value.financing = true
   }
+  
+  // Show outcome selection after extraction
+  showOutcomeSelection.value = true
+  callEnded.value = false
 }
 
 const handleScheduleAppointmentConfirm = async (appointmentData) => {
@@ -964,7 +968,7 @@ const handleNoAnswerConfirm = async () => {
   emit('call-attempt-logged', attempt)
   
   if (followupChannel.value && followupChannel.value !== 'dont-send') {
-    console.log('Sending follow-up:', followupChannel.value, messagePreview.value)
+    // Follow-up will be sent via the selected channel
   }
   
   // Create appointment and calendar event

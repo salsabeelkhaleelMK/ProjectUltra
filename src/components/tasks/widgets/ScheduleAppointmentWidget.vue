@@ -12,12 +12,22 @@
       </select>
     </div>
     <div>
-      <label class="block text-xs font-medium text-gray-500 mb-1.5">Assign to Salesman</label>
-      <select v-model="selectedUserId" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none appearance-none cursor-pointer transition-colors shadow-sm">
-        <option v-for="user in assignableUsers" :key="user.id" :value="user.id">
+      <label class="block text-xs font-medium text-gray-500 mb-1.5">Assign to</label>
+      <select v-model="selectedAssignee" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none appearance-none cursor-pointer transition-colors shadow-sm">
+        <optgroup label="Teams">
+          <option v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
+            {{ team.name }} Team
+          </option>
+        </optgroup>
+        <optgroup label="Users">
+          <option v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
           {{ user.name }}{{ user.id === userStore.currentUser?.id ? ' (Me)' : '' }}
         </option>
+        </optgroup>
       </select>
+      <p v-if="isTeamSelected" class="text-xs text-gray-500 mt-1">
+        <i class="fa-solid fa-users text-gray-400"></i> Any available team member will be assigned
+      </p>
     </div>
     <div>
       <label class="block text-xs font-medium text-gray-500 mb-1.5">Select Date</label>
@@ -72,17 +82,23 @@ const userStore = useUserStore()
 const usersStore = useUsersStore()
 
 const appointmentType = ref('')
-const selectedUserId = ref(null)
+const selectedAssignee = ref(null)
 const appointmentDate = ref('')
 const showTimeslots = ref(false)
 const selectedTimeSlot = ref('')
 
-// Get assignable users from store
+// Get assignable users and teams from store
 const assignableUsers = computed(() => usersStore.assignableUsers)
+const assignableTeams = computed(() => usersStore.assignableTeams)
+
+// Check if a team is selected
+const isTeamSelected = computed(() => {
+  return selectedAssignee.value && selectedAssignee.value.startsWith('team-')
+})
 
 // Set default assignee to current user
 onMounted(() => {
-  selectedUserId.value = userStore.currentUser?.id || 1
+  selectedAssignee.value = `user-${userStore.currentUser?.id || 1}`
 })
 
 // Reset form when component is hidden
@@ -94,30 +110,47 @@ watch(() => props.show, (newVal) => {
 
 const resetForm = () => {
   appointmentType.value = ''
-  selectedUserId.value = userStore.currentUser?.id || 1
+  selectedAssignee.value = `user-${userStore.currentUser?.id || 1}`
   appointmentDate.value = ''
   showTimeslots.value = false
   selectedTimeSlot.value = ''
 }
 
 const handleConfirm = () => {
-  if (!appointmentType.value || !appointmentDate.value || !selectedTimeSlot.value) {
-    alert('Please fill in all required fields: Type, Date, and Time')
+  if (!appointmentType.value || !appointmentDate.value || !selectedTimeSlot.value || !selectedAssignee.value) {
     return
   }
   
-  const selectedUser = usersStore.getUserById(selectedUserId.value)
-  const appointmentDateTime = `${appointmentDate.value}T${selectedTimeSlot.value}:00`
+  const isTeam = selectedAssignee.value.startsWith('team-')
+  const id = parseInt(selectedAssignee.value.split('-')[1])
+  
+  let assigneeData = {}
+  
+  if (isTeam) {
+    const team = usersStore.getTeamById(id)
+    assigneeData = {
+      assigneeType: 'team',
+      teamId: id,
+      team: team?.name || 'Unknown Team',
+      assignee: null,
+      assigneeId: null
+    }
+  } else {
+    const selectedUser = usersStore.getUserById(id)
+    assigneeData = {
+      assigneeType: 'user',
+      assigneeId: id,
+      assignee: selectedUser?.name || 'Unknown',
+      teamId: null,
+      team: null
+    }
+  }
   
   emit('confirm', {
     type: appointmentType.value,
-    assignee: selectedUser?.name || 'Unknown',
-    assigneeId: selectedUserId.value,
     date: appointmentDate.value,
     time: selectedTimeSlot.value,
-    datetime: appointmentDateTime,
-    location: '',
-    notes: ''
+    ...assigneeData
   })
   
   resetForm()

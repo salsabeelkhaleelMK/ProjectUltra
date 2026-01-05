@@ -68,7 +68,7 @@ import { useActionableQuestions } from '@/composables/useActionableQuestions'
 import { createNSTask, updateOpportunityAssignee } from '@/api/opportunities'
 import { saveDismissal } from '@/utils/dismissalStorage'
 import ActionableQuestionCard from '@/components/home/ActionableQuestionCard.vue'
-import ReassignUserModal from '@/components/home/ReassignUserModal.vue'
+import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

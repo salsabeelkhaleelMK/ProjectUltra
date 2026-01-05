@@ -189,3 +189,60 @@
 .animate-fade-in {
   animation: sweep 0.2s ease-in-out;
 }
+
+/* FullCalendar Custom Theme - Primary Blue */
+/* Toolbar buttons */
+.fc .fc-button-primary {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  color: white !important;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.fc .fc-button-primary:disabled {
+  background-color: #93c5fd !important;
+  border-color: #93c5fd !important;
+  opacity: 0.6;
+}
+
+.fc .fc-button-active {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+/* Today button */
+.fc .fc-today-button {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+/* Current day highlight */
+.fc .fc-day-today {
+  background-color: #dbeafe !important;
+}
+
+/* Table header styling */
+.fc .fc-col-header-cell {
+  background-color: #eff6ff;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+/* Event hover */
+.fc-event:hover {
+  filter: brightness(0.95);
+}
+
+/* More link styling */
+.fc .fc-more-link {
+  color: #2563eb !important;
+  font-weight: 600;
+}
+
+.fc .fc-more-link:hover {
+  color: #1d4ed8 !important;
+}

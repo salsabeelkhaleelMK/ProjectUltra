@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchContacts, fetchContactById, createContact, updateContact, deleteContact } from '@/api/contacts'
+import * as contactsApi from '@/api/contacts'
 
 export const useContactsStore = defineStore('contacts', () => {
   // State
@@ -18,7 +18,7 @@ export const useContactsStore = defineStore('contacts', () => {
     loading.value = true
     error.value = null
     try {
-      const result = await fetchContacts({ search: searchQuery.value })
+      const result = await contactsApi.fetchContacts({ search: searchQuery.value })
       contacts.value = result.data
     } catch (err) {
       error.value = err.message
@@ -31,9 +31,11 @@ export const useContactsStore = defineStore('contacts', () => {
     loading.value = true
     error.value = null
     try {
-      currentContact.value = await fetchContactById(id)
+      currentContact.value = await contactsApi.fetchContactById(id)
+      return currentContact.value
     } catch (err) {
       error.value = err.message
+      throw err
     } finally {
       loading.value = false
     }
@@ -43,7 +45,7 @@ export const useContactsStore = defineStore('contacts', () => {
     loading.value = true
     error.value = null
     try {
-      const newContact = await createContact(contactData)
+      const newContact = await contactsApi.createContact(contactData)
       contacts.value.unshift(newContact)
       return newContact
     } catch (err) {
@@ -58,7 +60,7 @@ export const useContactsStore = defineStore('contacts', () => {
     loading.value = true
     error.value = null
     try {
-      const updatedContact = await updateContact(id, updates)
+      const updatedContact = await contactsApi.updateContact(id, updates)
       const index = contacts.value.findIndex(c => c.id === id)
       if (index !== -1) {
         contacts.value[index] = updatedContact
@@ -76,7 +78,7 @@ export const useContactsStore = defineStore('contacts', () => {
     loading.value = true
     error.value = null
     try {
-      await deleteContact(id)
+      await contactsApi.deleteContact(id)
       contacts.value = contacts.value.filter(c => c.id !== id)
     } catch (err) {
       error.value = err.message
@@ -91,6 +93,74 @@ export const useContactsStore = defineStore('contacts', () => {
     loadContacts()
   }
   
+  async function addRequestedCar(contactId, carData) {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedContact = await contactsApi.addRequestedCarToContact(contactId, carData)
+      
+      // Update the contact in the store
+      const index = contacts.value.findIndex(c => c.id === contactId)
+      if (index !== -1) {
+        contacts.value[index] = updatedContact
+      }
+      
+      // Update current contact if it's the same one
+      if (currentContact.value && currentContact.value.id === contactId) {
+        currentContact.value = updatedContact
+      }
+      
+      return updatedContact
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function convertToLead(contactId) {
+    loading.value = true
+    error.value = null
+    try {
+      const newLead = await contactsApi.convertContactToLead(contactId)
+      
+      // Remove from contacts
+      contacts.value = contacts.value.filter(c => c.id !== contactId)
+      
+      // Clear current contact
+      currentContact.value = null
+      
+      return newLead
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  async function convertToOpportunity(contactId) {
+    loading.value = true
+    error.value = null
+    try {
+      const newOpp = await contactsApi.convertContactToOpportunity(contactId)
+      
+      // Remove from contacts
+      contacts.value = contacts.value.filter(c => c.id !== contactId)
+      
+      // Clear current contact
+      currentContact.value = null
+      
+      return newOpp
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+  
   return {
     contacts,
     currentContact,
@@ -103,7 +173,12 @@ export const useContactsStore = defineStore('contacts', () => {
     addContact,
     modifyContact,
     removeContact,
-    setSearchQuery
+    setSearchQuery,
+    addRequestedCar,
+    convertToLead,
+    convertToOpportunity
   }
 })
+
+
 

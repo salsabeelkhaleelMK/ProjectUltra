@@ -45,11 +45,13 @@
     <template #footer>
       <div class="p-4 bg-gray-50 flex justify-between items-center border-t border-gray-100">
         <button 
+          v-if="event?.id"
           @click="$emit('delete', event.id)"
           class="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
         >
           <i class="fa-regular fa-trash-can text-xs"></i> Delete
         </button>
+        <div v-else></div>
         <div class="flex gap-2">
           <button 
             @click="$emit('close')"

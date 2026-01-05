@@ -6,7 +6,7 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Manage Next Steps</h3>
+        <h3 class="font-bold text-slate-800 text-sm">Manage Next steps</h3>
       </div>
       <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">
         {{ isClosed ? 'Closed' : 'Active' }}
@@ -64,58 +64,53 @@
         </div>
       </div>
       
-      <!-- Vehicle Actions Section (only for Qualified stage) -->
-      <div v-if="opportunity.stage === 'Qualified' && opportunity.vehicle">
-        <div :class="opportunity.vehicle.stockDays !== null && opportunity.vehicle.stockDays !== undefined ? 'bg-green-50/50 border border-green-100' : 'bg-orange-50/50 border border-orange-100'"
-             class="rounded-lg p-4 relative transition-all duration-300">
+      <!-- Vehicle Selection Section (only for Qualified stage without selected vehicle) -->
+      <div v-if="opportunity.stage === 'Qualified' && !opportunity.selectedVehicle">
+        <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4 relative transition-all duration-300">
           <div class="flex justify-between items-start mb-3">
             <div>
-              <h4 class="font-bold text-slate-800 text-sm">
-                <span v-if="opportunity.vehicle.stockDays !== null && opportunity.vehicle.stockDays !== undefined">
-                  Vehicle Actions
-                </span>
-                <span v-else>
-                  Find Alternative Vehicle
-                </span>
-              </h4>
+              <h4 class="font-bold text-slate-800 text-sm">Select Vehicle</h4>
               <p class="text-xs text-gray-500 mt-0.5">
-                <span v-if="opportunity.vehicle.stockDays !== null && opportunity.vehicle.stockDays !== undefined">
-                  The requested vehicle is available. Create an offer or explore other options.
-                </span>
-                <span v-else>
-                  The requested vehicle is currently out of stock. Explore alternatives.
-                </span>
+                Choose a vehicle to create an offer for this opportunity
+              </p>
+            </div>
+          </div>
+          <button
+            @click="showVehicleSelectionModal = true"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+          >
+            <i class="fa-solid fa-car mr-1"></i>
+            Select Vehicle
+          </button>
+        </div>
+      </div>
+
+      <!-- Vehicle Added - Create Offer CTA (after vehicle selected, before offer created) -->
+      <div v-if="opportunity.stage === 'Qualified' && opportunity.selectedVehicle && !hasOffers">
+        <div class="bg-green-50/50 border border-green-100 rounded-lg p-4 relative transition-all duration-300">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Create Offer</h4>
+              <p class="text-xs text-gray-500 mt-0.5">
+                Vehicle selected: {{ opportunity.selectedVehicle.brand }} {{ opportunity.selectedVehicle.model }} ({{ opportunity.selectedVehicle.year }})
               </p>
             </div>
           </div>
           <div class="flex gap-3 flex-wrap">
             <button
-              @click="handleAddVehicleFromStock"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
-            >
-              Add vehicle from stock
-            </button>
-            <button
-              @click="handleConfigureVehicle"
-              class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
-            >
-              Configure vehicle
-            </button>
-            <button
               @click="handleCreateOffer"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+            >
+              <i class="fa-solid fa-file-contract mr-1"></i>
+              Create Offer
+            </button>
+            <button
+              @click="showVehicleSelectionModal = true"
               class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
             >
-              Create offer
+              <i class="fa-solid fa-car mr-1"></i>
+              Change Vehicle
             </button>
-          </div>
-          
-          <!-- Recommended Cars Slider (only if vehicle out of stock) -->
-          <div v-if="opportunity.vehicle.stockDays === null || opportunity.vehicle.stockDays === undefined" class="mt-4">
-            <div class="[&>div]:mb-0">
-              <RecommendedCarsSlider
-                @add-to-opportunity="handleAddToOpportunity"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -143,6 +138,43 @@
             @confirm="handleReschedule"
           />
         </div>
+      </div>
+      
+      <!-- No Appointment - Schedule Button -->
+      <div v-else-if="opportunity.stage === 'Qualified' && !hasAppointment" class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 relative transition-all duration-300">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">No Appointment Scheduled</h4>
+            <p class="text-xs text-gray-500 mt-0.5">Schedule a new appointment to move the opportunity forward.</p>
+          </div>
+        </div>
+        <button
+          @click="toggleScheduleAppointment('no-appointment')"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        >
+          Schedule appointment
+        </button>
+      </div>
+      
+      <!-- Contract Signed - Mark as Closed Won (In Negotiation with contractDate) -->
+      <div 
+        v-if="shouldShowClosedWonCTA"
+        class="bg-green-50/50 border border-green-100 rounded-lg p-4 relative transition-all duration-300"
+      >
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-sm">Contract Signed</h4>
+            <p class="text-xs text-gray-500 mt-0.5">
+              Contract was signed on {{ formatDate(opportunity.contractDate) }}. Mark this opportunity as Closed Won to complete the deal.
+            </p>
+          </div>
+        </div>
+        <button
+          @click="handleMarkAsClosedWon"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        >
+          Mark as Closed Won <i class="fa-solid fa-check-circle"></i>
+        </button>
       </div>
       
       <!-- Legacy Task Widgets - Conditionally Loaded (Priority Order) -->
@@ -239,43 +271,6 @@
         @not-responding="handleNotResponding"
       />
       
-      <!-- Schedule Appointment - Always available as next step (shows for all non-closed stages) -->
-      <div 
-        v-if="!isClosed"
-        class="bg-blue-50/50 border border-blue-100 rounded-lg p-4 relative transition-all duration-300"
-      >
-        <div class="flex justify-between items-start mb-3">
-          <div>
-            <h4 class="font-bold text-slate-800 text-sm">Schedule Appointment</h4>
-            <p class="text-xs text-gray-500 mt-0.5">
-              {{ scheduledAppointment ? 'Reschedule or book a new appointment with the customer.' : 'Schedule an appointment with the customer to move forward.' }}
-            </p>
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <button
-            @click="toggleScheduleAppointment('general')"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
-          >
-            {{ scheduledAppointment ? 'Schedule New Appointment' : 'Schedule Appointment' }}
-          </button>
-          <button
-            v-if="scheduledAppointment"
-            @click="toggleReschedule"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
-          >
-            Reschedule Existing
-          </button>
-        </div>
-        <div v-if="showReschedule" class="pt-4">
-          <RescheduleWidget
-            :show="showReschedule"
-            @close="showReschedule = false"
-            @confirm="handleReschedule"
-          />
-        </div>
-      </div>
-      
       <!-- Close Opportunity Widget (shows for all non-closed stages) -->
       <CloseOpportunityWidget
         v-if="shouldShowCloseOpportunity"
@@ -319,6 +314,15 @@
       @cancel="showDeliveryModal = false"
     />
     
+    <!-- Vehicle Selection Modal -->
+    <VehicleSelectionModal
+      :show="showVehicleSelectionModal"
+      :requested-vehicle="opportunity.requestedCar || opportunity.vehicle || null"
+      :opportunity-id="opportunity.id"
+      @close="showVehicleSelectionModal = false"
+      @vehicle-selected="handleVehicleSelected"
+    />
+    
     <!-- Offer Creation Modal -->
     <Teleport to="body">
       <div 
@@ -332,8 +336,7 @@
               :item="null"
               :task-type="'opportunity'"
               :task-id="opportunity.id"
-              :requested-car="opportunity.vehicle || null"
-              :recommended-cars="recommendedCars"
+              :selected-vehicle="opportunity.selectedVehicle || null"
               @save="handleOfferSave"
               @cancel="handleCloseOfferModal"
             />
@@ -364,22 +367,21 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Teleport } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
 import { mockVehicles } from '@/api/mockData'
-import { createCalendarEvent } from '@/api/calendar'
 import RescheduleWidget from '@/components/tasks/widgets/RescheduleWidget.vue'
 import ScheduleAppointmentWidget from '@/components/tasks/widgets/ScheduleAppointmentWidget.vue'
-import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
-import CloseAsLostModal from '@/components/tasks/modals/CloseAsLostModal.vue'
-import ContractDateModal from '@/components/tasks/modals/ContractDateModal.vue'
-import DeliveryModal from '@/components/tasks/modals/DeliveryModal.vue'
-import RequalifyAsLeadModal from '@/components/tasks/modals/RequalifyAsLeadModal.vue'
+import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
+import CloseAsLostModal from '@/components/modals/CloseAsLostModal.vue'
+import ContractDateModal from '@/components/modals/ContractDateModal.vue'
+import DeliveryModal from '@/components/modals/DeliveryModal.vue'
+import RequalifyAsLeadModal from '@/components/modals/RequalifyAsLeadModal.vue'
 import OfferWidget from '@/components/tasks/widgets/OfferWidget.vue'
-import RecommendedCarsSlider from '@/components/tasks/opportunities/RecommendedCarsSlider.vue'
+import VehicleSelectionModal from '@/components/modals/VehicleSelectionModal.vue'
 import OOFBWidget from '@/components/tasks/opportunities/tasks/OOFBWidget.vue'
 import UFBWidget from '@/components/tasks/opportunities/tasks/UFBWidget.vue'
 import OFBWidget from '@/components/tasks/opportunities/tasks/OFBWidget.vue'
@@ -401,14 +403,10 @@ const props = defineProps({
   activities: {
     type: Array,
     default: () => []
-  },
-  triggerAppointmentModal: {
-    type: Boolean,
-    default: false
   }
 })
 
-const emit = defineEmits(['add-vehicle-from-stock', 'configure-vehicle', 'create-offer', 'add-to-opportunity'])
+const emit = defineEmits(['add-vehicle', 'add-vehicle-from-stock', 'configure-vehicle', 'create-offer', 'add-to-opportunity', 'vehicle-selected'])
 
 // Check if opportunity is closed (Closed Won, Closed Lost, or Registration)
 const isClosed = computed(() => {
@@ -427,14 +425,12 @@ const showCloseAsLostModal = ref(false)
 const showContractDateModal = ref(false)
 const showDeliveryModal = ref(false)
 const showRequalifyModal = ref(false)
+const showVehicleSelectionModal = ref(false)
 const recommendedCars = ref([])
 
-// Watch for external trigger to open appointment modal
-watch(() => props.triggerAppointmentModal, (newVal) => {
-  if (newVal) {
-    showScheduleAppointment.value = true
-    scheduleAppointmentSource.value = 'contact-info'
-  }
+// Check if opportunity has any offers
+const hasOffers = computed(() => {
+  return props.activities?.some(activity => activity.type === 'offer') || false
 })
 
 const router = useRouter()
@@ -496,14 +492,6 @@ const daysSinceCreated = computed(() => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 })
 
-const hasOffers = computed(() => {
-  // Check if opportunity has offers by checking activities or stage
-  // If stage is In Negotiation or Closed, assume offers exist
-  // Also check activities for offer type
-  const hasOfferActivities = props.activities.some(activity => activity.type === 'offer')
-  return hasOfferActivities || props.opportunity?.stage === 'In Negotiation' || props.opportunity?.stage === 'Closed'
-})
-
 const hasAppointment = computed(() => {
   // Check if there's an appointment in activities
   return props.activities.some(activity => activity.type === 'appointment')
@@ -519,8 +507,8 @@ const hasContract = computed(() => {
     activity.action?.toLowerCase().includes('contract')
   )
   
-  // Closed stage with probability 100 likely means contract signed
-  return hasContractDate || hasWonActivity || (props.opportunity?.stage === 'Closed' && props.opportunity?.probability === 100)
+  // Closed stage likely means contract signed
+  return hasContractDate || hasWonActivity || props.opportunity?.stage === 'Closed'
 })
 
 const hasDelivery = computed(() => {
@@ -579,7 +567,7 @@ const shouldShowOFB = computed(() => {
   const now = new Date()
   const diffTime = Math.abs(now - negotiationDate)
   const daysInNegotiation = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return hasOffers.value && !hasContract.value && daysInNegotiation >= 5
+  return !hasContract.value && daysInNegotiation >= 5
 })
 
 // Show NFU when opportunity is In Negotiation with no contract date and no future appointment
@@ -689,6 +677,23 @@ const shouldShowCloseOpportunity = computed(() => {
   return !isClosed.value
 })
 
+// Show Closed Won CTA when:
+// - Opportunity is In Negotiation
+// - Contract date exists (contract signed)
+// - Not yet Closed Won
+const shouldShowClosedWonCTA = computed(() => {
+  // Must be In Negotiation stage
+  if (props.opportunity?.stage !== 'In Negotiation') return false
+  
+  // Must have contract date
+  if (!props.opportunity?.contractDate) return false
+  
+  // Must not already be Closed Won
+  if (props.opportunity?.stage === 'Closed') return false
+  
+  return true
+})
+
 // Show Registration CTA when:
 // - Opportunity is Closed Won (stage === 'Closed')
 // - Contract date exists (contract signed)
@@ -719,12 +724,9 @@ const shouldShowRegistrationCTA = computed(() => {
 })
 
 // Event handlers for vehicle actions
-const handleAddVehicleFromStock = () => {
-  openModal('Add Vehicle from Stock')
-}
-
-const handleConfigureVehicle = () => {
-  openModal('Configure Vehicle')
+const handleVehicleSelected = (data) => {
+  showVehicleSelectionModal.value = false
+  emit('vehicle-selected', { opportunity: props.opportunity, vehicleData: data })
 }
 
 const handleCreateOffer = () => {
@@ -738,10 +740,6 @@ const handleCloseOfferModal = () => {
 const handleOfferSave = (data) => {
   showOfferModal.value = false
   emit('create-offer', { opportunity: props.opportunity, offerData: data })
-}
-
-const handleAddToOpportunity = (car) => {
-  emit('add-to-opportunity', car)
 }
 
 // Event handlers for task widgets
@@ -788,57 +786,36 @@ const handleScheduleClosing = (opportunity) => {
   toggleScheduleAppointment('nfu')
 }
 
-const handleScheduleAppointment = async (appointmentData) => {
+const handleScheduleAppointment = (appointmentData) => {
   handleCloseScheduleModal()
   
-  const appointmentDateTime = `${appointmentData.date}T${appointmentData.time}:00`
-  const endTime = new Date(appointmentDateTime)
-  endTime.setHours(endTime.getHours() + 1) // Default 1 hour duration
-  
   // Create appointment activity
+  const assigneeText = appointmentData.assigneeType === 'team' 
+    ? `${appointmentData.team} Team`
+    : appointmentData.assignee
+  
   const appointmentActivity = {
     type: 'appointment',
-    user: userStore.currentUser?.name || 'You',
+    user: 'You',
     action: 'scheduled an appointment',
-    content: `Appointment scheduled: ${appointmentData.type} on ${appointmentData.date} at ${appointmentData.time}`,
+    content: `Appointment scheduled: ${appointmentData.type} on ${appointmentData.date} at ${appointmentData.time}${appointmentData.assigneeType === 'team' ? ` (assigned to ${appointmentData.team} Team)` : ''}`,
     data: {
       type: appointmentData.type,
       assignee: appointmentData.assignee,
+      assigneeId: appointmentData.assigneeId,
+      assigneeType: appointmentData.assigneeType,
+      teamId: appointmentData.teamId,
+      team: appointmentData.team,
       date: appointmentData.date,
       time: appointmentData.time,
-      datetime: appointmentDateTime,
+      datetime: `${appointmentData.date}T${appointmentData.time}:00`,
       status: 'scheduled'
     },
     timestamp: new Date().toISOString()
   }
   
-  try {
-    // Add activity to store (will show in overview feed)
-    await opportunitiesStore.addActivity(props.opportunity.id, appointmentActivity)
-    
-    // Add event to calendar
-    const calendarEvent = {
-      title: `${appointmentData.type} - ${props.opportunity.customer.name}`,
-      start: appointmentDateTime,
-      end: endTime.toISOString(),
-      type: appointmentData.type.toLowerCase().replace(' ', '-'),
-      customer: props.opportunity.customer.name,
-      vehicle: `${props.opportunity.vehicle.brand} ${props.opportunity.vehicle.model}`,
-      assignee: appointmentData.assignee,
-      assigneeId: appointmentData.assigneeId,
-      dealership: props.opportunity.vehicle.dealership || 'Main',
-      team: 'Sales (New)',
-      status: 'confirmed',
-      opportunityId: props.opportunity.id
-    }
-    
-    await createCalendarEvent(calendarEvent)
-    
-    // Reload opportunity to get updated state
-    await opportunitiesStore.loadOpportunityById(props.opportunity.id)
-  } catch (err) {
-    console.error('Failed to schedule appointment:', err)
-  }
+  // Emit to parent to add to activities
+  emit('appointment-created', appointmentActivity)
 }
 
 const handlePrepareDelivery = (opportunity) => {

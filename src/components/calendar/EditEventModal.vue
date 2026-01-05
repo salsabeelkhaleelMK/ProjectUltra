@@ -139,17 +139,37 @@ const localEvent = ref({
 
 watch(() => [props.show, props.event], ([newShow, newEvent]) => {
   if (newShow && newEvent) {
-    const startDate = new Date(newEvent.start)
-    localEvent.value = {
-      id: newEvent.id,
-      type: newEvent.type,
-      title: newEvent.title,
-      date: startDate.toISOString().split('T')[0],
-      time: startDate.toTimeString().slice(0, 5),
-      customer: newEvent.customer || '',
-      vehicle: newEvent.vehicle || '',
-      dealership: newEvent.dealership || '',
-      status: newEvent.status || 'confirmed'
+    try {
+      const startDate = newEvent.start ? new Date(newEvent.start) : new Date()
+      if (isNaN(startDate.getTime())) {
+        throw new Error('Invalid date')
+      }
+      localEvent.value = {
+        id: newEvent.id,
+        type: newEvent.type || 'test-drive',
+        title: newEvent.title || '',
+        date: startDate.toISOString().split('T')[0],
+        time: startDate.toTimeString().slice(0, 5),
+        customer: newEvent.customer || '',
+        vehicle: newEvent.vehicle || '',
+        dealership: newEvent.dealership || '',
+        status: newEvent.status || 'confirmed'
+      }
+    } catch (error) {
+      console.error('Error parsing event date:', error)
+      // Set default values if date parsing fails
+      const now = new Date()
+      localEvent.value = {
+        id: newEvent.id,
+        type: newEvent.type || 'test-drive',
+        title: newEvent.title || '',
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0, 5),
+        customer: newEvent.customer || '',
+        vehicle: newEvent.vehicle || '',
+        dealership: newEvent.dealership || '',
+        status: newEvent.status || 'confirmed'
+      }
     }
   }
 })
@@ -164,4 +184,6 @@ const handleCancel = () => {
   emit('cancel')
 }
 </script>
+
+
 

@@ -1,7 +1,9 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Header -->
-    <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
+  <div class="flex-1 flex flex-row overflow-hidden h-full">
+    <!-- Left Column: Header, Banner, and Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+      <!-- Header - Contact Card (Full Width) -->
+      <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
       <div class="px-4 md:px-8 py-4 md:py-6">
         <ContactInfo
           :initials="task.customer.initials"
@@ -9,7 +11,7 @@
           :email="task.customer.email"
           :phone="task.customer.phone"
           :third-field-value="task.customer.address"
-          :avatar-color-class="type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
+          :avatar-color-class="getAvatarColorClass"
           :task-type="type"
           email-label="Email"
           phone-label="Phone"
@@ -25,12 +27,78 @@
               {{ tag }}
             </span>
           </template>
+          <template #name-action>
+            <button
+              v-if="isTasksView"
+              @click="openLeadPage"
+              class="w-7 h-7 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+              title="Open in new page"
+            >
+              <i class="fa-solid fa-external-link text-xs"></i>
+            </button>
+          </template>
         </ContactInfo>
       </div>
     </header>
+    
+      <!-- Deadline Banner (only for warnings: overdue or urgent) -->
+      <div 
+        v-if="task.nextActionDue && type === 'lead' && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
+        class="px-4 md:px-8 py-3 border-b flex items-center justify-between shrink-0"
+        :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
+      >
+        <div class="flex items-center gap-3">
+          <div 
+            class="w-10 h-10 rounded-lg flex items-center justify-center"
+            :class="[deadlineStatus.bgClass, deadlineStatus.borderClass, 'border']"
+          >
+            <i 
+              class="text-lg"
+              :class="[`fa-solid ${deadlineStatus.icon}`, deadlineStatus.textClass]"
+            ></i>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
+            <div 
+              class="text-sm font-bold"
+              :class="deadlineStatus.textClass"
+            >
+              {{ formatDeadlineFull(task.nextActionDue) }}
+              <span v-if="deadlineStatus.type !== 'overdue'" class="text-xs font-normal opacity-75">
+                ({{ formatDueDate(task.nextActionDue) }})
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div 
+            v-if="deadlineStatus.type === 'overdue'"
+            class="text-xs font-bold uppercase px-3 py-1.5 rounded-lg"
+            :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
+          >
+            <i class="fa-solid fa-exclamation-circle mr-1"></i>
+            Overdue
+          </div>
+          <div 
+            v-else-if="deadlineStatus.type === 'urgent'"
+            class="text-xs font-bold uppercase px-3 py-1.5 rounded-lg"
+            :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
+          >
+            <i class="fa-solid fa-bolt mr-1"></i>
+            Urgent
+          </div>
+          <button
+            @click="dismissBanner"
+            class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
+            title="Dismiss"
+          >
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+      </div>
 
-    <!-- Scrollable Content -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
+      <!-- Main Content - Tabs and Activity Panel -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
       <!-- Tabs -->
       <div class="mb-4">
         <Tabs 
@@ -40,12 +108,13 @@
         />
       </div>
 
-      <!-- Stage & Owner Bar -->
-      <div v-if="activeTab === 'overview'" class="mb-6">
+      <!-- Stage & Owner Bar (hide for contacts) -->
+      <div v-if="activeTab === 'overview' && type !== 'contact'" class="mb-6">
         <StageOwnerBar
           :stage="task.stage"
           :owner="task.assignee"
           :source="task.source || ''"
+          @reassign="handleReassign"
         />
       </div>
 
@@ -56,20 +125,14 @@
           :is="managementWidget"
           :lead="type === 'lead' ? task : undefined"
           :opportunity="type === 'opportunity' ? task : undefined"
+          :contact="type === 'contact' ? task : undefined"
           :activities="allActivities"
-          :trigger-appointment-modal="type === 'opportunity' ? triggerAppointmentModal : false"
-          @open-purchase-method="() => { overviewModalType = 'purchase-method'; showOverviewModal = true }"
-          @open-trade-in="() => { overviewModalType = 'tradein'; showOverviewModal = true }"
+          @car-added="$emit('car-added', $event)"
+          @convert-to-lead="$emit('convert-to-lead')"
+          @convert-to-opportunity="$emit('convert-to-opportunity')"
+          @vehicle-selected="handleVehicleSelected"
+          @create-offer="handleCreateOffer"
         />
-        
-        <!-- Add New (overview tab - after next steps widget) -->
-        <AddNewButton
-          v-if="addNewConfig.overviewActions.length"
-          :actions="addNewConfig.overviewActions"
-          :active-tab="activeTab"
-          @action="handleAddNewAction"
-        />
-        
         <!-- Type-specific extra pinned widgets -->
         <slot name="pinned-extra" :task="task" />
       </div>
@@ -84,52 +147,38 @@
 
       <!-- Inline widgets -->
       <div v-if="activeTab !== 'overview'">
-        <InlineFormShell
+        <CommunicationWidget
           v-if="showInlineWidget === 'communication'"
-          :title="getCommunicationTitle(communicationType)"
-          @close="handleWidgetCancel"
-        >
-          <CommunicationWidget
-            :type="communicationType"
-            :task-type="type"
-            :task-id="task.id"
-            @save="handleWidgetSave"
-            @cancel="handleWidgetCancel"
-          />
-        </InlineFormShell>
+          :type="communicationType"
+          :task-type="type"
+          :task-id="task.id"
+          :item="editingItem"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
 
-        <InlineFormShell
+        <NoteWidget
           v-if="showInlineWidget === 'note'"
-          :title="editingItem ? 'Edit Note' : 'Add Note'"
-          @close="handleWidgetCancel"
-        >
-          <NoteWidget
-            :item="editingItem"
-            :task-type="type"
-            :task-id="task.id"
-            @save="handleWidgetSave"
-            @cancel="handleWidgetCancel"
-          />
-        </InlineFormShell>
+          :item="editingItem"
+          :task-type="type"
+          :task-id="task.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
 
-        <InlineFormShell
+        <AttachmentWidget
           v-if="showInlineWidget === 'attachment'"
-          :title="editingItem ? 'Edit Attachment' : 'Add Attachment'"
-          @close="handleWidgetCancel"
-        >
-          <AttachmentWidget
-            :item="editingItem"
-            :task-type="type"
-            :task-id="task.id"
-            @save="handleWidgetSave"
-            @cancel="handleWidgetCancel"
-          />
-        </InlineFormShell>
+          :item="editingItem"
+          :task-type="type"
+          :task-id="task.id"
+          @save="handleWidgetSave"
+          @cancel="handleWidgetCancel"
+        />
       </div>
 
       <!-- Feed -->
       <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
-        <TaskCard
+        <FeedItemCard
           v-for="item in filteredInlineContent"
           :key="item.id"
           :item="item"
@@ -140,8 +189,20 @@
         />
       </div>
     </main>
+    </div>
 
-    <!-- Overview Modal Widgets (Purchase Method, Trade-in) -->
+    <!-- Right Column: Activity Summary Sidebar (Full Height) -->
+    <ActivitySummarySidebar
+      :title="'Activity summary'"
+      :activities="allActivities"
+      :collapsed="activitySidebarCollapsed"
+      :show-collapse="true"
+      :show="true"
+      class="hidden lg:flex"
+      @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
+    />
+
+    <!-- Overview Modal Widgets (Financing, Trade-in, Purchase) -->
     <Teleport to="body">
       <div 
         v-if="showOverviewModal"
@@ -149,20 +210,20 @@
         @click.self="closeOverviewModal"
       >
         <div 
-          v-if="overviewModalType === 'purchase-method' || overviewModalType === 'tradein'"
+          v-if="overviewModalType === 'financing' || overviewModalType === 'tradein'"
           class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         >
           <div class="p-6">
             <div class="flex justify-between items-center mb-4">
               <h5 class="text-sm font-bold text-slate-800">
-                {{ overviewModalType === 'purchase-method' ? 'Add Purchase Method' : 'Add Trade-in' }}
+                {{ overviewModalType === 'financing' ? 'Add Financing' : 'Add Trade-in' }}
               </h5>
               <button @click="closeOverviewModal" class="text-gray-400 hover:text-gray-600">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
-            <PurchaseMethodWidget
-              v-if="overviewModalType === 'purchase-method'"
+            <FinancingWidget
+              v-if="overviewModalType === 'financing'"
               :item="null"
               :task-type="type"
               :task-id="task.id"
@@ -179,30 +240,56 @@
             />
           </div>
         </div>
+        
+        <div 
+          v-if="overviewModalType === 'purchase'"
+          class="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
+          <OfferWidget
+            :item="null"
+            :task-type="type"
+            :task-id="task.id"
+            :requested-car="type === 'lead' ? task.requestedCar : null"
+            :recommended-cars="[]"
+            @save="handleOverviewModalSave"
+            @cancel="closeOverviewModal"
+          />
+        </div>
       </div>
     </Teleport>
+    
+    <!-- Reassign Modal -->
+    <ReassignUserModal
+      :show="showReassignModal"
+      @close="showReassignModal = false"
+      @confirm="handleReassignConfirm"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ContactInfo from '@/components/tasks/widgets/ContactInfo.vue'
 import Tabs from '@/components/tasks/widgets/Tabs.vue'
 import StageOwnerBar from '@/components/tasks/widgets/StageOwnerBar.vue'
 import AddNewButton from '@/components/tasks/widgets/AddNewButton.vue'
-import TaskCard from '@/components/tasks/TaskCard.vue'
-import InlineFormShell from '@/components/tasks/widgets/InlineFormShell.vue'
+import FeedItemCard from '@/components/tasks/feed/FeedItemCard.vue'
+import ActivitySummarySidebar from '@/components/tasks/widgets/ActivitySummarySidebar.vue'
 import CommunicationWidget from '@/components/tasks/widgets/CommunicationWidget.vue'
 import NoteWidget from '@/components/tasks/widgets/NoteWidget.vue'
 import AttachmentWidget from '@/components/tasks/widgets/AttachmentWidget.vue'
-import PurchaseMethodWidget from '@/components/tasks/widgets/PurchaseMethodWidget.vue'
+import FinancingWidget from '@/components/tasks/widgets/FinancingWidget.vue'
 import TradeInWidget from '@/components/tasks/widgets/TradeInWidget.vue'
+import OfferWidget from '@/components/tasks/widgets/OfferWidget.vue'
+import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
+import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 
 const props = defineProps({
   task: { type: Object, required: true },
-  type: { type: String, required: true }, // 'lead' | 'opportunity'
+  type: { type: String, required: true }, // 'lead' | 'opportunity' | 'contact'
   managementWidget: { type: Object, required: true },
   storeAdapter: { type: Object, required: true }, // { currentActivities, addActivity, updateActivity, deleteActivity }
   addNewConfig: {
@@ -211,12 +298,79 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity'])
+
+const route = useRoute()
+const router = useRouter()
+
 const taskId = computed(() => props.task.id)
+
+// Avatar color class based on type
+const getAvatarColorClass = computed(() => {
+  if (props.type === 'contact') return 'bg-blue-100 text-blue-600'
+  if (props.type === 'lead') return 'bg-orange-100 text-orange-600'
+  return 'bg-purple-100 text-purple-600' // opportunity
+})
+
+// Activity sidebar collapse state - always expanded by default
+const activitySidebarCollapsed = ref(false)
+
+// Deadline banner dismissal state - tracked per task ID
+const dismissedBanners = ref(new Set())
+const deadlineBannerDismissed = computed(() => dismissedBanners.value.has(props.task.id))
+
+const dismissBanner = () => {
+  dismissedBanners.value.add(props.task.id)
+}
+
+// Check if we're on the tasks view (not the lead view)
+const isTasksView = computed(() => {
+  return route.path.startsWith('/tasks') && !route.path.startsWith('/lead')
+})
+
+// Open lead page in standalone view
+const openLeadPage = () => {
+  router.push({ 
+    path: `/lead/${props.task.id}`, 
+    query: { stage: props.type } 
+  })
+}
+
+// Handle reassign from StageOwnerBar
+const handleReassign = () => {
+  showReassignModal.value = true
+}
+
+const handleReassignConfirm = async (assignee) => {
+  const assigneeName = assignee.name
+  
+  if (props.type === 'lead') {
+    await props.storeAdapter.updateLead?.(props.task.id, { 
+      assignee: assigneeName,
+      assigneeType: assignee.type,
+      teamId: assignee.type === 'team' ? assignee.id : null
+    })
+  } else if (props.type === 'opportunity') {
+    await props.storeAdapter.updateOpportunity?.(props.task.id, { 
+      assignee: assigneeName,
+      assigneeType: assignee.type,
+      teamId: assignee.type === 'team' ? assignee.id : null
+    })
+  }
+  
+  showReassignModal.value = false
+}
+
+// Deadline status for banner
+const deadlineStatus = computed(() => {
+  return getDeadlineStatus(props.task.nextActionDue)
+})
 
 // Modal state for overview actions (financing, tradein, purchase)
 const showOverviewModal = ref(false)
 const overviewModalType = ref(null)
 const triggerAppointmentModal = ref(false)
+const showReassignModal = ref(false)
 
 const {
   activeTab,
@@ -242,26 +396,14 @@ const {
 const handleAddNewAction = (action) => {
   const result = handleAddNewActionBase(action)
   
-  // Check if it's a modal action
+  // Check if it's an overview modal action
   if (result && result.modalAction) {
     overviewModalType.value = result.modalAction
     showOverviewModal.value = true
   }
 }
 
-// Close modal
-const closeOverviewModal = () => {
-  showOverviewModal.value = false
-  overviewModalType.value = null
-}
-
-// Handle modal save
-const handleOverviewModalSave = async (data) => {
-  await handleWidgetSave(data)
-  closeOverviewModal()
-}
-
-// Handle ContactInfo quick action
+// Handle actions from ContactInfo "+" button
 const handleContactInfoAction = (action) => {
   // For opportunities, handle appointment differently
   if (action === 'appointment' && props.type === 'opportunity') {
@@ -276,11 +418,12 @@ const handleContactInfoAction = (action) => {
     'email': 'communication',
     'whatsapp': 'communication',
     'sms': 'communication',
+    'call': 'communication',
     'appointment': 'overview'
   }
   
   // Route to appropriate handler
-  if (['purchase-method', 'tradein'].includes(action)) {
+  if (['financing', 'tradein', 'purchase'].includes(action)) {
     overviewModalType.value = action
     showOverviewModal.value = true
   } else {
@@ -306,9 +449,27 @@ const handleContactInfoAction = (action) => {
   }
 }
 
+// Close modal
+const closeOverviewModal = () => {
+  showOverviewModal.value = false
+  overviewModalType.value = null
+}
+
+// Handle modal save
+const handleOverviewModalSave = async (data) => {
+  await handleWidgetSave(data)
+  closeOverviewModal()
+}
+
 const tabs = computed(() => {
   const allItems = [...props.storeAdapter.currentActivities.value, ...inlineContent.value]
-  const overviewCount = allItems.length
+  
+  // Count items by their actual tab mapping
+  const overviewCount = allItems.filter(item => {
+    const tabKey = getTabForItemType(item.type)
+    return tabKey === 'overview'
+  }).length
+  
   const communicationCount = allItems.filter(item =>
     ['call', 'email', 'sms', 'whatsapp', 'communication'].includes(item.type)
   ).length
@@ -328,13 +489,34 @@ const allActivities = computed(() => [
   ...inlineContent.value
 ])
 
-const getCommunicationTitle = (type) => {
-  const titles = {
-    email: 'Send Email',
-    whatsapp: 'Send WhatsApp',
-    sms: 'Send SMS'
+// Handle vehicle selection from OpportunityManagementWidget
+const handleVehicleSelected = async (data) => {
+  if (props.type !== 'opportunity') return
+  
+  try {
+    await props.storeAdapter.addVehicle(props.task.id, data.vehicleData)
+    // Reload the opportunity to get updated data
+    if (props.storeAdapter.loadOpportunityById) {
+      await props.storeAdapter.loadOpportunityById(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error selecting vehicle:', error)
   }
-  return titles[type] || 'Send Message'
+}
+
+// Handle offer creation from OpportunityManagementWidget
+const handleCreateOffer = async (data) => {
+  if (props.type !== 'opportunity') return
+  
+  try {
+    await props.storeAdapter.createOffer(props.task.id, data.offerData)
+    // Reload the opportunity to get updated stage and activities
+    if (props.storeAdapter.loadOpportunityById) {
+      await props.storeAdapter.loadOpportunityById(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error creating offer:', error)
+  }
 }
 </script>
 

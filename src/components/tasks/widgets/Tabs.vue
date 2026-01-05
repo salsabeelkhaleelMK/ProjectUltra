@@ -51,4 +51,3 @@ const getIconClass = (tabKey) => {
   return iconMap[tabKey] || 'fa-solid fa-circle'
 }
 </script>
-

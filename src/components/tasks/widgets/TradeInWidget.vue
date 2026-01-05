@@ -58,7 +58,7 @@ const props = defineProps({
     default: 'lead'
   },
   taskId: {
-    type: Number,
+    type: [String, Number],
     required: true
   }
 })

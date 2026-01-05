@@ -53,8 +53,47 @@ export const createLead = async (leadData) => {
     id: generateLeadId(),
     ...leadData,
     createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString()
+    lastActivity: new Date().toISOString(),
+    nextActionDue: leadData.nextActionDue || null,
+    tags: leadData.tags || []
   }
+  mockLeads.push(newLead)
+  return newLead
+}
+
+export const createLeadFromContact = async (contactId, carData) => {
+  await delay()
+  const { mockContacts } = await import('./mockData')
+  const contact = mockContacts.find(c => c.id === parseInt(contactId))
+  if (!contact) throw new Error('Contact not found')
+  
+  const newLead = {
+    id: generateLeadId(),
+    customer: {
+      id: contact.id,
+      name: contact.name,
+      initials: contact.initials,
+      email: contact.email,
+      phone: contact.phone,
+      address: contact.address || ''
+    },
+    requestedCar: carData,
+    status: 'Open',
+    stage: 'Open Lead',
+    priority: 'Normal',
+    source: carData.source || 'Direct',
+    assignee: null,
+    assigneeInitials: '',
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString(),
+    nextActionDue: null,
+    tags: [],
+    isDisqualified: false,
+    disqualifyReason: null,
+    scheduledAppointment: null,
+    contactAttempts: []
+  }
+  
   mockLeads.push(newLead)
   return newLead
 }
@@ -129,9 +168,11 @@ export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
     leadId: lead.id,
     opportunityId: null,
     assignee: appointmentData.assignee || lead.assignee,
-    assigneeId: appointmentData.assigneeId || 1,
+    assigneeId: appointmentData.assigneeId || null,
+    assigneeType: appointmentData.assigneeType || 'user',
+    teamId: appointmentData.teamId || null,
+    team: appointmentData.team || 'BDC',
     dealership: lead.fiscalEntity || 'Main',
-    team: 'BDC',
     status: 'scheduled'
   }
   
@@ -238,4 +279,33 @@ export const detectUrgentLeads = async (userId) => {
   }
   
   return questions
+}
+
+export const fetchTasksDueToday = async () => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  
+  return mockLeads.filter(lead => {
+    if (!lead.nextActionDue) return false
+    const dueDate = new Date(lead.nextActionDue)
+    dueDate.setHours(0, 0, 0, 0)
+    return dueDate >= today && dueDate < tomorrow && !lead.isDisqualified
+  })
+}
+
+export const fetchTasksDueUpcoming = async (days = 7) => {
+  await delay()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const endDate = new Date(today)
+  endDate.setDate(endDate.getDate() + days)
+  
+  return mockLeads.filter(lead => {
+    if (!lead.nextActionDue) return false
+    const dueDate = new Date(lead.nextActionDue)
+    return dueDate >= today && dueDate < endDate && !lead.isDisqualified
+  })
 }
