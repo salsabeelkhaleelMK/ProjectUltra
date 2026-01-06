@@ -1,0 +1,101 @@
+<template>
+  <div 
+    @click="$emit('select')"
+    class="border border-gray-200 rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-white"
+    :class="{ 'border-blue-500 shadow': selected }"
+  >
+    <!-- Vehicle Image -->
+    <div class="w-full h-28 bg-gray-100 rounded overflow-hidden mb-2">
+      <img 
+        v-if="vehicle.image" 
+        :src="vehicle.image" 
+        :alt="`${vehicle.brand} ${vehicle.model}`"
+        class="w-full h-full object-cover"
+      />
+      <div v-else class="w-full h-full flex items-center justify-center">
+        <i class="fa-solid fa-car text-gray-300 text-2xl"></i>
+      </div>
+    </div>
+    
+    <!-- Vehicle Info -->
+    <div>
+      <!-- Badge and Price Row -->
+      <div class="flex items-center justify-between mb-1.5">
+        <span 
+          class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded"
+          :class="badgeClass"
+        >
+          {{ badge }}
+        </span>
+        <span class="text-sm font-bold text-gray-900">€{{ formatPrice(vehicle.price) }}</span>
+      </div>
+      
+      <!-- Brand and Model -->
+      <h4 class="font-bold text-xs text-gray-800 mb-0.5 line-clamp-1">
+        {{ vehicle.brand }} {{ vehicle.model }}
+      </h4>
+      
+      <!-- Year -->
+      <p class="text-[10px] text-gray-500 mb-1.5">{{ vehicle.year }}</p>
+      
+      <!-- Stock Status -->
+      <div v-if="stockDays !== null && stockDays !== undefined" class="text-[10px] text-green-600 font-medium mb-2">
+        <i class="fa-solid fa-check-circle mr-0.5"></i>
+        In stock ({{ stockDays }} days)
+      </div>
+      <div v-else class="text-[10px] text-orange-600 font-medium mb-2">
+        <i class="fa-solid fa-clock mr-0.5"></i>
+        Out of stock
+      </div>
+      
+      <!-- Select Button -->
+      <button 
+        @click.stop="$emit('select')"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded text-xs transition-colors"
+      >
+        Select
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  vehicle: {
+    type: Object,
+    required: true
+  },
+  badge: {
+    type: String,
+    required: true // 'Requested', 'Recommended', 'In Stock', 'Custom'
+  },
+  stockDays: {
+    type: Number,
+    default: null
+  },
+  selected: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['select'])
+
+const badgeClass = computed(() => {
+  const classes = {
+    'Requested': 'bg-blue-100 text-blue-700 border border-blue-200',
+    'Recommended': 'bg-purple-100 text-purple-700 border border-purple-200',
+    'In Stock': 'bg-green-100 text-green-700 border border-green-200',
+    'Custom': 'bg-orange-100 text-orange-700 border border-orange-200'
+  }
+  return classes[props.badge] || 'bg-gray-100 text-gray-700 border border-gray-200'
+})
+
+const formatPrice = (price) => {
+  if (!price) return '0'
+  return price.toLocaleString('en-US')
+}
+</script>
+

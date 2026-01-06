@@ -386,3 +386,4 @@ To be completed with full schema analysis:
 - Check API documentation for `embedded[]` parameter usage
 - May need to handle CORS if API is on different domain
 
+
