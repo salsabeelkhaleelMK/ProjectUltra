@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "npm run auth:codeartifact && vite build",
+    "preview": "vite preview",
+    "auth:codeartifact": "aws codeartifact login --tool npm --repository ui-component-library --domain motork --domain-owner 678121811175 --region eu-west-1",
+    "preinstall": "npm run auth:codeartifact || echo 'Warning: AWS CodeArtifact authentication failed. Continuing...'"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.10",

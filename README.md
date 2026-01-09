@@ -13,18 +13,32 @@ A Vue 3-based CRM application for automotive dealerships with unified task manag
 - **Icons**: Font Awesome
 - **Build Tool**: Vite
 
+## Prerequisites
+
+- **Node.js** (LTS version recommended)
+- **AWS CLI** configured with access to CodeArtifact
+  - Required for accessing private npm packages from MotorK's CodeArtifact repository
+  - Ensure AWS credentials are configured: `aws configure`
+  - The build process will automatically authenticate with CodeArtifact before installation
+
 ## Quick Start
 
 ### Starting the App
 ```bash
-npm install
+npm install  # Automatically authenticates with AWS CodeArtifact
 npm run dev
 # Visit: http://localhost:5173/
 ```
 
+### Manual CodeArtifact Authentication
+If you need to authenticate manually:
+```bash
+npm run auth:codeartifact
+```
+
 ### Building for Production
 ```bash
-npm run build
+npm run build  # Automatically authenticates before building
 # Creates dist/ folder for deployment
 ```
 
@@ -183,7 +197,11 @@ No changes needed in components or stores - they already use the API layer.
 ## Build & Deploy
 
 - **Local**: `npm run build` (creates `dist/`)
-- **Netlify**: Configured in `netlify.toml` to run `npm run build` on deploy
+- **Netlify**: Configured in `netlify.toml` with AWS CLI installation and CodeArtifact authentication
+  - Required environment variables in Netlify:
+    - `AWS_ACCESS_KEY_ID_MK` - Your AWS access key
+    - `AWS_SECRET_ACCESS_KEY_MK` - Your AWS secret key
+  - The build automatically installs AWS CLI and authenticates with CodeArtifact before building
 - **.gitignore**: Excludes `node_modules`, `dist/`, log files
 
 ## Troubleshooting
