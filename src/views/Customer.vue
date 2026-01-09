@@ -22,9 +22,9 @@
       </div>
     </div>
 
-    <!-- TaskShell -->
+    <!-- TaskShell - Only show when task ID matches route ID -->
     <TaskShell
-      v-else
+      v-else-if="task && task.id === taskId"
       :task="task"
       :type="taskType"
       :management-widget="managementWidget"
@@ -92,6 +92,14 @@
         />
       </template>
     </TaskShell>
+
+    <!-- Loading state for ID mismatch (prevents showing stale data) -->
+    <div v-else class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-500">Loading...</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -233,7 +241,7 @@ const handleConvertToLead = async () => {
     loading.value = true
     const newLead = await contactsStore.convertToLead(taskId.value)
     // Navigate to the new lead view on the same page
-    router.replace({ path: `/lead/${newLead.id}`, query: { type: 'lead' } })
+    router.replace({ path: `/customer/${newLead.id}`, query: { type: 'lead' } })
   } catch (err) {
     console.error('Error converting to lead:', err)
     error.value = err.message || 'Failed to convert to lead'
@@ -247,7 +255,7 @@ const handleConvertToOpportunity = async () => {
     loading.value = true
     const newOpp = await contactsStore.convertToOpportunity(taskId.value)
     // Navigate to the new opportunity view on the same page
-    router.replace({ path: `/lead/${newOpp.id}`, query: { type: 'opportunity' } })
+    router.replace({ path: `/customer/${newOpp.id}`, query: { type: 'opportunity' } })
   } catch (err) {
     console.error('Error converting to opportunity:', err)
     error.value = err.message || 'Failed to convert to opportunity'

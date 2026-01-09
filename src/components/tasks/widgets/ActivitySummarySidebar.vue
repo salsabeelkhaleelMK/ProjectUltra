@@ -113,7 +113,7 @@ const props = defineProps({
   },
   collapsed: {
     type: Boolean,
-    default: false
+    default: true
   },
   showCollapse: {
     type: Boolean,

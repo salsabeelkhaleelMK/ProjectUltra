@@ -6,8 +6,62 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-clipboard-check text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Lead Management</h3>
+        <h3 class="font-bold text-slate-800 text-sm">Manage next steps</h3>
       </div>
+    </div>
+
+    <!-- Deadline Warning Banner (overdue or urgent) -->
+    <div 
+      v-if="lead.nextActionDue && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
+      class="mx-4 mt-4 px-4 py-3 rounded-lg border flex items-center justify-between"
+      :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
+    >
+      <div class="flex items-center gap-3">
+        <div 
+          class="w-9 h-9 rounded-lg flex items-center justify-center"
+          :class="[deadlineStatus.bgClass, deadlineStatus.borderClass, 'border']"
+        >
+          <i 
+            class="text-base"
+            :class="[`fa-solid ${deadlineStatus.icon}`, deadlineStatus.textClass]"
+          ></i>
+        </div>
+        <div class="flex-1">
+          <div class="text-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
+          <div 
+            class="text-sm font-bold"
+            :class="deadlineStatus.textClass"
+          >
+            {{ formatDeadlineFull(lead.nextActionDue) }}
+            <span v-if="deadlineStatus.type !== 'overdue'" class="text-xs font-normal opacity-75">
+              ({{ formatDueDate(lead.nextActionDue) }})
+            </span>
+          </div>
+        </div>
+        <div 
+          v-if="deadlineStatus.type === 'overdue'"
+          class="text-xs font-bold uppercase px-2.5 py-1 rounded-md"
+          :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
+        >
+          <i class="fa-solid fa-exclamation-circle mr-1"></i>
+          Overdue
+        </div>
+        <div 
+          v-else-if="deadlineStatus.type === 'urgent'"
+          class="text-xs font-bold uppercase px-2.5 py-1 rounded-md"
+          :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
+        >
+          <i class="fa-solid fa-bolt mr-1"></i>
+          Urgent
+        </div>
+      </div>
+      <button
+        @click="dismissBanner"
+        class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors ml-2 shrink-0"
+        title="Dismiss"
+      >
+        <i class="fa-solid fa-xmark text-xs"></i>
+      </button>
     </div>
 
     <div class="p-5 space-y-6">
@@ -29,11 +83,12 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
 import LQWidget from '@/components/tasks/leads/tasks/LQWidget.vue'
-import { formatDate, formatTime } from '@/utils/formatters'
+import { formatDate, formatTime, formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 
 const props = defineProps({
   lead: {
@@ -47,6 +102,18 @@ const emit = defineEmits(['open-purchase-method', 'open-trade-in'])
 const router = useRouter()
 const leadsStore = useLeadsStore()
 const userStore = useUserStore()
+
+// Deadline banner state
+const dismissedBanners = ref(new Set())
+const deadlineBannerDismissed = computed(() => dismissedBanners.value.has(props.lead.id))
+
+const dismissBanner = () => {
+  dismissedBanners.value.add(props.lead.id)
+}
+
+const deadlineStatus = computed(() => {
+  return getDeadlineStatus(props.lead.nextActionDue)
+})
 
 const handlePostponed = async (data) => {
   try {

@@ -604,10 +604,10 @@ onMounted(async () => {
 })
 
 const handleRowClick = (row) => {
-  // Handle contacts - navigate to contact view on /lead/:id page
+  // Handle contacts - navigate to contact view on /customer/:id page
   if (row.stageKey === 'contacts') {
     const contactId = row.id.split('-')[1]
-    router.push({ path: `/lead/${contactId}`, query: { type: 'contact' } })
+    router.push({ path: `/customer/${contactId}`, query: { type: 'contact' } })
     return
   }
   
@@ -615,17 +615,17 @@ const handleRowClick = (row) => {
   const idMatch = row.id.match(/-(\d+)$/)
   
   if (activeTab.value === 'open-leads' && row.id.startsWith('lead-')) {
-    // Navigate to standalone lead view
+    // Navigate to standalone customer view
     const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
-    router.push({ path: `/lead/${leadId}`, query: { stage: 'lead' } })
+    router.push({ path: `/customer/${leadId}`, query: { stage: 'lead' } })
   } else if (row.id.startsWith('opp-')) {
-    // Navigate to standalone lead view with opportunity type
+    // Navigate to standalone customer view with opportunity type
     const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/lead/${oppId}`, query: { stage: 'opportunity' } })
+    router.push({ path: `/customer/${oppId}`, query: { stage: 'opportunity' } })
   } else if (row.stageKey === 'won' || row.stageKey === 'lost') {
     // For won/lost rows, navigate to the opportunity
     const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/lead/${oppId}`, query: { stage: 'opportunity' } })
+    router.push({ path: `/customer/${oppId}`, query: { stage: 'opportunity' } })
   }
 }
 </script>

@@ -1,9 +1,7 @@
 <template>
-  <div class="flex-1 flex flex-row overflow-hidden h-full">
-    <!-- Left Column: Header, Banner, and Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
-      <!-- Header - Contact Card (Full Width) -->
-      <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
+  <div class="flex-1 flex flex-col overflow-hidden h-full">
+    <!-- Header - Contact Card (Full Width) -->
+    <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
       <div class="px-4 md:px-8 py-4 md:py-6">
         <ContactInfo
           :initials="task.customer.initials"
@@ -30,7 +28,7 @@
           <template #name-action>
             <button
               v-if="isTasksView"
-              @click="openLeadPage"
+              @click="openCustomerPage"
               class="w-7 h-7 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
               title="Open in new page"
             >
@@ -40,167 +38,135 @@
         </ContactInfo>
       </div>
     </header>
-    
-      <!-- Deadline Banner (only for warnings: overdue or urgent) -->
-      <div 
-        v-if="task.nextActionDue && type === 'lead' && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
-        class="px-4 md:px-8 py-3 border-b flex items-center justify-between shrink-0"
-        :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
-      >
-        <div class="flex items-center gap-3">
-          <div 
-            class="w-10 h-10 rounded-lg flex items-center justify-center"
-            :class="[deadlineStatus.bgClass, deadlineStatus.borderClass, 'border']"
-          >
-            <i 
-              class="text-lg"
-              :class="[`fa-solid ${deadlineStatus.icon}`, deadlineStatus.textClass]"
-            ></i>
+
+    <!-- Two-column layout: Tabs+Content | Activity Timeline -->
+    <div class="flex-1 flex flex-row overflow-hidden">
+      <!-- Left: Tabs and Content -->
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <!-- Content area with feed -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+          <!-- Tabs -->
+          <div class="mb-4">
+            <Tabs 
+              v-model="activeTab"
+              :tabs="tabs"
+              class="mb-0"
+            />
           </div>
-          <div>
-            <div class="text-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
-            <div 
-              class="text-sm font-bold"
-              :class="deadlineStatus.textClass"
-            >
-              {{ formatDeadlineFull(task.nextActionDue) }}
-              <span v-if="deadlineStatus.type !== 'overdue'" class="text-xs font-normal opacity-75">
-                ({{ formatDueDate(task.nextActionDue) }})
-              </span>
+          <!-- Overview tab content -->
+          <div v-if="activeTab === 'overview'">
+            <!-- Stage & Owner Bar (hide for contacts) -->
+            <div v-if="type !== 'contact'" class="mb-6">
+              <StageOwnerBar
+                :stage="task.stage"
+                :owner="task.assignee"
+                :source="task.source || ''"
+                @reassign="handleReassign"
+              />
+            </div>
+
+            <!-- Manage Next Steps widget (always first on overview) -->
+            <div class="mb-6">
+              <component
+                :is="managementWidget"
+                :lead="type === 'lead' ? task : undefined"
+                :opportunity="type === 'opportunity' ? task : undefined"
+                :contact="type === 'contact' ? task : undefined"
+                :activities="allActivities"
+                @car-added="$emit('car-added', $event)"
+                @convert-to-lead="$emit('convert-to-lead')"
+                @convert-to-opportunity="$emit('convert-to-opportunity')"
+                @vehicle-selected="handleVehicleSelected"
+                @create-offer="handleCreateOffer"
+              />
+            </div>
+
+            <!-- Type-specific extra pinned widgets (e.g. Requested Vehicle) -->
+            <div class="space-y-6 mb-6">
+              <slot name="pinned-extra" :task="task" />
+            </div>
+
+            <!-- Feed timeline (other overview items) -->
+            <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
+              <FeedItemCard
+                v-for="item in filteredInlineContent"
+                :key="item.id"
+                :item="item"
+                :task-type="type"
+                :customer-initials="'SK'"
+                @edit="handleEditItem"
+                @delete="handleDeleteItem"
+              />
             </div>
           </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <div 
-            v-if="deadlineStatus.type === 'overdue'"
-            class="text-xs font-bold uppercase px-3 py-1.5 rounded-lg"
-            :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
-          >
-            <i class="fa-solid fa-exclamation-circle mr-1"></i>
-            Overdue
+          
+          <!-- Other tab content (Notes, Communication, Attachments) -->
+          <div v-else>
+            <!-- Add New (non-overview tabs) -->
+            <AddNewButton
+              :actions="addNewConfig.tabActions"
+              :active-tab="activeTab"
+              @action="handleAddNewAction"
+            />
+
+            <!-- Inline widgets -->
+            <div>
+              <CommunicationWidget
+                v-if="showInlineWidget === 'communication'"
+                :type="communicationType"
+                :task-type="type"
+                :task-id="task.id"
+                :item="editingItem"
+                @save="handleWidgetSave"
+                @cancel="handleWidgetCancel"
+              />
+
+              <NoteWidget
+                v-if="showInlineWidget === 'note'"
+                :item="editingItem"
+                :task-type="type"
+                :task-id="task.id"
+                @save="handleWidgetSave"
+                @cancel="handleWidgetCancel"
+              />
+
+              <AttachmentWidget
+                v-if="showInlineWidget === 'attachment'"
+                :item="editingItem"
+                :task-type="type"
+                :task-id="task.id"
+                @save="handleWidgetSave"
+                @cancel="handleWidgetCancel"
+              />
+            </div>
+
+            <!-- Feed -->
+            <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
+              <FeedItemCard
+                v-for="item in filteredInlineContent"
+                :key="item.id"
+                :item="item"
+                :task-type="type"
+                :customer-initials="'SK'"
+                @edit="handleEditItem"
+                @delete="handleDeleteItem"
+              />
+            </div>
           </div>
-          <div 
-            v-else-if="deadlineStatus.type === 'urgent'"
-            class="text-xs font-bold uppercase px-3 py-1.5 rounded-lg"
-            :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
-          >
-            <i class="fa-solid fa-bolt mr-1"></i>
-            Urgent
-          </div>
-          <button
-            @click="dismissBanner"
-            class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
-            title="Dismiss"
-          >
-            <i class="fa-solid fa-xmark text-xs"></i>
-          </button>
-        </div>
+        </main>
       </div>
 
-      <!-- Main Content - Tabs and Activity Panel -->
-      <main class="flex-1 overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto w-full scrollbar-hide">
-      <!-- Tabs -->
-      <div class="mb-4">
-        <Tabs 
-          v-model="activeTab"
-          :tabs="tabs"
-          class="mb-0"
-        />
-      </div>
-
-      <!-- Stage & Owner Bar (hide for contacts) -->
-      <div v-if="activeTab === 'overview' && type !== 'contact'" class="mb-6">
-        <StageOwnerBar
-          :stage="task.stage"
-          :owner="task.assignee"
-          :source="task.source || ''"
-          @reassign="handleReassign"
-        />
-      </div>
-
-      <!-- Pinned Widgets Section (only on overview tab) -->
-      <div v-if="activeTab === 'overview'" class="space-y-6 mb-6">
-        <!-- Management widget -->
-        <component
-          :is="managementWidget"
-          :lead="type === 'lead' ? task : undefined"
-          :opportunity="type === 'opportunity' ? task : undefined"
-          :contact="type === 'contact' ? task : undefined"
-          :activities="allActivities"
-          @car-added="$emit('car-added', $event)"
-          @convert-to-lead="$emit('convert-to-lead')"
-          @convert-to-opportunity="$emit('convert-to-opportunity')"
-          @vehicle-selected="handleVehicleSelected"
-          @create-offer="handleCreateOffer"
-        />
-        <!-- Type-specific extra pinned widgets -->
-        <slot name="pinned-extra" :task="task" />
-      </div>
-
-      <!-- Add New (non-overview tabs) -->
-      <AddNewButton
-        v-if="activeTab !== 'overview'"
-        :actions="addNewConfig.tabActions"
-        :active-tab="activeTab"
-        @action="handleAddNewAction"
+      <!-- Right: Activity Timeline (collapsed by default) -->
+      <ActivitySummarySidebar
+        :title="'Activity summary'"
+        :activities="allActivities"
+        :collapsed="activitySidebarCollapsed"
+        :show-collapse="true"
+        :show="true"
+        class="hidden lg:flex"
+        @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
       />
-
-      <!-- Inline widgets -->
-      <div v-if="activeTab !== 'overview'">
-        <CommunicationWidget
-          v-if="showInlineWidget === 'communication'"
-          :type="communicationType"
-          :task-type="type"
-          :task-id="task.id"
-          :item="editingItem"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
-
-        <NoteWidget
-          v-if="showInlineWidget === 'note'"
-          :item="editingItem"
-          :task-type="type"
-          :task-id="task.id"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
-
-        <AttachmentWidget
-          v-if="showInlineWidget === 'attachment'"
-          :item="editingItem"
-          :task-type="type"
-          :task-id="task.id"
-          @save="handleWidgetSave"
-          @cancel="handleWidgetCancel"
-        />
-      </div>
-
-      <!-- Feed -->
-      <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
-        <FeedItemCard
-          v-for="item in filteredInlineContent"
-          :key="item.id"
-          :item="item"
-          :task-type="type"
-          :customer-initials="'SK'"
-          @edit="handleEditItem"
-          @delete="handleDeleteItem"
-        />
-      </div>
-    </main>
     </div>
-
-    <!-- Right Column: Activity Summary Sidebar (Full Height) -->
-    <ActivitySummarySidebar
-      :title="'Activity summary'"
-      :activities="allActivities"
-      :collapsed="activitySidebarCollapsed"
-      :show-collapse="true"
-      :show="true"
-      class="hidden lg:flex"
-      @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
-    />
 
     <!-- Overview Modal Widgets (Financing, Trade-in, Purchase) -->
     <Teleport to="body">
@@ -285,7 +251,6 @@ import OfferWidget from '@/components/tasks/widgets/OfferWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
-import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -312,27 +277,19 @@ const getAvatarColorClass = computed(() => {
   return 'bg-purple-100 text-purple-600' // opportunity
 })
 
-// Activity sidebar collapse state - always expanded by default
-const activitySidebarCollapsed = ref(false)
+// Activity sidebar collapse state - collapsed by default
+const activitySidebarCollapsed = ref(true)
 
-// Deadline banner dismissal state - tracked per task ID
-const dismissedBanners = ref(new Set())
-const deadlineBannerDismissed = computed(() => dismissedBanners.value.has(props.task.id))
-
-const dismissBanner = () => {
-  dismissedBanners.value.add(props.task.id)
-}
-
-// Check if we're on the tasks view (not the lead view)
+// Check if we're on the tasks view (not the customer view)
 const isTasksView = computed(() => {
-  return route.path.startsWith('/tasks') && !route.path.startsWith('/lead')
+  return route.path.startsWith('/tasks') && !route.path.startsWith('/customer')
 })
 
-// Open lead page in standalone view
-const openLeadPage = () => {
+// Open customer page in standalone view
+const openCustomerPage = () => {
   router.push({ 
-    path: `/lead/${props.task.id}`, 
-    query: { stage: props.type } 
+    path: `/customer/${props.task.id}`, 
+    query: { type: props.type } 
   })
 }
 
@@ -360,11 +317,6 @@ const handleReassignConfirm = async (assignee) => {
   
   showReassignModal.value = false
 }
-
-// Deadline status for banner
-const deadlineStatus = computed(() => {
-  return getDeadlineStatus(props.task.nextActionDue)
-})
 
 // Modal state for overview actions (financing, tradein, purchase)
 const showOverviewModal = ref(false)

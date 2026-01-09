@@ -8,12 +8,6 @@
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6 overflow-hidden">
       <!-- Always visible content -->
       <div class="p-4">
-        <!-- Request message at the top -->
-        <div v-if="requestMessage" class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-          <div class="text-xs font-medium text-gray-500 mb-1">Request message</div>
-          <p class="text-sm text-slate-700 leading-snug">{{ requestMessage }}</p>
-        </div>
-        
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="w-16 h-12 bg-gray-200 rounded-md overflow-hidden shrink-0 border border-gray-100">
@@ -24,7 +18,7 @@
               <div class="flex items-center gap-2">
                 <div class="font-bold text-slate-800 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
               </div>
-              <div class="mt-1.5">
+              <div class="mt-1.5 flex items-center gap-2">
                 <div 
                   v-if="stockDays !== undefined && stockDays !== null"
                   class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
@@ -37,16 +31,16 @@
                 >
                   <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
                 </div>
+                <button 
+                  v-if="showOpenAd && price" 
+                  class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
+                >
+                  Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
+                </button>
               </div>
             </div>
           </div>
           <div class="flex items-center gap-4">
-            <button 
-              v-if="showOpenAd && price" 
-              class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
-            >
-              Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
-            </button>
             <div v-if="price" class="text-right">
               <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
               <div class="font-bold text-slate-800">€ {{ formatCurrency(price) }}</div>
@@ -157,6 +151,15 @@
           <button class="bg-white border border-gray-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
             <i class="fa-solid fa-list-check text-gray-400 group-hover:text-blue-500"></i> View technical specs
           </button>
+        </div>
+      </div>
+      
+      <!-- Request message -->
+      <div v-if="requestMessage" class="border-t border-gray-200 my-6"></div>
+      <div v-if="requestMessage" class="mb-6 px-6">
+        <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">REQUEST MESSAGE</h4>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+          <p class="text-sm text-slate-700 leading-relaxed">{{ requestMessage }}</p>
         </div>
       </div>
       </div>

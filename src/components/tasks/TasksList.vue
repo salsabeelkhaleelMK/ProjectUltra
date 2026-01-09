@@ -2,9 +2,9 @@
   <div 
     class="bg-white border-r border-gray-200 flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
-    <!-- Header: Title and Dropdown -->
+    <!-- Header: Title + View Toggle -->
     <div class="px-4 md:px-8 py-4 md:py-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <!-- Close button (mobile only) -->
           <button 
@@ -16,39 +16,30 @@
           </button>
           <h2 class="page-header-title">{{ title }}</h2>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="text-xs font-medium bg-white hover:bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
-            Urgent first <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
-          </button>
+        
+        <!-- View Toggle (Desktop only) -->
+        <div v-if="viewMode" class="hidden lg:flex">
+          <ViewToggle
+            :view="viewMode"
+            :options="[
+              { value: 'card', icon: 'fa-solid fa-list', label: 'Cards' },
+              { value: 'table', icon: 'fa-solid fa-table', label: 'Table' }
+            ]"
+            @update:view="$emit('view-change', $event)"
+          />
         </div>
       </div>
     </div>
     
-    <!-- Type Filter Buttons -->
-    <div v-if="showTypeFilter" class="px-5 py-3 bg-white">
-      <div class="flex gap-2">
-        <button
-          @click="$emit('filter-change', 'all')"
-          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-          :class="typeFilter === 'all' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
-        >
-          All
-        </button>
-        <button
-          @click="$emit('filter-change', 'lead')"
-          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-          :class="typeFilter === 'lead' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
-        >
-          Leads
-        </button>
-        <button
-          @click="$emit('filter-change', 'opportunity')"
-          class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-          :class="typeFilter === 'opportunity' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
-        >
-          Opportunities
-        </button>
-      </div>
+    <!-- Filters -->
+    <div v-if="showTypeFilter" class="px-5 py-3 bg-white border-b border-gray-100">
+      <TaskFilters
+        :type-filter="typeFilter"
+        :sort-option="currentSort"
+        :show-type-filter="showTypeFilter"
+        @filter-change="$emit('filter-change', $event)"
+        @sort-change="selectSort"
+      />
     </div>
     
     <!-- Search Bar -->
@@ -70,58 +61,75 @@
         :key="item.id"
         :ref="el => { if (isSelected(item)) selectedItemRef = el }"
         @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
-        class="rounded-xl px-4 py-3.5 cursor-pointer transition-all relative group"
+        class="rounded-lg px-4 py-3 cursor-pointer transition-all relative group"
         :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
       >
-        <!-- Top right menu button -->
-        <button 
-          v-if="showMenu"
-          @click.stop="$emit('menu-click', item.id)"
-          class="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors z-10"
-        >
-          <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-        </button>
-        
         <!-- Card Menu -->
         <div 
           v-if="openMenuId === item.id && showMenu"
-          class="absolute right-2 top-8 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+          class="absolute right-2 top-10 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
           v-click-outside="() => $emit('menu-close')"
         >
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <!-- Main content: Avatar, Name, Vehicle, Amount/Due -->
-        <div class="flex items-start gap-3.5 pr-6">
-          <!-- Avatar -->
-          <div 
-            class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            :class="avatarClass(item)"
-          >
-            {{ getInitials(item) }}
+        <!-- Card Content -->
+        <div class="space-y-3">
+          <!-- Customer Section -->
+          <div class="space-y-2">
+            <!-- Top Row: Avatar + Name + Amount + Dropdown -->
+            <div class="flex items-start gap-3">
+              <!-- Avatar -->
+              <div 
+                class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                :class="avatarClass(item)"
+              >
+                {{ getInitials(item) }}
+              </div>
+              
+              <!-- Name and Amount -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-0.5">
+                  <div class="font-bold text-gray-900 text-sm leading-tight truncate">{{ getName(item) }}</div>
+                  <div class="text-right shrink-0">
+                    <slot name="meta" :item="item"></slot>
+                  </div>
+                </div>
+                
+                <!-- Vehicle Info with Type Badge -->
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="text-gray-600 text-xs truncate flex-1 min-w-0">{{ getVehicleInfo(item) }}</div>
+                  <slot name="vehicle-type" :item="item"></slot>
+                </div>
+              </div>
+              
+              <!-- Dropdown Button (Always Visible) -->
+              <button 
+                v-if="showMenu"
+                @click.stop="$emit('menu-click', item.id)"
+                class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors shrink-0"
+              >
+                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+              </button>
+            </div>
           </div>
           
-          <!-- Name and Vehicle -->
-          <div class="flex-1 min-w-0">
-            <div class="font-bold text-gray-800 text-sm leading-snug truncate">{{ getName(item) }}</div>
-            <div class="text-gray-600 text-xs mt-1 truncate">{{ getVehicleInfo(item) }}</div>
-          </div>
+          <!-- Separator -->
+          <div class="border-t border-gray-100"></div>
           
-          <!-- Right side: Amount -->
-          <div class="text-right shrink-0">
-            <slot name="meta" :item="item"></slot>
-            <slot name="footer" :item="item"></slot>
+          <!-- Task Info Section -->
+          <div class="space-y-2">
+            <!-- Owner and Due Date Row -->
+            <div class="flex items-center justify-between gap-3">
+              <slot name="owner" :item="item"></slot>
+              <slot name="dates" :item="item"></slot>
+            </div>
+            
+            <!-- Badges Row -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <slot name="badges" :item="item"></slot>
+            </div>
           </div>
-        </div>
-        
-        <!-- Dates row (between customer info and badges) -->
-        <div class="mt-2.5">
-          <slot name="dates" :item="item"></slot>
-        </div>
-        
-        <!-- Tags at bottom -->
-        <div class="flex items-center gap-2 flex-wrap mt-3">
-          <slot name="badges" :item="item"></slot>
         </div>
       </div>
     </div>
@@ -129,7 +137,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import TaskFilters from './TaskFilters.vue'
+import ViewToggle from '@/components/shared/ViewToggle.vue'
 
 // Click outside directive
 const vClickOutside = {
@@ -206,12 +216,17 @@ const props = defineProps({
   showMobileClose: {
     type: Boolean,
     default: false
+  },
+  viewMode: {
+    type: String,
+    default: 'card'
   }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'close'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'close', 'view-change'])
 
 const searchQuery = ref('')
+const currentSort = ref('none')
 
 const filteredItems = computed(() => {
   let items = props.items
@@ -237,6 +252,11 @@ const filteredItems = computed(() => {
 const isSelected = (item) => {
   const itemId = item.compositeId || `${item.type || 'task'}-${item.id}` || item.id
   return props.selectedId === itemId
+}
+
+const selectSort = (sortOption) => {
+  currentSort.value = sortOption
+  emit('sort-change', sortOption)
 }
 
 // Refs for scroll functionality
@@ -270,4 +290,18 @@ watch(filteredItems, async () => {
   }
 }, { immediate: true })
 </script>
+
+<style scoped>
+/* Dropdown animations */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>
 

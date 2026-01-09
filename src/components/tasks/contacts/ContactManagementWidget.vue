@@ -6,7 +6,7 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-user-circle text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Contact Management</h3>
+        <h3 class="font-bold text-slate-800 text-sm">Manage next steps</h3>
       </div>
     </div>
 

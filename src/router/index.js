@@ -42,9 +42,9 @@ const routes = [
         component: () => import('@/views/Tasks.vue')
       },
       {
-        path: 'lead/:id',
-        name: 'lead-view',
-        component: () => import('@/views/Lead.vue'),
+        path: 'customer/:id',
+        name: 'customer-view',
+        component: () => import('@/views/Customer.vue'),
         props: true
       },
       {
