@@ -1,26 +1,35 @@
 [build]
   publish = "dist"
-  # The codeartifact-auth plugin handles authentication before npm install
-  command = "npm run build"
+  # package.json is renamed to _package.json in git to prevent Netlify's automatic npm install
+  # We restore it and handle authentication manually in the build command
+  command = '''
+    echo "Restoring package.json and package-lock.json..." && \
+    mv _package.json package.json && \
+    mv _package-lock.json package-lock.json && \
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MK:-$AWS_ACCESS_KEY_ID} && \
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MK:-$AWS_SECRET_ACCESS_KEY} && \
+    export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-west-1} && \
+    rm -f .npmrc && \
+    (which aws || (curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install && export PATH="/usr/local/bin:$PATH")) && \
+    echo "AWS CLI: $(aws --version)" && \
+    echo "Getting CodeArtifact token..." && \
+    AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain motork --domain-owner 678121811175 --region eu-west-1 --query authorizationToken --output text) && \
+    echo "Token obtained (length: ${#AUTH_TOKEN}), creating .npmrc..." && \
+    echo "registry=https://motork-678121811175.d.codeartifact.eu-west-1.amazonaws.com/npm/ui-component-library/" > .npmrc && \
+    echo "//motork-678121811175.d.codeartifact.eu-west-1.amazonaws.com/npm/ui-component-library/:always-auth=true" >> .npmrc && \
+    echo "//motork-678121811175.d.codeartifact.eu-west-1.amazonaws.com/npm/ui-component-library/:_authToken=${AUTH_TOKEN}" >> .npmrc && \
+    echo "Installing dependencies..." && \
+    npm install && \
+    echo "Building project..." && \
+    npm run build
+  '''
 
 [build.environment]
   # AWS region for CodeArtifact
   AWS_DEFAULT_REGION = "eu-west-1"
-  # Map Netlify environment variables to AWS CLI expected names
-  # The preinstall script will use these during npm install
-  # Note: Set BOTH variable names in Netlify UI for compatibility:
-  # - AWS_ACCESS_KEY_ID_MK (primary) and AWS_ACCESS_KEY_ID (fallback)
-  # - AWS_SECRET_ACCESS_KEY_MK (primary) and AWS_SECRET_ACCESS_KEY (fallback)
-  # Or just set AWS_ACCESS_KEY_ID_MK and AWS_SECRET_ACCESS_KEY_MK - the script handles mapping
-  # Set in: Site settings > Build & deploy > Environment variables
-
-# CodeArtifact authentication plugin (runs before npm install)
-[[plugins]]
-  package = "./plugins/codeartifact-auth"
-
-# Cache node_modules to speed up builds
-[[plugins]]
-  package = "@netlify/plugin-cache"
+  # Required environment variables (set in Netlify UI):
+  # - AWS_ACCESS_KEY_ID_MK: AWS access key for CodeArtifact
+  # - AWS_SECRET_ACCESS_KEY_MK: AWS secret key for CodeArtifact
 
 # Optimize static asset caching
 [[headers]]
