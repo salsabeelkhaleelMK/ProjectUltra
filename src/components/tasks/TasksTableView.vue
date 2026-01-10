@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container flex-1 flex flex-col overflow-hidden w-full min-w-0">
+  <div class="page-container flex-1 flex flex-col overflow-hidden min-w-0">
     <!-- Header -->
     <PageHeader title="Tasks" subtitle="Manage your leads and opportunities">
       <template #actions>
@@ -16,10 +16,9 @@
     </PageHeader>
     
     <!-- Content -->
-    <div class="flex-1 flex flex-col overflow-hidden p-4 md:p-8">
-      
+    <div class="flex-1 overflow-y-auto p-4 md:p-8">
       <!-- Table Container -->
-      <div class="table-wrapper flex-1 w-full">
+      <div class="table-wrapper w-full">
         <DataTable 
           :data="filteredTasks" 
           :columns="columns"
@@ -36,9 +35,17 @@
             rowCount: filteredTasks.length
           }"
           :globalFilterOptions="{
-            debounce: 300
+            debounce: 300,
+            placeholder: 'Q Search or ask a question'
           }"
-        />
+        >
+          <template #empty-state>
+            <div class="empty-state">
+              <i class="fa-solid fa-tasks empty-state-icon"></i>
+              <p class="empty-state-text">No tasks found</p>
+            </div>
+          </template>
+        </DataTable>
       </div>
     </div>
   </div>
@@ -122,7 +129,10 @@ const filterDefinitions = computed(() => {
       { value: 'Qualified', label: 'Qualified' },
       { value: 'In Negotiation', label: 'In Negotiation' },
       { value: 'Won', label: 'Won' },
-      { value: 'Lost', label: 'Lost' }
+      { value: 'Lost', label: 'Lost' },
+      { value: 'Not interested', label: 'Not interested' },
+      { value: 'Open', label: 'Open' },
+      { value: 'Open Lead', label: 'Open Lead' }
     ],
     aiHint: 'Lead status or opportunity stage'
   })
@@ -136,9 +146,79 @@ const filterDefinitions = computed(() => {
       { value: 'eq', label: 'is' }
     ],
     options: [
-      { value: 'Hot', label: 'Hot' },
+      { value: 'Hot', label: 'High' },
       { value: 'Normal', label: 'Normal' }
-    ]
+    ],
+    aiHint: 'Task priority level'
+  })
+  
+  // Source filter
+  defs.push({
+    key: 'source',
+    label: 'Source',
+    type: 'multiselect',
+    operators: [
+      { value: 'in', label: 'is any of' },
+      { value: 'notIn', label: 'is none of' }
+    ],
+    options: [
+      { value: 'Marketing', label: 'Marketing' },
+      { value: 'Website', label: 'Website' },
+      { value: 'Referral', label: 'Referral' },
+      { value: 'Walk-in', label: 'Walk-in' }
+    ],
+    aiHint: 'Lead or opportunity source'
+  })
+  
+  // Assignee filter
+  const uniqueAssignees = [...new Set(props.tasks.map(t => t.assignee).filter(Boolean))]
+  if (uniqueAssignees.length > 0) {
+    defs.push({
+      key: 'assignee',
+      label: 'Assignee',
+      type: 'select',
+      operators: [
+        { value: 'eq', label: 'is' }
+      ],
+      options: uniqueAssignees.map(name => ({ value: name, label: name })),
+      aiHint: 'Person assigned to the task'
+    })
+  }
+  
+  // Requested car filter (for leads)
+  const uniqueBrands = [...new Set(
+    props.tasks
+      .map(t => {
+        const car = t.type === 'lead' ? t.requestedCar : t.vehicle
+        return car?.brand
+      })
+      .filter(Boolean)
+  )]
+  if (uniqueBrands.length > 0) {
+    defs.push({
+      key: 'requestedCarBrand',
+      label: 'Requested car',
+      type: 'multiselect',
+      operators: [
+        { value: 'in', label: 'is any of' },
+        { value: 'notIn', label: 'is none of' }
+      ],
+      options: uniqueBrands.map(brand => ({ value: brand, label: brand })),
+      aiHint: 'Car brand requested by customer'
+    })
+  }
+  
+  // Creation date filter
+  defs.push({
+    key: 'createdAt',
+    label: 'Creation date',
+    type: 'daterange',
+    operators: [
+      { value: 'between', label: 'is between' },
+      { value: 'gte', label: 'is after' },
+      { value: 'lte', label: 'is before' }
+    ],
+    aiHint: 'Date when the task was created'
   })
   
   return defs
