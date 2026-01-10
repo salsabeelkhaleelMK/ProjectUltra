@@ -1,12 +1,7 @@
 [build]
   publish = "dist"
-  # Handle authentication before npm install runs
-  # Clear any cached .npmrc, install AWS CLI, authenticate, then install dependencies and build
-  command = "rm -f .npmrc ~/.npmrc && export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MK:-$AWS_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MK:-$AWS_SECRET_ACCESS_KEY} && export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-west-1} && (which aws || (curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install && export PATH='/usr/local/bin:$PATH')) && aws --version && aws codeartifact login --tool npm --repository ui-component-library --domain motork --domain-owner 678121811175 --region eu-west-1 && npm install && npm run build"
-  # Node.js version is specified in .nvmrc file (Node 22)
-  # Netlify will automatically detect and use it
-  # Note: This disables Netlify's automatic npm install to prevent using cached invalid tokens
-  ignore_npm_ci = true
+  # The codeartifact-auth plugin handles authentication before npm install
+  command = "npm run build"
 
 [build.environment]
   # AWS region for CodeArtifact
@@ -18,6 +13,10 @@
   # - AWS_SECRET_ACCESS_KEY_MK (primary) and AWS_SECRET_ACCESS_KEY (fallback)
   # Or just set AWS_ACCESS_KEY_ID_MK and AWS_SECRET_ACCESS_KEY_MK - the script handles mapping
   # Set in: Site settings > Build & deploy > Environment variables
+
+# CodeArtifact authentication plugin (runs before npm install)
+[[plugins]]
+  package = "./plugins/codeartifact-auth"
 
 # Cache node_modules to speed up builds
 [[plugins]]
