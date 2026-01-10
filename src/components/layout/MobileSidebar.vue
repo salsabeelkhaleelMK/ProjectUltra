@@ -33,7 +33,7 @@
       <!-- Navigation Items -->
       <div class="py-4">
         <!-- Add New Section -->
-        <div class="px-4 mb-4">
+        <div class="px-4 mb-1">
           <router-link
             to="/add-new"
             @click="$emit('close')"
@@ -42,6 +42,19 @@
           >
             <i class="fa-solid fa-plus"></i>
             <span class="font-medium">Add New</span>
+          </router-link>
+        </div>
+
+        <!-- Home -->
+        <div class="px-4 mb-4">
+          <router-link
+            to="/home"
+            @click="$emit('close')"
+            class="mobile-sidebar-link"
+            :class="{ 'mobile-sidebar-link-active': isActive('/home') }"
+          >
+            <i class="fa-solid fa-house w-5"></i>
+            <span>Home</span>
           </router-link>
         </div>
         

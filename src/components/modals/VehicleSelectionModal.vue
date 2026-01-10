@@ -158,7 +158,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import ModalShell from '@/components/shared/ModalShell.vue'
-import VehicleCard from '@/components/modals/VehicleCard.vue'
+import VehicleCard from '@/components/shared/vehicles/VehicleCard.vue'
 import { mockVehicles } from '@/api/mockData'
 
 const props = defineProps({

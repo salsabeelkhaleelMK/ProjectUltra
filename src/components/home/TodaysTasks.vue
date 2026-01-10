@@ -61,8 +61,8 @@
             >
               {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
             </span>
-            <span v-if="task.stage" class="text-gray-500">
-              {{ task.stage }}
+            <span v-if="task.stage || task.displayStage" class="text-gray-500">
+              {{ task.displayStage || task.stage }}
             </span>
           </div>
         </div>

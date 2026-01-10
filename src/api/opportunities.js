@@ -1,6 +1,62 @@
-import { mockOpportunities, mockActivities, mockCalendarEvents, mockUsers } from './mockData'
+import { mockOpportunities, mockActivities, mockCalendarEvents, mockUsers, mockCustomers } from './mockData'
+import { getDisplayStage, getDeliverySubstatus } from '@/utils/stageMapper'
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
+
+// Enrich opportunity with customer data from mockCustomers
+function enrichOpportunityWithCustomer(opportunity) {
+  if (!opportunity) return null
+  
+  const customer = mockCustomers.find(c => c.id === opportunity.customerId)
+  if (!customer) {
+    // Fallback if customer not found
+    return {
+      ...opportunity,
+      customer: {
+        id: opportunity.customerId,
+        name: 'Unknown Customer',
+        initials: '??',
+        email: '',
+        phone: '',
+        address: ''
+      }
+    }
+  }
+  
+  return {
+    ...opportunity,
+    customer: {
+      id: customer.id,
+      name: customer.name,
+      initials: customer.initials,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address
+    }
+  }
+}
+
+// Enrich opportunity with display stage, delivery substatus, and customer data
+function enrichOpportunityWithStage(opportunity) {
+  if (!opportunity) return null
+  
+  const oppWithCustomer = enrichOpportunityWithCustomer(opportunity)
+  const activities = mockActivities.filter(a => a.opportunityId === opportunity.id)
+  const displayStage = getDisplayStage({ ...oppWithCustomer, apiStatus: opportunity.stage, activities }, 'opportunity')
+  
+  // Calculate delivery substatus only for Closed Won opportunities
+  const deliverySubstatus = displayStage === 'Closed Won' 
+    ? getDeliverySubstatus({ ...oppWithCustomer, displayStage }, activities)
+    : null
+  
+  return {
+    ...oppWithCustomer,
+    apiStatus: opportunity.stage,
+    displayStage,
+    deliverySubstatus,
+    activities // Include activities for stage calculation
+  }
+}
 
 export const fetchOpportunities = async (filters = {}) => {
   await delay()
@@ -15,21 +71,26 @@ export const fetchOpportunities = async (filters = {}) => {
   }
   if (filters.search) {
     const search = filters.search.toLowerCase()
-    results = results.filter(opp => 
-      opp.customer.name.toLowerCase().includes(search) ||
-      opp.vehicle.brand.toLowerCase().includes(search) ||
-      opp.vehicle.model.toLowerCase().includes(search)
-    )
+    results = results.filter(opp => {
+      const customer = mockCustomers.find(c => c.id === opp.customerId)
+      const customerName = customer?.name || ''
+      return customerName.toLowerCase().includes(search) ||
+        (opp.vehicle && opp.vehicle.brand && opp.vehicle.brand.toLowerCase().includes(search)) ||
+        (opp.vehicle && opp.vehicle.model && opp.vehicle.model.toLowerCase().includes(search))
+    })
   }
   
-  return { data: results, total: results.length }
+  // Enrich with display stages
+  const enrichedResults = results.map(enrichOpportunityWithStage)
+  
+  return { data: enrichedResults, total: enrichedResults.length }
 }
 
 export const fetchOpportunityById = async (id) => {
   await delay()
   const opportunity = mockOpportunities.find(o => o.id === parseInt(id))
   if (!opportunity) throw new Error('Opportunity not found')
-  return opportunity
+  return enrichOpportunityWithStage(opportunity)
 }
 
 export const fetchOpportunityActivities = async (opportunityId) => {
@@ -55,14 +116,23 @@ export const createOpportunity = async (opportunityData) => {
   await delay()
   const newOpportunity = {
     id: mockOpportunities.length + 1,
-    ...opportunityData,
+    customerId: opportunityData.customerId,
+    requestedCar: opportunityData.requestedCar || null,
+    vehicle: opportunityData.vehicle || opportunityData.requestedCar || null,
+    selectedVehicle: opportunityData.selectedVehicle || null,
+    stage: opportunityData.stage || 'Qualified',
+    tags: opportunityData.tags || [],
+    value: opportunityData.value || 0,
+    expectedCloseDate: opportunityData.expectedCloseDate || null,
+    assignee: opportunityData.assignee || null,
+    source: opportunityData.source || 'Direct',
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString(),
-    expectedCloseDate: opportunityData.expectedCloseDate || null,
-    tags: opportunityData.tags || []
+    scheduledAppointment: opportunityData.scheduledAppointment || null,
+    contractDate: opportunityData.contractDate || null
   }
   mockOpportunities.push(newOpportunity)
-  return newOpportunity
+  return enrichOpportunityWithStage(newOpportunity)
 }
 
 export const createOpportunityFromContact = async (contactId, carData) => {
@@ -73,15 +143,9 @@ export const createOpportunityFromContact = async (contactId, carData) => {
   
   const newOpportunity = {
     id: mockOpportunities.length + 1,
-    customer: {
-      id: contact.id,
-      name: contact.name,
-      initials: contact.initials,
-      email: contact.email,
-      phone: contact.phone,
-      address: contact.address || ''
-    },
+    customerId: contact.customerId,
     vehicle: carData,
+    requestedCar: carData,
     stage: 'Qualified',
     priority: 'Normal',
     source: carData.source || 'Direct',
@@ -90,11 +154,12 @@ export const createOpportunityFromContact = async (contactId, carData) => {
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString(),
     expectedCloseDate: null,
-    tags: []
+    tags: [],
+    value: carData.price || 0
   }
   
   mockOpportunities.push(newOpportunity)
-  return newOpportunity
+  return enrichOpportunityWithStage(newOpportunity)
 }
 
 export const updateOpportunity = async (id, updates) => {
@@ -102,8 +167,11 @@ export const updateOpportunity = async (id, updates) => {
   const index = mockOpportunities.findIndex(o => o.id === parseInt(id))
   if (index === -1) throw new Error('Opportunity not found')
   
-  mockOpportunities[index] = { ...mockOpportunities[index], ...updates }
-  return mockOpportunities[index]
+  // Remove displayStage from updates (it's calculated, not stored)
+  const { displayStage, ...updatesToStore } = updates
+  
+  mockOpportunities[index] = { ...mockOpportunities[index], ...updatesToStore }
+  return enrichOpportunityWithStage(mockOpportunities[index])
 }
 
 export const deleteOpportunity = async (id) => {
@@ -215,7 +283,7 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
   
   const newOpportunity = {
     id: generateOpportunityId(),
-    customer: leadData.customer,
+    customerId: leadData.customerId,
     requestedCar: leadData.requestedCar,
     vehicle: { ...leadData.requestedCar }, // Copy requestedCar to vehicle
     stage: 'Qualified',
@@ -250,7 +318,7 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
     mockActivities.push(newActivity)
   }
   
-  return newOpportunity
+  return enrichOpportunityWithStage(newOpportunity)
 }
 
 // Detect stuck opportunities (inactive for 7+ days)
@@ -298,14 +366,15 @@ export const detectStuckOpportunities = async (userId) => {
     if (hasRecentOffers) continue
     
     // This opportunity is stuck
+    const enrichedOpp = enrichOpportunityWithCustomer(opp)
     questions.push({
       id: `stuck-opportunity-${opp.id}`,
       type: 'stuck-opportunity',
       priority: 1, // Critical
-      question: `This opportunity with ${opp.customer.name} has been inactive for ${daysSinceActivity} days. Are they still interested in purchasing?`,
-      customer: opp.customer,
+      question: `This opportunity with ${enrichedOpp.customer.name} has been inactive for ${daysSinceActivity} days. Are they still interested in purchasing?`,
+      customer: enrichedOpp.customer,
       opportunityId: opp.id,
-      opportunity: opp,
+      opportunity: enrichedOpp,
       createdAt: opp.lastActivity,
       daysInactive: daysSinceActivity
     })
@@ -348,14 +417,15 @@ export const fetchActionableQuestions = async (userId, userRole) => {
       )
       
       if (!hasOffers) {
+        const enrichedOpp = enrichOpportunityWithCustomer(opp)
         questions.push({
           id: `appt-followup-${opp.id}`,
           type: 'appointment-followup',
           priority: 4, // High priority
-          question: `You had an appointment ${daysSinceAppointment === 1 ? 'yesterday' : `${daysSinceAppointment} days ago`} with ${opp.customer.name} but no offer is added so far. Did they show up to the appointment?`,
-          customer: opp.customer,
+          question: `You had an appointment ${daysSinceAppointment === 1 ? 'yesterday' : `${daysSinceAppointment} days ago`} with ${enrichedOpp.customer.name} but no offer is added so far. Did they show up to the appointment?`,
+          customer: enrichedOpp.customer,
           opportunityId: opp.id,
-          opportunity: opp,
+          opportunity: enrichedOpp,
           createdAt: opp.scheduledAppointment.start,
           appointmentDate: opp.scheduledAppointment.start
         })
@@ -386,14 +456,15 @@ export const fetchActionableQuestions = async (userId, userRole) => {
         })
         
         if (!hasCommunications) {
+          const enrichedOpp = enrichOpportunityWithCustomer(opp)
           questions.push({
             id: `ns-followup-${opp.id}`,
             type: 'ns-followup',
             priority: 3, // High
-            question: `You had to follow up with ${opp.customer.name} on a missed appointment. Did you call them?`,
-            customer: opp.customer,
+            question: `You had to follow up with ${enrichedOpp.customer.name} on a missed appointment. Did you call them?`,
+            customer: enrichedOpp.customer,
             opportunityId: opp.id,
-            opportunity: opp,
+            opportunity: enrichedOpp,
             createdAt: appointment.nsTaskCreatedAt,
             nsTaskCreatedAt: appointment.nsTaskCreatedAt
           })

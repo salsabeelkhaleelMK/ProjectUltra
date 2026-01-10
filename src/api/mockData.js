@@ -8,10 +8,52 @@ export const mockUsers = [
   { id: 4, name: 'Natalia Sung', initials: 'NS', role: 'operator', email: 'natalia.sung@example.com' }
 ]
 
+// Customers are the top-level entity - independent contact data
+export const mockCustomers = [
+  { id: 1, name: 'Josh Adams', initials: 'JA', email: 'josh.adams@example.com', phone: '+4901564879300', address: 'Via Torino 56, 20123 Milan', company: null, source: 'Marketing', tags: ['Premium', 'Automation'], createdAt: '2025-03-21T08:17:00', lastContact: '2025-03-25T14:30:00' },
+  { id: 2, name: 'Emma Watson', initials: 'EW', email: 'emma.watson@example.com', phone: '+4901234567890', address: 'Hauptstraße 12, 10115 Berlin', company: null, source: 'Marketing', tags: [], createdAt: '2025-03-20T10:15:00', lastContact: '2025-03-24T16:20:00' },
+  { id: 3, name: 'Liam Johnson', initials: 'LJ', email: 'liam.johnson@example.com', phone: '+4901567891234', address: 'Unter den Linden 45, 10117 Berlin', company: null, source: 'Marketing', tags: [], createdAt: '2025-03-19T13:52:00', lastContact: '2025-03-19T13:52:00' },
+  { id: 4, name: 'Sophie Mueller', initials: 'SM', email: 'sophie.mueller@example.com', phone: '+4901678912345', address: 'Maximilianstraße 10, 80539 Munich', company: null, source: 'Website', tags: ['Premium'], createdAt: '2025-03-16T10:00:00', lastContact: '2025-03-24T14:00:00' },
+  { id: 5, name: 'Marco Rossi', initials: 'MR', email: 'marco.rossi@example.com', phone: '+393401234567', address: 'Via della Repubblica 25, 50123 Florence', company: null, source: 'Referral', tags: [], createdAt: '2025-03-18T09:00:00', lastContact: '2025-03-25T12:00:00' },
+  { id: 6, name: 'Klaus Schmidt', initials: 'KS', email: 'klaus.schmidt@example.com', phone: '+4901789123456', address: 'Friedrichstraße 100, 10117 Berlin', company: null, source: 'Marketing', tags: [], createdAt: '2025-03-06T10:00:00', lastContact: '2025-03-23T14:00:00' },
+  { id: 7, name: 'Anna Becker', initials: 'AB', email: 'anna.becker@example.com', phone: '+4901890234567', address: 'Reeperbahn 50, 20359 Hamburg', company: null, source: 'Website', tags: [], createdAt: '2025-03-13T10:00:00', lastContact: '2025-03-24T15:00:00' },
+  { id: 8, name: 'Thomas Weber', initials: 'TW', email: 'thomas.weber@example.com', phone: '+4901901345678', address: 'Königsallee 60, 40212 Düsseldorf', company: null, source: 'Phone', tags: [], createdAt: '2025-03-01T10:00:00', lastContact: '2025-03-22T10:00:00' },
+  { id: 9, name: 'Julia Fischer', initials: 'JF', email: 'julia.fischer@example.com', phone: '+4901912456789', address: 'Ludwigstraße 15, 70173 Stuttgart', company: null, source: 'Website', tags: [], createdAt: '2025-03-19T10:00:00', lastContact: '2025-03-25T09:00:00' },
+  { id: 10, name: 'Michael Hoffmann', initials: 'MH', email: 'michael.hoffmann@example.com', phone: '+4901923567890', address: 'Marienplatz 8, 80331 Munich', company: null, source: 'Referral', tags: [], createdAt: '2025-03-14T10:00:00', lastContact: '2025-03-24T16:00:00' },
+  { id: 11, name: 'Laura Zimmermann', initials: 'LZ', email: 'laura.zimmermann@example.com', phone: '+4901934678901', address: 'Kurfürstendamm 100, 10709 Berlin', company: null, source: 'Walk-in', tags: ['Urgent'], createdAt: '2025-03-09T10:00:00', lastContact: '2025-03-25T06:00:00' },
+  { id: 12, name: 'Stefan Braun', initials: 'SB', email: 'stefan.braun@example.com', phone: '+4901945789012', address: 'Elbchaussee 200, 22605 Hamburg', company: null, source: 'Marketing', tags: [], createdAt: '2025-03-03T10:00:00', lastContact: '2025-03-25T00:00:00' },
+  { id: 13, name: 'Nina Keller', initials: 'NK', email: 'nina.keller@example.com', phone: '+4901956890123', address: 'Bahnhofstraße 45, 60329 Frankfurt', company: null, source: 'Referral', tags: ['VIP', 'Urgent'], createdAt: '2025-03-25T06:00:00', lastContact: '2025-03-25T07:00:00' },
+  { id: 14, name: 'Oliver Lang', initials: 'OL', email: 'oliver.lang@example.com', phone: '+4901967901234', address: 'Schillerstraße 30, 70173 Stuttgart', company: null, source: 'Website', tags: [], createdAt: '2025-03-25T00:00:00', lastContact: '2025-03-25T04:00:00' },
+  { id: 15, name: 'Petra Schulz', initials: 'PS', email: 'petra.schulz@example.com', phone: '+4901978012345', address: 'Alexanderplatz 5, 10178 Berlin', company: null, source: 'Walk-in', tags: ['Hot'], createdAt: '2025-03-20T10:00:00', lastContact: '2025-03-22T10:00:00' },
+  { id: 16, name: 'Robert Klein', initials: 'RK', email: 'robert.klein@example.com', phone: '+4901989123456', address: 'Hafenstraße 80, 20359 Hamburg', company: 'Klein GmbH', source: 'Marketing', tags: ['Corporate'], createdAt: '2025-03-19T10:00:00', lastContact: '2025-03-19T10:00:00' },
+  { id: 17, name: 'Sabine Vogel', initials: 'SV', email: 'sabine.vogel@example.com', phone: '+4901990234567', address: 'Goethestraße 25, 60313 Frankfurt', company: null, source: 'Phone', tags: [], createdAt: '2025-03-24T10:00:00', lastContact: '2025-03-25T03:00:00' },
+  { id: 18, name: 'Dr. Andreas Werner', initials: 'AW', email: 'andreas.werner@example.com', phone: '+4902001345678', address: 'Königsallee 25, 40212 Düsseldorf', company: 'Werner Medical GmbH', source: 'Referral', tags: ['VIP', 'Referral', 'Premium', 'High-Value'], createdAt: '2025-03-25T04:00:00', lastContact: '2025-03-25T06:00:00' },
+  { id: 19, name: 'Christina Bauer', initials: 'CB', email: 'christina.bauer@example.com', phone: '+4902012456789', address: 'Leopoldstraße 50, 80802 Munich', company: 'Bauer Consulting AG', source: 'Website', tags: ['Corporate', 'Urgent'], createdAt: '2025-03-23T10:00:00', lastContact: '2025-03-25T07:00:00' },
+  { id: 20, name: 'Martin Richter', initials: 'MR', email: 'martin.richter@example.com', phone: '+4902023567890', address: 'Mönckebergstraße 15, 20095 Hamburg', company: null, source: 'Walk-in', tags: ['Performance', 'Hot'], createdAt: '2025-03-21T10:00:00', lastContact: '2025-03-24T10:00:00' },
+  { id: 21, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze', company: null, source: 'Marketing', tags: ['Premium'], createdAt: '2025-03-24T10:00:00', lastContact: '2025-03-24T10:00:00' },
+  { id: 22, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901777888999', address: 'Via Roma 15, 20121 Milano', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-10T09:00:00', lastContact: '2024-12-18T10:00:00' },
+  { id: 23, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901888999000', address: 'Via Garibaldi 20, 50123 Firenze', company: null, source: 'Website', tags: [], createdAt: '2024-12-05T10:00:00', lastContact: '2024-12-15T11:00:00' },
+  { id: 24, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901777888999', address: 'Via Roma 15, 20121 Milano', company: null, source: 'Website', tags: [], createdAt: '2024-12-12T11:00:00', lastContact: '2024-12-18T10:00:00' },
+  { id: 25, name: 'Janice Litman', initials: 'JL', email: 'janice.litman@example.com', phone: '+4901888999000', address: 'Alexanderstraße 10, 10178 Berlin', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-08T10:00:00', lastContact: '2024-12-20T14:00:00' },
+  { id: 26, name: 'Michael Brown', initials: 'MB', email: 'michael.brown@example.com', phone: '+4901999000111', address: 'Via Dante 5, 20121 Milano', company: null, source: 'Website', tags: [], createdAt: '2024-12-07T10:00:00', lastContact: '2024-12-20T15:00:00' },
+  { id: 27, name: 'Sarah Johnson', initials: 'SJ', email: 'sarah.johnson@example.com', phone: '+4901111222333', address: 'Via Manzoni 10, 20121 Milano', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-06T10:00:00', lastContact: '2024-12-20T16:00:00' },
+  { id: 28, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901222333444', address: 'Via Verdi 8, 20121 Milano', company: null, source: 'Website', tags: [], createdAt: '2024-12-05T10:00:00', lastContact: '2024-12-20T17:00:00' },
+  { id: 29, name: 'Emily Davis', initials: 'ED', email: 'emily.davis@example.com', phone: '+4901999000222', address: 'Via Dante 6, 20121 Milano', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-04T10:00:00', lastContact: '2024-12-20T18:00:00' },
+  // Additional customers from opportunities (reassigned IDs to avoid conflicts)
+  { id: 30, name: 'Sophia Martinez', initials: 'SM', email: 'sophia.martinez@example.com', phone: '+4901555666777', address: 'Piazza Navona 8, 00186 Roma', company: null, source: 'Marketing', tags: [], createdAt: '2025-03-01T09:00:00', lastContact: '2025-03-25T11:30:00' },
+  { id: 31, name: 'Alexander Chen', initials: 'AC', email: 'alexander.chen@example.com', phone: '+4901999888777', address: 'Via Montenapoleone 3, 20121 Milano', company: null, source: 'Website', tags: ['Premium'], createdAt: '2025-03-16T10:00:00', lastContact: '2025-03-16T10:00:00' },
+  { id: 32, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456', address: 'Marienplatz 5, 80331 München', company: null, source: 'Website', tags: [], createdAt: '2024-12-20T10:00:00', lastContact: '2024-12-20T10:00:00' },
+  { id: 33, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766', address: 'Schildergasse 18, 50667 Köln', company: null, source: 'Website', tags: ['Premium'], createdAt: '2024-12-15T11:00:00', lastContact: '2024-12-20T14:00:00' },
+  { id: 34, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666', address: 'Königsallee 70, 40212 Düsseldorf', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-18T10:00:00', lastContact: '2024-12-25T15:00:00' },
+  { id: 35, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666', address: 'Zeil 90, 60313 Frankfurt am Main', company: null, source: 'Marketing', tags: ['Automation'], createdAt: '2024-12-10T09:00:00', lastContact: '2024-12-20T14:00:00' },
+  { id: 36, name: 'Ross Geller', initials: 'RG', email: 'ross.geller@example.com', phone: '+4901222333444', address: 'Unter den Linden 77, 10117 Berlin', company: null, source: 'Website', tags: [], createdAt: '2024-12-03T10:00:00', lastContact: '2024-12-20T11:00:00' },
+  { id: 37, name: 'Rachel Green', initials: 'RG', email: 'rachel.green@example.com', phone: '+4901333444555', address: 'Alexanderplatz 1, 10178 Berlin', company: null, source: 'Marketing', tags: [], createdAt: '2024-12-02T10:00:00', lastContact: '2024-12-20T12:00:00' }
+]
+
 export const mockLeads = [
   {
-    id: 21,
-    customer: { id: 1, name: 'Josh Adams', initials: 'JA', email: 'josh.adams@example.com', phone: '+4901564879300', address: 'Via Torino 56, 20123 Milan' },
+    id: 1,
+    customerId: 1,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -39,11 +81,13 @@ export const mockLeads = [
     createdAt: (() => {
       const date = new Date()
       date.setDate(date.getDate() - 1) // 1 day ago - fresh lead
+      date.setMinutes(date.getMinutes() - 5) // Offset to differentiate
       return date.toISOString()
     })(),
     lastActivity: (() => {
       const date = new Date()
       date.setDate(date.getDate() - 1)
+      date.setMinutes(date.getMinutes() - 5)
       return date.toISOString()
     })(),
     nextActionDue: (() => {
@@ -53,7 +97,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Premium', 'Automation'],
-    stage: 'Open Lead', // Still in Open Lead stage
+    stage: 'Open Lead', // Maps to "New"
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -61,7 +105,7 @@ export const mockLeads = [
   },
   {
     id: 2,
-    customer: { id: 2, name: 'Emma Watson', initials: 'EW', email: 'emma.watson@example.com', phone: '+4901234567890', address: 'Hauptstraße 12, 10115 Berlin' },
+    customerId: 2,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -97,7 +141,7 @@ export const mockLeads = [
   },
   {
     id: 3,
-    customer: { id: 3, name: 'Liam Johnson', initials: 'LJ', email: 'liam.johnson@example.com', phone: '+4901567891234', address: 'Unter den Linden 45, 10117 Berlin' },
+    customerId: 3,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -134,7 +178,7 @@ export const mockLeads = [
   // GROUP A: Validated Stage Leads
   {
     id: 4,
-    customer: { id: 4, name: 'Sophie Mueller', initials: 'SM', email: 'sophie.mueller@example.com', phone: '+4901678912345', address: 'Maximilianstraße 10, 80539 Munich' },
+    customerId: 4,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -212,7 +256,7 @@ export const mockLeads = [
   },
   {
     id: 5,
-    customer: { id: 5, name: 'Marco Rossi', initials: 'MR', email: 'marco.rossi@example.com', phone: '+393401234567', address: 'Via della Repubblica 25, 50123 Florence' },
+    customerId: 5,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -275,7 +319,7 @@ export const mockLeads = [
   // GROUP B: Disqualified States
   {
     id: 6,
-    customer: { id: 6, name: 'Klaus Schmidt', initials: 'KS', email: 'klaus.schmidt@example.com', phone: '+4901789123456', address: 'Friedrichstraße 100, 10117 Berlin' },
+    customerId: 6,
     status: 'Disqualified',
     priority: 'Normal',
     requestedCar: { 
@@ -312,7 +356,7 @@ export const mockLeads = [
     })(),
     nextActionDue: null,
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Not Valid',
     isDisqualified: true,
     disqualifyReason: 'Data cleanup',
     disqualifyCategory: 'Not Valid',
@@ -321,7 +365,7 @@ export const mockLeads = [
   },
   {
     id: 7,
-    customer: { id: 7, name: 'Anna Becker', initials: 'AB', email: 'anna.becker@example.com', phone: '+4901890234567', address: 'Reeperbahn 50, 20359 Hamburg' },
+    customerId: 7,
     status: 'Disqualified',
     priority: 'Normal',
     requestedCar: { 
@@ -358,7 +402,7 @@ export const mockLeads = [
     })(),
     nextActionDue: null,
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Not Interested',
     isDisqualified: true,
     disqualifyReason: 'Bought elsewhere',
     disqualifyCategory: 'Not Interested',
@@ -379,7 +423,7 @@ export const mockLeads = [
   },
   {
     id: 8,
-    customer: { id: 8, name: 'Thomas Weber', initials: 'TW', email: 'thomas.weber@example.com', phone: '+4901901345678', address: 'Königsallee 60, 40212 Düsseldorf' },
+    customerId: 8,
     status: 'Disqualified',
     priority: 'Normal',
     requestedCar: { 
@@ -482,7 +526,7 @@ export const mockLeads = [
   // GROUP C: Contact Attempts Progression
   {
     id: 9,
-    customer: { id: 9, name: 'Julia Fischer', initials: 'JF', email: 'julia.fischer@example.com', phone: '+4901912456789', address: 'Ludwigstraße 15, 70173 Stuttgart' },
+    customerId: 9,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -544,7 +588,7 @@ export const mockLeads = [
   },
   {
     id: 10,
-    customer: { id: 10, name: 'Michael Hoffmann', initials: 'MH', email: 'michael.hoffmann@example.com', phone: '+4901923567890', address: 'Marienplatz 8, 80331 Munich' },
+    customerId: 10,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -628,7 +672,7 @@ export const mockLeads = [
   },
   {
     id: 11,
-    customer: { id: 11, name: 'Laura Zimmermann', initials: 'LZ', email: 'laura.zimmermann@example.com', phone: '+4901934678901', address: 'Kurfürstendamm 100, 10709 Berlin' },
+    customerId: 11,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -723,7 +767,7 @@ export const mockLeads = [
   },
   {
     id: 12,
-    customer: { id: 12, name: 'Stefan Braun', initials: 'SB', email: 'stefan.braun@example.com', phone: '+4901945789012', address: 'Elbchaussee 200, 22605 Hamburg' },
+    customerId: 12,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -830,7 +874,7 @@ export const mockLeads = [
   // GROUP D: Deadline States
   {
     id: 13,
-    customer: { id: 13, name: 'Nina Keller', initials: 'NK', email: 'nina.keller@example.com', phone: '+4901956890123', address: 'Bahnhofstraße 45, 60329 Frankfurt' },
+    customerId: 13,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -881,7 +925,7 @@ export const mockLeads = [
   },
   {
     id: 14,
-    customer: { id: 14, name: 'Oliver Lang', initials: 'OL', email: 'oliver.lang@example.com', phone: '+4901967901234', address: 'Schillerstraße 30, 70173 Stuttgart' },
+    customerId: 14,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -931,7 +975,7 @@ export const mockLeads = [
   },
   {
     id: 15,
-    customer: { id: 15, name: 'Petra Schulz', initials: 'PS', email: 'petra.schulz@example.com', phone: '+4901978012345', address: 'Alexanderplatz 5, 10178 Berlin' },
+    customerId: 15,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -993,7 +1037,7 @@ export const mockLeads = [
   },
   {
     id: 16,
-    customer: { id: 16, name: 'Robert Klein', initials: 'RK', email: 'robert.klein@example.com', phone: '+4901989123456', address: 'Hafenstraße 80, 20359 Hamburg' },
+    customerId: 16,
     status: 'Open',
     priority: 'Normal',
     requestedCar: { 
@@ -1044,7 +1088,7 @@ export const mockLeads = [
   // GROUP E: Edge Cases
   {
     id: 17,
-    customer: { id: 17, name: 'Sabine Vogel', initials: 'SV', email: 'sabine.vogel@example.com', phone: '+4901990234567', address: 'Goethestraße 25, 60313 Frankfurt' },
+    customerId: 17,
     status: 'Open',
     priority: 'Normal',
     requestedCar: null,
@@ -1092,7 +1136,7 @@ export const mockLeads = [
   },
   {
     id: 18,
-    customer: { id: 18, name: 'Dr. Andreas Werner', initials: 'AW', email: 'andreas.werner@example.com', phone: '+4902001345678', address: 'Königsallee 25, 40212 Düsseldorf' },
+    customerId: 18,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -1154,7 +1198,7 @@ export const mockLeads = [
   },
   {
     id: 19,
-    customer: { id: 19, name: 'Christina Bauer', initials: 'CB', email: 'christina.bauer@example.com', phone: '+4902012456789', address: 'Leopoldstraße 50, 80802 Munich' },
+    customerId: 19,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -1244,7 +1288,7 @@ export const mockLeads = [
   },
   {
     id: 20,
-    customer: { id: 20, name: 'Martin Richter', initials: 'MR', email: 'martin.richter@example.com', phone: '+4902023567890', address: 'Mönckebergstraße 15, 20095 Hamburg' },
+    customerId: 20,
     status: 'Open',
     priority: 'Hot',
     requestedCar: { 
@@ -1320,7 +1364,7 @@ export const mockLeads = [
 export const mockOpportunities = [
   {
     id: 1,
-    customer: { id: 21, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901987654321', address: 'Via Garibaldi 10, 50123 Firenze' },
+    customerId: 21,
     requestedCar: { 
       brand: 'Audi', 
       model: 'e-tron GT', 
@@ -1393,9 +1437,10 @@ export const mockOpportunities = [
       noShowCount: 0
     }
   },
+  // REMOVED ID 2 - Duplicate of Qualified stage (ID 1)
   {
-    id: 2,
-    customer: { id: 5, name: 'Oliver Brown', initials: 'OB', email: 'oliver.brown@example.com', phone: '+4901123456789', address: 'Corso Buenos Aires 22, 20124 Milano' },
+    id: 3,
+    customerId: 30,
     requestedCar: { 
       brand: 'Porsche', 
       model: 'Taycan', 
@@ -1462,8 +1507,8 @@ export const mockOpportunities = [
     }
   },
   {
-    id: 3,
-    customer: { id: 6, name: 'Sophia Martinez', initials: 'SM', email: 'sophia.martinez@example.com', phone: '+4901555666777', address: 'Piazza Navona 8, 00186 Roma' },
+    id: 2,
+    customerId: 30,
     requestedCar: { 
       brand: 'BMW', 
       model: 'iX', 
@@ -1490,7 +1535,7 @@ export const mockOpportunities = [
       stockDays: 15,
       requestMessage: 'Looking for an iX. What are the delivery times?'
     },
-    stage: 'Closed',
+    stage: 'Closed Won',
     tags: ['Automation'],
     value: 105000,
     expectedCloseDate: '2025-03-20',
@@ -1501,7 +1546,7 @@ export const mockOpportunities = [
   },
   {
     id: 4,
-    customer: { id: 7, name: 'Alexander Chen', initials: 'AC', email: 'alexander.chen@example.com', phone: '+4901999888777', address: 'Via Montenapoleone 3, 20121 Milano' },
+    customerId: 31,
     requestedCar: { 
       brand: 'Tesla', 
       model: 'Model S', 
@@ -1554,9 +1599,12 @@ export const mockOpportunities = [
     })(),
     scheduledAppointment: null // No appointment scheduled
   },
+  // REMOVED ID 5 - Duplicate of Qualified stage (ID 1)
+  // REMOVED ID 6 - Duplicate of Qualified stage (ID 1)
+  // REMOVED ID 7 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage - actually keeping it)
   {
-    id: 5,
-    customer: { id: 8, name: 'Emma Wilson', initials: 'EW', email: 'emma.wilson@example.com', phone: '+4901234567890', address: 'Kurfürstendamm 30, 10719 Berlin' },
+    id: 7,
+    customerId: 32,
     requestedCar: { 
       brand: 'Mercedes-Benz', 
       model: 'EQS', 
@@ -1593,9 +1641,10 @@ export const mockOpportunities = [
     lastActivity: '2024-12-20T10:00:00'
     // No offers, no appointment - perfect for OOFB
   },
+  // REMOVED ID 6 - Duplicate of Qualified stage (ID 1)
   {
-    id: 6,
-    customer: { id: 9, name: 'Robert Taylor', initials: 'RT', email: 'robert.taylor@example.com', phone: '+4901987654321', address: 'Leipziger Platz 1, 10117 Berlin' },
+    id: 5,
+    customerId: 22,
     requestedCar: { 
       brand: 'Volkswagen', 
       model: 'ID.4', 
@@ -1633,8 +1682,8 @@ export const mockOpportunities = [
     // No offers, no appointment - perfect for UFB
   },
   {
-    id: 7,
-    customer: { id: 10, name: 'Lisa Anderson', initials: 'LA', email: 'lisa.anderson@example.com', phone: '+4901555123456', address: 'Marienplatz 5, 80331 München' },
+    id: 8,
+    customerId: 33,
     requestedCar: { 
       brand: 'BMW', 
       model: 'i4', 
@@ -1672,8 +1721,8 @@ export const mockOpportunities = [
     // Has offers (stage is In Negotiation) but no contract - perfect for OFB
   },
   {
-    id: 8,
-    customer: { id: 11, name: 'James White', initials: 'JW', email: 'james.white@example.com', phone: '+4901999887766', address: 'Schildergasse 18, 50667 Köln' },
+    id: 9,
+    customerId: 34,
     requestedCar: { 
       brand: 'Audi', 
       model: 'Q4 e-tron', 
@@ -1712,8 +1761,8 @@ export const mockOpportunities = [
     // In Negotiation, no contract date, no appointment - perfect for NFU
   },
   {
-    id: 9,
-    customer: { id: 12, name: 'Maria Garcia', initials: 'MG', email: 'maria.garcia@example.com', phone: '+4901444555666', address: 'Königsallee 70, 40212 Düsseldorf' },
+    id: 10,
+    customerId: 34,
     requestedCar: { 
       brand: 'Porsche', 
       model: 'Macan Electric', 
@@ -1740,7 +1789,7 @@ export const mockOpportunities = [
       stockDays: 5,
       requestMessage: 'Interested in Macan Electric. Ready to proceed.'
     },
-    stage: 'Closed',
+    stage: 'Closed Won',
     tags: ['Premium'],
     value: 85000,
     expectedCloseDate: '2025-01-15',
@@ -1752,9 +1801,9 @@ export const mockOpportunities = [
     // Closed Won (contract signed) but not delivered yet - perfect for CFB
   },
   {
-    id: 16,
-    customer: { id: 13, name: 'Thomas Anderson', initials: 'TA', email: 'thomas.anderson@example.com', phone: '+4901777999888', address: 'Spitalerstraße 12, 20095 Hamburg' },
-    requestedCar: { 
+    id: 24,
+    customerId: 23,
+    requestedCar: {
       brand: 'Mercedes-Benz', 
       model: 'EQC', 
       year: 2024,
@@ -1792,8 +1841,8 @@ export const mockOpportunities = [
     // In Negotiation for 10+ days without contract - perfect for UFB
   },
   {
-    id: 11,
-    customer: { id: 14, name: 'Jennifer Lee', initials: 'JL', email: 'jennifer.lee@example.com', phone: '+4901888777666', address: 'Zeil 90, 60313 Frankfurt am Main' },
+    id: 27,
+    customerId: 35,
     requestedCar: { 
       brand: 'BMW', 
       model: 'iX3', 
@@ -1828,18 +1877,22 @@ export const mockOpportunities = [
     source: 'Marketing',
     createdAt: '2024-12-10T09:00:00',
     lastActivity: '2024-12-20T14:00:00',
-    contractDate: '2024-12-20T14:00:00' // Has contract date - should NOT show OFB/UFB/NFU
-    // In Negotiation with contract date - no task widgets should appear
+    contractDate: '2024-12-20T14:00:00' // Has contract date - stage mapper will show "Contract Pending"
+    // In Negotiation with contract date - stage mapper calculates to "Contract Pending"
   },
+  // REMOVED ID 12 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)
+  // REMOVED ID 13 - Duplicate of Qualified stage (ID 1)
+  // REMOVED ID 14 - Duplicate of Qualified stage (ID 1)
+  // Opportunity 15 (Daniel Kim)
   {
-    id: 12,
-    customer: { id: 15, name: 'Daniel Kim', initials: 'DK', email: 'daniel.kim@example.com', phone: '+4901999888777', address: 'Piazzo San Marco 4, 30124 Venezia' },
+    id: 15,
+    customerId: 24,
     requestedCar: { 
       brand: 'Audi', 
       model: 'A6 e-tron', 
       year: 2024,
       price: 90000,
-      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60',
       dealership: 'Milano',
       fuelType: 'Electric',
       gearType: 'Automatic',
@@ -1852,7 +1905,7 @@ export const mockOpportunities = [
       model: 'A6 e-tron', 
       year: 2024,
       price: 90000,
-      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60',
       dealership: 'Milano',
       fuelType: 'Electric',
       gearType: 'Automatic',
@@ -1885,100 +1938,11 @@ export const mockOpportunities = [
     }
     // In Negotiation with future appointment - should NOT show NFU
   },
+  // REMOVED ID 13 - Duplicate of Qualified stage (ID 1)
+  // REMOVED ID 14 - Duplicate of Qualified stage (ID 1)
   {
-    id: 13,
-    customer: { id: 16, name: 'Rachel Green', initials: 'RG', email: 'rachel.green@example.com', phone: '+4901555444333' },
-    requestedCar: { 
-      brand: 'Volkswagen', 
-      model: 'ID.3', 
-      year: 2024,
-      price: 40000,
-      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
-      dealership: 'Roma',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      stockDays: 16,
-      requestMessage: 'Interested in ID.3. What financing options are available?'
-    },
-    vehicle: { 
-      brand: 'Volkswagen', 
-      model: 'ID.3', 
-      year: 2024,
-      price: 40000,
-      image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dm9sa3N3YWdlbnxlbnwwfHwwfHx8MA%3D%3D',
-      dealership: 'Roma',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      stockDays: 16,
-      requestMessage: 'Interested in ID.3. What financing options are available?'
-    },
-    stage: 'Qualified',
-    value: 40000,
-    expectedCloseDate: '2025-06-15',
-    assignee: 'David Miller',
-    source: 'Marketing',
-    createdAt: '2024-12-01T08:00:00', // 14+ days ago
-    lastActivity: '2024-12-01T08:00:00'
-    // Open for 14+ days, no offers, no appointment - stale but no task widget (UFB is for In Negotiation)
-  },
-  {
-    id: 14,
-    customer: { id: 17, name: 'Monica Geller', initials: 'MG', email: 'monica.geller@example.com', phone: '+4901444333222', address: 'Beethovenstraße 8, 80336 München' },
-    requestedCar: { 
-      brand: 'Tesla', 
-      model: 'Model 3', 
-      year: 2024,
-      price: 48000,
-      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      dealership: 'Milano',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      stockDays: 8,
-      requestMessage: 'Interested in Model 3. Need to test drive.'
-    },
-    vehicle: { 
-      brand: 'Tesla', 
-      model: 'Model 3', 
-      year: 2024,
-      price: 48000,
-      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      dealership: 'Milano',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      stockDays: 8,
-      requestMessage: 'Interested in Model 3. Need to test drive.'
-    },
-    stage: 'Qualified',
-    tags: [],
-    value: 48000,
-    expectedCloseDate: '2025-04-10',
-    assignee: 'Michael Thomas',
-    source: 'Website',
-    createdAt: '2025-03-10T10:00:00',
-    lastActivity: '2025-03-15T14:00:00',
-    scheduledAppointment: {
-      id: 22,
-      title: 'Test Drive - Monica Geller',
-      start: '2025-12-15T10:00:00', // Past appointment (3 days ago)
-      end: '2025-12-15T11:00:00',
-      type: 'appointment',
-      customer: 'Monica Geller',
-      vehicle: 'Tesla Model 3',
-      assignee: 'Michael Thomas',
-      assigneeId: 1,
-      dealership: 'Milano',
-      team: 'Sales (New)',
-      status: 'scheduled' // Not completed - triggers NS
-    }
-    // Qualified with past appointment not completed - perfect for NS (No-Show) widget
-  },
-  {
-    id: 15,
-    customer: { id: 18, name: 'Ross Geller', initials: 'RG', email: 'ross.geller@example.com', phone: '+4901222333444', address: 'Unter den Linden 77, 10117 Berlin' },
+    id: 16,
+    customerId: 36,
     requestedCar: { 
       brand: 'BMW', 
       model: 'i5', 
@@ -2017,6 +1981,508 @@ export const mockOpportunities = [
     closedReason: 'Customer found better price at competitor',
     closedDate: '2025-03-01T15:00:00'
     // Closed Lost - terminal state, no widgets should appear
+  },
+  // ========================================
+  // STATE MACHINE COVERAGE - All Stage Permutations
+  // ========================================
+  {
+    id: 18,
+    customerId: 37,
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'A4', 
+      year: 2024,
+      price: 52000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 7,
+      requestMessage: 'Interested in Audi A4. Scheduled appointment.'
+    },
+    vehicle: { 
+      brand: 'Audi', 
+      model: 'A4', 
+      year: 2024,
+      price: 52000,
+      image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGF1ZGl8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 7,
+      requestMessage: 'Interested in Audi A4. Scheduled appointment.'
+    },
+    stage: 'Qualified',
+    tags: [],
+    value: 52000,
+    expectedCloseDate: '2025-04-20',
+    assignee: 'Salsabeel Khaleel',
+    source: 'Website',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: {
+      id: 23,
+      title: 'Appointment - Rachel Green',
+      start: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 2) // Future appointment
+        date.setHours(14, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      end: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 2)
+        date.setHours(15, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      type: 'appointment',
+      customer: 'Rachel Green',
+      vehicle: 'Audi A4',
+      assignee: 'Salsabeel Khaleel',
+      assigneeId: 1,
+      dealership: 'Firenze',
+      team: 'Sales (New)',
+      status: 'confirmed',
+      noShowCount: 0
+    }
+    // STAGE: Awaiting Appointment (has future scheduledAppointment)
+  },
+  // REMOVED ID 20 - Duplicate of Offer Sent stage (keeping ID 8 for this stage)
+  // REMOVED ID 21 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)
+  // REMOVED ID 22 - Duplicate of Contract Pending stage (keeping ID 11 for this stage)
+  {
+    id: 25,
+    customerId: 28,
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'C-Class', 
+      year: 2024,
+      price: 58000,
+      image: 'https://images.unsplash.com/photo-1599912027765-a69c78bfa3aa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fG1lcmNlZGVzfGVufDB8fDB8fHww',
+      dealership: 'Milano',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 9,
+      requestMessage: 'Interested in C-Class. Offer sent recently.'
+    },
+    vehicle: { 
+      brand: 'Mercedes-Benz', 
+      model: 'C-Class', 
+      year: 2024,
+      price: 58000,
+      image: 'https://images.unsplash.com/photo-1599912027765-a69c78bfa3aa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fG1lcmNlZGVzfGVufDB8fDB8fHww',
+      dealership: 'Milano',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 9,
+      requestMessage: 'Interested in C-Class. Offer sent recently.'
+    },
+    stage: 'In Negotiation',
+    tags: [],
+    value: 58000,
+    expectedCloseDate: '2025-04-15',
+    assignee: 'Sarah Jenkins',
+    source: 'Website',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1) // Offer sent 1 day ago (less than 3 days)
+      return date.toISOString()
+    })()
+    // STAGE: Offer Sent (has offer activity less than 3 days old - will be calculated by stageMapper)
+  },
+  // REMOVED ID 21 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)
+  {
+    id: 28,
+    customerId: 29,
+    requestedCar: { 
+      brand: 'BMW', 
+      model: '3 Series', 
+      year: 2024,
+      price: 50000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 11,
+      requestMessage: 'Interested in 3 Series. Offer pending review.'
+    },
+    vehicle: { 
+      brand: 'BMW', 
+      model: '3 Series', 
+      year: 2024,
+      price: 50000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 11,
+      requestMessage: 'Interested in 3 Series. Offer pending review.'
+    },
+    stage: 'In Negotiation',
+    tags: [],
+    value: 50000,
+    expectedCloseDate: '2025-04-20',
+    assignee: 'Michael Thomas',
+    source: 'Marketing',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 15)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 4) // Offer sent 4 days ago (3+ days)
+      return date.toISOString()
+    })()
+    // STAGE: Awaiting Response (has offer activity 3+ days old - will be calculated by stageMapper)
+  },
+  {
+    id: 22,
+    customerId: 26,
+    requestedCar: {
+      brand: 'BMW', 
+      model: '3 Series', 
+      year: 2024,
+      price: 50000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 11,
+      requestMessage: 'Interested in 3 Series. Offer pending review.'
+    },
+    vehicle: { 
+      brand: 'BMW', 
+      model: '3 Series', 
+      year: 2024,
+      price: 50000,
+      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGNhcnxlbnwwfHwwfHx8MA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 11,
+      requestMessage: 'Interested in 3 Series. Offer pending review.'
+    },
+    stage: 'In Negotiation',
+    tags: [],
+    value: 50000,
+    expectedCloseDate: '2025-04-20',
+    assignee: 'Michael Thomas',
+    source: 'Marketing',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 15)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 4) // Offer sent 4 days ago (3+ days)
+      return date.toISOString()
+    })()
+    // STAGE: Awaiting Response (has offer activity 3+ days old - will be calculated by stageMapper)
+  },
+  // REMOVED ID 22 - Duplicate of Contract Pending stage (keeping ID 11 for this stage)
+  {
+    id: 23,
+    customerId: 27,
+    requestedCar: { 
+      brand: 'Porsche', 
+      model: '911', 
+      year: 2024,
+      price: 150000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 3,
+      requestMessage: 'Interested in 911. Contract pending.'
+    },
+    vehicle: { 
+      brand: 'Porsche', 
+      model: '911', 
+      year: 2024,
+      price: 150000,
+      image: 'https://images.unsplash.com/photo-1613246922662-c0b007a418d5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjQzfHxjYXJ8ZW58MHx8MHx8fDA%3D',
+      dealership: 'Milano',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 3,
+      requestMessage: 'Interested in 911. Contract pending.'
+    },
+    stage: 'In Negotiation',
+    tags: ['Premium'],
+    value: 150000,
+    expectedCloseDate: '2025-03-25',
+    assignee: 'Salsabeel Khaleel',
+    source: 'Website',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 20)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 5)
+      return date.toISOString()
+    })(),
+    contractDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2) // Contract date set 2 days ago
+      return date.toISOString()
+    })()
+    // STAGE: Contract Pending (has contractDate but stage is In Negotiation - will be calculated by stageMapper)
+  },
+  {
+    id: 26,
+    customerId: 25,
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model Y', 
+      year: 2024,
+      price: 55000,
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 6,
+      requestMessage: 'Interested in Model Y. Delivery scheduled.'
+    },
+    vehicle: { 
+      brand: 'Tesla', 
+      model: 'Model Y', 
+      year: 2024,
+      price: 55000,
+      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      dealership: 'Firenze',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      stockDays: 6,
+      requestMessage: 'Interested in Model Y. Delivery scheduled.'
+    },
+    stage: 'Closed Won',
+    tags: [],
+    value: 55000,
+    expectedCloseDate: '2025-03-30',
+    assignee: 'David Miller',
+    source: 'Website',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 30)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    contractDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    deliveryDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 5) // Delivery scheduled for 5 days from now
+      return date.toISOString()
+    })()
+    // STAGE: Closed Won - Awaiting Delivery (has deliveryDate but no delivery activity - substatus will be calculated)
+  }
+]
+
+// Tasks are separate entities that can be associated with customers, leads, or opportunities
+export const mockTasks = [
+  {
+    id: 1,
+    title: 'Follow up on test drive request',
+    description: 'Customer requested test drive for Audi A6 Allroad. Schedule appointment.',
+    status: 'active',
+    priority: 'high',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      return date.toISOString()
+    })(),
+    customerId: 1,
+    leadId: 21,
+    opportunityId: null,
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 2,
+    title: 'Send quotation for Mercedes EQS',
+    description: 'Prepare and send detailed quotation for EQS model.',
+    status: 'active',
+    priority: 'normal',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 2)
+      return date.toISOString()
+    })(),
+    customerId: 2,
+    leadId: 2,
+    opportunityId: null,
+    assignee: 'Sarah Jenkins',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 5)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 3,
+    title: 'Review financing options',
+    description: 'Customer needs financing information for Audi e-tron GT purchase.',
+    status: 'active',
+    priority: 'high',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 3)
+      return date.toISOString()
+    })(),
+    customerId: 21,
+    leadId: null,
+    opportunityId: 1,
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 4,
+    title: 'Schedule delivery date',
+    description: 'Coordinate delivery date for Porsche Taycan purchase.',
+    status: 'active',
+    priority: 'normal',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 5)
+      return date.toISOString()
+    })(),
+    customerId: 30,
+    leadId: null,
+    opportunityId: 3,
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 2)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 5,
+    title: 'Customer contact verification',
+    description: 'Verify customer contact details and preferred communication method.',
+    status: 'active',
+    priority: 'normal',
+    dueDate: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() + 4)
+      return date.toISOString()
+    })(),
+    customerId: 3,
+    leadId: 3,
+    opportunityId: null,
+    assignee: 'David Miller',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 1)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 6,
+    title: 'Prepare trade-in evaluation',
+    description: 'Customer wants to trade in their current vehicle. Schedule evaluation.',
+    status: 'active',
+    priority: 'normal',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 7)
+      return date.toISOString()
+    })(),
+    customerId: 4,
+    leadId: null,
+    opportunityId: null,
+    assignee: 'Sarah Jenkins',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 7,
+    title: 'Follow up on offer response',
+    description: 'Customer received offer for BMW iX. Follow up on their response.',
+    status: 'active',
+    priority: 'high',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      return date.toISOString()
+    })(),
+    customerId: 30,
+    leadId: null,
+    opportunityId: 2,
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setHours(date.getHours() - 3)
+      return date.toISOString()
+    })()
+  },
+  {
+    id: 8,
+    title: 'Complete paperwork',
+    description: 'Complete all necessary paperwork for Tesla Model S purchase.',
+    status: 'active',
+    priority: 'normal',
+    dueDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 4)
+      return date.toISOString()
+    })(),
+    customerId: 31,
+    leadId: null,
+    opportunityId: 4,
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })()
   }
 ]
 
@@ -2250,7 +2716,8 @@ export const mockCalendarEvents = [
     assigneeId: 3,
     dealership: 'Roma',
     team: 'Sales (New)',
-    status: 'cancelled'
+    status: 'cancelled',
+    noShowCount: 0
   },
   {
     id: 7,
@@ -2264,7 +2731,8 @@ export const mockCalendarEvents = [
     assigneeId: 1,
     dealership: 'Firenze',
     team: 'BDC',
-    status: 'no-show'
+    status: 'no-show',
+    noShowCount: 1
   },
   {
     id: 8,
@@ -2279,7 +2747,8 @@ export const mockCalendarEvents = [
     assigneeId: 2,
     dealership: 'Milano',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0
   },
   {
     id: 9,
@@ -2294,7 +2763,8 @@ export const mockCalendarEvents = [
     assigneeId: 2,
     dealership: 'Milano',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0
   },
   {
     id: 10,
@@ -2327,7 +2797,8 @@ export const mockCalendarEvents = [
     assigneeId: 3,
     dealership: 'Firenze',
     team: 'Service',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0
   },
   {
     id: 12,
@@ -2342,7 +2813,8 @@ export const mockCalendarEvents = [
     assigneeId: 3,
     dealership: 'Roma',
     team: 'Sales (New)',
-    status: 'confirmed'
+    status: 'confirmed',
+    noShowCount: 0
   },
   {
     id: 13,
@@ -2844,12 +3316,193 @@ export const mockActivities = [
     timestamp: '2024-12-01T08:00:00',
     opportunityId: 13
   },
+  // Opportunity 18 activities (Awaiting Appointment - has future appointment)
+  {
+    id: 53,
+    type: 'appointment',
+    user: 'Salsabeel Khaleel',
+    action: 'scheduled an appointment',
+    content: 'Appointment scheduled for Audi A4 test drive',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    opportunityId: 18
+  },
+  {
+    id: 54,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    opportunityId: 18
+  },
+  // Opportunity 20 activities (Offer Sent - offer less than 3 days old)
+  {
+    id: 57,
+    type: 'offer',
+    user: 'Sarah Jenkins',
+    action: 'created an offer',
+    content: 'Initial offer sent for Mercedes-Benz C-Class',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1) // 1 day ago (less than 3 days)
+      return date.toISOString()
+    })(),
+    opportunityId: 20
+  },
+  {
+    id: 58,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    opportunityId: 20
+  },
+  // Opportunity 21 activities (Awaiting Response - offer 3+ days old)
+  {
+    id: 59,
+    type: 'offer',
+    user: 'Michael Thomas',
+    action: 'created an offer',
+    content: 'Initial offer sent for BMW 3 Series',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 4) // 4 days ago (3+ days)
+      return date.toISOString()
+    })(),
+    opportunityId: 21
+  },
+  {
+    id: 60,
+    type: 'note',
+    user: 'Michael Thomas',
+    action: 'added a note',
+    content: 'Customer reviewing offer. Waiting for response.',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    opportunityId: 21
+  },
+  {
+    id: 61,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from marketing campaign',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 15)
+      return date.toISOString()
+    })(),
+    opportunityId: 21
+  },
+  // Opportunity 22 activities (Contract Pending - has contractDate)
+  {
+    id: 62,
+    type: 'contract',
+    user: 'Salsabeel Khaleel',
+    action: 'contract date set',
+    content: 'Contract date set for Porsche 911',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    opportunityId: 22
+  },
+  {
+    id: 63,
+    type: 'offer',
+    user: 'Salsabeel Khaleel',
+    action: 'created an offer',
+    content: 'Final offer accepted for Porsche 911',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 5)
+      return date.toISOString()
+    })(),
+    opportunityId: 22
+  },
+  {
+    id: 64,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 20)
+      return date.toISOString()
+    })(),
+    opportunityId: 22
+  },
+  // Opportunity 23 activities (Closed Won - Awaiting Delivery - has deliveryDate but no delivery activity)
+  {
+    id: 65,
+    type: 'opportunity-won',
+    user: 'David Miller',
+    action: 'marked opportunity as won',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    opportunityId: 23
+  },
+  {
+    id: 66,
+    type: 'contract',
+    user: 'David Miller',
+    action: 'contract signed',
+    content: 'Contract signed for Tesla Model Y',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    opportunityId: 23
+  },
+  {
+    id: 67,
+    type: 'note',
+    user: 'David Miller',
+    action: 'added a note',
+    content: 'Delivery scheduled for 5 days from now.',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    opportunityId: 23
+  },
+  {
+    id: 68,
+    type: 'opportunity-created',
+    user: 'System',
+    action: 'Opportunity was created from website inquiry',
+    timestamp: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 30)
+      return date.toISOString()
+    })(),
+    opportunityId: 23
+  },
   
   // ========== LEAD ACTIVITIES (Leads 2-22) ==========
   
   // Lead 2 (Emma Watson) - Mercedes EQS
   {
-    id: 53,
+    id: 69,
     type: 'call',
     user: 'Sarah Jenkins',
     action: 'made a call attempt',
@@ -2858,7 +3511,7 @@ export const mockActivities = [
     leadId: 2
   },
   {
-    id: 54,
+    id: 70,
     type: 'note',
     user: 'Sarah Jenkins',
     action: 'added a note',
@@ -2867,7 +3520,7 @@ export const mockActivities = [
     leadId: 2
   },
   {
-    id: 55,
+    id: 71,
     type: 'email',
     user: 'Sarah Jenkins',
     action: 'sent an email',
@@ -2878,7 +3531,7 @@ export const mockActivities = [
   
   // Lead 3 (Liam Johnson) - Mercedes EQS
   {
-    id: 56,
+    id: 72,
     type: 'sms',
     user: 'David Miller',
     action: 'sent an SMS',
@@ -2887,7 +3540,7 @@ export const mockActivities = [
     leadId: 3
   },
   {
-    id: 57,
+    id: 73,
     type: 'attachment',
     user: 'David Miller',
     action: 'uploaded an attachment',
@@ -2897,7 +3550,7 @@ export const mockActivities = [
     leadId: 3
   },
   {
-    id: 58,
+    id: 74,
     type: 'note',
     user: 'David Miller',
     action: 'added a note',
@@ -2908,7 +3561,7 @@ export const mockActivities = [
   
   // Lead 4 (Sophie Mueller) - BMW X5
   {
-    id: 59,
+    id: 75,
     type: 'whatsapp',
     user: 'Natalia Sung',
     action: 'sent a WhatsApp message',
@@ -2917,7 +3570,7 @@ export const mockActivities = [
     leadId: 4
   },
   {
-    id: 60,
+    id: 76,
     type: 'attachment',
     user: 'Natalia Sung',
     action: 'uploaded an attachment',
@@ -2927,7 +3580,7 @@ export const mockActivities = [
     leadId: 4
   },
   {
-    id: 61,
+    id: 77,
     type: 'call',
     user: 'Natalia Sung',
     action: 'made a call',
@@ -2938,7 +3591,7 @@ export const mockActivities = [
   
   // Lead 5 (Marco Rossi) - Volkswagen ID.4
   {
-    id: 62,
+    id: 78,
     type: 'email',
     user: 'Salsabeel Khaleel',
     action: 'sent an email',
@@ -2947,7 +3600,7 @@ export const mockActivities = [
     leadId: 5
   },
   {
-    id: 63,
+    id: 79,
     type: 'call',
     user: 'Salsabeel Khaleel',
     action: 'made a call',
@@ -2956,7 +3609,7 @@ export const mockActivities = [
     leadId: 5
   },
   {
-    id: 64,
+    id: 80,
     type: 'note',
     user: 'Salsabeel Khaleel',
     action: 'added a note',
@@ -2967,7 +3620,7 @@ export const mockActivities = [
   
   // Lead 6 (Klaus Schmidt) - Porsche 911
   {
-    id: 65,
+    id: 81,
     type: 'attachment',
     user: 'Sarah Jenkins',
     action: 'uploaded an attachment',
@@ -2977,7 +3630,7 @@ export const mockActivities = [
     leadId: 6
   },
   {
-    id: 66,
+    id: 82,
     type: 'whatsapp',
     user: 'Sarah Jenkins',
     action: 'sent a WhatsApp message',
@@ -2986,7 +3639,7 @@ export const mockActivities = [
     leadId: 6
   },
   {
-    id: 67,
+    id: 83,
     type: 'call',
     user: 'Sarah Jenkins',
     action: 'made a call',
@@ -2997,7 +3650,7 @@ export const mockActivities = [
   
   // Lead 7 (Anna Becker) - Tesla Model 3
   {
-    id: 68,
+    id: 84,
     type: 'sms',
     user: 'David Miller',
     action: 'sent an SMS',
@@ -3006,7 +3659,7 @@ export const mockActivities = [
     leadId: 7
   },
   {
-    id: 69,
+    id: 85,
     type: 'note',
     user: 'David Miller',
     action: 'added a note',
@@ -3015,7 +3668,7 @@ export const mockActivities = [
     leadId: 7
   },
   {
-    id: 70,
+    id: 86,
     type: 'email',
     user: 'David Miller',
     action: 'sent an email',
@@ -3026,7 +3679,7 @@ export const mockActivities = [
   
   // Lead 8 (Thomas Weber) - Audi e-tron GT
   {
-    id: 71,
+    id: 87,
     type: 'call',
     user: 'Natalia Sung',
     action: 'made a call',
@@ -3035,7 +3688,7 @@ export const mockActivities = [
     leadId: 8
   },
   {
-    id: 72,
+    id: 88,
     type: 'attachment',
     user: 'Natalia Sung',
     action: 'uploaded an attachment',
@@ -3045,7 +3698,7 @@ export const mockActivities = [
     leadId: 8
   },
   {
-    id: 73,
+    id: 89,
     type: 'whatsapp',
     user: 'Natalia Sung',
     action: 'sent a WhatsApp message',

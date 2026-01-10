@@ -10,26 +10,12 @@ const routes = [
       {
         path: '',
         name: 'home',
-        redirect: '/tasks'
+        redirect: '/home'
       },
       {
         path: 'home',
         name: 'home-dashboard',
         component: () => import('@/views/Home.vue')
-      },
-      {
-        path: 'action-items',
-        name: 'action-items',
-        component: () => import('@/views/ActionItems.vue'),
-        beforeEnter: (to, from, next) => {
-          const userStore = useUserStore()
-          // Allow all roles to see action items page (different questions per role)
-          if (userStore.isSalesman() || userStore.isManager() || userStore.isOperator()) {
-            next()
-          } else {
-            next('/tasks')
-          }
-        }
       },
       {
         path: 'add-new',

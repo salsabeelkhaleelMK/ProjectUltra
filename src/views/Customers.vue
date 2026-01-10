@@ -23,239 +23,44 @@
           </span>
         </button>
       </div>
-      <!-- Filters row in gray background above table -->
-      <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-          <!-- Left: search + basic filters -->
-          <div class="flex flex-wrap items-center gap-2 md:gap-3">
-            <div class="w-full sm:w-auto sm:min-w-[260px] sm:max-w-md">
-              <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input 
-                  v-model="searchQuery"
-                  @input="handleSearch"
-                  type="text" 
-                  placeholder="Search or ask a question" 
-                  class="input-with-icon"
-                >
-              </div>
-            </div>
-            
-            <select v-model="filters.status" @change="applyFilters" class="input text-sm w-auto shrink-0">
-              <option value="">Status</option>
-              <option value="Valid">Valid</option>
-              <option value="Not valid">Not valid</option>
-              <option value="Qualified">Qualified</option>
-              <option value="Not interested">Not interested</option>
-            </select>
-            
-            <select v-model="filters.priority" @change="applyFilters" class="input text-sm w-auto shrink-0">
-              <option value="">Priority</option>
-              <option value="Hot">Hot</option>
-              <option value="Normal">Normal</option>
-            </select>
-            
-            <select v-model="filters.source" @change="applyFilters" class="input text-sm w-auto shrink-0">
-              <option value="">Source</option>
-              <option value="Marketing">Marketing</option>
-            </select>
-            
-            <button class="btn-secondary text-sm">
-              <i class="fa-solid fa-plus mr-1"></i> More filters
-            </button>
-            
-            <button @click="clearFilters" class="btn-secondary text-sm">
-              Clear
-            </button>
-            
-            <button class="btn-secondary text-sm">
-              Save
-            </button>
-            
-            <!-- Contacts/Accounts Filter (only show for contacts tab) -->
-            <button
-              v-if="activeTab === 'contacts'"
-              @click="contactFilterType = contactFilterType === 'all' ? 'contacts' : contactFilterType === 'contacts' ? 'accounts' : 'all'"
-              class="btn-secondary text-sm flex items-center gap-2 transition-colors"
-            >
-              <i class="fa-solid fa-filter"></i>
-              {{ contactFilterType === 'all' ? 'All' : contactFilterType === 'contacts' ? 'Contacts Only' : 'Accounts Only' }}
-            </button>
-            
-            <!-- Disqualified Filter (only show for leads tab) -->
-            <button
-              v-if="activeTab === 'open-leads'"
-              @click="showDisqualified = !showDisqualified"
-              class="btn-secondary text-sm flex items-center gap-2 transition-colors"
-              :class="showDisqualified ? 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100' : ''"
-            >
-              <i class="fa-solid fa-ban"></i>
-              {{ showDisqualified ? 'Hide Disqualified' : 'Show Disqualified' }}
-            </button>
-          </div>
-
-          <!-- Right: Add New button aligned to the far right -->
-          <div class="flex justify-end">
-            <button 
-              v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
-              @click="showAddModal = true"
-              class="btn-primary-lg"
-            >
-              <i class="fa-solid fa-plus"></i> Add new
-            </button>
-          </div>
-        </div>
+      <!-- Add New button -->
+      <div class="mb-6 flex justify-end">
+        <button 
+          v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
+          @click="showAddModal = true"
+          class="btn-primary-lg"
+        >
+          <i class="fa-solid fa-plus"></i> Add new
+        </button>
       </div>
 
       <!-- Table -->
-      <div v-if="filteredRows.length === 0" class="empty-state">
-        <i class="fa-solid fa-inbox empty-state-icon"></i>
-        <p class="empty-state-text">No records found</p>
-      </div>
-
-      <div v-else class="card overflow-hidden">
-        <div class="overflow-x-auto -mx-4 md:mx-0">
-          <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th class="px-3 md:px-6 py-3 text-left">
-                  <input type="checkbox" class="rounded">
-                </th>
-                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">{{ activeTab === 'contacts' ? 'Contact' : 'Customer' }}</th>
-                <th v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Company</th>
-                <th v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Email</th>
-                <th v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Phone</th>
-                <th v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Next action due</th>
-                <th v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Requested car</th>
-                <th v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Car status</th>
-                <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Source</th>
-                <th v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden xl:table-cell">Tags</th>
-                <th v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Assignee</th>
-                <th v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Status</th>
-                <th class="px-3 md:px-6 py-3"></th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-              <tr 
-                v-for="row in filteredRows" 
-                :key="row.id"
-                :data-row-id="row.id"
-                class="hover:bg-gray-50 cursor-pointer transition-colors"
-                @click="handleRowClick(row)"
-              >
-                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
-                  <input type="checkbox" class="rounded">
-                </td>
-                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <div class="flex items-center gap-2 md:gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                      :class="activeTab === 'contacts' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'">
-                      {{ row.initials }}
-                    </div>
-                    <div class="min-w-0">
-                      <div class="text-content-bold truncate" :class="activeTab === 'contacts' ? 'max-w-[120px] md:max-w-none' : ''">{{ row.customer }}</div>
-                      <div v-if="activeTab !== 'contacts'" class="text-meta truncate hidden sm:block">{{ row.email }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-content text-gray-600 whitespace-nowrap">
-                  <span class="truncate block max-w-[100px]">{{ row.company || '-' }}</span>
-                </td>
-                <td v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <div class="text-content text-gray-600 truncate max-w-[150px]">{{ row.email }}</div>
-                </td>
-                <td v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 text-content text-gray-600 whitespace-nowrap">
-                  {{ row.phone }}
-                </td>
-                <td v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <div class="text-content">
-                    <div 
-                      class="font-medium mb-0.5"
-                      :class="row.deadlineStatus?.textClass || 'text-gray-600'"
-                    >
-                      {{ row.nextActionFull }}
-                    </div>
-                    <div 
-                      class="text-xs flex items-center gap-1"
-                      :class="row.deadlineStatus?.textClass || 'text-gray-500'"
-                    >
-                      <i 
-                        v-if="row.deadlineStatus?.icon"
-                        :class="`fa-solid ${row.deadlineStatus.icon} text-[10px]`"
-                      ></i>
-                      <span>{{ row.nextAction }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-brands fa-volkswagen text-gray-400 text-sm"></i>
-                    <span class="text-content font-medium truncate max-w-[120px]">{{ row.car }}</span>
-                  </div>
-                </td>
-                <td v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <span class="badge-ui font-semibold" :class="row.carStatusClass">
-                    {{ row.carStatus }}
-                  </span>
-                </td>
-                <td class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <span class="badge-ui bg-gray-100 text-gray-700 font-semibold">{{ row.source }}</span>
-                </td>
-                <td v-if="activeTab === 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap hidden xl:table-cell">
-                  <div class="flex flex-wrap gap-1">
-                    <span 
-                      v-for="tag in row.tags" 
-                      :key="tag"
-                      class="badge-ui bg-blue-50 text-blue-700 font-semibold"
-                    >
-                      {{ tag }}
-                    </span>
-                    <span v-if="!row.tags || row.tags.length === 0" class="text-xs text-gray-400">-</span>
-                  </div>
-                </td>
-                <td v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0">
-                      {{ row.assigneeInitials }}
-                    </div>
-                    <span class="text-content text-gray-600 truncate max-w-[80px] hidden md:inline">{{ row.assignee }}</span>
-                  </div>
-                </td>
-                <td v-if="activeTab !== 'contacts'" class="px-3 md:px-6 py-3 whitespace-nowrap">
-                  <span class="badge-ui font-semibold" :class="row.statusClass">
-                    {{ row.status }}
-                  </span>
-                </td>
-                <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
-                  <button class="text-gray-400 hover:text-gray-600">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <!-- Pagination -->
-        <div class="px-4 md:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="text-sm text-gray-600 flex items-center">
-            Rows per page: 
-            <select class="ml-2 input text-sm w-auto">
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-          </div>
-          <div class="flex items-center gap-1 md:gap-2 flex-wrap">
-            <button class="btn-secondary text-sm whitespace-nowrap">Previous</button>
-            <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">1</button>
-            <button class="btn-secondary text-sm">2</button>
-            <button class="btn-secondary text-sm hidden sm:inline-block">3</button>
-            <span class="px-2 text-sm text-gray-500 hidden sm:inline">...</span>
-            <button class="btn-secondary text-sm whitespace-nowrap">Next</button>
-          </div>
-        </div>
+      <div class="table-wrapper w-full">
+        <DataTable 
+          :data="filteredRows" 
+          :columns="columns"
+          :meta="tableMeta"
+          :columnFiltersOptions="{
+            filterDefs: filterDefinitions
+          }"
+          v-model:pagination="pagination"
+          v-model:globalFilter="globalFilter"
+          v-model:sorting="sorting"
+          v-model:columnFilters="columnFilters"
+          :paginationOptions="{
+            rowCount: filteredRows.length
+          }"
+          :globalFilterOptions="{
+            debounce: 300
+          }"
+        >
+          <template #empty-state>
+            <div class="empty-state">
+              <i class="fa-solid fa-inbox empty-state-icon"></i>
+              <p class="empty-state-text">No records found</p>
+            </div>
+          </template>
+        </DataTable>
       </div>
     </div>
     
@@ -271,15 +76,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, h, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
+import { DataTable } from '@motork/component-library/future/components'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useContactsStore } from '@/stores/contacts'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import * as customersApi from '@/api/customers'
 
 const router = useRouter()
 const route = useRoute()
@@ -287,6 +94,10 @@ const userStore = useUserStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 const contactsStore = useContactsStore()
+
+// Customers data
+const customers = ref([])
+const loadingCustomers = ref(false)
 
 // Compute stats from stores
 const stats = computed(() => {
@@ -303,10 +114,8 @@ const stats = computed(() => {
   const lost = opportunitiesStore.opportunities.filter(opp => 
     opp.stage === 'Closed Lost'
   )
-  const contacts = contactsStore.contacts
-  
   return {
-    contacts: contacts.length,
+    contacts: customers.value.length,
     openLeads: activeLeads.length,
     openOpportunities: openOpportunities.length - inNegotiation.length, // Exclude in-negotiation from open
     inNegotiation: inNegotiation.length,
@@ -334,6 +143,95 @@ const filters = ref({
   status: '',
   priority: '',
   source: ''
+})
+
+// DataTable state management
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 10
+})
+
+const globalFilter = ref('')
+const sorting = ref([])
+const columnFilters = ref([])
+const columnVisibility = ref({})
+
+// Filter definitions for AI-powered filtering
+const filterDefinitions = computed(() => {
+  // Different filters based on active tab
+  if (activeTab.value === 'contacts') {
+    return [
+      {
+        key: 'source',
+        label: 'Source',
+        type: 'select',
+        operators: [
+          { value: 'eq', label: 'is' },
+          { value: 'ne', label: 'is not' }
+        ],
+        options: [
+          { value: 'Marketing', label: 'Marketing' },
+          { value: 'Referral', label: 'Referral' },
+          { value: 'Direct', label: 'Direct' }
+        ]
+      },
+      {
+        key: 'company',
+        label: 'Has Company',
+        type: 'boolean',
+        operators: [
+          { value: 'exists', label: 'exists' },
+          { value: 'notExists', label: 'does not exist' }
+        ]
+      }
+    ]
+  } else {
+    // For leads and opportunities
+    return [
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'multiselect',
+        operators: [
+          { value: 'in', label: 'is any of' },
+          { value: 'notIn', label: 'is none of' }
+        ],
+        options: [
+          { value: 'Valid', label: 'Valid' },
+          { value: 'Not valid', label: 'Not valid' },
+          { value: 'Qualified', label: 'Qualified' },
+          { value: 'Not interested', label: 'Not interested' }
+        ]
+      },
+      {
+        key: 'priority',
+        label: 'Priority',
+        type: 'select',
+        operators: [
+          { value: 'eq', label: 'is' },
+          { value: 'ne', label: 'is not' }
+        ],
+        options: [
+          { value: 'Hot', label: 'Hot' },
+          { value: 'Normal', label: 'Normal' }
+        ]
+      },
+      {
+        key: 'source',
+        label: 'Source',
+        type: 'select',
+        operators: [
+          { value: 'eq', label: 'is' },
+          { value: 'ne', label: 'is not' }
+        ],
+        options: [
+          { value: 'Marketing', label: 'Marketing' },
+          { value: 'Referral', label: 'Referral' },
+          { value: 'Direct', label: 'Direct' }
+        ]
+      }
+    ]
+  }
 })
 
 const newItem = ref({
@@ -434,25 +332,26 @@ const handleAdd = () => {
 }
 
 const rows = computed(() => {
-  // Contacts rows
-  let filteredContacts = contactsStore.contacts
+  // Customers rows (replacing contacts)
+  let filteredCustomers = customers.value
   if (contactFilterType.value === 'contacts') {
-    filteredContacts = contactsStore.contacts.filter(c => !c.company || c.company === '')
+    filteredCustomers = customers.value.filter(c => !c.company || c.company === '')
   } else if (contactFilterType.value === 'accounts') {
-    filteredContacts = contactsStore.contacts.filter(c => c.company && c.company !== '')
+    filteredCustomers = customers.value.filter(c => c.company && c.company !== '')
   }
   
-  const contactRows = filteredContacts.map((contact) => ({
-    id: `contact-${contact.id}`,
+  const customerRows = filteredCustomers.map((customer) => ({
+    id: `customer-${customer.id}`,
     stageKey: 'contacts',
-    customer: contact.name,
-    email: contact.email,
-    phone: contact.phone,
-    company: contact.company || '-',
-    initials: contact.initials || contact.name.slice(0,2).toUpperCase(),
-    source: contact.source || 'Marketing',
-    tags: contact.tags || [],
-    type: contact.company && contact.company !== '' ? 'account' : 'contact'
+    customer: customer.name,
+    email: customer.email,
+    phone: customer.phone,
+    company: customer.company || '-',
+    initials: customer.initials || customer.name.slice(0,2).toUpperCase(),
+    source: customer.source || 'Marketing',
+    tags: customer.tags || [],
+    type: customer.company && customer.company !== '' ? 'account' : 'contact',
+    customerId: customer.id
   }))
   
   // Filter leads based on disqualified toggle
@@ -466,9 +365,9 @@ const rows = computed(() => {
   const leadRows = filteredLeads.map((lead) => ({
     id: `lead-${lead.id}`,
     stageKey: 'open-leads',
-    customer: lead.customer.name,
-    email: lead.customer.email,
-    initials: lead.customer.initials || lead.customer.name.slice(0,2).toUpperCase(),
+    customer: lead.customer?.name || 'Unknown',
+    email: lead.customer?.email || '',
+    initials: lead.customer?.initials || lead.customer?.name?.slice(0,2).toUpperCase() || '?',
     nextAction: formatDueDate(lead.nextActionDue) || 'No due date',
     nextActionFull: formatDeadlineFull(lead.nextActionDue),
     deadlineStatus: getDeadlineStatus(lead.nextActionDue),
@@ -498,9 +397,9 @@ const rows = computed(() => {
     return {
       id: `opp-${opp.id}`,
       stageKey,
-      customer: opp.customer.name,
-      email: opp.customer.email,
-      initials: opp.customer.initials || opp.customer.name.slice(0,2).toUpperCase(),
+      customer: opp.customer?.name || 'Unknown',
+      email: opp.customer?.email || '',
+      initials: opp.customer?.initials || opp.customer?.name?.slice(0,2).toUpperCase() || '?',
       nextAction: formatDueDate(opp.expectedCloseDate) || 'No due date',
       car: `${opp.vehicle?.brand || ''} ${opp.vehicle?.model || ''}`.trim() || 'N/A',
       carStatus: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'In Stock' : 'Out of Stock',
@@ -517,28 +416,11 @@ const rows = computed(() => {
     }
   })
   
-  return [...contactRows, ...leadRows, ...oppRows]
+  return [...customerRows, ...leadRows, ...oppRows]
 })
 
 const filteredRows = computed(() => {
   let result = rows.value.filter(r => r.stageKey === activeTab.value)
-  
-  // Apply search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(r => {
-      if (r.stageKey === 'contacts') {
-        return r.customer.toLowerCase().includes(query) ||
-          r.email?.toLowerCase().includes(query) ||
-          r.company?.toLowerCase().includes(query) ||
-          r.phone?.toLowerCase().includes(query)
-      } else {
-        return r.customer.toLowerCase().includes(query) ||
-          r.email?.toLowerCase().includes(query) ||
-          r.car?.toLowerCase().includes(query)
-      }
-    })
-  }
   
   // Apply status filter
   if (filters.value.status) {
@@ -555,19 +437,12 @@ const filteredRows = computed(() => {
     result = result.filter(r => r.source === filters.value.source)
   }
   
+  // Note: Search is now handled by DataTable's globalFilter
   return result
 })
 
 const setTab = (key) => {
   activeTab.value = key
-}
-
-const handleSearch = () => {
-  // Search is handled in computed property
-}
-
-const applyFilters = () => {
-  // Filters are handled in computed property
 }
 
 const clearFilters = () => {
@@ -576,7 +451,8 @@ const clearFilters = () => {
     priority: '',
     source: ''
   }
-  searchQuery.value = ''
+  columnFilters.value = []
+  globalFilter.value = ''
 }
 
 const getStatusClass = (status) => {
@@ -598,16 +474,25 @@ const formatDate = (dateString) => {
 
 // Load data on mount
 onMounted(async () => {
+  loadingCustomers.value = true
+  try {
+    const customersResult = await customersApi.fetchCustomers()
+    customers.value = customersResult.data || []
+  } catch (err) {
+    console.error('Error loading customers:', err)
+  } finally {
+    loadingCustomers.value = false
+  }
   await contactsStore.loadContacts()
   await leadsStore.loadLeads()
   await opportunitiesStore.loadOpportunities()
 })
 
 const handleRowClick = (row) => {
-  // Handle contacts - navigate to contact view on /customer/:id page
+  // Handle customers - navigate to customer profile on /customer/:id page
   if (row.stageKey === 'contacts') {
-    const contactId = row.id.split('-')[1]
-    router.push({ path: `/customer/${contactId}`, query: { type: 'contact' } })
+    const customerId = row.customerId || row.id.split('-')[1]
+    router.push({ path: `/customer/${customerId}`, query: { type: 'contact' } })
     return
   }
   
@@ -628,4 +513,211 @@ const handleRowClick = (row) => {
     router.push({ path: `/customer/${oppId}`, query: { stage: 'opportunity' } })
   }
 }
+
+// Table meta with row click handler
+const tableMeta = computed(() => ({
+  class: {
+    tr: 'cursor-pointer hover:bg-gray-50 transition-colors'
+  }
+}))
+
+// DataTable columns configuration - dynamic based on activeTab
+const columns = computed(() => {
+  if (activeTab.value === 'contacts') {
+    // Contacts columns
+    return [
+      {
+        accessorKey: 'customer',
+        header: 'Contact',
+        meta: { 
+          title: 'Contact',
+          onOpen: (row) => handleRowClick(row.original)
+        },
+        cell: ({ row }) => {
+          const rowData = row.original
+          return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
+            h('div', {
+              class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-blue-100 text-blue-600'
+            }, rowData.initials),
+            h('div', { class: 'min-w-0' }, [
+              h('div', { class: 'text-sm font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, rowData.customer)
+            ])
+          ])
+        }
+      },
+      {
+        accessorKey: 'company',
+        header: 'Company',
+        meta: { title: 'Company' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600 truncate block max-w-[100px]' }, row.original.company || '-')
+        }
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        meta: { title: 'Email' },
+        cell: ({ row }) => {
+          return h('div', { class: 'text-sm text-gray-600 truncate max-w-[150px]' }, row.original.email)
+        }
+      },
+      {
+        accessorKey: 'phone',
+        header: 'Phone',
+        meta: { title: 'Phone' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.phone)
+        }
+      },
+      {
+        accessorKey: 'source',
+        header: 'Source',
+        meta: { title: 'Source' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+          }, row.original.source)
+        }
+      },
+      {
+        accessorKey: 'tags',
+        header: 'Tags',
+        meta: { title: 'Tags' },
+        cell: ({ row }) => {
+          const tags = row.original.tags
+          if (tags && tags.length > 0) {
+            return h('div', { class: 'flex flex-wrap gap-1' }, tags.map(tag =>
+              h('span', {
+                class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700'
+              }, tag)
+            ))
+          }
+          return h('span', { class: 'text-xs text-gray-400' }, '-')
+        }
+      },
+      {
+        id: 'actions',
+        header: '',
+        meta: { title: 'Actions' },
+        cell: () => {
+          return h('button', {
+            class: 'text-gray-400 hover:text-gray-600'
+          }, [
+            h('i', { class: 'fa-solid fa-ellipsis-vertical' })
+          ])
+        }
+      }
+    ]
+  } else {
+    // Customers (leads/opportunities) columns
+    return [
+      {
+        accessorKey: 'customer',
+        header: 'Customer',
+        meta: { 
+          title: 'Customer',
+          onOpen: (row) => handleRowClick(row.original)
+        },
+        cell: ({ row }) => {
+          const rowData = row.original
+          return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
+            h('div', {
+              class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-orange-100 text-orange-600'
+            }, rowData.initials),
+            h('div', { class: 'min-w-0' }, [
+              h('div', { class: 'text-sm font-semibold text-gray-900 truncate' }, rowData.customer),
+              h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
+            ])
+          ])
+        }
+      },
+      {
+        accessorKey: 'nextAction',
+        header: 'Next action due',
+        meta: { title: 'Next action due' },
+        cell: ({ row }) => {
+          const rowData = row.original
+          if (!rowData.nextActionFull) return '-'
+          return h('div', { class: 'text-sm' }, [
+            h('div', {
+              class: `font-medium mb-0.5 ${rowData.deadlineStatus?.textClass || 'text-gray-600'}`
+            }, rowData.nextActionFull),
+            h('div', {
+              class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
+            }, [
+              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-[10px]` }) : null,
+              h('span', rowData.nextAction)
+            ])
+          ])
+        }
+      },
+      {
+        accessorKey: 'car',
+        header: 'Requested car',
+        meta: { title: 'Requested car' },
+        cell: ({ row }) => {
+          return h('div', { class: 'flex items-center gap-2' }, [
+            h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
+            h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car)
+          ])
+        }
+      },
+      {
+        accessorKey: 'carStatus',
+        header: 'Car status',
+        meta: { title: 'Car status' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.carStatusClass}`
+          }, row.original.carStatus)
+        }
+      },
+      {
+        accessorKey: 'source',
+        header: 'Source',
+        meta: { title: 'Source' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+          }, row.original.source)
+        }
+      },
+      {
+        accessorKey: 'assignee',
+        header: 'Assignee',
+        meta: { title: 'Assignee' },
+        cell: ({ row }) => {
+          return h('div', { class: 'flex items-center gap-2' }, [
+            h('div', {
+              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+            }, row.original.assigneeInitials),
+            h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee)
+          ])
+        }
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        meta: { title: 'Status' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.statusClass}`
+          }, row.original.status)
+        }
+      },
+      {
+        id: 'actions',
+        header: '',
+        meta: { title: 'Actions' },
+        cell: () => {
+          return h('button', {
+            class: 'text-gray-400 hover:text-gray-600'
+          }, [
+            h('i', { class: 'fa-solid fa-ellipsis-vertical' })
+          ])
+        }
+      }
+    ]
+  }
+})
 </script>

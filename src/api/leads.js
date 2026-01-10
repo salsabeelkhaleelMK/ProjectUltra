@@ -1,7 +1,54 @@
-import { mockLeads, mockActivities, mockCalendarEvents, mockUsers } from './mockData'
+import { mockLeads, mockActivities, mockCalendarEvents, mockUsers, mockCustomers } from './mockData'
+import { getDisplayStage } from '@/utils/stageMapper'
 
 // Simulate API delay
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
+
+// Enrich lead with customer data from mockCustomers
+function enrichLeadWithCustomer(lead) {
+  if (!lead) return null
+  
+  const customer = mockCustomers.find(c => c.id === lead.customerId)
+  if (!customer) {
+    // Fallback if customer not found
+    return {
+      ...lead,
+      customer: {
+        id: lead.customerId,
+        name: 'Unknown Customer',
+        initials: '??',
+        email: '',
+        phone: '',
+        address: ''
+      }
+    }
+  }
+  
+  return {
+    ...lead,
+    customer: {
+      id: customer.id,
+      name: customer.name,
+      initials: customer.initials,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address
+    }
+  }
+}
+
+// Enrich lead with display stage and customer data
+function enrichLeadWithStage(lead) {
+  if (!lead) return null
+  
+  const leadWithCustomer = enrichLeadWithCustomer(lead)
+  
+  return {
+    ...leadWithCustomer,
+    apiStatus: lead.stage,
+    displayStage: getDisplayStage({ ...leadWithCustomer, apiStatus: lead.stage }, 'lead')
+  }
+}
 
 // ID generation helpers
 export const generateLeadId = () => {
@@ -25,21 +72,26 @@ export const fetchLeads = async (filters = {}) => {
   }
   if (filters.search) {
     const search = filters.search.toLowerCase()
-    results = results.filter(lead => 
-      lead.customer.name.toLowerCase().includes(search) ||
-      lead.requestedCar.brand.toLowerCase().includes(search) ||
-      lead.requestedCar.model.toLowerCase().includes(search)
-    )
+    results = results.filter(lead => {
+      const customer = mockCustomers.find(c => c.id === lead.customerId)
+      const customerName = customer?.name || ''
+      return customerName.toLowerCase().includes(search) ||
+        (lead.requestedCar && lead.requestedCar.brand && lead.requestedCar.brand.toLowerCase().includes(search)) ||
+        (lead.requestedCar && lead.requestedCar.model && lead.requestedCar.model.toLowerCase().includes(search))
+    })
   }
   
-  return { data: results, total: results.length }
+  // Enrich with display stages
+  const enrichedResults = results.map(enrichLeadWithStage)
+  
+  return { data: enrichedResults, total: enrichedResults.length }
 }
 
 export const fetchLeadById = async (id) => {
   await delay()
   const lead = mockLeads.find(l => l.id === parseInt(id))
   if (!lead) throw new Error('Lead not found')
-  return lead
+  return enrichLeadWithStage(lead)
 }
 
 export const fetchLeadActivities = async (leadId) => {
@@ -51,14 +103,29 @@ export const createLead = async (leadData) => {
   await delay()
   const newLead = {
     id: generateLeadId(),
-    ...leadData,
+    customerId: leadData.customerId,
+    status: leadData.status || 'Open',
+    priority: leadData.priority || 'Normal',
+    requestedCar: leadData.requestedCar,
+    carStatus: leadData.carStatus || null,
+    requestType: leadData.requestType || 'Generic Sales',
+    source: leadData.source || 'Direct',
+    fiscalEntity: leadData.fiscalEntity || '',
+    sourceDetails: leadData.sourceDetails || '',
+    assignee: leadData.assignee || null,
+    assigneeInitials: leadData.assigneeInitials || '',
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString(),
     nextActionDue: leadData.nextActionDue || null,
-    tags: leadData.tags || []
+    tags: leadData.tags || [],
+    stage: leadData.stage || 'Open Lead',
+    isDisqualified: leadData.isDisqualified || false,
+    disqualifyReason: leadData.disqualifyReason || null,
+    scheduledAppointment: leadData.scheduledAppointment || null,
+    contactAttempts: leadData.contactAttempts || []
   }
   mockLeads.push(newLead)
-  return newLead
+  return enrichLeadWithStage(newLead)
 }
 
 export const createLeadFromContact = async (contactId, carData) => {
@@ -69,14 +136,7 @@ export const createLeadFromContact = async (contactId, carData) => {
   
   const newLead = {
     id: generateLeadId(),
-    customer: {
-      id: contact.id,
-      name: contact.name,
-      initials: contact.initials,
-      email: contact.email,
-      phone: contact.phone,
-      address: contact.address || ''
-    },
+    customerId: contact.customerId,
     requestedCar: carData,
     status: 'Open',
     stage: 'Open Lead',
@@ -95,7 +155,7 @@ export const createLeadFromContact = async (contactId, carData) => {
   }
   
   mockLeads.push(newLead)
-  return newLead
+  return enrichLeadWithStage(newLead)
 }
 
 export const updateLead = async (id, updates) => {
@@ -103,8 +163,11 @@ export const updateLead = async (id, updates) => {
   const index = mockLeads.findIndex(l => l.id === parseInt(id))
   if (index === -1) throw new Error('Lead not found')
   
-  mockLeads[index] = { ...mockLeads[index], ...updates, lastActivity: new Date().toISOString() }
-  return mockLeads[index]
+  // Remove displayStage from updates (it's calculated, not stored)
+  const { displayStage, ...updatesToStore } = updates
+  
+  mockLeads[index] = { ...mockLeads[index], ...updatesToStore, lastActivity: new Date().toISOString() }
+  return enrichLeadWithStage(mockLeads[index])
 }
 
 export const deleteLead = async (id) => {
@@ -157,14 +220,17 @@ export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
   const appointmentStart = new Date(appointmentData.dateTime)
   const appointmentEnd = new Date(appointmentStart.getTime() + 30 * 60000) // +30 minutes
   
+  const enrichedLead = enrichLeadWithCustomer(lead)
+  const customer = enrichedLead.customer
+  
   const calendarEvent = {
     id: eventId,
-    title: `Follow-up Call - ${lead.customer.name}`,
+    title: `Follow-up Call - ${customer.name}`,
     start: appointmentStart.toISOString(),
     end: appointmentEnd.toISOString(),
     type: 'call',
-    customer: lead.customer.name,
-    customerId: lead.customer.id,
+    customer: customer.name,
+    customerId: customer.id,
     leadId: lead.id,
     opportunityId: null,
     assignee: appointmentData.assignee || lead.assignee,
@@ -192,7 +258,7 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
   
   const newLead = {
     id: generateLeadId(),
-    customer: opportunityData.customer,
+    customerId: opportunityData.customerId,
     status: 'Open',
     priority: 'Normal',
     requestedCar: opportunityData.requestedCar,
@@ -230,7 +296,7 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
     mockActivities.push(newActivity)
   }
   
-  return newLead
+  return enrichLeadWithStage(newLead)
 }
 
 // Detect urgent leads that need qualification
@@ -264,14 +330,15 @@ export const detectUrgentLeads = async (userId) => {
     
     // Only show if 7-14 days old (urgent actionable window)
     if (daysSinceCreation >= THRESHOLD_DAYS && daysSinceCreation <= 14) {
+      const enrichedLead = enrichLeadWithCustomer(lead)
       questions.push({
         id: `lead-qualification-urgency-${lead.id}`,
         type: 'lead-qualification-urgency',
         priority: 1, // Critical
-        question: `This lead from ${lead.customer.name} has been in the system for ${daysSinceCreation} days without qualification. Have you been able to contact them?`,
-        customer: lead.customer,
+        question: `This lead from ${enrichedLead.customer.name} has been in the system for ${daysSinceCreation} days without qualification. Have you been able to contact them?`,
+        customer: enrichedLead.customer,
         leadId: lead.id,
-        lead: lead,
+        lead: enrichedLead,
         createdAt: lead.createdAt,
         daysOld: daysSinceCreation
       })

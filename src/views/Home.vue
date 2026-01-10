@@ -1,8 +1,5 @@
 <template>
   <div class="page-container">
-    <!-- Header -->
-    <PageHeader title="Dashboard" :subtitle="formatDate(new Date())" />
-    
     <!-- Content -->
     <div class="p-4 md:p-6 lg:p-8">
       <!-- Loading State -->
@@ -12,13 +9,13 @@
       
       <!-- Dashboard Content - 3 Column Grid -->
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <!-- Notifications Widget -->
-        <div v-if="notifications.length > 0" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <!-- Quick Actions Widget -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div class="p-4 border-b border-gray-100 bg-gray-50/50">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bell text-gray-400 text-sm"></i>
-                <h2 class="font-bold text-slate-800 text-sm">Notifications</h2>
+                <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
+                <h2 class="font-bold text-slate-800 text-sm">Quick Actions</h2>
                 <span v-if="totalNotificationsCount > 0" class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
                   {{ totalNotificationsCount }}
                 </span>
@@ -34,6 +31,11 @@
           </div>
           
           <div class="p-4 space-y-3">
+            <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
+              <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
+              <p class="text-sm">All caught up!</p>
+              <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
+            </div>
             <ActionableQuestionCard
               v-for="question in notifications.slice(0, 5)"
               :key="question.id"
@@ -97,19 +99,6 @@
           </div>
         </div>
       </div>
-      
-      <!-- Empty State -->
-      <div v-if="notifications.length === 0 && appointmentsToday.length === 0 && tasksDueToday.length === 0" class="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-        <i class="fa-solid fa-check-circle text-6xl text-emerald-400 mb-4"></i>
-        <h3 class="text-xl font-semibold text-slate-800 mb-2">All caught up!</h3>
-        <p class="text-sm text-gray-600 mb-6">No appointments or tasks scheduled for today.</p>
-        <button
-          @click="$router.push('/tasks')"
-          class="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
-        >
-          View all tasks →
-        </button>
-      </div>
     </div>
     
     <!-- Modals -->
@@ -133,7 +122,6 @@ import ActionableQuestionCard from '@/components/home/ActionableQuestionCard.vue
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import TodaysAppointments from '@/components/home/TodaysAppointments.vue'
 import TodaysTasks from '@/components/home/TodaysTasks.vue'
-import PageHeader from '@/components/layout/PageHeader.vue'
 import { formatDate } from '@/utils/formatters'
 
 const router = useRouter()

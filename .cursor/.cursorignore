@@ -1,0 +1,74 @@
+# --- Dependencies & Packages ---
+# The AI rarely needs to read library source code deep in these folders
+node_modules/
+vendor/
+.venv/
+env/
+__pycache__/
+.cache/
+
+# --- Large Lock Files (CRITICAL) ---
+# These consume massive amounts of tokens and confuse the AI with huge data structures
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+composer.lock
+Gemfile.lock
+Cargo.lock
+go.sum
+
+# --- Build Outputs & Distributables ---
+# We want the AI to edit source code, not generated build artifacts
+dist/
+build/
+out/
+target/
+bin/
+obj/
+.next/
+.nuxt/
+.output/
+
+# --- Minified Files ---
+# The AI cannot effectively edit minified code
+*.min.js
+*.min.css
+*.map
+
+# --- Assets & Media ---
+# Binary files usually just add noise
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.mp4
+*.mp3
+*.pdf
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# --- Data Dumps & Logs ---
+# Large data files can fill the context window immediately
+*.log
+*.csv
+*.tsv
+*.sql
+*.sqlite
+*.db
+
+# --- System & IDE Configs ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.git/
+
+# --- Temporary/Backup Files ---
+*.bak
+*.swp
+*.tmp

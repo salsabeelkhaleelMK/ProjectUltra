@@ -22,8 +22,8 @@
           <ViewToggle
             :view="viewMode"
             :options="[
-              { value: 'card', icon: 'fa-solid fa-list', label: 'Cards' },
-              { value: 'table', icon: 'fa-solid fa-table', label: 'Table' }
+              { value: 'card', icon: 'fa-solid fa-grip', label: 'Cards' },
+              { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
             ]"
             @update:view="$emit('view-change', $event)"
           />
@@ -31,16 +31,6 @@
       </div>
     </div>
     
-    <!-- Filters -->
-    <div v-if="showTypeFilter" class="px-5 py-3 bg-white border-b border-gray-100">
-      <TaskFilters
-        :type-filter="typeFilter"
-        :sort-option="currentSort"
-        :show-type-filter="showTypeFilter"
-        @filter-change="$emit('filter-change', $event)"
-        @sort-change="selectSort"
-      />
-    </div>
     
     <!-- Search Bar -->
     <div class="px-5 py-3">
@@ -55,13 +45,24 @@
       </div>
     </div>
     
+    <!-- Filters (Card View Only) -->
+    <div v-if="showTypeFilter" class="px-5 pb-3">
+      <TaskFilters
+        :type-filter="typeFilter"
+        :sort-option="currentSort"
+        :show-type-filter="true"
+        @filter-change="$emit('filter-change', $event)"
+        @sort-change="selectSort"
+      />
+    </div>
+    
     <div ref="scrollContainer" class="flex-1 overflow-y-auto px-4 space-y-4 pb-4 scrollbar-hide">
       <div 
         v-for="item in filteredItems" 
-        :key="item.id"
+        :key="item.compositeId || `${item.type || 'task'}-${item.id}`"
         :ref="el => { if (isSelected(item)) selectedItemRef = el }"
         @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
-        class="rounded-lg px-4 py-3 cursor-pointer transition-all relative group"
+        class="card card-hover min-h-[11rem] flex flex-col overflow-hidden cursor-pointer relative"
         :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
       >
         <!-- Card Menu -->
@@ -73,62 +74,56 @@
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <!-- Card Content -->
-        <div class="space-y-3">
-          <!-- Customer Section -->
-          <div class="space-y-2">
-            <!-- Top Row: Avatar + Name + Amount + Dropdown -->
-            <div class="flex items-start gap-3">
-              <!-- Avatar -->
-              <div 
-                class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                :class="avatarClass(item)"
-              >
-                {{ getInitials(item) }}
-              </div>
-              
-              <!-- Name and Amount -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between gap-2 mb-0.5">
-                  <div class="font-bold text-gray-900 text-sm leading-tight truncate">{{ getName(item) }}</div>
-                  <div class="text-right shrink-0">
-                    <slot name="meta" :item="item"></slot>
-                  </div>
-                </div>
-                
-                <!-- Vehicle Info with Type Badge -->
-                <div class="flex items-center gap-2 mt-1">
-                  <div class="text-gray-600 text-xs truncate flex-1 min-w-0">{{ getVehicleInfo(item) }}</div>
-                  <slot name="vehicle-type" :item="item"></slot>
-                </div>
-              </div>
-              
-              <!-- Dropdown Button (Always Visible) -->
-              <button 
-                v-if="showMenu"
-                @click.stop="$emit('menu-click', item.id)"
-                class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors shrink-0"
-              >
-                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
-              </button>
+        <!-- Top Bar: Badges + Dropdown -->
+        <div class="flex items-center justify-between border-b border-gray-100 p-2 bg-gray-50">
+          <div class="flex gap-2">
+            <slot name="badges" :item="item"></slot>
+          </div>
+          <button 
+            v-if="showMenu"
+            @click.stop="$emit('menu-click', item.id)"
+            class="text-gray-400 hover:text-gray-600 transition-colors pr-2"
+          >
+            <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+          </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="p-3 flex-1 flex flex-col justify-between">
+          <!-- Avatar + Name + Location -->
+          <div class="flex items-start gap-3 mb-3">
+            <div 
+              class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-xs font-bold shrink-0"
+              :class="avatarClass(item)"
+            >
+              {{ getInitials(item) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-bold text-gray-900 truncate">{{ getName(item) }}</h3>
+              <p class="text-[10px] text-gray-500">
+                <slot name="location" :item="item"></slot>
+              </p>
             </div>
           </div>
           
-          <!-- Separator -->
-          <div class="border-t border-gray-100"></div>
+          <!-- Car and Status Details -->
+          <div class="space-y-1 mb-3">
+            <div class="flex justify-between text-[10px]">
+              <span class="text-gray-400">Car</span>
+              <span class="font-medium text-gray-700 truncate ml-2">{{ getVehicleInfo(item) }}</span>
+            </div>
+            <div class="flex justify-between text-[10px]">
+              <span class="text-gray-400">Status</span>
+              <span class="font-medium text-gray-700">
+                <slot name="vehicle-status" :item="item"></slot>
+              </span>
+            </div>
+          </div>
           
-          <!-- Task Info Section -->
-          <div class="space-y-2">
-            <!-- Owner and Due Date Row -->
-            <div class="flex items-center justify-between gap-3">
-              <slot name="owner" :item="item"></slot>
-              <slot name="dates" :item="item"></slot>
-            </div>
-            
-            <!-- Badges Row -->
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <slot name="badges" :item="item"></slot>
-            </div>
+          <!-- Footer: Assignee + Due Date -->
+          <div class="border-t border-gray-100 pt-2 flex justify-between text-[9px] text-gray-400">
+            <slot name="owner" :item="item"></slot>
+            <slot name="dates" :item="item"></slot>
           </div>
         </div>
       </div>
@@ -138,8 +133,8 @@
 
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import TaskFilters from './TaskFilters.vue'
 import ViewToggle from '@/components/shared/ViewToggle.vue'
+import TaskFilters from './TaskFilters.vue'
 
 // Click outside directive
 const vClickOutside = {
@@ -174,7 +169,7 @@ const props = defineProps({
     default: 'bg-white border-2 border-blue-500 shadow-md'
   },
   unselectedClass: {
-    type: String,
+    type: [String, Function],
     default: 'bg-white border border-gray-200 hover:border-blue-300'
   },
   searchPlaceholder: {

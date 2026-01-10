@@ -15,8 +15,31 @@
           :selected-class="(task) => task.type === 'lead' ? 'bg-white border-2 border-blue-500 shadow-md' : 'bg-white border-2 border-purple-500 shadow-md'"
           :unselected-class="getUnselectedClass"
           :open-menu-id="openCardMenu"
-          :getName="(task) => task.customer.name"
-          :getInitials="(task) => task.customer.initials"
+          :getName="(task) => {
+            // Ensure customer exists and has name
+            const customer = task.customer
+            if (customer && customer.name) {
+              return customer.name
+            }
+            // Generate from name if initials exist but name doesn't (shouldn't happen, but defensive)
+            if (customer && !customer.name && customer.email) {
+              return customer.email.split('@')[0] || 'Unknown'
+            }
+            return 'Unknown'
+          }"
+          :getInitials="(task) => {
+            // Ensure customer exists
+            const customer = task.customer
+            if (customer && customer.initials) {
+              return customer.initials
+            }
+            // Generate from name if available
+            if (customer && customer.name) {
+              const initials = customer.name.split(' ').map(n => n[0]).filter(Boolean).join('').toUpperCase().slice(0, 2)
+              return initials || '?'
+            }
+            return '?'
+          }"
           :getVehicleInfo="(task) => {
             if (task.type === 'lead') {
               return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
@@ -32,81 +55,48 @@
           :show-type-filter="shouldShowTypeFilter"
           @filter-change="typeFilter = $event"
           @sort-change="handleSortChange"
-          @view-change="viewMode = $event"
+          @view-change="handleViewChange"
         >
           <template #badges="{ item: task }">
             <!-- Type Badge -->
             <span 
-              class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md"
-              :class="task.type === 'lead' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'"
+              class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
+              :class="task.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
             >
               {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
             </span>
             
-            <!-- Lead-specific badges -->
-            <template v-if="task.type === 'lead'">
-              <span 
-                v-if="task.priority === 'Hot'"
-                class="bg-red-50 text-red-700 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md flex items-center gap-1"
-              >
-                <i class="fa-solid fa-fire text-[9px]"></i> Hot
-              </span>
-              <span class="bg-gray-100 text-gray-700 text-[10px] font-medium px-2 py-0.5 rounded-md">{{ task.status }}</span>
-            </template>
-            
-            <!-- Opportunity-specific badges -->
-            <template v-else>
-              <span 
-                class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md"
-                :class="getStageBadgeClass(task.stage)"
-              >
-                {{ task.stage }}
-              </span>
-            </template>
-          </template>
-          
-          <template #meta="{ item: task }">
-            <template v-if="task.type === 'opportunity'">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-gray-900">€{{ formatCurrency(task.value) }}</div>
-              </div>
-            </template>
-          </template>
-          
-          <template #vehicle-type="{ item: task }">
+            <!-- Hot Badge (for leads) -->
             <span 
-              v-if="getVehicleType(task)"
-              class="text-[10px] font-medium px-1.5 py-0.5 rounded-md shrink-0"
-              :class="getVehicleTypeBadgeClass(getVehicleType(task))"
+              v-if="task.priority === 'Hot'"
+              class="px-1.5 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-bold uppercase"
             >
-              {{ getVehicleType(task).label }}
+              HOT
             </span>
           </template>
           
+          <template #location="{ item: task }">
+            {{ getLocationDisplay(task) }}
+          </template>
+          
+          <template #vehicle-status="{ item: task }">
+            {{ getVehicleStatusDisplay(task) }}
+          </template>
+          
           <template #owner="{ item: task }">
-            <div v-if="task.assignee" class="flex items-center gap-1.5">
-              <i class="fa-solid fa-user text-[10px] text-gray-400"></i>
-              <span class="text-xs text-gray-600 truncate">{{ task.assignee }}</span>
-            </div>
+            <span v-if="task.assignee">Assignee: {{ task.assignee }}</span>
+            <span v-else>Assignee: Unassigned</span>
           </template>
           
           <template #dates="{ item: task }">
             <template v-if="task.type === 'lead' && task.nextActionDue">
-              <div 
-                class="flex items-center gap-1.5"
-                :class="getDeadlineStatus(task.nextActionDue).textClass"
-              >
-                <i 
-                  v-if="getDeadlineStatus(task.nextActionDue).type !== 'overdue'"
-                  class="text-[10px]"
-                  :class="getDeadlineStatus(task.nextActionDue).iconClass"
-                ></i>
-                <span 
-                  class="text-xs font-medium leading-tight"
-                >
-                  {{ getDateDisplay(task.nextActionDue) }}
-                </span>
-              </div>
+              <span>Due: {{ getDateDisplay(task.nextActionDue) }}</span>
+            </template>
+            <template v-else-if="task.type === 'opportunity' && task.nextActionDue">
+              <span>Due: {{ getDateDisplay(task.nextActionDue) }}</span>
+            </template>
+            <template v-else>
+              <span>Due: No deadline</span>
             </template>
           </template>
           
@@ -135,39 +125,57 @@
         </EntityListSidebar>
     </div>
     
-    <!-- Table View - Full width -->
-    <TasksTableView
-      v-if="viewMode === 'table'"
-      :tasks="filteredTasks"
-      :current-task-id="currentTask?.compositeId"
-      :type-filter="typeFilter"
-      :sort-option="sortOption"
-      :show-type-filter="shouldShowTypeFilter"
-      :show-mobile-close="true"
-      :open-menu-id="openCardMenu"
-      :get-vehicle-type="getVehicleType"
-      :get-vehicle-type-badge-class="getVehicleTypeBadgeClass"
-      :get-owner-info="getOwnerInfo"
-      :get-stage-badge-class="getStageBadgeClass"
-      :view-mode="viewMode"
-      @select="selectTask"
-      @menu-click="toggleCardMenu"
-      @menu-close="openCardMenu = null"
-      @filter-change="typeFilter = $event"
-      @sort-change="handleSortChange"
-      @reassign="reassignTask"
-      @close="showTaskListMobile = false"
-      @view-change="viewMode = $event"
-    />
+    <!-- Table View - Takes remaining space, detail panel shown alongside when task selected -->
+    <div v-if="viewMode === 'table'" class="flex-1 flex flex-col lg:flex-row overflow-hidden min-w-0">
+      <TasksTableView
+        :tasks="filteredTasks"
+        :current-task-id="currentTask?.compositeId"
+        :highlight-id="highlightId"
+        :type-filter="typeFilter"
+        :sort-option="sortOption"
+        :show-type-filter="shouldShowTypeFilter"
+        :show-mobile-close="true"
+        :open-menu-id="openCardMenu"
+        :get-vehicle-type="getVehicleType"
+        :get-vehicle-type-badge-class="getVehicleTypeBadgeClass"
+        :get-owner-info="getOwnerInfo"
+        :get-stage-badge-class="getStageBadgeClass"
+        :view-mode="viewMode"
+        @select="selectTask"
+        @menu-click="toggleCardMenu"
+        @menu-close="openCardMenu = null"
+        @filter-change="typeFilter = $event"
+        @sort-change="handleSortChange"
+        @reassign="reassignTask"
+        @close="showTaskListMobile = false"
+        @view-change="handleViewChange"
+        :class="currentTask ? 'lg:w-1/2' : 'w-full'"
+      />
+      
+      <!-- Task Detail Panel for Table View -->
+      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden border-l border-gray-200 lg:w-1/2">
+        <TaskShell
+          :task="currentTask"
+          :type="currentTask.type"
+          :management-widget="managementWidget"
+          :store-adapter="storeAdapter"
+          :add-new-config="addNewConfig"
+        >
+          <template #pinned-extra="{ task }">
+            <!-- Additional widgets can be added here if needed -->
+          </template>
+        </TaskShell>
+      </div>
+    </div>
     
     <!-- Main Content - Task Details (Card View Only) -->
-    <div v-if="viewMode === 'card'" class="flex-1 flex flex-col overflow-hidden">
-      
+    <div v-if="viewMode === 'card' && currentTask" class="flex-1 flex flex-col overflow-hidden">
+
       <!-- Mobile View Toggle + Action Buttons -->
       <div class="lg:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
         <!-- View Toggle Button (mobile) -->
         <button
-          @click="viewMode = viewMode === 'card' ? 'table' : 'card'"
+          @click="handleViewChange(viewMode === 'card' ? 'table' : 'card')"
           class="w-14 h-14 bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 transition-all hover:scale-110"
           :title="viewMode === 'card' ? 'Switch to Table' : 'Switch to Cards'"
         >
@@ -201,60 +209,7 @@
         :add-new-config="addNewConfig"
       >
         <template #pinned-extra="{ task }">
-          <!-- Requested Vehicle Widget - Always show on overview tab -->
-          <VehicleWidget
-            v-if="task.type === 'lead' && task.requestedCar"
-            :brand="task.requestedCar.brand"
-            :model="task.requestedCar.model"
-            :year="task.requestedCar.year"
-            :image="task.requestedCar.image || ''"
-            :price="task.requestedCar.price || null"
-            :request-message="task.requestedCar.requestMessage || ''"
-            :request-type="task.requestedCar.requestType || ''"
-            :source="task.source || ''"
-            :dealership="task.requestedCar.dealership || ''"
-            :registration="task.requestedCar.registration || ''"
-            :kilometers="task.requestedCar.kilometers || null"
-            :fuel-type="task.requestedCar.fuelType || ''"
-            :gear-type="task.requestedCar.gearType || ''"
-            :vin="task.requestedCar.vin || ''"
-            :stock-days="task.requestedCar.stockDays !== undefined ? task.requestedCar.stockDays : null"
-            :channel="task.requestedCar.channel || 'Email'"
-            :ad-campaign="task.requestedCar.adCampaign || ''"
-            :expected-purchase-date="task.requestedCar.expectedPurchaseDate || ''"
-            :fiscal-entity="task.requestedCar.fiscalEntity || ''"
-            :source-details="task.requestedCar.sourceDetails || ''"
-            :ad-medium="task.requestedCar.adMedium || ''"
-            :ad-source="task.requestedCar.adSource || ''"
-            label="Requested Car"
-          />
-          
-          <VehicleWidget
-            v-if="task.type === 'opportunity' && task.vehicle"
-            :brand="task.vehicle.brand"
-            :model="task.vehicle.model"
-            :year="task.vehicle.year"
-            :image="task.vehicle.image || ''"
-            :price="task.vehicle.price || null"
-            :request-message="task.vehicle.requestMessage || ''"
-            :request-type="task.vehicle.requestType || ''"
-            :source="task.source || ''"
-            :dealership="task.vehicle.dealership || ''"
-            :registration="task.vehicle.registration || ''"
-            :kilometers="task.vehicle.kilometers || null"
-            :fuel-type="task.vehicle.fuelType || ''"
-            :gear-type="task.vehicle.gearType || ''"
-            :vin="task.vehicle.vin || ''"
-            :stock-days="task.vehicle.stockDays !== undefined ? task.vehicle.stockDays : null"
-            :channel="task.vehicle.channel || 'Email'"
-            :ad-campaign="task.vehicle.adCampaign || ''"
-            :expected-purchase-date="task.vehicle.expectedPurchaseDate || ''"
-            :fiscal-entity="task.vehicle.fiscalEntity || ''"
-            :source-details="task.vehicle.sourceDetails || ''"
-            :ad-medium="task.vehicle.adMedium || ''"
-            :ad-source="task.vehicle.adSource || ''"
-            label="Vehicle"
-          />
+          <!-- Additional widgets can be added here if needed -->
         </template>
       </TaskShell>
     </div>
@@ -277,8 +232,7 @@ import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 import EntityListSidebar from '@/components/tasks/TasksList.vue'
 import TasksTableView from '@/components/tasks/TasksTableView.vue'
-import TaskShell from '@/components/tasks/TaskShell.vue'
-import VehicleWidget from '@/components/tasks/widgets/RequestedVehicleWidget.vue'
+import TaskShell from '@/components/customer/CustomerShell.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
@@ -293,10 +247,45 @@ const usersStore = useUsersStore()
 // View mode state with localStorage persistence (default to table)
 const viewMode = ref(localStorage.getItem('tasksViewMode') || 'table')
 
+// Get highlight ID from query string
+const highlightId = computed(() => {
+  return route.query.highlight || null
+})
+
 // Watch for changes and persist
 watch(viewMode, (newMode) => {
   localStorage.setItem('tasksViewMode', newMode)
 })
+
+// Handle view mode changes with navigation logic
+const handleViewChange = (newViewMode) => {
+  const previousMode = viewMode.value
+  
+  // Capture current task before navigation (since route change will clear it)
+  const taskToHighlight = currentTask.value
+  
+  viewMode.value = newViewMode
+  
+  // If switching to table view while a task is selected, navigate to /tasks with highlight query
+  if (newViewMode === 'table' && taskToHighlight) {
+    router.push({ 
+      path: '/tasks', 
+      query: { highlight: taskToHighlight.compositeId } 
+    })
+  }
+  // If switching to card view and we have a highlight query, navigate to that task
+  else if (newViewMode === 'card' && highlightId.value) {
+    const [type, id] = highlightId.value.split('-')
+    router.push({ 
+      path: `/tasks/${id}`, 
+      query: { type } 
+    })
+  }
+  // If switching to card view without highlight and no current task, just go to /tasks (no selection)
+  else if (newViewMode === 'card' && !highlightId.value && !currentTask.value) {
+    router.push({ path: '/tasks' })
+  }
+}
 
 // Helper function to display date with conditional logic (relative if today, absolute if future)
 const getDateDisplay = (isoTimestamp) => {
@@ -363,6 +352,71 @@ const getOwnerInfo = (task) => {
   }
 }
 
+// Helper function to extract city from customer address
+const getCustomerCity = (task) => {
+  if (!task || !task.customer || !task.customer.address) {
+    return null
+  }
+  
+  const address = task.customer.address
+  // Address format: "Street, PostalCode City" or "Street, City"
+  // Extract city (last part after comma)
+  const parts = address.split(',')
+  if (parts.length > 1) {
+    const cityPart = parts[parts.length - 1].trim()
+    // Remove postal code if present (numbers at start)
+    const city = cityPart.replace(/^\d+\s*/, '').trim()
+    return city || null
+  }
+  return null
+}
+
+// Helper function to get location display (city • source)
+const getLocationDisplay = (task) => {
+  const city = getCustomerCity(task)
+  const source = task.source || 'Unknown'
+  
+  if (city) {
+    return `${city} • ${source}`
+  }
+  return source
+}
+
+// Helper function to format vehicle status (type / kilometers)
+const getVehicleStatusDisplay = (task) => {
+  const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
+  if (!vehicle) {
+    return 'No vehicle'
+  }
+  
+  const vehicleType = getVehicleType(task)
+  const typeLabel = vehicleType ? vehicleType.label : (vehicle.type || 'Unknown')
+  
+  // Format kilometers
+  let kmDisplay = ''
+  if (vehicle.kilometers !== undefined && vehicle.kilometers !== null) {
+    if (vehicle.kilometers >= 1000) {
+      kmDisplay = `${(vehicle.kilometers / 1000).toFixed(0)}k`
+    } else {
+      kmDisplay = `${vehicle.kilometers}`
+    }
+  }
+  
+  if (kmDisplay) {
+    return `${typeLabel} / ${kmDisplay}`
+  }
+  return typeLabel
+}
+
+// Helper function to get task status for display (leads: status, opportunities: stage)
+const getTaskStatusDisplay = (task) => {
+  if (task.type === 'lead') {
+    return task.status || 'Unknown'
+  } else {
+    return task.stage || 'Unknown'
+  }
+}
+
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
 const openCardMenu = ref(null)
@@ -375,8 +429,24 @@ const taskToReassign = ref(null)
 const allTasks = computed(() => {
   // Filter out disqualified leads
   const activeLeads = leadsStore.leads.filter(lead => !lead.isDisqualified)
-  const leads = activeLeads.map(lead => ({ ...lead, type: 'lead', compositeId: `lead-${lead.id}` }))
-  const opportunities = opportunitiesStore.opportunities.map(opp => ({ ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }))
+  const leads = activeLeads.map(lead => {
+    // Ensure customer object is preserved
+    const task = { ...lead, type: 'lead', compositeId: `lead-${lead.id}` }
+    // Explicitly ensure customer is present (spread should handle this, but being defensive)
+    if (!task.customer && lead.customer) {
+      task.customer = lead.customer
+    }
+    return task
+  })
+  const opportunities = opportunitiesStore.opportunities.map(opp => {
+    // Ensure customer object is preserved
+    const task = { ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }
+    // Explicitly ensure customer is present (spread should handle this, but being defensive)
+    if (!task.customer && opp.customer) {
+      task.customer = opp.customer
+    }
+    return task
+  })
   
   // Filter by role
   let tasks = []
@@ -472,21 +542,26 @@ const currentTask = computed(() => {
   const taskId = parseInt(route.params.id)
   const routeType = route.query.type // 'lead' or 'opportunity' from query param
   
-  // If type is specified in query, use it; otherwise check both stores
+  // Always use compositeId for matching to avoid conflicts between leads and opportunities with same ID
   if (routeType) {
-    return allTasks.value.find(t => t.id === taskId && t.type === routeType) || null
+    const compositeId = `${routeType}-${taskId}`
+    return allTasks.value.find(t => t.compositeId === compositeId) || null
   }
   
-  // Try to find in both, but prefer the one that matches the current filter
+  // If no type specified, try to find by compositeId in filtered list first
   const filtered = typeFilter.value !== 'all' 
     ? allTasks.value.filter(t => t.type === typeFilter.value)
     : allTasks.value
   
-  const task = filtered.find(t => t.id === taskId)
+  // Try both lead and opportunity compositeIds
+  const leadCompositeId = `lead-${taskId}`
+  const oppCompositeId = `opportunity-${taskId}`
+  
+  const task = filtered.find(t => t.compositeId === leadCompositeId || t.compositeId === oppCompositeId)
   if (task) return task
   
-  // Fallback: check all tasks
-  return allTasks.value.find(t => t.id === taskId) || null
+  // Fallback: check all tasks by compositeId
+  return allTasks.value.find(t => t.compositeId === leadCompositeId || t.compositeId === oppCompositeId) || null
 })
 
 // Get current activities based on task type
@@ -561,6 +636,10 @@ const loadTaskById = (id) => {
 const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
+  // When selecting a task, switch to card view to show the detail
+  if (viewMode.value === 'table') {
+    viewMode.value = 'card'
+  }
   router.push({ path: `/tasks/${id}`, query: { type } })
   showTaskListMobile.value = false // Close mobile list after selection
 }

@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit" class="max-w-4xl mx-auto">
     <!-- Contact Section -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+    <div v-if="!hideContactSelection" class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">Contact Information</h3>
       
       <!-- Toggle: Existing vs New -->
@@ -329,7 +329,7 @@
         <span class="font-semibold">Requires vehicle details to be filled.</span>
       </p>
       
-      <div class="space-y-3">
+      <div v-if="!forceType" class="space-y-3">
         <label 
           class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-blue-50 hover:border-blue-300' : 'cursor-not-allowed opacity-60'"
@@ -372,6 +372,17 @@
           </div>
         </label>
       </div>
+
+      <!-- If forceType is set, just show confirmation -->
+      <div v-else class="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+        <i class="fa-solid fa-info-circle text-blue-600"></i>
+        <div>
+          <p class="text-sm font-medium text-blue-900">
+            Converting to {{ forceType === 'lead' ? 'Lead' : 'Opportunity' }}
+          </p>
+          <p class="text-xs text-blue-700">Vehicle details are required for this action.</p>
+        </div>
+      </div>
       
       <div v-if="!hasVehicleData" class="mt-3 flex items-start gap-2 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-3">
         <i class="fa-solid fa-exclamation-triangle mt-0.5"></i>
@@ -411,20 +422,35 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useContactsStore } from '@/stores/contacts'
+
+const props = defineProps({
+  initialContact: {
+    type: Object,
+    default: null
+  },
+  hideContactSelection: {
+    type: Boolean,
+    default: false
+  },
+  forceType: {
+    type: String, // 'lead' | 'opportunity'
+    default: ''
+  }
+})
 
 const emit = defineEmits(['submit'])
 
 const contactsStore = useContactsStore()
 
 // Contact Mode
-const contactMode = ref('existing') // 'existing' or 'new'
+const contactMode = ref(props.initialContact ? 'existing' : 'existing') // 'existing' or 'new'
 
 // Contact Search (for existing)
 const searchQuery = ref('')
 const showResults = ref(false)
-const selectedContact = ref(null)
+const selectedContact = ref(props.initialContact || null)
 
 // Contact Form Data (for new)
 const contactFormData = reactive({
@@ -452,8 +478,28 @@ const vehicleFormData = reactive({
 })
 
 // Task Marking
-const markAsLead = ref(false)
-const markAsOpportunity = ref(false)
+const markAsLead = ref(props.forceType === 'lead')
+const markAsOpportunity = ref(props.forceType === 'opportunity')
+
+// Update marking when forceType changes
+watch(() => props.forceType, (newType) => {
+  if (newType === 'lead') {
+    markAsLead.value = true
+    markAsOpportunity.value = false
+  } else if (newType === 'opportunity') {
+    markAsLead.value = false
+    markAsOpportunity.value = true
+  }
+})
+
+// Set initial contact if provided
+watch(() => props.initialContact, (newContact) => {
+  if (newContact) {
+    selectedContact.value = newContact
+    searchQuery.value = newContact.name
+    contactMode.value = 'existing'
+  }
+}, { immediate: true })
 
 // UI State
 const isSubmitting = ref(false)

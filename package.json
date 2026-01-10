@@ -16,6 +16,7 @@
     "@fullcalendar/interaction": "^6.1.10",
     "@fullcalendar/timegrid": "^6.1.10",
     "@fullcalendar/vue3": "^6.1.10",
+    "@motork/component-library": "latest",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"

@@ -124,9 +124,9 @@ import { useUserStore } from '@/stores/user'
 
 // New sub-components
 import CalendarFiltersSidebar from '@/components/calendar/CalendarFiltersSidebar.vue'
-import CreateEventModal from '@/components/calendar/CreateEventModal.vue'
-import QuickViewEventModal from '@/components/calendar/QuickViewEventModal.vue'
-import EditEventModal from '@/components/calendar/EditEventModal.vue'
+import CreateEventModal from '@/components/modals/CreateEventModal.vue'
+import QuickViewEventModal from '@/components/modals/QuickViewEventModal.vue'
+import EditEventModal from '@/components/modals/EditEventModal.vue'
 
 // Utilities
 import { getEventCalendarClass } from '@/utils/calendarHelpers'

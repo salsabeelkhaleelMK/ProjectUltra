@@ -3,7 +3,9 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/@motork/component-library/**/*.js",
   ],
+  presets: [require('@motork/component-library/preset')],
   theme: {
     extend: {
       colors: {

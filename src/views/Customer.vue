@@ -35,9 +35,25 @@
       @convert-to-opportunity="handleConvertToOpportunity"
     >
       <template #pinned-extra="{ task }">
-        <!-- Requested Vehicle Widget for contacts and leads -->
+        <!-- Customer Overview Widgets -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <CustomerLeadsWidget 
+            :leads="customerLeads" 
+            :all-tasks="customerTasks"
+            @add-lead="openAddModal('lead')"
+          />
+          <CustomerOpportunitiesWidget 
+            :opportunities="customerOpportunities" 
+            :all-tasks="customerTasks"
+            :activities="customerActivities"
+            @add-opportunity="openAddModal('opportunity')"
+          />
+        </div>
+        <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
+        
+        <!-- Requested Vehicle Widget for contacts only (leads/opportunities handled in CustomerShell) -->
         <VehicleWidget
-          v-if="(task.type === 'contact' || task.type === 'lead') && task.requestedCar"
+          v-if="task.type === 'contact' && task.requestedCar"
           :brand="task.requestedCar.brand"
           :model="task.requestedCar.model"
           :year="task.requestedCar.year"
@@ -62,36 +78,18 @@
           :ad-source="task.requestedCar.adSource || ''"
           label="Requested Car"
         />
-        
-        <!-- Vehicle Widget for opportunities -->
-        <VehicleWidget
-          v-if="task.type === 'opportunity' && task.vehicle"
-          :brand="task.vehicle.brand"
-          :model="task.vehicle.model"
-          :year="task.vehicle.year"
-          :image="task.vehicle.image || ''"
-          :price="task.vehicle.price || null"
-          :request-message="task.vehicle.requestMessage || ''"
-          :request-type="task.vehicle.requestType || ''"
-          :source="task.source || ''"
-          :dealership="task.vehicle.dealership || ''"
-          :registration="task.vehicle.registration || ''"
-          :kilometers="task.vehicle.kilometers || null"
-          :fuel-type="task.vehicle.fuelType || ''"
-          :gear-type="task.vehicle.gearType || ''"
-          :vin="task.vehicle.vin || ''"
-          :stock-days="task.vehicle.stockDays !== undefined ? task.vehicle.stockDays : null"
-          :channel="task.vehicle.channel || 'Email'"
-          :ad-campaign="task.vehicle.adCampaign || ''"
-          :expected-purchase-date="task.vehicle.expectedPurchaseDate || ''"
-          :fiscal-entity="task.vehicle.fiscalEntity || ''"
-          :source-details="task.vehicle.sourceDetails || ''"
-          :ad-medium="task.vehicle.adMedium || ''"
-          :ad-source="task.vehicle.adSource || ''"
-          label="Vehicle"
-        />
       </template>
     </TaskShell>
+
+    <!-- Add Lead/Opportunity Modal -->
+    <AddLeadOpportunityModal
+      v-if="task"
+      :show="showAddModal"
+      :type="addModalType"
+      :contact="getContactForModal"
+      @close="showAddModal = false"
+      @save="handleAddModalSave"
+    />
 
     <!-- Loading state for ID mismatch (prevents showing stale data) -->
     <div v-else class="flex-1 flex items-center justify-center">
@@ -109,10 +107,15 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useContactsStore } from '@/stores/contacts'
-import TaskShell from '@/components/tasks/TaskShell.vue'
-import VehicleWidget from '@/components/tasks/widgets/RequestedVehicleWidget.vue'
-import ContactManagementWidget from '@/components/tasks/contacts/ContactManagementWidget.vue'
-import { useTaskShell } from '@/composables/useTaskShell'
+import TaskShell from '@/components/customer/CustomerShell.vue'
+import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
+import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'
+import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportunitiesWidget.vue'
+import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
+import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
+import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
+import { fetchCustomerById } from '@/api/customers'
+import { mockActivities } from '@/api/mockData'
 
 const route = useRoute()
 const router = useRouter()
@@ -123,32 +126,43 @@ const contactsStore = useContactsStore()
 const loading = ref(false)
 const error = ref(null)
 
+// Customer-related data (only for contacts)
+const customerData = ref(null)
+const customerLeads = ref([])
+const customerOpportunities = ref([])
+const customerTasks = ref([])
+const customerCars = ref([])
+const customerActivities = ref([])
+
 // Get task ID and type from route
 const taskId = computed(() => parseInt(route.params.id))
 const taskType = computed(() => {
   const queryType = route.query.type || route.query.stage
-  // Accept 'contact', 'lead', 'opportunity'
-  return queryType || 'lead'
+  // Accept 'contact', 'lead', 'opportunity' (default to 'contact' for customer route)
+  return queryType || 'contact'
 })
 
 // Get task from store and ensure it has type property
 const task = computed(() => {
   if (taskType.value === 'contact') {
-    const contact = contactsStore.currentContact
-    if (!contact) return null
-    // Map contact to task-like structure
+    // Use customerData if available, otherwise fallback to contact
+    const customer = customerData.value || contactsStore.currentContact
+    if (!customer) return null
+    // Map customer/contact to task-like structure
     return {
-      ...contact,
+      ...customer,
+      id: customer.id,
       type: 'contact',
       customer: {
-        name: contact.name,
-        email: contact.email,
-        phone: contact.phone,
-        address: contact.address || '',
-        initials: contact.initials
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address || '',
+        initials: customer.initials
       },
-      source: contact.source || 'Direct',
-      tags: contact.tags || [],
+      source: customer.source || 'Direct',
+      tags: customer.tags || [],
       stage: 'Contact', // Contacts don't have stages
       assignee: null,
       assigneeId: null
@@ -162,40 +176,61 @@ const task = computed(() => {
   }
 })
 
-// Use composable to get TaskShell props for leads/opportunities
-const taskShellProps = useTaskShell(task)
+// Management widget should NEVER appear on customer route
+// Customer route is only for viewing customer/contact information
+// Leads and opportunities should be viewed via /tasks/:id?type=lead|opportunity
+const managementWidget = computed(() => null)
 
-// Override management widget and config for contacts
-const managementWidget = computed(() => {
-  if (taskType.value === 'contact') {
-    return ContactManagementWidget
-  }
-  return taskShellProps.managementWidget.value
-})
+// Store adapter for contacts only (customer route only handles contacts)
+const storeAdapter = computed(() => ({
+  currentActivities: computed(() => []),
+  addActivity: async () => {},
+  updateActivity: async () => {},
+  deleteActivity: async () => {}
+}))
 
-const storeAdapter = computed(() => {
-  if (taskType.value === 'contact') {
-    // Contacts don't have activities yet, provide empty adapter
-    return {
-      currentActivities: computed(() => []),
-      addActivity: async () => {},
-      updateActivity: async () => {},
-      deleteActivity: async () => {}
-    }
-  }
-  // Return the computed ref directly, not its value, to maintain reactivity
-  return taskShellProps.storeAdapter.value
-})
+// Add new config for contacts only
+const addNewConfig = computed(() => ({
+  overviewActions: [],
+  tabActions: ['note', 'email', 'sms', 'whatsapp', 'attachment']
+}))
 
-const addNewConfig = computed(() => {
-  if (taskType.value === 'contact') {
-    return {
-      overviewActions: [],
-      tabActions: ['note', 'email', 'sms', 'whatsapp', 'attachment']
-    }
+// Load customer-related data
+const loadCustomerData = async (explicitId = null) => {
+  const customerId = explicitId || (taskType.value === 'contact' ? taskId.value : task.value?.customerId)
+  if (!customerId) return
+  
+  try {
+    // Fetch customer data, leads, opportunities, tasks, and cars
+    const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
+      fetchCustomerById(customerId),
+      fetchLeadsByCustomerId(customerId),
+      fetchOpportunitiesByCustomerId(customerId),
+      fetchTasksByCustomerId(customerId),
+      fetchCustomerCars(customerId)
+    ])
+    
+    customerData.value = customer
+    customerLeads.value = leadsResult.data || []
+    customerOpportunities.value = oppsResult.data || []
+    customerTasks.value = tasksResult.data || []
+    customerCars.value = carsResult.data || []
+    
+    // Fetch activities from mockActivities
+    const allActivities = []
+    customerLeads.value.forEach(lead => {
+      const leadActivities = mockActivities.filter(a => a.leadId === lead.id)
+      allActivities.push(...leadActivities)
+    })
+    customerOpportunities.value.forEach(opp => {
+      const oppActivities = mockActivities.filter(a => a.opportunityId === opp.id)
+      allActivities.push(...oppActivities)
+    })
+    customerActivities.value = allActivities
+  } catch (err) {
+    console.error('Error loading customer data:', err)
   }
-  return taskShellProps.addNewConfig.value
-})
+}
 
 // Load task data
 const loadTask = async () => {
@@ -209,11 +244,16 @@ const loadTask = async () => {
 
   try {
     if (taskType.value === 'contact') {
-      await contactsStore.loadContactById(taskId.value)
+      // Load customer data directly
+      await loadCustomerData()
     } else if (taskType.value === 'lead') {
       await leadsStore.loadLeadById(taskId.value)
+      // Also load associated customer data for widgets
+      await loadCustomerData()
     } else {
       await opportunitiesStore.loadOpportunityById(taskId.value)
+      // Also load associated customer data for widgets
+      await loadCustomerData()
     }
   } catch (err) {
     error.value = err.message || 'Failed to load task'
@@ -263,14 +303,83 @@ const handleConvertToOpportunity = async () => {
   }
 }
 
+// Add Lead/Opportunity Modal State
+const showAddModal = ref(false)
+const addModalType = ref('lead')
+
+// Get contact data for modal (extract customer from task)
+const getContactForModal = computed(() => {
+  if (!task.value) {
+    return { id: null, name: 'Unknown', email: '', phone: '', initials: '?' }
+  }
+  
+  const t = task.value
+  const isContact = taskType.value === 'contact'
+  
+  // For contacts, use task properties directly
+  if (isContact) {
+    return {
+      id: t.id,
+      name: t.name || 'Unknown',
+      email: t.email || '',
+      phone: t.phone || '',
+      initials: t.initials || '?'
+    }
+  }
+  
+  // For leads/opportunities, extract from customer property
+  const customer = t.customer || {}
+  return {
+    id: customer.id || t.customerId || t.id,
+    name: customer.name || 'Unknown',
+    email: customer.email || '',
+    phone: customer.phone || '',
+    initials: customer.initials || '?'
+  }
+})
+
+const openAddModal = (type) => {
+  console.log('openAddModal called with type:', type, 'task:', task.value)
+  addModalType.value = type
+  showAddModal.value = true
+  console.log('showAddModal set to:', showAddModal.value, 'contact:', getContactForModal.value)
+}
+
+const handleAddModalSave = async (data) => {
+  try {
+    loading.value = true
+    showAddModal.value = false
+    
+    // Get the customer ID from the current task
+    const customerId = taskType.value === 'contact' ? taskId.value : task.value?.customerId
+    
+    if (!customerId) {
+      throw new Error('Customer ID not found')
+    }
+    
+    // Process the data from UnifiedAddForm
+    if (addModalType.value === 'lead') {
+      await contactsStore.convertToLead(customerId, data.vehicleData)
+    } else {
+      await contactsStore.convertToOpportunity(customerId, data.vehicleData)
+    }
+    
+    // Reload data to show the new item
+    await loadCustomerData(customerId)
+    loading.value = false
+  } catch (err) {
+    console.error(`Error adding ${addModalType.value}:`, err)
+    error.value = err.message || `Failed to add ${addModalType.value}`
+    loading.value = false
+  }
+}
+
 // Load task on mount
 onMounted(async () => {
   // Ensure stores are loaded first
-  if (taskType.value === 'contact') {
-    await contactsStore.loadContacts()
-  } else if (taskType.value === 'lead') {
+  if (taskType.value === 'lead') {
     await leadsStore.loadLeads()
-  } else {
+  } else if (taskType.value === 'opportunity') {
     await opportunitiesStore.loadOpportunities()
   }
   await loadTask()

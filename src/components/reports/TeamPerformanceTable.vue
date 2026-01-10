@@ -4,61 +4,106 @@
       <h2 class="heading-main">Team Performance</h2>
     </div>
     
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
-          <tr>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Name</th>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Leads</th>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Qualified</th>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Opportunities</th>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">In Negotiation</th>
-            <th class="px-4 py-3 text-left label-upper whitespace-nowrap">Won</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr
-            v-for="member in teamMembers"
-            :key="member.name"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm font-bold text-gray-900">{{ member.name }}</div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-700">{{ member.leads }}</div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-700">
-                {{ member.qualifiedLeads }} <span class="text-gray-500 text-xs">({{ member.qualifiedPercentage }}%)</span>
-              </div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-700">{{ member.opportunities }}</div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-700">
-                {{ member.inNegotiation }} <span class="text-gray-500 text-xs">({{ member.inNegotiationPercentage }}%)</span>
-              </div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-700">
-                {{ member.won }} <span class="text-gray-500 text-xs">({{ member.wonPercentage }}%)</span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="table-wrapper w-full">
+      <DataTable 
+        :data="teamMembers" 
+        :columns="columns"
+        v-model:pagination="pagination"
+        v-model:globalFilter="globalFilter"
+        v-model:sorting="sorting"
+        :paginationOptions="{
+          rowCount: teamMembers.length
+        }"
+        :globalFilterOptions="{
+          debounce: 300
+        }"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { ref, computed, h } from 'vue'
+import { DataTable } from '@motork/component-library/future/components'
+
+const props = defineProps({
   teamMembers: {
     type: Array,
     required: true
   }
 })
+
+// DataTable state management
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 10
+})
+
+const globalFilter = ref('')
+const sorting = ref([])
+
+// DataTable columns configuration
+const columns = computed(() => [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    meta: { title: 'Name' },
+    cell: ({ row }) => {
+      return h('div', { class: 'text-sm font-bold text-gray-900' }, row.original.name)
+    }
+  },
+  {
+    accessorKey: 'leads',
+    header: 'Leads',
+    meta: { title: 'Leads' },
+    cell: ({ row }) => {
+      return h('div', { class: 'text-sm text-gray-700' }, row.original.leads)
+    }
+  },
+  {
+    accessorKey: 'qualifiedLeads',
+    header: 'Qualified',
+    meta: { title: 'Qualified' },
+    cell: ({ row }) => {
+      const member = row.original
+      return h('div', { class: 'text-sm text-gray-700' }, [
+        h('span', member.qualifiedLeads),
+        h('span', { class: 'text-gray-500 text-xs ml-1' }, `(${member.qualifiedPercentage}%)`)
+      ])
+    }
+  },
+  {
+    accessorKey: 'opportunities',
+    header: 'Opportunities',
+    meta: { title: 'Opportunities' },
+    cell: ({ row }) => {
+      return h('div', { class: 'text-sm text-gray-700' }, row.original.opportunities)
+    }
+  },
+  {
+    accessorKey: 'inNegotiation',
+    header: 'In Negotiation',
+    meta: { title: 'In Negotiation' },
+    cell: ({ row }) => {
+      const member = row.original
+      return h('div', { class: 'text-sm text-gray-700' }, [
+        h('span', member.inNegotiation),
+        h('span', { class: 'text-gray-500 text-xs ml-1' }, `(${member.inNegotiationPercentage}%)`)
+      ])
+    }
+  },
+  {
+    accessorKey: 'won',
+    header: 'Won',
+    meta: { title: 'Won' },
+    cell: ({ row }) => {
+      const member = row.original
+      return h('div', { class: 'text-sm text-gray-700' }, [
+        h('span', member.won),
+        h('span', { class: 'text-gray-500 text-xs ml-1' }, `(${member.wonPercentage}%)`)
+      ])
+    }
+  }
+])
 </script>
 

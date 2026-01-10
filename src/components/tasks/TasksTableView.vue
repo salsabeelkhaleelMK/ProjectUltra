@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container flex-1 flex flex-col overflow-hidden w-full min-w-0">
     <!-- Header -->
     <PageHeader title="Tasks" subtitle="Manage your leads and opportunities">
       <template #actions>
@@ -16,209 +16,45 @@
     </PageHeader>
     
     <!-- Content -->
-    <div class="p-4 md:p-8">
-      <!-- Search Bar and Filters Row -->
-      <div class="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center">
-        <!-- Search Bar -->
-        <div class="relative flex-1 max-w-md">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            :placeholder="searchPlaceholder"
-            class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm"
-          >
-        </div>
-        
-        <!-- Filters -->
-        <TaskFilters
-          :type-filter="typeFilter"
-          :sort-option="sortOption"
-          :show-type-filter="showTypeFilter"
-          @filter-change="$emit('filter-change', $event)"
-          @sort-change="$emit('sort-change', $event)"
-        />
-      </div>
+    <div class="flex-1 flex flex-col overflow-hidden p-4 md:p-8">
       
       <!-- Table Container -->
-      <div class="card overflow-hidden">
-        <div class="overflow-x-auto -mx-4 md:mx-0">
-          <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
-          <tr>
-            <th class="px-3 md:px-6 py-3 text-left">
-              <input type="checkbox" class="rounded">
-            </th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Customer</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Vehicle</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden sm:table-cell">Type</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap">Stage/Status</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden lg:table-cell">Next Action</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden md:table-cell">Owner</th>
-            <th class="px-3 md:px-6 py-3 text-left label-upper whitespace-nowrap hidden xl:table-cell">Value</th>
-            <th class="px-3 md:px-6 py-3"></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr 
-            v-for="task in filteredTasks"
-            :key="task.compositeId"
-            @click="$emit('select', task.compositeId)"
-            class="hover:bg-gray-50 cursor-pointer transition-colors"
-            :class="{ 'bg-blue-50': isSelected(task) }"
-          >
-            <!-- Checkbox -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
-              <input type="checkbox" class="rounded">
-            </td>
-            
-            <!-- Customer -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap">
-              <div class="flex items-center gap-2 md:gap-3">
-                <div 
-                  class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                  :class="task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
-                >
-                  {{ task.customer.initials }}
-                </div>
-                <div class="min-w-0">
-                  <div class="text-content-bold truncate max-w-[120px] md:max-w-none">{{ task.customer.name }}</div>
-                  <div class="text-meta truncate hidden sm:block">{{ task.customer.email }}</div>
-                </div>
-              </div>
-            </td>
-            
-            <!-- Vehicle -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap">
-              <div class="flex items-center gap-2">
-                <div class="min-w-0">
-                  <div class="text-content font-medium truncate max-w-[120px]">
-                    {{ getVehicleInfo(task) }}
-                  </div>
-                  <div class="flex items-center gap-1 mt-0.5">
-                    <span 
-                      v-if="getVehicleType(task)"
-                      class="text-[10px] font-medium px-1.5 py-0.5 rounded-md"
-                      :class="getVehicleTypeBadgeClass(getVehicleType(task))"
-                    >
-                      {{ getVehicleType(task).label }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </td>
-            
-            <!-- Type (Lead/Opportunity) -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap hidden sm:table-cell">
-              <span 
-                class="badge-ui font-semibold"
-                :class="task.type === 'lead' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'"
-              >
-                {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
-              </span>
-            </td>
-            
-            <!-- Stage/Status -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap">
-              <div class="flex flex-col gap-1">
-                <span 
-                  class="badge-ui font-semibold"
-                  :class="props.getStageBadgeClass(task.type === 'lead' ? task.status : task.stage)"
-                >
-                  {{ task.type === 'lead' ? task.status : task.stage }}
-                </span>
-                <span 
-                  v-if="task.type === 'lead' && task.priority === 'Hot'"
-                  class="badge-ui bg-red-50 text-red-700 font-semibold flex items-center gap-1 w-fit"
-                >
-                  <i class="fa-solid fa-fire text-[9px]"></i> Hot
-                </span>
-              </div>
-            </td>
-            
-            <!-- Next Action Due -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap hidden lg:table-cell">
-              <div class="text-content">
-                <div 
-                  class="font-medium mb-0.5"
-                  :class="getDeadlineStatus(task.nextActionDue).textClass"
-                >
-                  {{ formatDeadlineFull(task.nextActionDue) }}
-                </div>
-                <div 
-                  class="text-xs flex items-center gap-1"
-                  :class="getDeadlineStatus(task.nextActionDue).textClass"
-                >
-                  <i 
-                    v-if="getDeadlineStatus(task.nextActionDue).icon"
-                    :class="`fa-solid ${getDeadlineStatus(task.nextActionDue).icon} text-[10px]`"
-                  ></i>
-                  <span>{{ getDateDisplay(task.nextActionDue) }}</span>
-                </div>
-              </div>
-            </td>
-            
-            <!-- Owner -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap hidden md:table-cell">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0">
-                  {{ getOwnerInfo(task).initials }}
-                </div>
-                <span class="text-content text-gray-600 truncate max-w-[80px]">{{ getOwnerInfo(task).name }}</span>
-              </div>
-            </td>
-            
-            <!-- Value (Opportunities only) -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap hidden xl:table-cell">
-              <div v-if="task.type === 'opportunity'" class="text-content font-semibold text-gray-900">
-                €{{ formatCurrency(task.value) }}
-              </div>
-              <div v-else class="text-gray-400">-</div>
-            </td>
-            
-            <!-- Actions Menu -->
-            <td class="px-3 md:px-6 py-3 whitespace-nowrap" @click.stop>
-              <button 
-                @click="$emit('menu-click', task.id)"
-                class="text-gray-400 hover:text-gray-600"
-              >
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div 
-                v-if="openMenuId === task.id"
-                class="absolute right-2 mt-2 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
-                v-click-outside="() => $emit('menu-close')"
-              >
-                <button 
-                  @click="$emit('reassign', task)"
-                  class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-user-plus w-4 text-gray-400"></i>
-                  Reassign
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-        </div>
+      <div class="table-wrapper flex-1 w-full">
+        <DataTable 
+          :data="filteredTasks" 
+          :columns="columns"
+          :meta="tableMeta"
+          @row-click="handleRowClick"
+          :columnFiltersOptions="{
+            filterDefs: filterDefinitions
+          }"
+          v-model:pagination="pagination"
+          v-model:globalFilter="globalFilter"
+          v-model:sorting="sorting"
+          v-model:columnFilters="columnFilters"
+          :paginationOptions="{
+            rowCount: filteredTasks.length
+          }"
+          :globalFilterOptions="{
+            debounce: 300
+          }"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, h, watch, nextTick } from 'vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import TaskFilters from './TaskFilters.vue'
 import ViewToggle from '@/components/shared/ViewToggle.vue'
+import { DataTable } from '@motork/component-library/future/components'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 
 const props = defineProps({
   tasks: { type: Array, required: true },
   currentTaskId: { type: String, default: null },
+  highlightId: { type: String, default: null },
   typeFilter: { type: String, default: 'all' },
   sortOption: { type: String, default: 'recent-first' },
   showTypeFilter: { type: Boolean, default: true },
@@ -239,24 +75,85 @@ const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change',
 
 const searchQuery = ref('')
 
-const filteredTasks = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return props.tasks
+// DataTable state management
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 10
+})
+
+const globalFilter = ref('')
+const sorting = ref([])
+const columnFilters = ref([])
+const columnVisibility = ref({})
+
+// Filter definitions for AI-powered filtering
+const filterDefinitions = computed(() => {
+  const defs = []
+  
+  // Type filter (only if showTypeFilter is true)
+  if (props.showTypeFilter) {
+    defs.push({
+      key: 'type',
+      label: 'Type',
+      type: 'select',
+      operators: [
+        { value: 'eq', label: 'is' }
+      ],
+      options: [
+        { value: 'lead', label: 'Lead' },
+        { value: 'opportunity', label: 'Opportunity' }
+      ],
+      aiHint: 'Lead or Opportunity type'
+    })
   }
   
-  const query = searchQuery.value.toLowerCase()
-  return props.tasks.filter(task => {
-    return (
-      task.customer.name.toLowerCase().includes(query) ||
-      task.customer.email?.toLowerCase().includes(query) ||
-      getVehicleInfo(task).toLowerCase().includes(query) ||
-      task.assignee?.toLowerCase().includes(query)
-    )
+  // Status/Stage filter
+  defs.push({
+    key: 'status',
+    label: 'Status',
+    type: 'multiselect',
+    operators: [
+      { value: 'in', label: 'is any of' },
+      { value: 'notIn', label: 'is none of' }
+    ],
+    options: [
+      { value: 'Valid', label: 'Valid' },
+      { value: 'Not valid', label: 'Not valid' },
+      { value: 'Qualified', label: 'Qualified' },
+      { value: 'In Negotiation', label: 'In Negotiation' },
+      { value: 'Won', label: 'Won' },
+      { value: 'Lost', label: 'Lost' }
+    ],
+    aiHint: 'Lead status or opportunity stage'
   })
+  
+  // Priority filter
+  defs.push({
+    key: 'priority',
+    label: 'Priority',
+    type: 'select',
+    operators: [
+      { value: 'eq', label: 'is' }
+    ],
+    options: [
+      { value: 'Hot', label: 'Hot' },
+      { value: 'Normal', label: 'Normal' }
+    ]
+  })
+  
+  return defs
+})
+
+// Sync searchQuery with globalFilter for DataTable
+const filteredTasks = computed(() => {
+  // DataTable handles filtering via globalFilter, so we can return all tasks
+  // The searchQuery is kept for backward compatibility but DataTable uses globalFilter
+  return props.tasks
 })
 
 const isSelected = (task) => {
-  return task.compositeId === props.currentTaskId
+  // Check both currentTaskId (when task detail is shown) and highlightId (when switching from card to table)
+  return task.compositeId === props.currentTaskId || task.compositeId === props.highlightId
 }
 
 const getVehicleInfo = (task) => {
@@ -285,48 +182,211 @@ const getDateDisplay = (date) => {
   
   return formatDeadlineFull(date)
 }
+
+// DataTable columns configuration
+const columns = computed(() => [
+  {
+    accessorKey: 'customer',
+    header: 'Customer',
+    meta: {
+      title: 'Customer',
+      onOpen: (row) => handleRowClick(row.original)
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
+        h('div', {
+          class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
+        }, task.customer.initials),
+        h('div', { class: 'min-w-0' }, [
+          h('div', { class: 'text-sm font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, task.customer.email)
+        ])
+      ])
+    }
+  },
+  {
+    accessorKey: 'vehicle',
+    header: 'Vehicle',
+    meta: {
+      title: 'Vehicle'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const vehicleType = props.getVehicleType(task)
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h('div', { class: 'min-w-0' }, [
+          h('div', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, getVehicleInfo(task)),
+          vehicleType ? h('div', { class: 'flex items-center gap-1 mt-0.5' }, [
+            h('span', {
+              class: `text-[10px] font-medium px-1.5 py-0.5 rounded-md ${props.getVehicleTypeBadgeClass(vehicleType)}`
+            }, vehicleType.label)
+          ]) : null
+        ])
+      ])
+    }
+  },
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    meta: {
+      title: 'Type'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const typeClass = task.type === 'lead' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+      return h('span', {
+        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${typeClass}`
+      }, task.type === 'lead' ? 'Lead' : 'Opportunity')
+    }
+  },
+  {
+    accessorKey: 'stage',
+    header: 'Stage/Status',
+    meta: {
+      title: 'Stage/Status'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const stageStatus = task.type === 'lead' ? task.status : (task.displayStage || task.stage)
+      const stageClass = props.getStageBadgeClass(stageStatus)
+      return h('div', { class: 'flex flex-col gap-1' }, [
+        h('span', {
+          class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${stageClass}`
+        }, stageStatus),
+        task.type === 'lead' && task.priority === 'Hot' ? h('span', {
+          class: 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-red-50 text-red-700 w-fit'
+        }, [
+          h('i', { class: 'fa-solid fa-fire text-[9px]' }),
+          'Hot'
+        ]) : null
+      ])
+    }
+  },
+  {
+    accessorKey: 'nextActionDue',
+    header: 'Next Action',
+    meta: {
+      title: 'Next Action'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      if (!task.nextActionDue) return '-'
+      const deadlineStatus = getDeadlineStatus(task.nextActionDue)
+      return h('div', { class: 'text-sm' }, [
+        h('div', {
+          class: `font-medium mb-0.5 ${deadlineStatus.textClass}`
+        }, formatDeadlineFull(task.nextActionDue)),
+        h('div', {
+          class: `text-xs flex items-center gap-1 ${deadlineStatus.textClass}`
+        }, [
+          deadlineStatus.icon ? h('i', { class: `fa-solid ${deadlineStatus.icon} text-[10px]` }) : null,
+          h('span', getDateDisplay(task.nextActionDue))
+        ])
+      ])
+    }
+  },
+  {
+    accessorKey: 'owner',
+    header: 'Owner',
+    meta: {
+      title: 'Owner'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const owner = props.getOwnerInfo(task)
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h('div', {
+          class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+        }, owner.initials),
+        h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px]' }, owner.name)
+      ])
+    }
+  },
+  {
+    accessorKey: 'value',
+    header: 'Value',
+    meta: {
+      title: 'Value'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      if (task.type === 'opportunity') {
+        return h('div', { class: 'text-sm font-semibold text-gray-900' }, `€${formatCurrency(task.value)}`)
+      }
+      return h('div', { class: 'text-gray-400' }, '-')
+    }
+  },
+  {
+    id: 'actions',
+    header: '',
+    meta: {
+      title: 'Actions'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      return h('button', {
+        class: 'text-gray-400 hover:text-gray-600',
+        onClick: (e) => {
+          e.stopPropagation()
+          emit('menu-click', task.id)
+        }
+      }, [
+        h('i', { class: 'fa-solid fa-ellipsis-vertical' })
+      ])
+    }
+  }
+])
+
+const handleRowClick = (record) => {
+  emit('select', record.compositeId)
+}
+
+// Table meta with row click handler and highlighting
+const tableMeta = computed(() => ({
+  class: {
+    tr: (row) => {
+      const baseClasses = 'cursor-pointer hover:bg-gray-50 transition-colors'
+      const task = row.original
+      if (isSelected(task)) {
+        // Highlight selected/highlighted row with a subtle background and border
+        return `${baseClasses} bg-blue-50 border-l-4 border-l-blue-500`
+      }
+      return baseClasses
+    }
+  }
+}))
+
+// Scroll highlighted row into view when table loads or highlightId changes
+watch(() => [props.highlightId, props.tasks], async ([newHighlightId]) => {
+  if (newHighlightId && props.tasks.length > 0) {
+    await nextTick()
+    // Wait for DataTable to render, then find and scroll to the highlighted row
+    setTimeout(() => {
+      const tableWrapper = document.querySelector('.table-wrapper')
+      if (!tableWrapper) return
+      
+      // Find the task in the data
+      const highlightedTask = props.tasks.find(t => t.compositeId === newHighlightId)
+      if (!highlightedTask) return
+      
+      // Try to find the row by searching for customer name or other unique identifier
+      // DataTable likely renders rows with the customer name, so we can search for that
+      const customerName = highlightedTask.customer?.name
+      if (customerName) {
+        // Find all table rows
+        const rows = tableWrapper.querySelectorAll('tbody tr, [role="row"]')
+        for (const row of rows) {
+          // Check if this row contains the customer name
+          if (row.textContent?.includes(customerName)) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+            break
+          }
+        }
+      }
+    }, 500)
+  }
+}, { immediate: true })
 </script>
 
-<style scoped>
-.label-upper {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgb(107 114 128);
-}
-
-.text-content {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-content-bold {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
-}
-
-.text-meta {
-  font-size: 0.75rem;
-  color: rgb(156 163 175);
-}
-
-.badge-ui {
-  display: inline-block;
-  font-size: 0.6875rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.375rem;
-  white-space: nowrap;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-</style>
 

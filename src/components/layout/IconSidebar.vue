@@ -3,7 +3,7 @@
     <!-- Logo/Brand -->
     <div 
       class="w-10 h-10 bg-[#F90032] rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
-      @click="router.push('/tasks/1')"
+      @click="router.push('/home')"
     >
       <span class="font-bold text-lg">PU</span>
     </div>
@@ -18,10 +18,19 @@
     >
       <i class="fa-solid fa-plus"></i>
     </router-link>
+
+    <!-- Home -->
+    <router-link
+      to="/home"
+      class="nav-icon"
+      :class="{ 'nav-icon-active': isActive('/home') }"
+    >
+      <i class="fa-solid fa-house"></i>
+    </router-link>
     
     <!-- Primary Navigation -->
     <router-link 
-      to="/tasks/1" 
+      to="/tasks" 
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/tasks') }"
       title="Tasks"
