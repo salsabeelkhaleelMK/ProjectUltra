@@ -185,6 +185,7 @@ const handleAddItem = (type) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .mobile-sidebar-link {
   @apply flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors;
 }

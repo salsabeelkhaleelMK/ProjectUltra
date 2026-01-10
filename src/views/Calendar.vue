@@ -406,6 +406,7 @@ const handleSaveEditedEvent = async (eventData) => {
 </script>
 
 <style>
+@reference "tailwindcss";
 /* FullCalendar custom styles - Improved readability */
 .fc {
   @apply font-sans text-sm;

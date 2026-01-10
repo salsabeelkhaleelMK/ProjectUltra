@@ -151,6 +151,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .nav-icon {
   @apply w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all relative;
   @apply hover:text-white hover:bg-gray-700;
