@@ -1,8 +1,8 @@
 [build]
   publish = "dist"
-  # Install AWS CLI if needed, then run build
-  # The preinstall script handles AWS credential mapping and CodeArtifact auth
-  # Netlify runs npm install automatically before this command
+  # Map Netlify env vars (_MK) to AWS CLI expected names, install AWS CLI if needed, then build
+  # Netlify runs npm install automatically before this command, so we export credentials here
+  # so they're available for the preinstall script
   command = "(which aws || (curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install)) && npm run build"
   # Node.js version is specified in .nvmrc file (Node 22)
   # Netlify will automatically detect and use it
@@ -10,10 +10,12 @@
 [build.environment]
   # AWS region for CodeArtifact
   AWS_DEFAULT_REGION = "eu-west-1"
+  # Map Netlify environment variables to AWS CLI expected names
+  # These will be set from the _MK versions in the build command
   # Note: Node version is specified in .nvmrc file (Node 22)
   # Required environment variables (set in Netlify UI):
-  # - AWS_ACCESS_KEY_ID_MK: AWS access key for CodeArtifact
-  # - AWS_SECRET_ACCESS_KEY_MK: AWS secret key for CodeArtifact
+  # - AWS_ACCESS_KEY_ID_MK: AWS access key for CodeArtifact (or set AWS_ACCESS_KEY_ID directly)
+  # - AWS_SECRET_ACCESS_KEY_MK: AWS secret key for CodeArtifact (or set AWS_SECRET_ACCESS_KEY directly)
   # Set these in: Site settings > Build & deploy > Environment variables
 
 # Cache node_modules to speed up builds
