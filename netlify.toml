@@ -10,7 +10,13 @@
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MK:-$AWS_SECRET_ACCESS_KEY} && \
     export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-west-1} && \
     rm -f .npmrc && \
-    (which aws || (curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install && export PATH="/usr/local/bin:$PATH")) && \
+    if ! command -v aws >/dev/null 2>&1; then
+      echo "Installing AWS CLI to user directory...";
+      curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip;
+      unzip -q /tmp/awscliv2.zip -d /tmp;
+      /tmp/aws/install --install-dir "$HOME/aws-cli" --bin-dir "$HOME/bin";
+      export PATH="$HOME/bin:$PATH";
+    fi && \
     echo "AWS CLI: $(aws --version)" && \
     echo "Getting CodeArtifact token..." && \
     AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain motork --domain-owner 678121811175 --region eu-west-1 --query authorizationToken --output text) && \
