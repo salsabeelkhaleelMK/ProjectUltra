@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "npm run auth:codeartifact && vite build",
     "preview": "vite preview",
-    "auth:codeartifact": "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MK:-$AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MK:-$AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-west-1} aws codeartifact login --tool npm --repository ui-component-library --domain motork --domain-owner 678121811175 --region eu-west-1",
-    "preinstall": "(which aws || (curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install)) && npm run auth:codeartifact || echo 'Warning: AWS CodeArtifact authentication failed. Continuing...'"
+    "auth:codeartifact": "bash scripts/netlify-auth.sh || (AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_MK:-$AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_MK:-$AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-west-1} aws codeartifact login --tool npm --repository ui-component-library --domain motork --domain-owner 678121811175 --region eu-west-1)",
+    "preinstall": "bash scripts/netlify-auth.sh"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.10",
