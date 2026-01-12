@@ -100,13 +100,15 @@
       </div>
       
       <!-- Settings Icon -->
-      <button
+      <router-link
         v-if="userStore.canAccessSettings()"
+        to="/settings"
         class="nav-icon"
+        :class="{ 'nav-icon-active': isActive('/settings') }"
         title="Settings"
       >
         <i class="fa-solid fa-gear"></i>
-      </button>
+      </router-link>
     </div>
   </div>
 </template>

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import * as opportunitiesApi from '@/api/opportunities'
 import { mockActivities } from '@/api/mockData'
+import { useSettingsStore } from '@/stores/settings'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
   const opportunities = ref([])
@@ -81,6 +82,36 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     loading.value = true
     error.value = null
     try {
+      // Check if opportunity is being closed and auto-close is enabled
+      const settingsStore = useSettingsStore()
+      const autoCloseEnabled = settingsStore.getSetting('autoCloseWidgetsOnClose')
+      const currentOpp = currentOpportunity.value?.id === id ? currentOpportunity.value : opportunities.value.find(o => o.id === id)
+      
+      // Check if stage is changing to Closed Won or Closed Lost
+      if (autoCloseEnabled && updates.stage && (updates.stage === 'Closed Won' || updates.stage === 'Closed Lost')) {
+        const currentStage = currentOpp?.stage
+        // Only auto-close if transitioning from an active stage
+        if (currentStage && currentStage !== 'Closed Won' && currentStage !== 'Closed Lost') {
+          // Find and mark NFU/OFB activities as completed
+          const nfuOfbActivities = mockActivities.filter(activity => 
+            activity.opportunityId === parseInt(id) && 
+            (activity.type === 'nfu-task' || activity.type === 'ofb-task' || 
+             activity.action?.includes('NFU') || activity.action?.includes('OFB'))
+          )
+          
+          // Mark activities as completed
+          for (const activity of nfuOfbActivities) {
+            if (!activity.completed) {
+              await updateActivity(id, activity.id, { 
+                completed: true,
+                completedAt: new Date().toISOString(),
+                completionReason: `Opportunity closed as ${updates.stage}`
+              })
+            }
+          }
+        }
+      }
+      
       const updated = await opportunitiesApi.updateOpportunity(id, updates)
       const index = opportunities.value.findIndex(o => o.id === id)
       if (index !== -1) {

@@ -32,10 +32,10 @@
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-phone text-gray-600 text-xs"></i>
           <span class="text-xs font-semibold text-slate-700">Contact Attempts:</span>
-          <span class="text-xs font-bold text-slate-800">{{ contactAttempts }} / 5</span>
+          <span class="text-xs font-bold text-slate-800">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
         </div>
         <div 
-          v-if="contactAttempts >= 4"
+          v-if="contactAttempts >= maxContactAttempts - 1"
           class="text-xs text-orange-600 font-medium flex items-center gap-1"
         >
           <i class="fa-solid fa-exclamation-triangle"></i>
@@ -67,7 +67,7 @@
         <i class="fa-solid fa-phone"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
         <span v-if="contactAttempts > 0" class="bg-blue-500 px-2 py-0.5 rounded text-xs font-bold">
-          {{ contactAttempts + 1 }}/5
+          {{ contactAttempts + 1 }}/{{ maxContactAttempts }}
         </span>
       </button>
       
@@ -654,6 +654,7 @@ import ScheduleAppointmentWidget from '@/components/customer/ScheduleAppointment
 import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
+import { useSettingsStore } from '@/stores/settings'
 import { formatDate, formatTime } from '@/utils/formatters'
 
 const props = defineProps({
@@ -671,6 +672,7 @@ const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified',
 
 const usersStore = useUsersStore()
 const userStore = useUserStore()
+const settingsStore = useSettingsStore()
 
 const isCallActive = ref(false)
 const callEnded = ref(false)
@@ -788,6 +790,10 @@ const statusBadge = computed(() => {
 
 const contactAttempts = computed(() => {
   return props.lead.contactAttempts?.length || 0
+})
+
+const maxContactAttempts = computed(() => {
+  return settingsStore.getSetting('maxContactAttempts')
 })
 
 const existingNotes = computed(() => {
@@ -995,7 +1001,7 @@ const handleNoAnswerConfirm = async () => {
     createAppointment: true
     })
     
-    if (contactAttempts.value + 1 >= 5) {
+    if (contactAttempts.value + 1 >= maxContactAttempts.value) {
       emit('disqualified', {
         category: 'Not Interested',
         reason: 'Unreachable'

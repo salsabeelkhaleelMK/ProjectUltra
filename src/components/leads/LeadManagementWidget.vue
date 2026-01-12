@@ -75,7 +75,8 @@
       <!-- Active States -->
       <template v-if="!isClosedState">
         <!-- LQ Widget - The main call simulation task (preserved) -->
-        <LQWidget 
+        <LQWidget
+          v-if="displayStage === 'New' || !isClosedState" 
           :lead="lead"
           @postponed="handlePostponed"
           @validated="handleValidated"

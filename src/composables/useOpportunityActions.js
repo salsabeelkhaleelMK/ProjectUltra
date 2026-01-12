@@ -22,6 +22,7 @@ import OFBWidget from '@/components/opportunities/tasks/OFBWidget.vue'
 import CFBWidget from '@/components/opportunities/tasks/CFBWidget.vue'
 import DFBWidget from '@/components/opportunities/tasks/DFBWidget.vue'
 import NSWidget from '@/components/opportunities/tasks/NSWidget.vue'
+import AbandonedWidget from '@/components/opportunities/tasks/AbandonedWidget.vue'
 
 // Map widget types to components
 const TASK_WIDGET_COMPONENTS = {
@@ -31,7 +32,8 @@ const TASK_WIDGET_COMPONENTS = {
   'OFB': OFBWidget,
   'CFB': CFBWidget,
   'DFB': DFBWidget,
-  'NS': NSWidget
+  'NS': NSWidget,
+  'ABANDONED': AbandonedWidget
 }
 
 /**
@@ -71,13 +73,18 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
     if (!widgetType) return null
     
     const component = TASK_WIDGET_COMPONENTS[widgetType]
-    if (!component) return null
+    if (!component) {
+      console.warn(`No component found for widget type: ${widgetType}`)
+      return null
+    }
     
     return {
+      type: widgetType,
       component,
       props: {
         opportunity: ctx.opportunity,
-        appointment: ctx.scheduledAppointment
+        appointment: ctx.scheduledAppointment,
+        activities: ctx.activities
       }
     }
   })
@@ -127,14 +134,9 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
 
   // Get task widget title
   const taskWidgetTitle = computed(() => {
-    if (!activeTaskWidget.value) return ''
+    if (!activeTaskWidget.value || !activeTaskWidget.value.type) return ''
     
-    const componentName = activeTaskWidget.value.component.__name || activeTaskWidget.value.component.name
-    
-    // Extract widget type from component name (e.g., "OOFBWidget" -> "OOFB")
-    const widgetType = componentName.replace('Widget', '')
-    
-    return getTaskWidgetTitle(widgetType)
+    return getTaskWidgetTitle(activeTaskWidget.value.type)
   })
 
   return {

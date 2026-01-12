@@ -5,6 +5,8 @@
  * Maintains backward compatibility with legacy API while providing granular stage tracking
  */
 
+import { useSettingsStore } from '@/stores/settings'
+
 // ========================================
 // STAGE DEFINITIONS
 // ========================================
@@ -18,7 +20,8 @@ export const OPPORTUNITY_STAGES = {
   AWAITING_RESPONSE: 'Awaiting Response',
   CONTRACT_PENDING: 'Contract Pending',
   CLOSED_WON: 'Closed Won',
-  CLOSED_LOST: 'Closed Lost'
+  CLOSED_LOST: 'Closed Lost',
+  ABANDONED: 'Abandoned'
 }
 
 // Delivery Substatus - used within Closed Won stage
@@ -141,6 +144,12 @@ function calculateOpportunityDisplayStage(opportunity) {
     return OPPORTUNITY_STAGES.CLOSED_WON
   }
   
+  // Check for abandoned status (before other stages)
+  // Note: Abandoned is typically handled via task widget condition, but we check here if explicitly set
+  if (apiStatus === 'Abandoned') {
+    return OPPORTUNITY_STAGES.ABANDONED
+  }
+  
   // In Negotiation and substates
   if (apiStatus === API_STATUSES.IN_NEGOTIATION) {
     // Contract pending
@@ -151,9 +160,11 @@ function calculateOpportunityDisplayStage(opportunity) {
     // Offer states
     const lastOffer = getLastOffer(activities)
     if (lastOffer) {
+      const settingsStore = useSettingsStore()
+      const threshold = settingsStore.getSetting('offerSentToAwaitingResponseDays')
       const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
       
-      if (daysSinceOffer >= 3) {
+      if (daysSinceOffer >= threshold) {
         return OPPORTUNITY_STAGES.AWAITING_RESPONSE
       }
       return OPPORTUNITY_STAGES.OFFER_SENT
@@ -224,7 +235,8 @@ function mapOpportunityStageToApiStatus(displayStage) {
     [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CLOSED_WON]: API_STATUSES.CLOSED_WON,
-    [OPPORTUNITY_STAGES.CLOSED_LOST]: API_STATUSES.CLOSED_LOST
+    [OPPORTUNITY_STAGES.CLOSED_LOST]: API_STATUSES.CLOSED_LOST,
+    [OPPORTUNITY_STAGES.ABANDONED]: API_STATUSES.QUALIFIED // Abandoned maps back to Qualified for API
   }
   
   return mapping[displayStage] || API_STATUSES.QUALIFIED
@@ -236,33 +248,39 @@ function getOpportunityTransitions() {
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
       OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: [
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: [
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: [
       OPPORTUNITY_STAGES.OFFER_SENT,
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.OFFER_SENT]: [
       OPPORTUNITY_STAGES.AWAITING_RESPONSE,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: [
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
       OPPORTUNITY_STAGES.OFFER_SENT,
-      OPPORTUNITY_STAGES.CLOSED_LOST
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: [
       OPPORTUNITY_STAGES.CLOSED_WON,
@@ -273,6 +291,10 @@ function getOpportunityTransitions() {
     ],
     [OPPORTUNITY_STAGES.CLOSED_LOST]: [
       OPPORTUNITY_STAGES.QUALIFIED  // Reopen
+    ],
+    [OPPORTUNITY_STAGES.ABANDONED]: [
+      OPPORTUNITY_STAGES.QUALIFIED,  // Reopen
+      OPPORTUNITY_STAGES.CLOSED_LOST
     ]
   }
 }
@@ -433,7 +455,8 @@ export function getStageColor(displayStage, entityType = 'opportunity') {
     [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: 'bg-pink-50 text-pink-700 border-pink-200',
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     [OPPORTUNITY_STAGES.CLOSED_WON]: 'bg-green-100 text-green-800 border-green-300',
-    [OPPORTUNITY_STAGES.CLOSED_LOST]: 'bg-red-50 text-red-700 border-red-200'
+    [OPPORTUNITY_STAGES.CLOSED_LOST]: 'bg-red-50 text-red-700 border-red-200',
+    [OPPORTUNITY_STAGES.ABANDONED]: 'bg-gray-50 text-gray-700 border-gray-200'
   }
   
   const leadColors = {

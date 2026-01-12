@@ -56,7 +56,7 @@
       />
 
       <!-- Task Widgets (conditionally rendered based on displayStage) -->
-      <div v-if="activeTaskWidget" class="space-y-3">
+      <div v-if="activeTaskWidget && activeTaskWidget.component" class="space-y-3">
         <!-- Task Title Header -->
         <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
           <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>

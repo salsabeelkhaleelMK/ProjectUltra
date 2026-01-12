@@ -252,17 +252,9 @@
   color: #1d4ed8 !important;
 }
 
-/* DataTable Component Isolation - Prevent theme styles from breaking AI table */
-/* Isolate DataTable from Tailwind base table resets and theme styles */
+/* DataTable Component Wrapper */
+/* Removed isolation: isolate - it was preventing component library styles from applying */
 .table-wrapper {
-  /* Create isolation context to prevent style leakage */
-  isolation: isolate;
-}
-
-/* Prevent Tailwind base table styles from overriding DataTable's internal styling */
-/* Only apply minimal resets that won't interfere with component functionality */
-.table-wrapper table {
-  /* Reset to defaults that won't conflict with DataTable's own styling */
-  border-collapse: separate;
-  border-spacing: 0;
+  /* Let component library styles apply naturally */
+  width: 100%;
 }

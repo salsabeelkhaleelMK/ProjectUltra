@@ -6,6 +6,7 @@
  */
 
 import { OPPORTUNITY_STATE_CONFIG, CLOSED_OPPORTUNITY_ACTIONS } from '@/composables/useOpportunityStateMachine'
+import { useSettingsStore } from '@/stores/settings'
 
 // Helper function to calculate days since a date
 function calculateDaysSince(dateString) {
@@ -46,13 +47,18 @@ export const OpportunityConditions = {
 
   // Qualified stage conditions
   'qualified-no-offers-7-13-days': (context) => {
+    const settingsStore = useSettingsStore()
+    const minDays = settingsStore.getSetting('oofbMinDays')
+    const maxDays = settingsStore.getSetting('oofbMaxDays')
     const days = calculateDaysSince(context.opportunity.createdAt)
-    return days >= 7 && days < 14 && !context.hasOffers
+    return days >= minDays && days < maxDays + 1 && !context.hasOffers
   },
   
   'qualified-no-offers-14-plus-days': (context) => {
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('ufbDays')
     const days = calculateDaysSince(context.opportunity.createdAt)
-    return days >= 14 && !context.hasOffers
+    return days >= threshold && !context.hasOffers
   },
 
   // Negotiation stage conditions
@@ -62,8 +68,10 @@ export const OpportunityConditions = {
       return false
     }
     
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('ofbDays')
     const days = calculateDaysSince(context.opportunity.lastActivity || context.opportunity.createdAt)
-    return days >= 5 && !context.opportunity.contractDate && context.hasOffers
+    return days >= threshold && !context.opportunity.contractDate && context.hasOffers
   },
   
   'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers': (context) => {
@@ -72,23 +80,32 @@ export const OpportunityConditions = {
       return false
     }
     
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('nfuDays')
     const days = calculateDaysSince(context.opportunity.lastActivity || context.opportunity.createdAt)
     const hasFutureAppointment = context.scheduledAppointment && 
       new Date(context.scheduledAppointment.start) > new Date()
     
-    return days >= 5 && !context.opportunity.contractDate && !hasFutureAppointment && context.hasOffers
+    return days >= threshold && !context.opportunity.contractDate && !hasFutureAppointment && context.hasOffers
   },
 
   // Contract/Delivery conditions
   'contract-7-plus-days-no-delivery': (context) => {
     if (!context.opportunity.contractDate) return false
     
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('cfbDays')
     const days = calculateDaysSince(context.opportunity.contractDate)
     const hasDelivery = context.activities?.some(a => 
       a.type === 'delivery' || a.action?.toLowerCase().includes('delivered')
     )
     
-    return days >= 7 && !hasDelivery
+    return days >= threshold && !hasDelivery
+  },
+  
+  'delivery-date-set': (context) => {
+    // Trigger DFB immediately when delivery date is set
+    return !!context.opportunity.deliveryDate
   },
   
   'delivery-3-plus-days': (context) => {
@@ -98,8 +115,10 @@ export const OpportunityConditions = {
     
     if (!deliveryActivity) return false
     
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('dfbDays')
     const days = calculateDaysSince(deliveryActivity.timestamp)
-    return days >= 3
+    return days >= threshold
   },
 
   // Delivery substatus conditions
@@ -123,6 +142,29 @@ export const OpportunityConditions = {
   
   'is-closed-with-task-widget': (context) => {
     return OpportunityConditions['is-closed'](context) && context.hasActiveTaskWidget
+  },
+
+  // Abandoned condition
+  'opportunity-abandoned': (context) => {
+    // Don't mark as abandoned if already closed
+    if (OpportunityConditions['is-closed'](context)) {
+      return false
+    }
+
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('abandonedOpportunityDays')
+    const eligibleStages = settingsStore.getSetting('abandonedEligibleStages')
+    
+    // Check if stage is eligible
+    if (!eligibleStages.includes(context.stage)) {
+      return false
+    }
+    
+    // Calculate days since last activity
+    const lastActivity = context.opportunity.lastActivity || context.opportunity.createdAt
+    const days = calculateDaysSince(lastActivity)
+    
+    return days >= threshold
   }
 }
 
@@ -165,8 +207,18 @@ export function getActiveTaskWidget(stage, context) {
     return null
   }
   
+  // Check if opportunity is closed and auto-close is enabled
+  const settingsStore = useSettingsStore()
+  const autoCloseEnabled = settingsStore.getSetting('autoCloseWidgetsOnClose')
+  const isClosed = OpportunityConditions['is-closed']({ stage })
+  
   // Check each widget's condition in order
   for (const widget of stageConfig.taskWidgets) {
+    // Auto-close NFU/OFB widgets when opportunity is closed (if enabled)
+    if (autoCloseEnabled && isClosed && (widget.type === 'NFU' || widget.type === 'OFB')) {
+      continue // Skip this widget
+    }
+    
     const conditionFn = OpportunityConditions[widget.condition]
     if (conditionFn && conditionFn(context)) {
       return widget.type
@@ -208,7 +260,8 @@ export function getTaskWidgetTitle(widgetType) {
     'OFB': 'Offer Follow-up Task',
     'CFB': 'Contract Follow-up Task',
     'DFB': 'Delivery Follow-up Task',
-    'NS': 'No-Show Follow-up Task'
+    'NS': 'No-Show Follow-up Task',
+    'ABANDONED': 'Abandoned Opportunity Task'
   }
   
   return titles[widgetType] || 'Task'

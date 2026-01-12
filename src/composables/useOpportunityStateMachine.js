@@ -306,7 +306,37 @@ export const OPPORTUNITY_STATE_CONFIG = {
     ],
     taskWidgets: [
       { type: 'CFB', condition: 'contract-7-plus-days-no-delivery' },
+      { type: 'DFB', condition: 'delivery-date-set' },
       { type: 'DFB', condition: 'delivery-3-plus-days' }
+    ]
+  },
+
+  'Abandoned': {
+    primaryAction: {
+      key: 'reopen',
+      title: 'Opportunity Abandoned',
+      description: 'This opportunity has been inactive for an extended period. Reopen it to continue the sales process.',
+      label: 'Reopen Opportunity',
+      icon: 'fa-solid fa-rotate-left',
+      buttonClass: 'bg-gray-600 hover:bg-gray-700 text-white',
+      colorScheme: { background: 'bg-gray-50/50', border: 'border-gray-100' }
+    },
+    secondaryActions: [
+      {
+        key: 'close-lost',
+        label: 'Close as Lost',
+        icon: 'fa-solid fa-xmark',
+        description: 'Mark this opportunity as lost'
+      },
+      {
+        key: 'requalify',
+        label: 'Requalify as Lead',
+        icon: 'fa-solid fa-arrow-left',
+        description: 'Convert back to a lead'
+      }
+    ],
+    taskWidgets: [
+      { type: 'ABANDONED', condition: 'opportunity-abandoned' }
     ]
   }
 }

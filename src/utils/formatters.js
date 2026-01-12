@@ -1,4 +1,44 @@
 /**
+ * Formatters utility
+ * Centralized formatting functions for dates, currency, etc.
+ */
+
+import { useSettingsStore } from '@/stores/settings'
+
+/**
+ * Calculate conversion rate from leads to opportunities
+ * Optionally excludes "NOT VALID" leads based on settings
+ * @param {Array} leads - Array of lead objects
+ * @param {Array} opportunities - Array of opportunity objects
+ * @returns {number} Conversion rate as a percentage (0-100)
+ */
+export function calculateConversionRate(leads, opportunities) {
+  const settingsStore = useSettingsStore()
+  const excludeNotValid = settingsStore.getSetting('excludeNotValidFromConversion')
+  
+  // Filter leads based on exclusion setting
+  let validLeads = leads
+  if (excludeNotValid) {
+    validLeads = leads.filter(lead => {
+      // Exclude "Closed - Invalid" stage and duplicates
+      return lead.stage !== 'Closed - Invalid' && 
+             lead.stage !== 'Not Valid' &&
+             !lead.isDuplicate
+    })
+  }
+  
+  if (validLeads.length === 0) return 0
+  
+  // Count opportunities that were created from leads
+  const convertedCount = opportunities.filter(opp => {
+    // Check if opportunity has a leadId or was created from a lead
+    return opp.leadId || opp.source === 'Lead'
+  }).length
+  
+  return (convertedCount / validLeads.length) * 100
+}
+
+/**
  * Format a due date timestamp for display
  * @param {string} isoTimestamp - ISO timestamp string
  * @returns {string} Formatted string: "OVERDUE", "2h 30m", or "Dec 22"

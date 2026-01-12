@@ -3,21 +3,15 @@
     <!-- Header -->
     <PageHeader title="Vehicles Inventory" :subtitle="`${vehiclesStore.totalVehicles} vehicles in inventory`" />
     
-    <!-- Filters + Table -->
+    <!-- Content with padding -->
     <div class="p-4 md:p-8">
-      <!-- Add New button -->
-      <div class="mb-6 flex justify-end">
-        <button class="btn-primary-lg">
-          <i class="fa-solid fa-plus"></i> Add new
-        </button>
-      </div>
-
       <!-- Table -->
       <div class="table-wrapper w-full">
         <DataTable 
           :data="vehiclesStore.vehicles" 
           :columns="columns"
           :loading="vehiclesStore.loading"
+          :meta="tableMeta"
           :columnFiltersOptions="{
             filterDefs: filterDefinitions
           }"
@@ -29,9 +23,17 @@
             rowCount: vehiclesStore.totalVehicles
           }"
           :globalFilterOptions="{
-            debounce: 300
+            debounce: 300,
+            placeholder: 'Q Search or ask a question'
           }"
         >
+          <!-- Toolbar slot for action buttons -->
+          <template #toolbar>
+            <button class="btn-primary-lg">
+              <i class="fa-solid fa-plus"></i> Add new
+            </button>
+          </template>
+          
           <template #empty-state>
             <div class="empty-state">
               <i class="fa-solid fa-car empty-state-icon"></i>
@@ -134,6 +136,13 @@ const formatCurrency = (value) => {
 const formatNumber = (value) => {
   return new Intl.NumberFormat('en-US').format(value)
 }
+
+// Table meta for row styling
+const tableMeta = computed(() => ({
+  class: {
+    tr: () => 'cursor-pointer hover:bg-gray-50 transition-colors'
+  }
+}))
 
 // DataTable columns configuration (TanStack Table format)
 const columns = computed(() => [

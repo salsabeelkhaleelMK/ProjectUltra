@@ -62,6 +62,19 @@ const routes = [
         }
       },
       {
+        path: 'settings',
+        name: 'settings',
+        component: () => import('@/views/Settings.vue'),
+        beforeEnter: (to, from, next) => {
+          const userStore = useUserStore()
+          if (userStore.canAccessSettings()) {
+            next()
+          } else {
+            next('/access-denied')
+          }
+        }
+      },
+      {
         path: 'access-denied',
         name: 'access-denied',
         component: () => import('@/views/AccessDenied.vue')

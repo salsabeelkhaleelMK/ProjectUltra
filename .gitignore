@@ -19,6 +19,11 @@ node_modules
 dist-ssr
 *.local
 
+# Local development files (restored from _package.json for npm)
+# These are generated locally but _package.json is what's committed for Netlify
+package.json
+package-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
