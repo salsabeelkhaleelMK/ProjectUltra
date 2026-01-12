@@ -59,20 +59,20 @@
         >
           <template #badges="{ item: task }">
             <!-- Type Badge -->
-            <span 
-              class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
-              :class="task.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
-            >
-              {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
-            </span>
+            <Badge
+              v-if="task && task.type"
+              :text="task.type === 'lead' ? 'Lead' : 'Opportunity'"
+              size="small"
+              :theme="task.type === 'lead' ? 'blue' : 'gray'"
+            />
             
             <!-- Hot Badge (for leads) -->
-            <span 
-              v-if="task.priority === 'Hot'"
-              class="px-1.5 py-0.5 bg-red-50 text-red-600 rounded text-[9px] font-bold uppercase"
-            >
-              HOT
-            </span>
+            <Badge
+              v-if="task && task.priority === 'Hot'"
+              text="HOT"
+              size="small"
+              theme="red"
+            />
           </template>
           
           <template #location="{ item: task }">
@@ -230,6 +230,7 @@ import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
+import { Badge } from '@motork/component-library'
 import EntityListSidebar from '@/components/tasks/TasksList.vue'
 import TasksTableView from '@/components/tasks/TasksTableView.vue'
 import TaskShell from '@/components/customer/CustomerShell.vue'

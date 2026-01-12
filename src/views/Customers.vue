@@ -15,23 +15,27 @@
           :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
         >
           <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
-          <span 
-            class="px-2.5 py-1 text-sm font-semibold rounded-full min-w-[32px] text-center"
-            :class="activeTab === tab.key ? tab.badgeColor : 'bg-muted text-muted-foreground'"
-          >
-            {{ tab.count }}
-          </span>
+          <Badge
+            :text="String(tab.count)"
+            size="small"
+            :theme="getBadgeTheme(tab.key, activeTab === tab.key)"
+          />
         </button>
       </div>
       <!-- Add New button -->
       <div class="mb-6 flex justify-end">
-        <button 
+        <div 
           v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
-          @click="showAddModal = true"
-          class="btn-primary-lg"
+          class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-plus"></i> Add new
-        </button>
+          <i class="fa-solid fa-plus"></i>
+          <Button
+            label="Add new"
+            variant="primary"
+            size="large"
+            @click="showAddModal = true"
+          />
+        </div>
       </div>
 
       <!-- Table -->
@@ -81,12 +85,14 @@ import { useRouter, useRoute } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
 import { DataTable } from '@motork/component-library/future/components'
+import { Button, Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useContactsStore } from '@/stores/contacts'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import * as customersApi from '@/api/customers'
+import { mockActivities } from '@/api/mockData'
 
 const router = useRouter()
 const route = useRoute()
@@ -340,16 +346,43 @@ const rows = computed(() => {
     filteredCustomers = customers.value.filter(c => c.company && c.company !== '')
   }
   
+  // Helper to extract location from address
+  const getLocation = (address) => {
+    if (!address) return 'N/A'
+    // Extract city from address (last part after comma)
+    const parts = address.split(',')
+    if (parts.length > 1) {
+      const cityPart = parts[parts.length - 1].trim()
+      // Remove postal code if present
+      const city = cityPart.replace(/^\d+\s*/, '').trim()
+      return city || address
+    }
+    return address
+  }
+
   const customerRows = filteredCustomers.map((customer) => ({
     id: `customer-${customer.id}`,
     stageKey: 'contacts',
     customer: customer.name,
-    email: customer.email,
-    phone: customer.phone,
-    company: customer.company || '-',
+    accountType: customer.company && customer.company !== '' ? 'Account' : 'Contact',
+    telephone: customer.phone,
+    location: getLocation(customer.address),
+    createdAt: formatDate(customer.createdAt),
+    // For accounts, additional fields
+    name: customer.name,
+    accountOwner: customer.source || 'N/A', // Using source as placeholder for account owner
+    updatedAt: formatDate(customer.lastContact || customer.createdAt),
+    lastActivity: formatDate(customer.lastContact),
+    openOpportunities: opportunitiesStore.opportunities.filter(opp => 
+      opp.customerId === customer.id && 
+      opp.stage !== 'Closed Won' && 
+      opp.stage !== 'Closed Lost'
+    ).length,
+    wonOpportunities: opportunitiesStore.opportunities.filter(opp => 
+      opp.customerId === customer.id && 
+      opp.stage === 'Closed Won'
+    ).length,
     initials: customer.initials || customer.name.slice(0,2).toUpperCase(),
-    source: customer.source || 'Marketing',
-    tags: customer.tags || [],
     type: customer.company && customer.company !== '' ? 'account' : 'contact',
     customerId: customer.id
   }))
@@ -385,6 +418,14 @@ const rows = computed(() => {
     priority: lead.priority || 'Normal'
   }))
   
+  // Helper to get last appointment from activities
+  const getLastAppointment = (opportunityId) => {
+    const appointmentActivities = mockActivities
+      .filter(a => a.opportunityId === opportunityId && a.type === 'appointment')
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    return appointmentActivities.length > 0 ? appointmentActivities[0].timestamp : null
+  }
+
   const oppRows = opportunitiesStore.opportunities.map((opp) => {
     let stageKey = 'open-opportunities'
     if (opp.stage === 'In Negotiation' || opp.stage === 'In negotiation') {
@@ -394,6 +435,7 @@ const rows = computed(() => {
     } else if (opp.stage === 'Closed Lost') {
       stageKey = 'lost'
     }
+    const lastAppointment = getLastAppointment(opp.id)
     return {
       id: `opp-${opp.id}`,
       stageKey,
@@ -401,15 +443,17 @@ const rows = computed(() => {
       email: opp.customer?.email || '',
       initials: opp.customer?.initials || opp.customer?.name?.slice(0,2).toUpperCase() || '?',
       nextAction: formatDueDate(opp.expectedCloseDate) || 'No due date',
+      nextActionFull: formatDeadlineFull(opp.expectedCloseDate),
+      deadlineStatus: getDeadlineStatus(opp.expectedCloseDate),
       car: `${opp.vehicle?.brand || ''} ${opp.vehicle?.model || ''}`.trim() || 'N/A',
       carStatus: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'In Stock' : 'Out of Stock',
       carStatusClass: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
-      requestType: 'Opportunity',
+      requestType: opp.requestType || 'Opportunity',
       source: opp.source || 'Marketing',
       assignee: opp.assignee,
       assigneeInitials: opp.assignee ? opp.assignee.slice(0,2).toUpperCase() : 'NA',
       createdAt: formatDate(opp.createdAt),
-      lastActivity: formatDate(opp.lastActivity),
+      lastAppointment: lastAppointment ? formatDate(lastAppointment) : 'N/A',
       status: opp.stage,
       statusClass: stageKey === 'in-negotiation' ? 'bg-orange-100 text-orange-700' : stageKey === 'won' ? 'bg-green-100 text-green-700' : stageKey === 'lost' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700',
       priority: opp.priority || 'Normal'
@@ -472,6 +516,22 @@ const formatDate = (dateString) => {
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
+const getBadgeTheme = (tabKey, isActive) => {
+  if (!isActive || !tabKey) return 'gray'
+  const themeMap = {
+    'contacts': 'gray', // Purple not available, use gray
+    'open-leads': 'blue',
+    'open-opportunities': 'blue', // Orange not available, use blue
+    'in-negotiation': 'blue',
+    'won': 'green',
+    'lost': 'red'
+  }
+  const theme = themeMap[tabKey] || 'gray'
+  // Ensure we always return a valid theme
+  const validThemes = ['blue', 'green', 'red', 'gray']
+  return validThemes.includes(theme) ? theme : 'gray'
+}
+
 // Load data on mount
 onMounted(async () => {
   loadingCustomers.value = true
@@ -524,13 +584,13 @@ const tableMeta = computed(() => ({
 // DataTable columns configuration - dynamic based on activeTab
 const columns = computed(() => {
   if (activeTab.value === 'contacts') {
-    // Contacts columns
+    // Contacts columns - unified for contacts and accounts
     return [
       {
         accessorKey: 'customer',
-        header: 'Contact',
+        header: 'Customer',
         meta: { 
-          title: 'Contact',
+          title: 'Customer',
           onOpen: (row) => handleRowClick(row.original)
         },
         cell: ({ row }) => {
@@ -546,53 +606,76 @@ const columns = computed(() => {
         }
       },
       {
-        accessorKey: 'company',
-        header: 'Company',
-        meta: { title: 'Company' },
+        accessorKey: 'accountType',
+        header: 'Account type',
+        meta: { title: 'Account type' },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600 truncate block max-w-[100px]' }, row.original.company || '-')
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.accountType || 'N/A')
         }
       },
       {
-        accessorKey: 'email',
-        header: 'Email',
-        meta: { title: 'Email' },
+        accessorKey: 'telephone',
+        header: 'Telephone',
+        meta: { title: 'Telephone' },
         cell: ({ row }) => {
-          return h('div', { class: 'text-sm text-gray-600 truncate max-w-[150px]' }, row.original.email)
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.telephone || 'N/A')
         }
       },
       {
-        accessorKey: 'phone',
-        header: 'Phone',
-        meta: { title: 'Phone' },
+        accessorKey: 'location',
+        header: 'Location',
+        meta: { title: 'Location' },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, row.original.phone)
+          return h('span', { class: 'text-sm text-gray-600 truncate max-w-[150px]' }, row.original.location || 'N/A')
         }
       },
       {
-        accessorKey: 'source',
-        header: 'Source',
-        meta: { title: 'Source' },
+        accessorKey: 'createdAt',
+        header: 'Created at',
+        meta: { title: 'Created at' },
         cell: ({ row }) => {
-          return h('span', {
-            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
-          }, row.original.source)
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+        }
+      },
+      // Account-specific columns (show N/A for contacts)
+      {
+        accessorKey: 'accountOwner',
+        header: 'Account owner',
+        meta: { title: 'Account owner' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.accountOwner || 'N/A') : 'N/A')
         }
       },
       {
-        accessorKey: 'tags',
-        header: 'Tags',
-        meta: { title: 'Tags' },
+        accessorKey: 'updatedAt',
+        header: 'Updated at',
+        meta: { title: 'Updated at' },
         cell: ({ row }) => {
-          const tags = row.original.tags
-          if (tags && tags.length > 0) {
-            return h('div', { class: 'flex flex-wrap gap-1' }, tags.map(tag =>
-              h('span', {
-                class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700'
-              }, tag)
-            ))
-          }
-          return h('span', { class: 'text-xs text-gray-400' }, '-')
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.updatedAt || 'N/A') : 'N/A')
+        }
+      },
+      {
+        accessorKey: 'lastActivity',
+        header: 'Last activity',
+        meta: { title: 'Last activity' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.lastActivity || 'N/A') : 'N/A')
+        }
+      },
+      {
+        accessorKey: 'openOpportunities',
+        header: 'Open opportunities',
+        meta: { title: 'Open opportunities' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.openOpportunities || 0) : 'N/A')
+        }
+      },
+      {
+        accessorKey: 'wonOpportunities',
+        header: 'Won opportunities',
+        meta: { title: 'Won opportunities' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.wonOpportunities || 0) : 'N/A')
         }
       },
       {
@@ -608,7 +691,7 @@ const columns = computed(() => {
         }
       }
     ]
-  } else {
+  } else if (activeTab.value === 'open-leads') {
     // Customers (leads/opportunities) columns
     return [
       {
@@ -658,7 +741,7 @@ const columns = computed(() => {
         cell: ({ row }) => {
           return h('div', { class: 'flex items-center gap-2' }, [
             h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-            h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car)
+            h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
           ])
         }
       },
@@ -673,13 +756,21 @@ const columns = computed(() => {
         }
       },
       {
+        accessorKey: 'requestType',
+        header: 'Request type',
+        meta: { title: 'Request type' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.requestType || 'N/A')
+        }
+      },
+      {
         accessorKey: 'source',
         header: 'Source',
         meta: { title: 'Source' },
         cell: ({ row }) => {
           return h('span', {
             class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
-          }, row.original.source)
+          }, row.original.source || 'N/A')
         }
       },
       {
@@ -691,8 +782,158 @@ const columns = computed(() => {
             h('div', {
               class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
             }, row.original.assigneeInitials),
-            h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee)
+            h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
           ])
+        }
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Created at',
+        meta: { title: 'Created at' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+        }
+      },
+      {
+        accessorKey: 'lastActivity',
+        header: 'Last activity',
+        meta: { title: 'Last activity' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.lastActivity || 'N/A')
+        }
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        meta: { title: 'Status' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.statusClass}`
+          }, row.original.status)
+        }
+      },
+      {
+        id: 'actions',
+        header: '',
+        meta: { title: 'Actions' },
+        cell: () => {
+          return h('button', {
+            class: 'text-gray-400 hover:text-gray-600'
+          }, [
+            h('i', { class: 'fa-solid fa-ellipsis-vertical' })
+          ])
+        }
+      }
+    ]
+  } else {
+    // Opportunities columns (for open-opportunities, in-negotiation, won, lost tabs)
+    return [
+      {
+        accessorKey: 'customer',
+        header: 'Customer',
+        meta: { 
+          title: 'Customer',
+          onOpen: (row) => handleRowClick(row.original)
+        },
+        cell: ({ row }) => {
+          const rowData = row.original
+          return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
+            h('div', {
+              class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-purple-100 text-purple-600'
+            }, rowData.initials),
+            h('div', { class: 'min-w-0' }, [
+              h('div', { class: 'text-sm font-semibold text-gray-900 truncate' }, rowData.customer),
+              h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
+            ])
+          ])
+        }
+      },
+      {
+        accessorKey: 'nextAction',
+        header: 'Next action due',
+        meta: { title: 'Next action due' },
+        cell: ({ row }) => {
+          const rowData = row.original
+          if (!rowData.nextActionFull) return '-'
+          return h('div', { class: 'text-sm' }, [
+            h('div', {
+              class: `font-medium mb-0.5 ${rowData.deadlineStatus?.textClass || 'text-gray-600'}`
+            }, rowData.nextActionFull),
+            h('div', {
+              class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
+            }, [
+              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-[10px]` }) : null,
+              h('span', rowData.nextAction)
+            ])
+          ])
+        }
+      },
+      {
+        accessorKey: 'car',
+        header: 'Offered car',
+        meta: { title: 'Offered car' },
+        cell: ({ row }) => {
+          return h('div', { class: 'flex items-center gap-2' }, [
+            h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
+            h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
+          ])
+        }
+      },
+      {
+        accessorKey: 'carStatus',
+        header: 'Car status',
+        meta: { title: 'Car status' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.carStatusClass}`
+          }, row.original.carStatus)
+        }
+      },
+      {
+        accessorKey: 'requestType',
+        header: 'Request type',
+        meta: { title: 'Request type' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.requestType || 'N/A')
+        }
+      },
+      {
+        accessorKey: 'source',
+        header: 'Source',
+        meta: { title: 'Source' },
+        cell: ({ row }) => {
+          return h('span', {
+            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+          }, row.original.source || 'N/A')
+        }
+      },
+      {
+        accessorKey: 'assignee',
+        header: 'Assignee',
+        meta: { title: 'Assignee' },
+        cell: ({ row }) => {
+          return h('div', { class: 'flex items-center gap-2' }, [
+            h('div', {
+              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+            }, row.original.assigneeInitials),
+            h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
+          ])
+        }
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Created at',
+        meta: { title: 'Created at' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+        }
+      },
+      {
+        accessorKey: 'lastAppointment',
+        header: 'Last appointment',
+        meta: { title: 'Last appointment' },
+        cell: ({ row }) => {
+          return h('span', { class: 'text-sm text-gray-600' }, row.original.lastAppointment || 'N/A')
         }
       },
       {

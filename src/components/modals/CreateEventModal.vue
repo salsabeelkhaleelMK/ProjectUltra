@@ -93,18 +93,18 @@
     </div>
 
     <template #actions>
-      <button 
+      <Button
+        label="Create Event"
+        variant="primary"
         @click="handleCreate"
-        class="btn-primary"
-      >
-        Create Event
-      </button>
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'

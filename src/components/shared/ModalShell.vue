@@ -1,32 +1,30 @@
 <template>
-  <Teleport to="body">
-    <div 
-      v-if="show"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      @click.self="handleBackdropClick"
-    >
-      <div 
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+      <DialogContent 
         :class="[
-          'bg-white rounded-xl shadow-2xl w-full mx-4 overflow-hidden',
+          'fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%] bg-white rounded-xl shadow-2xl w-full mx-4 overflow-hidden',
           sizeClass,
           { 'animate-fade-in': animate }
         ]"
+        @escapeKeyDown="handleEscapeKeyDown"
+        @pointerDownOutside="handlePointerDownOutside"
       >
         <!-- Header Slot Override or Default Header -->
         <slot name="header">
-          <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+          <DialogHeader class="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
             <div>
-              <h3 class="font-bold text-lg text-gray-900">{{ title }}</h3>
-              <p v-if="subtitle" class="text-xs text-gray-500 mt-1">{{ subtitle }}</p>
+              <DialogTitle class="font-bold text-lg text-gray-900">{{ title }}</DialogTitle>
+              <DialogDescription v-if="subtitle" class="text-xs text-gray-500 mt-1">{{ subtitle }}</DialogDescription>
             </div>
-            <button 
+            <DialogClose 
               v-if="showCloseButton"
-              @click="$emit('close')"
               class="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <i class="fa-solid fa-times"></i>
-            </button>
-          </div>
+            </DialogClose>
+          </DialogHeader>
         </slot>
 
         <!-- Body Slot -->
@@ -36,24 +34,35 @@
 
         <!-- Footer Slot Override or Default Footer -->
         <slot name="footer">
-          <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-            <button 
-              @click="$emit('cancel')"
-              class="btn-secondary text-sm"
-            >
-              {{ cancelLabel }}
-            </button>
+          <DialogFooter class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+            <Button
+              :label="cancelLabel"
+              variant="outline"
+              size="small"
+              @click="handleCancel"
+            />
             <slot name="actions"></slot>
-          </div>
+          </DialogFooter>
         </slot>
-      </div>
-    </div>
-  </Teleport>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { Teleport } from 'vue'
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogOverlay, 
+  DialogPortal, 
+  DialogTitle, 
+  DialogClose 
+} from '@motork/component-library/future/primitives'
+import { Button } from '@motork/component-library'
 
 const props = defineProps({
   show: {
@@ -108,10 +117,28 @@ const sizeClass = computed(() => {
   return sizes[props.size] || sizes.md
 })
 
-const handleBackdropClick = () => {
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
+
+const handleCancel = () => {
+  emit('cancel')
+  emit('close')
+}
+
+const handleEscapeKeyDown = () => {
+  emit('close')
+}
+
+const handlePointerDownOutside = (event) => {
   emit('backdrop-click')
-  if (props.clickOutsideToClose) {
+  if (!props.clickOutsideToClose) {
+    event.preventDefault()
+  } else {
     emit('cancel')
+    emit('close')
   }
 }
 </script>

@@ -4,27 +4,30 @@
     <PageHeader title="Calendar" subtitle="Appointments & Events">
       <template #actions>
         <!-- Connect Calendar Button -->
-        <button 
-          @click="showConnectModal = true"
-          class="btn-secondary flex items-center gap-2"
-          :class="{ 'bg-green-50 border-green-200 text-green-700': connectedCalendars.length > 0 }"
-        >
+        <div class="flex items-center gap-2">
           <i class="fa-solid fa-link text-xs"></i>
-          <span>{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
+          <Button
+            :label="connectedCalendars.length > 0 ? 'Connected' : 'Connect'"
+            variant="outline"
+            @click="showConnectModal = true"
+            :class="{ 'bg-green-50 border-green-200 text-green-700': connectedCalendars.length > 0 }"
+          />
           <span 
             v-if="connectedCalendars.length > 0" 
             class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] font-bold flex items-center justify-center"
           >
             {{ connectedCalendars.length }}
           </span>
-        </button>
+        </div>
         
-        <button 
-          @click="showCreateEventModal = true"
-          class="btn-primary"
-        >
-          <i class="fa-solid fa-plus"></i> New Event
-        </button>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i>
+          <Button
+            label="New Event"
+            variant="primary"
+            @click="showCreateEventModal = true"
+          />
+        </div>
       </template>
       <template v-if="appliedFilterChips.length > 0" #bottom>
         <!-- Applied Filter Chips -->
@@ -34,17 +37,23 @@
             v-for="chip in appliedFilterChips"
             :key="chip.key"
             @click="removeFilterChip(chip)"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors group"
+            class="inline-flex items-center gap-1.5"
           >
-            {{ chip.label }}
-            <i class="fa-solid fa-xmark text-[10px] text-blue-400 group-hover:text-blue-600"></i>
+            <Badge
+              :text="chip.label"
+              size="small"
+              theme="blue"
+              class="cursor-pointer hover:opacity-80"
+            />
+            <i class="fa-solid fa-xmark text-[10px] text-blue-400 hover:text-blue-600"></i>
           </button>
-          <button
+          <Button
+            label="Clear all"
+            variant="ghost"
+            size="small"
             @click="clearAllAppliedFilters"
-            class="text-xs hover:text-red-600 font-medium"
-          >
-            Clear all
-          </button>
+            class="text-xs hover:text-red-600"
+          />
         </div>
       </template>
     </PageHeader>
@@ -120,6 +129,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { fetchCalendarEvents, fetchCalendarFilterOptions, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/api/calendar'
 import CalendarConnectModal from '@/components/modals/CalendarConnectModal.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
+import { Button, Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 
 // New sub-components

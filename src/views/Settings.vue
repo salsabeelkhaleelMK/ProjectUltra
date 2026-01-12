@@ -204,27 +204,25 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-between items-center pt-4 border-t border-gray-200">
-          <button
-            type="button"
+          <Button
+            label="Reset to Defaults"
+            variant="outline"
+            size="medium"
             @click="handleReset"
-            class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Reset to Defaults
-          </button>
+          />
           <div class="flex gap-3">
-            <button
-              type="button"
+            <Button
+              label="Cancel"
+              variant="outline"
+              size="medium"
               @click="handleCancel"
-              class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-            >
-              Cancel
-            </button>
-            <button
+            />
+            <Button
+              label="Save Settings"
+              variant="primary"
+              size="medium"
               type="submit"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg text-sm transition-colors shadow-sm"
-            >
-              Save Settings
-            </button>
+            />
           </div>
         </div>
       </form>
@@ -235,6 +233,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
+import { Button } from '@motork/component-library'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
 const settingsStore = useSettingsStore()

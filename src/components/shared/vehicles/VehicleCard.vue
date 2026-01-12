@@ -21,12 +21,11 @@
     <div>
       <!-- Badge and Price Row -->
       <div class="flex items-center justify-between mb-1.5">
-        <span 
-          class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded"
-          :class="badgeClass"
-        >
-          {{ badge }}
-        </span>
+        <Badge
+          :text="badge"
+          size="small"
+          :theme="badgeTheme"
+        />
         <span class="text-sm font-bold text-gray-900">€{{ formatPrice(vehicle.price) }}</span>
       </div>
       
@@ -61,6 +60,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Badge } from '@motork/component-library'
 
 const props = defineProps({
   vehicle: {
@@ -83,14 +83,14 @@ const props = defineProps({
 
 defineEmits(['select'])
 
-const badgeClass = computed(() => {
-  const classes = {
-    'Requested': 'bg-blue-100 text-blue-700 border border-blue-200',
-    'Recommended': 'bg-purple-100 text-purple-700 border border-purple-200',
-    'In Stock': 'bg-green-100 text-green-700 border border-green-200',
-    'Custom': 'bg-orange-100 text-orange-700 border border-orange-200'
+const badgeTheme = computed(() => {
+  const themeMap = {
+    'Requested': 'blue',
+    'Recommended': 'gray', // Purple not available, use gray
+    'In Stock': 'green',
+    'Custom': 'yellow' // Orange not available, use yellow
   }
-  return classes[props.badge] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return themeMap[props.badge] || 'gray'
 })
 
 const formatPrice = (price) => {

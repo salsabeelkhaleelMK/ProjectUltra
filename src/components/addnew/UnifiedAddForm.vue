@@ -397,32 +397,30 @@
     
     <!-- Submit -->
     <div class="flex justify-end gap-3">
-      <button
+      <Button
+        label="Clear Form"
+        variant="outline"
         type="button"
         @click="handleClear"
-        class="btn-secondary"
-      >
-        Clear Form
-      </button>
+      />
       
-      <button
-        type="submit"
-        class="btn-primary"
-        :disabled="isSubmitting || !canSubmit"
-      >
-        <span v-if="isSubmitting">
-          <i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...
-        </span>
-        <span v-else>
-          Save <i class="fa-solid fa-check ml-2"></i>
-        </span>
-      </button>
+      <div class="flex items-center gap-2">
+        <i v-if="isSubmitting" class="fa-solid fa-spinner fa-spin"></i>
+        <i v-else class="fa-solid fa-check"></i>
+        <Button
+          :label="isSubmitting ? 'Saving...' : 'Save'"
+          variant="primary"
+          type="submit"
+          :disabled="isSubmitting || !canSubmit"
+        />
+      </div>
     </div>
   </form>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { Button } from '@motork/component-library'
 import { useContactsStore } from '@/stores/contacts'
 
 const props = defineProps({

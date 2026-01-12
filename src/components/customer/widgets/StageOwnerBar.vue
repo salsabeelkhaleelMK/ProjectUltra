@@ -5,13 +5,12 @@
       <span class="label-upper text-[9px] md:text-xs">Stage</span>
       <div class="flex items-center gap-1.5">
         <span class="text-[10px] md:text-xs font-bold text-gray-800">{{ stage }}</span>
-        <span 
+        <Badge
           v-if="deliverySubstatus"
-          class="text-[9px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-medium border"
-          :class="substatusColorClass"
-        >
-          {{ deliverySubstatus }}
-        </span>
+          :text="deliverySubstatus"
+          size="small"
+          :theme="substatusTheme"
+        />
       </div>
     </div>
 
@@ -42,6 +41,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Badge } from '@motork/component-library'
 import { getDeliverySubstatusColor } from '@/utils/stageMapper'
 
 /**
@@ -75,6 +75,14 @@ defineEmits(['reassign'])
 const substatusColorClass = computed(() => {
   if (!props.deliverySubstatus) return ''
   return getDeliverySubstatusColor(props.deliverySubstatus)
+})
+
+const substatusTheme = computed(() => {
+  if (!props.deliverySubstatus) return 'gray'
+  // Map delivery substatus to library badge themes
+  if (props.deliverySubstatus === 'Delivered') return 'green'
+  if (props.deliverySubstatus === 'Awaiting Delivery') return 'blue'
+  return 'gray'
 })
 </script>
 

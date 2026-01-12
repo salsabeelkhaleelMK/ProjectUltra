@@ -124,18 +124,17 @@
     
     <template #footer>
       <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-        <button 
+        <Button
+          label="Cancel"
+          variant="outline"
+          size="small"
           @click="$emit('close')"
-          class="btn-secondary text-sm"
-        >
-          Cancel
-        </button>
-        <button 
+        />
+        <Button
+          :label="`Create ${itemType}`"
+          variant="primary"
           @click="handleAdd"
-          class="btn-primary"
-        >
-          Create {{ itemType }}
-        </button>
+        />
       </div>
     </template>
   </ModalShell>
@@ -143,6 +142,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

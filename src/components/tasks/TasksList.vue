@@ -262,10 +262,18 @@ const selectedItemRef = ref(null)
 watch(() => props.selectedId, async (newId) => {
   if (newId && selectedItemRef.value) {
     await nextTick()
-    selectedItemRef.value.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest'
-    })
+    try {
+      // Check if element still exists and is in the DOM
+      if (selectedItemRef.value && selectedItemRef.value.parentNode) {
+        selectedItemRef.value.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        })
+      }
+    } catch (error) {
+      // Silently handle DOM access errors
+      console.debug('Could not scroll to selected item:', error)
+    }
   }
 }, { immediate: true })
 
@@ -275,11 +283,17 @@ watch(filteredItems, async () => {
     await nextTick()
     // Small delay to ensure the DOM is fully rendered
     setTimeout(() => {
-      if (selectedItemRef.value) {
-        selectedItemRef.value.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest'
-        })
+      try {
+        // Check if element still exists and is in the DOM
+        if (selectedItemRef.value && selectedItemRef.value.parentNode) {
+          selectedItemRef.value.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          })
+        }
+      } catch (error) {
+        // Silently handle DOM access errors
+        console.debug('Could not scroll to selected item:', error)
       }
     }, 100)
   }

@@ -53,18 +53,19 @@
         </button>
         <div v-else></div>
         <div class="flex gap-2">
-          <button 
+          <Button
+            label="Close"
+            variant="outline"
             @click="$emit('close')"
-            class="btn-secondary"
-          >
-            Close
-          </button>
-          <button 
-            @click="$emit('edit')"
-            class="btn-primary"
-          >
-            <i class="fa-regular fa-pen-to-square mr-1"></i> Edit
-          </button>
+          />
+          <div class="flex items-center gap-1">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <Button
+              label="Edit"
+              variant="primary"
+              @click="$emit('edit')"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -72,6 +73,7 @@
 </template>
 
 <script setup>
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import CalendarEventDetails from '@/components/calendar/CalendarEventDetails.vue'
 import { getEventTypeLabel, getEventTypeHeaderClass, getEventTypeBadgeClass, getEventTypeTextClass } from '@/utils/calendarHelpers'

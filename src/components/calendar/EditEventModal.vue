@@ -94,18 +94,18 @@
     </div>
 
     <template #actions>
-      <button 
+      <Button
+        label="Save Changes"
+        variant="primary"
         @click="handleSave"
-        class="btn-primary"
-      >
-        Save Changes
-      </button>
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

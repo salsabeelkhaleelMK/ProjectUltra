@@ -346,7 +346,6 @@ function handleAppointmentCreated(eventData) {
   showCreateAppointmentModal.value = false
   // Emit event to parent or handle appointment creation
   // TODO: Integrate with calendar API
-  console.log('Appointment created:', eventData)
 }
 
 const handleReassign = () => {
@@ -448,9 +447,15 @@ const handleContactInfoAction = (action) => {
         handleAddNewAction(action)
         // Scroll to inline widget after a brief delay
         setTimeout(() => {
-          const inlineWidget = document.querySelector('.animate-fade-in')
-          if (inlineWidget) {
-            inlineWidget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          try {
+            const inlineWidget = document.querySelector('.animate-fade-in')
+            // Check if element exists and is still in the DOM
+            if (inlineWidget && inlineWidget.parentNode) {
+              inlineWidget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          } catch (error) {
+            // Silently handle DOM access errors
+            console.debug('Could not scroll to inline widget:', error)
           }
         }, 100)
       }, 50)

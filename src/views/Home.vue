@@ -16,17 +16,21 @@
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
                 <h2 class="font-bold text-slate-800 text-sm">Quick Actions</h2>
-                <span v-if="totalNotificationsCount > 0" class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                  {{ totalNotificationsCount }}
-                </span>
+                <Badge
+                  v-if="totalNotificationsCount > 0"
+                  :text="String(totalNotificationsCount)"
+                  size="small"
+                  theme="blue"
+                />
               </div>
-              <button
+              <Button
                 v-if="totalNotificationsCount > 5"
+                label="View all →"
+                variant="ghost"
+                size="small"
                 @click="$router.push('/tasks')"
-                class="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                View all →
-              </button>
+                class="text-xs"
+              />
             </div>
           </div>
           
@@ -56,16 +60,20 @@
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
                 <h2 class="font-bold text-slate-800 text-sm">Appointments Today</h2>
-                <span v-if="appointmentsToday.length > 0" class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                  {{ appointmentsToday.length }}
-                </span>
+                <Badge
+                  v-if="appointmentsToday.length > 0"
+                  :text="String(appointmentsToday.length)"
+                  size="small"
+                  theme="blue"
+                />
               </div>
-              <button
+              <Button
+                label="View calendar →"
+                variant="ghost"
+                size="small"
                 @click="$router.push('/calendar')"
-                class="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                View calendar →
-              </button>
+                class="text-xs"
+              />
             </div>
           </div>
           
@@ -81,16 +89,20 @@
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-tasks text-gray-400 text-sm"></i>
                 <h2 class="font-bold text-slate-800 text-sm">Tasks Due Today</h2>
-                <span v-if="tasksDueToday.length > 0" class="text-xs font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded">
-                  {{ tasksDueToday.length }}
-                </span>
+                <Badge
+                  v-if="tasksDueToday.length > 0"
+                  :text="String(tasksDueToday.length)"
+                  size="small"
+                  theme="red"
+                />
               </div>
-              <button
+              <Button
+                label="View all tasks →"
+                variant="ghost"
+                size="small"
                 @click="$router.push('/tasks')"
-                class="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                View all tasks →
-              </button>
+                class="text-xs"
+              />
             </div>
           </div>
           
@@ -118,6 +130,7 @@ import { useActionableQuestions } from '@/composables/useActionableQuestions'
 import { useDashboard } from '@/composables/useDashboard'
 import { createNSTask, updateOpportunityAssignee } from '@/api/opportunities'
 import { saveDismissal } from '@/utils/dismissalStorage'
+import { Button, Badge } from '@motork/component-library'
 import ActionableQuestionCard from '@/components/home/ActionableQuestionCard.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import TodaysAppointments from '@/components/home/TodaysAppointments.vue'

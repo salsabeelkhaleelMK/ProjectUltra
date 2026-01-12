@@ -263,14 +263,47 @@ const getDateDisplay = (date) => {
   return formatDeadlineFull(date)
 }
 
+// Helper function to get car status
+const getCarStatus = (task) => {
+  const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
+  if (!vehicle) return { status: 'N/A', class: 'bg-gray-100 text-gray-700' }
+  const isInStock = vehicle.stockDays !== undefined && vehicle.stockDays !== null
+  return {
+    status: isInStock ? 'In Stock' : 'Out of Stock',
+    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+  }
+}
+
+// Helper function to get request type
+const getRequestType = (task) => {
+  if (task.type === 'lead') {
+    return task.requestedCar?.requestType || task.requestType || 'N/A'
+  }
+  return task.requestType || 'Opportunity'
+}
+
 // DataTable columns configuration
 const columns = computed(() => [
+  {
+    accessorKey: 'type',
+    header: 'Task type',
+    meta: {
+      title: 'Task type',
+      onOpen: (row) => handleRowClick(row.original)
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const typeClass = task.type === 'lead' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+      return h('span', {
+        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${typeClass}`
+      }, task.type === 'lead' ? 'Lead' : 'Opportunity')
+    }
+  },
   {
     accessorKey: 'customer',
     header: 'Customer',
     meta: {
-      title: 'Customer',
-      onOpen: (row) => handleRowClick(row.original)
+      title: 'Customer'
     },
     cell: ({ row }) => {
       const task = row.original
@@ -286,91 +319,67 @@ const columns = computed(() => [
     }
   },
   {
-    accessorKey: 'vehicle',
-    header: 'Vehicle',
+    accessorKey: 'car',
+    header: 'Car',
     meta: {
-      title: 'Vehicle'
+      title: 'Car'
     },
     cell: ({ row }) => {
       const task = row.original
-      const vehicleType = props.getVehicleType(task)
+      const vehicleInfo = getVehicleInfo(task)
+      if (vehicleInfo === 'No vehicle specified') {
+        return h('span', { class: 'text-sm text-gray-400' }, 'N/A')
+      }
       return h('div', { class: 'flex items-center gap-2' }, [
-        h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, getVehicleInfo(task)),
-          vehicleType ? h('div', { class: 'flex items-center gap-1 mt-0.5' }, [
-            h('span', {
-              class: `text-[10px] font-medium px-1.5 py-0.5 rounded-md ${props.getVehicleTypeBadgeClass(vehicleType)}`
-            }, vehicleType.label)
-          ]) : null
-        ])
+        h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
+        h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, vehicleInfo)
       ])
     }
   },
   {
-    accessorKey: 'type',
-    header: 'Type',
+    accessorKey: 'carStatus',
+    header: 'Car status',
     meta: {
-      title: 'Type'
+      title: 'Car status'
     },
     cell: ({ row }) => {
       const task = row.original
-      const typeClass = task.type === 'lead' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+      const carStatus = getCarStatus(task)
       return h('span', {
-        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${typeClass}`
-      }, task.type === 'lead' ? 'Lead' : 'Opportunity')
+        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}`
+      }, carStatus.status)
     }
   },
   {
-    accessorKey: 'stage',
-    header: 'Stage/Status',
+    accessorKey: 'requestType',
+    header: 'Request type',
     meta: {
-      title: 'Stage/Status'
+      title: 'Request type'
     },
     cell: ({ row }) => {
       const task = row.original
-      const stageStatus = task.type === 'lead' ? task.status : (task.displayStage || task.stage)
-      const stageClass = props.getStageBadgeClass(stageStatus)
-      return h('div', { class: 'flex flex-col gap-1' }, [
-        h('span', {
-          class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${stageClass}`
-        }, stageStatus),
-        task.type === 'lead' && task.priority === 'Hot' ? h('span', {
-          class: 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-red-50 text-red-700 w-fit'
-        }, [
-          h('i', { class: 'fa-solid fa-fire text-[9px]' }),
-          'Hot'
-        ]) : null
-      ])
+      const requestType = getRequestType(task)
+      return h('span', { class: 'text-sm text-gray-600' }, requestType)
     }
   },
   {
-    accessorKey: 'nextActionDue',
-    header: 'Next Action',
+    accessorKey: 'source',
+    header: 'Source',
     meta: {
-      title: 'Next Action'
+      title: 'Source'
     },
     cell: ({ row }) => {
       const task = row.original
-      if (!task.nextActionDue) return '-'
-      const deadlineStatus = getDeadlineStatus(task.nextActionDue)
-      return h('div', { class: 'text-sm' }, [
-        h('div', {
-          class: `font-medium mb-0.5 ${deadlineStatus.textClass}`
-        }, formatDeadlineFull(task.nextActionDue)),
-        h('div', {
-          class: `text-xs flex items-center gap-1 ${deadlineStatus.textClass}`
-        }, [
-          deadlineStatus.icon ? h('i', { class: `fa-solid ${deadlineStatus.icon} text-[10px]` }) : null,
-          h('span', getDateDisplay(task.nextActionDue))
-        ])
-      ])
+      return h('span', {
+        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+      }, task.source || 'N/A')
     }
   },
   {
-    accessorKey: 'owner',
-    header: 'Owner',
+    accessorKey: 'assignee',
+    header: 'Assignee',
     meta: {
-      title: 'Owner'
+      title: 'Assignee'
     },
     cell: ({ row }) => {
       const task = row.original
@@ -384,17 +393,18 @@ const columns = computed(() => [
     }
   },
   {
-    accessorKey: 'value',
-    header: 'Value',
+    accessorKey: 'status',
+    header: 'Status',
     meta: {
-      title: 'Value'
+      title: 'Status'
     },
     cell: ({ row }) => {
       const task = row.original
-      if (task.type === 'opportunity') {
-        return h('div', { class: 'text-sm font-semibold text-gray-900' }, `€${formatCurrency(task.value)}`)
-      }
-      return h('div', { class: 'text-gray-400' }, '-')
+      const stageStatus = task.type === 'lead' ? task.status : (task.displayStage || task.stage)
+      const stageClass = props.getStageBadgeClass(stageStatus)
+      return h('span', {
+        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${stageClass}`
+      }, stageStatus)
     }
   },
   {
@@ -443,26 +453,31 @@ watch(() => [props.highlightId, props.tasks], async ([newHighlightId]) => {
     await nextTick()
     // Wait for DataTable to render, then find and scroll to the highlighted row
     setTimeout(() => {
-      const tableWrapper = document.querySelector('.table-wrapper')
-      if (!tableWrapper) return
-      
-      // Find the task in the data
-      const highlightedTask = props.tasks.find(t => t.compositeId === newHighlightId)
-      if (!highlightedTask) return
-      
-      // Try to find the row by searching for customer name or other unique identifier
-      // DataTable likely renders rows with the customer name, so we can search for that
-      const customerName = highlightedTask.customer?.name
-      if (customerName) {
-        // Find all table rows
-        const rows = tableWrapper.querySelectorAll('tbody tr, [role="row"]')
-        for (const row of rows) {
-          // Check if this row contains the customer name
-          if (row.textContent?.includes(customerName)) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-            break
+      try {
+        const tableWrapper = document.querySelector('.table-wrapper')
+        if (!tableWrapper) return
+        
+        // Find the task in the data
+        const highlightedTask = props.tasks.find(t => t.compositeId === newHighlightId)
+        if (!highlightedTask) return
+        
+        // Try to find the row by searching for customer name or other unique identifier
+        // DataTable likely renders rows with the customer name, so we can search for that
+        const customerName = highlightedTask.customer?.name
+        if (customerName) {
+          // Find all table rows
+          const rows = tableWrapper.querySelectorAll('tbody tr, [role="row"]')
+          for (const row of rows) {
+            // Check if row exists and is still in the DOM before accessing properties
+            if (row && row.parentNode && row.textContent?.includes(customerName)) {
+              row.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+              break
+            }
           }
         }
+      } catch (error) {
+        // Silently handle DOM access errors (element might have been removed)
+        console.debug('Could not scroll to highlighted row:', error)
       }
     }, 500)
   }

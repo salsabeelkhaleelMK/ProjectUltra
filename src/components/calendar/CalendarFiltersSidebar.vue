@@ -165,18 +165,22 @@
     
     <!-- Apply Filters Button -->
     <div class="sticky bottom-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3">
-      <button 
-        @click="$emit('apply')"
-        class="btn-primary w-full justify-center"
-      >
-        <i class="fa-solid fa-check"></i> Apply Filters
-      </button>
+      <div class="flex items-center justify-center gap-2 w-full">
+        <i class="fa-solid fa-check"></i>
+        <Button
+          label="Apply Filters"
+          variant="primary"
+          @click="$emit('apply')"
+          class="w-full"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { Button } from '@motork/component-library'
 
 const props = defineProps({
   modelValue: {

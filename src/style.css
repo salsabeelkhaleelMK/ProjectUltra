@@ -32,19 +32,7 @@
     @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
   }
   
-  /* Button Primary */
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 shadow-sm;
-  }
-  
-  .btn-primary-lg {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-colors flex items-center gap-2 shadow-sm;
-  }
-  
-  /* Button Secondary */
-  .btn-secondary {
-    @apply bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors;
-  }
+  /* Button classes removed - using @motork/component-library Button component */
   
   /* Input */
   .input {

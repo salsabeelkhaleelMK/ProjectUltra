@@ -13,12 +13,12 @@
       <div class="text-center">
         <i class="fa-solid fa-exclamation-circle text-6xl text-gray-300 mb-4"></i>
         <p class="text-gray-500 mb-2">{{ error || 'Task not found' }}</p>
-        <button
+        <Button
+          label="Back to Customers"
+          variant="primary"
+          size="medium"
           @click="$router.push('/customers')"
-          class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-        >
-          Back to Customers
-        </button>
+        />
       </div>
     </div>
 
@@ -107,6 +107,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useContactsStore } from '@/stores/contacts'
+import { Button } from '@motork/component-library'
 import TaskShell from '@/components/customer/CustomerShell.vue'
 import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'

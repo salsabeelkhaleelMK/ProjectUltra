@@ -304,7 +304,6 @@ function calculateDaysSince(dateString) {
 // Event handlers
 function handleSecondaryAction(action) {
   // Action handler is already called by the action definition
-  console.log('Secondary action selected:', action.key)
 }
 
 function handleTaskWidgetClose() {
@@ -390,13 +389,11 @@ function handleRequalified(leadData) {
 function handleDeleteAppointment(appointmentId) {
   showViewAppointment.value = false
   // Delete appointment logic would go here
-  console.log('Delete appointment:', appointmentId)
 }
 
 function handleSaveAppointment(appointmentData) {
   showEditAppointment.value = false
   // Save appointment logic would go here
-  console.log('Save appointment:', appointmentData)
 }
 
 function handleSetCallback(data) {
