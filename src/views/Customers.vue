@@ -44,6 +44,7 @@
           :data="filteredRows" 
           :columns="columns"
           :meta="tableMeta"
+          @row-click="handleRowClick"
           :columnFiltersOptions="{
             filterDefs: filterDefinitions
           }"

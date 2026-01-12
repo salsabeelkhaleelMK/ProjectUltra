@@ -30,6 +30,7 @@
           :columns="columns"
           :loading="vehiclesStore.loading"
           :meta="tableMeta"
+          @row-click="handleRowClick"
           :columnFiltersOptions="{
             filterDefs: filterDefinitions
           }"
@@ -71,10 +72,13 @@
 
 <script setup>
 import { ref, computed, onMounted, h } from 'vue'
+import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button, Badge } from '@motork/component-library'
+
+const router = useRouter()
 
 const vehiclesStore = useVehiclesStore()
 
@@ -185,6 +189,17 @@ const filterDefinitions = [
 onMounted(() => {
   vehiclesStore.loadVehicles()
 })
+
+// Handle row click - navigate to vehicle detail or show vehicle info
+const handleRowClick = (row) => {
+  const vehicle = row.original || row
+  // For now, we can navigate to a vehicle detail page if it exists
+  // Or you could open a modal with vehicle details
+  // Since there's no vehicle detail route yet, we'll just log it
+  // You can add navigation here when vehicle detail page is created
+  // router.push({ path: `/vehicles/${vehicle.id}` })
+  console.log('Vehicle clicked:', vehicle)
+}
 
 
 const formatCurrency = (value) => {
