@@ -104,17 +104,22 @@ export const OPPORTUNITY_STATE_CONFIG = {
 
   'In Negotiation': {
     primaryAction: {
-      key: 'create-offer',
-      title: 'Create Offer',
+      key: 'follow-up-offer',
+      title: 'Follow Up on Offer',
       description: (context) => context.hasOffers 
-        ? 'Add another offer or refine existing proposal'
-        : 'Create initial offer to move forward with negotiation',
-      label: (context) => context.hasOffers ? 'Add Another Offer' : 'Create Offer',
-      icon: 'fa-solid fa-file-invoice-dollar',
+        ? 'Follow up to gauge customer interest and move forward'
+        : 'Create initial offer to begin negotiation',
+      label: (context) => context.hasOffers ? 'Follow Up on Offer' : 'Create Offer',
+      icon: 'fa-solid fa-phone-volume',
       buttonClass: 'bg-yellow-600 hover:bg-yellow-700 text-white',
       colorScheme: { background: 'bg-yellow-50/50', border: 'border-yellow-100' }
     },
     secondaryActions: [
+      {
+        key: 'add-offer',
+        label: 'Add Another Offer',
+        icon: 'fa-solid fa-file-invoice-dollar'
+      },
       {
         key: 'schedule-appointment',
         label: 'Schedule Appointment',
@@ -133,45 +138,11 @@ export const OPPORTUNITY_STATE_CONFIG = {
     ]
   },
 
-  'Offer Sent': {
-    primaryAction: {
-      key: 'follow-up-offer',
-      title: 'Follow Up on Offer',
-      description: 'Offer recently sent. Follow up to gauge customer interest',
-      label: 'Log Follow-up',
-      icon: 'fa-solid fa-phone-volume',
-      buttonClass: 'bg-orange-600 hover:bg-orange-700 text-white',
-      colorScheme: { background: 'bg-orange-50/50', border: 'border-orange-100' }
-    },
-    secondaryActions: [
-      {
-        key: 'add-offer',
-        label: 'Add Another Offer',
-        icon: 'fa-solid fa-file-invoice-dollar'
-      },
-      {
-        key: 'schedule-appointment',
-        label: 'Schedule Follow-up',
-        icon: 'fa-solid fa-calendar-plus',
-        conditional: 'no-appointment'
-      },
-      {
-        key: 'close-lost',
-        label: 'Close as Lost',
-        icon: 'fa-solid fa-xmark'
-      }
-    ],
-    taskWidgets: [
-      { type: 'OFB', condition: 'negotiation-5-plus-days-no-contract-has-offers' },
-      { type: 'NFU', condition: 'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers' }
-    ]
-  },
-
-  'Awaiting Response': {
+  'Needs Follow-up': {
     primaryAction: {
       key: 'request-decision',
       title: 'Request Customer Decision',
-      description: 'Offer has been pending. Time to request a decision from the prospect',
+      description: 'Offer has been pending. Time to request a decision',
       label: 'Request Decision',
       icon: 'fa-solid fa-circle-question',
       buttonClass: 'bg-pink-600 hover:bg-pink-700 text-white',

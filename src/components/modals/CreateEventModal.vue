@@ -96,6 +96,8 @@
       <Button
         label="Create Event"
         variant="primary"
+        size="small"
+        class="rounded-sm"
         @click="handleCreate"
       />
     </template>

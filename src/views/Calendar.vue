@@ -3,15 +3,16 @@
     <!-- Header -->
     <PageHeader title="Calendar" subtitle="Appointments & Events">
       <template #actions>
-        <!-- Connect Calendar Button -->
+        <!-- Connect Calendar Button (Secondary) -->
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-link text-xs"></i>
-          <Button
-            :label="connectedCalendars.length > 0 ? 'Connected' : 'Connect'"
-            variant="outline"
+          <button
             @click="showConnectModal = true"
-            :class="{ 'bg-green-50 border-green-200 text-green-700': connectedCalendars.length > 0 }"
-          />
+            class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+            :class="{ 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100': connectedCalendars.length > 0 }"
+          >
+            <i class="fa-solid fa-link text-xs"></i>
+            <span>{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
+          </button>
           <span 
             v-if="connectedCalendars.length > 0" 
             class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] font-bold flex items-center justify-center"
@@ -20,14 +21,14 @@
           </span>
         </div>
         
-        <div class="flex items-center gap-2">
+        <!-- New Event Button (Secondary) -->
+        <button
+          @click="showCreateEventModal = true"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+        >
           <i class="fa-solid fa-plus"></i>
-          <Button
-            label="New Event"
-            variant="primary"
-            @click="showCreateEventModal = true"
-          />
-        </div>
+          <span>New Event</span>
+        </button>
       </template>
       <template v-if="appliedFilterChips.length > 0" #bottom>
         <!-- Applied Filter Chips -->

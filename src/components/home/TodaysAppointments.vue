@@ -1,16 +1,36 @@
 <template>
   <div class="space-y-3">
-    <div v-if="appointments.length === 0" class="text-center py-8 text-gray-500">
-      <i class="fa-solid fa-calendar-check text-4xl mb-2 text-gray-300"></i>
-      <p class="text-sm">No appointments scheduled for today</p>
-    </div>
+    <!-- Loading Skeleton -->
+    <template v-if="loading">
+      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1 min-w-0 space-y-2">
+            <div class="flex items-center gap-2">
+              <div class="h-5 bg-gray-200 rounded w-16 animate-pulse"></div>
+              <div class="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+            </div>
+            <div class="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+            <div class="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+            <div class="h-3 bg-gray-200 rounded w-20 animate-pulse"></div>
+          </div>
+          <div class="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      </div>
+    </template>
     
-    <div
-      v-for="appointment in appointments"
-      :key="appointment.id"
-      @click="handleClick(appointment)"
-      class="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
-    >
+    <!-- Actual Content -->
+    <template v-else>
+      <div v-if="appointments.length === 0" class="text-center py-8 text-gray-500">
+        <i class="fa-solid fa-calendar-check text-4xl mb-2 text-gray-300"></i>
+        <p class="text-sm">No appointments scheduled for today</p>
+      </div>
+      
+      <div
+        v-for="appointment in appointments"
+        :key="appointment.id"
+        @click="handleClick(appointment)"
+        class="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+      >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
@@ -56,6 +76,7 @@
         </button>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -66,6 +87,10 @@ const props = defineProps({
   appointments: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

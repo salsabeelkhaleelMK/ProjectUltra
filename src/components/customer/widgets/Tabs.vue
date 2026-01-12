@@ -1,37 +1,32 @@
 <template>
-  <HorizontalTabs
-    :tabs="formattedTabs"
-    :modelValue="modelValue"
-    @update:modelValue="$emit('update:modelValue', $event)"
-    @tab-click="handleTabClick"
-    class="custom-tabs"
-  >
-    <template v-for="(tab, index) in tabs" :key="tab.key" #[`tab-${index}`]>
-      <div class="flex items-center justify-center gap-1.5">
-        <!-- Icon (always visible) -->
-        <i :class="getIconClass(tab.key)" class="text-base md:text-base"></i>
-        
-        <!-- Label (hidden on mobile, visible on desktop) -->
-        <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
-        
-        <!-- Count badge -->
-        <Badge
-          v-if="tab.count !== undefined"
-          :text="String(tab.count)"
-          size="small"
-          theme="gray"
-        />
-      </div>
-    </template>
-  </HorizontalTabs>
+  <div class="flex gap-0 md:gap-8 text-base font-medium text-slate-500 py-1">
+    <div 
+      v-for="tab in tabs"
+      :key="tab.key"
+      @click="$emit('update:modelValue', tab.key)"
+      class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+      :class="modelValue === tab.key ? 'border-slate-900 text-slate-900' : 'border-transparent hover:text-slate-700 hover:border-slate-200'"
+    >
+      <!-- Icon (always visible) -->
+      <i :class="getIconClass(tab.key)" class="text-base md:text-base"></i>
+      
+      <!-- Label (hidden on mobile, visible on desktop) -->
+      <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
+      
+      <!-- Count badge -->
+      <span 
+        v-if="tab.count !== undefined"
+        class="inline-flex items-center justify-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold"
+        :class="modelValue === tab.key ? 'bg-gray-200 text-gray-700' : 'bg-gray-100 text-gray-500'"
+      >
+        {{ tab.count }}
+      </span>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { HorizontalTabs } from '@motork/component-library'
-import { Badge } from '@motork/component-library'
-
-const props = defineProps({
+defineProps({
   modelValue: {
     type: String,
     required: true
@@ -42,16 +37,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
-
-// Transform tabs to library format
-const formattedTabs = computed(() => 
-  props.tabs.map(tab => ({ id: tab.key, label: tab.label }))
-)
-
-const handleTabClick = (tabId) => {
-  emit('update:modelValue', tabId)
-}
+defineEmits(['update:modelValue'])
 
 // Icon mapping for each tab type
 const iconMap = {
@@ -65,28 +51,3 @@ const getIconClass = (tabKey) => {
   return iconMap[tabKey] || 'fa-solid fa-circle'
 }
 </script>
-
-<style scoped>
-@reference "tailwindcss";
-/* Match current design exactly - override library defaults */
-.custom-tabs :deep(.tab-item) {
-  @apply flex-1 pb-2 border-b-2 cursor-pointer transition-colors px-4 py-2;
-  @apply border-transparent hover:text-slate-700 hover:border-slate-200;
-  @apply text-sm font-medium text-gray-600;
-}
-
-@media (min-width: 768px) {
-  .custom-tabs :deep(.tab-item) {
-    @apply flex-none;
-  }
-}
-
-.custom-tabs :deep(.tab-item.active) {
-  @apply border-slate-900 text-slate-900 font-semibold;
-}
-
-/* Ensure badge styling doesn't conflict */
-.custom-tabs :deep(.tab-item) .badge {
-  @apply ml-1.5;
-}
-</style>

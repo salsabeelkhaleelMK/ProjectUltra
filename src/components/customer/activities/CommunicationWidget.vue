@@ -5,7 +5,7 @@
     
     <div class="mb-3">
       <label class="block text-xs font-medium text-slate-700 mb-1">Template</label>
-      <select v-model="selectedTemplate" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
+      <select v-model="selectedTemplate" class="input">
         <option value="">Select a template...</option>
         <option>Follow-up</option>
         <option>Meeting Confirmation</option>
@@ -16,7 +16,7 @@
 
     <textarea 
       v-model="message"
-      class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 resize-none mb-3" 
+      class="input mb-3" 
       rows="4" 
       placeholder="Type your message here..."
     ></textarea>

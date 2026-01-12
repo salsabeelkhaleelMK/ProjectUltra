@@ -84,8 +84,8 @@
           </template>
           
           <template #owner="{ item: task }">
-            <span v-if="task.assignee">Assignee: {{ task.assignee }}</span>
-            <span v-else>Assignee: Unassigned</span>
+            <span v-if="task.assignee">{{ task.assignee }}</span>
+            <span v-else>Unassigned</span>
           </template>
           
           <template #dates="{ item: task }">
@@ -193,15 +193,7 @@
         </button>
       </div>
       
-      <div v-if="!currentTask && viewMode === 'card'" class="flex-1 flex items-center justify-center">
-        <div class="text-center">
-          <i class="fa-solid fa-tasks text-6xl text-gray-300 mb-4"></i>
-          <p class="text-gray-500">Select a task to view details</p>
-        </div>
-      </div>
-      
       <TaskShell
-        v-else-if="currentTask && viewMode === 'card'"
         :task="currentTask"
         :type="currentTask.type"
         :management-widget="managementWidget"
@@ -212,6 +204,13 @@
           <!-- Additional widgets can be added here if needed -->
         </template>
       </TaskShell>
+    </div>
+    
+    <div v-if="!currentTask && viewMode === 'card'" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <i class="fa-solid fa-tasks text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500">Select a task to view details</p>
+      </div>
     </div>
     
     <!-- Reassign Modal -->

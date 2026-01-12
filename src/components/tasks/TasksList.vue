@@ -17,12 +17,12 @@
           <h2 class="page-header-title">{{ title }}</h2>
         </div>
         
-        <!-- View Toggle (Desktop only) -->
-        <div v-if="viewMode" class="hidden lg:flex">
+        <!-- View Toggle -->
+        <div v-if="viewMode" class="flex">
           <ViewToggle
             :view="viewMode"
             :options="[
-              { value: 'card', icon: 'fa-solid fa-grip', label: 'Cards' },
+              { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
               { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
             ]"
             @update:view="$emit('view-change', $event)"
@@ -56,74 +56,95 @@
       />
     </div>
     
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-4 space-y-4 pb-4 scrollbar-hide">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide bg-gray-50/50">
       <div 
         v-for="item in filteredItems" 
         :key="item.compositeId || `${item.type || 'task'}-${item.id}`"
         :ref="el => { if (isSelected(item)) selectedItemRef = el }"
         @click="$emit('select', item.compositeId || `${item.type || 'task'}-${item.id}` || item.id)"
-        class="card card-hover min-h-[11rem] flex flex-col overflow-hidden cursor-pointer relative"
-        :class="isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)"
+        class="bg-white border border-gray-100 rounded shadow-sm overflow-hidden cursor-pointer relative group transition-all hover:shadow-md"
+        :class="[
+          isSelected(item) ? (typeof selectedClass === 'function' ? selectedClass(item) : selectedClass) : (typeof unselectedClass === 'function' ? unselectedClass(item) : unselectedClass)
+        ]"
       >
+        <!-- Side Accent Bar -->
+        <div 
+          class="absolute top-0 bottom-0 left-0 w-1"
+          :class="item.type === 'lead' ? 'bg-blue-500' : 'bg-purple-500'"
+        ></div>
+
         <!-- Card Menu -->
         <div 
           v-if="openMenuId === item.id && showMenu"
-          class="absolute right-2 top-10 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+          class="absolute right-3 top-10 w-40 bg-white border border-gray-200 rounded-sm shadow-xl z-50 overflow-hidden animate-fade-in"
           v-click-outside="() => $emit('menu-close')"
         >
           <slot name="menu" :item="item"></slot>
         </div>
         
-        <!-- Top Bar: Badges + Dropdown -->
-        <div class="flex items-center justify-between border-b border-gray-100 p-2 bg-gray-50">
-          <div class="flex gap-2">
-            <slot name="badges" :item="item"></slot>
+        <div class="p-3 pl-3">
+          <!-- Header: Avatar + Name + Type Badge -->
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div 
+                class="w-8 h-8 rounded bg-gray-50 text-gray-600 font-bold flex items-center justify-center text-xs border border-gray-200 shrink-0"
+                :class="avatarClass(item)"
+              >
+                {{ getInitials(item) }}
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-sm text-gray-900 truncate">{{ getName(item) }}</span>
+                  <div 
+                    v-if="item.priority === 'Hot'"
+                    class="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0"
+                  ></div>
+                </div>
+                <div class="text-[10px] text-gray-400 truncate">
+                  <slot name="location" :item="item"></slot>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span 
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded text-gray-500 bg-gray-50 uppercase"
+              >
+                {{ item.type === 'lead' ? 'Lead' : 'Opportunity' }}
+              </span>
+              <button 
+                v-if="showMenu"
+                @click.stop="$emit('menu-click', item.id)"
+                class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-all"
+              >
+                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+              </button>
+            </div>
           </div>
-          <button 
-            v-if="showMenu"
-            @click.stop="$emit('menu-click', item.id)"
-            class="text-gray-400 hover:text-gray-600 transition-colors pr-2"
-          >
-            <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
-          </button>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="p-3 flex-1 flex flex-col justify-between">
-          <!-- Avatar + Name + Location -->
-          <div class="flex items-start gap-3 mb-3">
-            <div 
-              class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-xs font-bold shrink-0"
-              :class="avatarClass(item)"
-            >
-              {{ getInitials(item) }}
+
+          <!-- Details: Vehicle & Status Grid -->
+          <div class="grid grid-cols-2 gap-2 bg-gray-50 rounded p-2 mb-2">
+            <div class="min-w-0">
+              <div class="text-[9px] text-gray-400 uppercase">Vehicle</div>
+              <div class="text-xs font-medium text-gray-700 truncate">{{ getVehicleInfo(item) }}</div>
             </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-sm font-bold text-gray-900 truncate">{{ getName(item) }}</h3>
-              <p class="text-[10px] text-gray-500">
-                <slot name="location" :item="item"></slot>
-              </p>
-            </div>
-          </div>
-          
-          <!-- Car and Status Details -->
-          <div class="space-y-1 mb-3">
-            <div class="flex justify-between text-[10px]">
-              <span class="text-gray-400">Car</span>
-              <span class="font-medium text-gray-700 truncate ml-2">{{ getVehicleInfo(item) }}</span>
-            </div>
-            <div class="flex justify-between text-[10px]">
-              <span class="text-gray-400">Status</span>
-              <span class="font-medium text-gray-700">
+            <div class="min-w-0">
+              <div class="text-[9px] text-gray-400 uppercase">Status</div>
+              <div class="text-xs text-gray-500 truncate">
                 <slot name="vehicle-status" :item="item"></slot>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer: Owner + Due Date -->
+          <div class="flex items-center justify-between">
+            <div class="text-[10px] text-gray-400">
+              Owned by <span class="text-gray-600 font-medium">
+                <slot name="owner" :item="item"></slot>
               </span>
             </div>
-          </div>
-          
-          <!-- Footer: Assignee + Due Date -->
-          <div class="border-t border-gray-100 pt-2 flex justify-between text-[9px] text-gray-400">
-            <slot name="owner" :item="item"></slot>
-            <slot name="dates" :item="item"></slot>
+            <div class="text-[10px] text-gray-400 font-medium">
+              <slot name="dates" :item="item"></slot>
+            </div>
           </div>
         </div>
       </div>

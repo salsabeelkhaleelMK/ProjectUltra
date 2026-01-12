@@ -13,7 +13,8 @@ export function useDashboard() {
   const todayLeadTasks = ref([])
   const todayOppTasks = ref([])
   const upcomingAppointments = ref([])
-  const loading = ref(false)
+  const loadingAppointments = ref(true)
+  const loadingTasks = ref(true)
 
   // Computed: All today's tasks (leads + opportunities)
   const todayTasks = computed(() => {
@@ -137,29 +138,34 @@ export function useDashboard() {
   const notifications = computed(() => questions.value)
 
   async function loadDashboard() {
-    loading.value = true
-    try {
+    // Load all data in parallel with individual loading states
+    Promise.all([
       // Load actionable questions
-      await loadQuestions()
+      loadQuestions(),
       
       // Load today's appointments
-      todayAppointments.value = await fetchTodayAppointments()
+      fetchTodayAppointments().then(data => {
+        todayAppointments.value = data
+        loadingAppointments.value = false
+      }),
       
       // Load today's tasks based on user role
-      if (userStore.canAccessLeads()) {
-        todayLeadTasks.value = await fetchLeadTasksDueToday()
-      }
-      if (userStore.canAccessOpportunities()) {
-        todayOppTasks.value = await fetchOppTasksDueToday()
-      }
+      Promise.all([
+        userStore.canAccessLeads() ? fetchLeadTasksDueToday().then(data => { todayLeadTasks.value = data }) : Promise.resolve(),
+        userStore.canAccessOpportunities() ? fetchOppTasksDueToday().then(data => { todayOppTasks.value = data }) : Promise.resolve()
+      ]).then(() => {
+        loadingTasks.value = false
+      }),
       
       // Load upcoming appointments (next 24h)
-      upcomingAppointments.value = await fetchUpcomingAppointments(1)
-    } catch (error) {
+      fetchUpcomingAppointments(1).then(data => {
+        upcomingAppointments.value = data
+      })
+    ]).catch(error => {
       console.error('Error loading dashboard:', error)
-    } finally {
-      loading.value = false
-    }
+      loadingAppointments.value = false
+      loadingTasks.value = false
+    })
   }
 
   return {
@@ -168,7 +174,9 @@ export function useDashboard() {
     appointmentsToday,
     tasksDueToday,
     prioritizedTodos,
-    loading: computed(() => loading.value || questionsLoading.value),
+    loadingNotifications: questionsLoading,
+    loadingAppointments: computed(() => loadingAppointments.value),
+    loadingTasks: computed(() => loadingTasks.value),
     loadDashboard
   }
 }

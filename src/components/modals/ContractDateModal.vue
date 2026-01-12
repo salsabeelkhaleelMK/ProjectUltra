@@ -40,19 +40,21 @@
     </div>
 
     <template #actions>
-      <button 
-        @click="handleConfirm"
+      <Button 
+        label="Set Contract Date"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-green-600 !hover:bg-green-700 !border-green-600"
         :disabled="!contractDate"
-        class="bg-green-600 hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-      >
-        Set Contract Date
-      </button>
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

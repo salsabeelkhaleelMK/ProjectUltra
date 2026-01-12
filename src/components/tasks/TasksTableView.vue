@@ -7,8 +7,8 @@
         <ViewToggle
           :view="viewMode"
           :options="[
-            { value: 'card', icon: 'fa-solid fa-list', label: 'Cards' },
-            { value: 'table', icon: 'fa-solid fa-table', label: 'Table' }
+            { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
+            { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
           ]"
           @update:view="$emit('view-change', $event)"
         />
@@ -90,7 +90,12 @@ const pagination = ref({
 
 const globalFilter = ref('')
 const sorting = ref([])
-const columnFilters = ref([])
+const columnFilters = ref([
+  { id: 'type', value: undefined },
+  { id: 'status', value: [] },
+  { id: 'source', value: [] },
+  { id: 'assignee', value: undefined }
+])
 const columnVisibility = ref({})
 
 // Filter definitions for AI-powered filtering
@@ -110,7 +115,8 @@ const filterDefinitions = computed(() => {
         { value: 'lead', label: 'Lead' },
         { value: 'opportunity', label: 'Opportunity' }
       ],
-      aiHint: 'Lead or Opportunity type'
+      aiHint: 'Lead or Opportunity type',
+      pinned: true
     })
   }
   
@@ -134,7 +140,8 @@ const filterDefinitions = computed(() => {
       { value: 'Open', label: 'Open' },
       { value: 'Open Lead', label: 'Open Lead' }
     ],
-    aiHint: 'Lead status or opportunity stage'
+    aiHint: 'Lead status or opportunity stage',
+    pinned: true
   })
   
   // Priority filter
@@ -167,7 +174,8 @@ const filterDefinitions = computed(() => {
       { value: 'Referral', label: 'Referral' },
       { value: 'Walk-in', label: 'Walk-in' }
     ],
-    aiHint: 'Lead or opportunity source'
+    aiHint: 'Lead or opportunity source',
+    pinned: true
   })
   
   // Assignee filter
@@ -181,7 +189,8 @@ const filterDefinitions = computed(() => {
         { value: 'eq', label: 'is' }
       ],
       options: uniqueAssignees.map(name => ({ value: name, label: name })),
-      aiHint: 'Person assigned to the task'
+      aiHint: 'Person assigned to the task',
+      pinned: true
     })
   }
   

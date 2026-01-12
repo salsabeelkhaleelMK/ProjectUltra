@@ -2,30 +2,24 @@
   <ModalShell
     :show="show"
     title="Requalify as Lead"
+    subtitle="This will convert the opportunity back to a lead. Some data will be lost."
     size="lg"
     @cancel="$emit('cancel')"
   >
-    <!-- Custom header with icon -->
-    <template #header>
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0">
-            <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-              <i class="fa-solid fa-exclamation-triangle text-yellow-600 text-xl"></i>
-            </div>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-gray-900 mb-1">Requalify as Lead</h3>
-            <p class="text-sm text-gray-600">
-              This will convert the opportunity back to a lead. Some data will be lost.
-            </p>
-          </div>
-        </div>
-      </div>
-    </template>
-
     <!-- Body with scrollable content -->
     <div class="space-y-6 max-h-[60vh] overflow-y-auto">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="flex-shrink-0">
+          <div class="w-12 h-12 rounded-sm bg-yellow-100 flex items-center justify-center border border-yellow-200">
+            <i class="fa-solid fa-exclamation-triangle text-yellow-600 text-xl"></i>
+          </div>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm text-gray-600">
+            Requalifying this opportunity will reset its stage and remove negotiation history.
+          </p>
+        </div>
+      </div>
       <!-- What will be lost -->
       <div>
         <h4 class="text-sm font-bold text-red-700 mb-3 flex items-center gap-2">
@@ -84,17 +78,19 @@
     </div>
 
     <template #actions>
-      <button
+      <Button
+        label="Confirm Requalification"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-yellow-600 !hover:bg-yellow-700 !border-yellow-600"
         @click="$emit('confirm')"
-        class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium px-6 py-2 rounded-lg text-sm transition-colors"
-      >
-        Confirm Requalification
-      </button>
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 defineProps({

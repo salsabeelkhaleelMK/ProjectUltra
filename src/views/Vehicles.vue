@@ -6,7 +6,7 @@
     <!-- Content with padding -->
     <div class="p-4 md:p-8">
       <!-- Filter Tabs -->
-      <div class="flex items-center gap-3 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+      <div class="flex items-center gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
         <button
           v-for="tab in vehicleTabs"
           :key="tab.key"
@@ -48,14 +48,14 @@
         >
           <!-- Toolbar slot for action buttons -->
           <template #toolbar>
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-plus text-sm"></i>
-              <Button
-                label="Add new"
-                variant="primary"
-                size="large"
-              />
-            </div>
+            <button 
+              v-if="vehicleFilter === 'customer-vehicles'" 
+              @click="showAddModal = true" 
+              class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span>Add new</span>
+            </button>
           </template>
           
           <template #empty-state>
@@ -67,6 +67,178 @@
         </DataTable>
       </div>
     </div>
+
+    <!-- Add Vehicle Modal -->
+    <ModalShell
+      :show="showAddModal"
+      title="Add Customer Vehicle"
+      subtitle="Fill in the details for the new customer vehicle."
+      @close="handleCloseModal"
+      size="lg"
+    >
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <!-- Vehicle Information -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block label-upper mb-2">Brand</label>
+            <input 
+              v-model="newVehicle.brand"
+              type="text" 
+              placeholder="e.g., Volkswagen" 
+              class="input"
+              required
+            >
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Model</label>
+            <input 
+              v-model="newVehicle.model"
+              type="text" 
+              placeholder="e.g., ID.4" 
+              class="input"
+              required
+            >
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Year</label>
+            <input 
+              v-model="newVehicle.year"
+              type="number" 
+              placeholder="e.g., 2024" 
+              class="input"
+              min="1900"
+              :max="new Date().getFullYear() + 1"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Identification -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block label-upper mb-2">VIN</label>
+            <input 
+              v-model="newVehicle.vin"
+              type="text" 
+              placeholder="Vehicle Identification Number" 
+              class="input"
+            >
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Plates</label>
+            <input 
+              v-model="newVehicle.plates"
+              type="text" 
+              placeholder="License plate number" 
+              class="input"
+            >
+          </div>
+        </div>
+
+        <!-- Vehicle Details -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block label-upper mb-2">Fuel Type</label>
+            <select v-model="newVehicle.fuelType" class="input">
+              <option value="">Select fuel type...</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+            </select>
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Gear Type</label>
+            <select v-model="newVehicle.gearType" class="input">
+              <option value="">Select gear type...</option>
+              <option value="Manual">Manual</option>
+              <option value="Automatic">Automatic</option>
+              <option value="CVT">CVT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Mileage (km)</label>
+            <input 
+              v-model.number="newVehicle.kilometers"
+              type="number" 
+              placeholder="0" 
+              class="input"
+              min="0"
+            >
+          </div>
+        </div>
+
+        <!-- Registration & Ownership -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block label-upper mb-2">Registered At</label>
+            <input 
+              v-model="newVehicle.registration"
+              type="text" 
+              placeholder="MM/YYYY (e.g., 01/2024)" 
+              class="input"
+            >
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Owned Since</label>
+            <input 
+              v-model="newVehicle.ownedSince"
+              type="text" 
+              placeholder="MM/YYYY (e.g., 01/2024)" 
+              class="input"
+            >
+          </div>
+        </div>
+
+        <!-- Owner Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block label-upper mb-2">Owner</label>
+            <input 
+              v-model="newVehicle.owner"
+              type="text" 
+              placeholder="Owner name" 
+              class="input"
+            >
+          </div>
+          <div>
+            <label class="block label-upper mb-2">Ownership Type</label>
+            <select v-model="newVehicle.ownershipType" class="input">
+              <option value="">Select ownership type...</option>
+              <option value="Private">Private</option>
+              <option value="Company">Company</option>
+              <option value="Lease">Lease</option>
+              <option value="Fleet">Fleet</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Warranty -->
+        <div>
+          <label class="block label-upper mb-2">Warranty Info</label>
+          <textarea 
+            v-model="newVehicle.warrantyInfo"
+            rows="3"
+            placeholder="Warranty information..." 
+            class="input"
+          ></textarea>
+        </div>
+      </form>
+
+      <template #actions>
+        <Button
+          label="Cancel"
+          variant="outline"
+          @click="handleCloseModal"
+        />
+        <Button
+          label="Add Vehicle"
+          variant="primary"
+          @click="handleSubmit"
+        />
+      </template>
+    </ModalShell>
   </div>
 </template>
 
@@ -75,6 +247,7 @@ import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'
+import ModalShell from '@/components/shared/ModalShell.vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button, Badge } from '@motork/component-library'
 
@@ -124,6 +297,73 @@ const vehicleTabs = computed(() => [
 
 const setVehicleFilter = (key) => {
   vehicleFilter.value = key
+}
+
+// Add Vehicle Modal State
+const showAddModal = ref(false)
+const newVehicle = ref({
+  brand: '',
+  model: '',
+  year: '',
+  vin: '',
+  plates: '',
+  fuelType: '',
+  gearType: '',
+  kilometers: '',
+  registration: '',
+  owner: '',
+  ownershipType: '',
+  ownedSince: '',
+  warrantyInfo: '',
+  stockDays: null // Customer vehicles have null stockDays
+})
+
+const handleCloseModal = () => {
+  showAddModal.value = false
+  // Reset form
+  newVehicle.value = {
+    brand: '',
+    model: '',
+    year: '',
+    vin: '',
+    plates: '',
+    fuelType: '',
+    gearType: '',
+    kilometers: '',
+    registration: '',
+    owner: '',
+    ownershipType: '',
+    ownedSince: '',
+    warrantyInfo: '',
+    stockDays: null
+  }
+}
+
+const handleSubmit = async () => {
+  try {
+    const vehicleData = {
+      brand: newVehicle.value.brand,
+      model: newVehicle.value.model,
+      year: parseInt(newVehicle.value.year) || null,
+      vin: newVehicle.value.vin || null,
+      plates: newVehicle.value.plates || null,
+      fuelType: newVehicle.value.fuelType || null,
+      gearType: newVehicle.value.gearType || null,
+      kilometers: parseInt(newVehicle.value.kilometers) || 0,
+      registration: newVehicle.value.registration || null,
+      owner: newVehicle.value.owner || null,
+      ownershipType: newVehicle.value.ownershipType || null,
+      ownedSince: newVehicle.value.ownedSince || null,
+      warrantyInfo: newVehicle.value.warrantyInfo || null,
+      stockDays: null, // Customer vehicles have null stockDays
+      status: 'Available'
+    }
+    
+    await vehiclesStore.addVehicle(vehicleData)
+    handleCloseModal()
+  } catch (error) {
+    console.error('Error adding vehicle:', error)
+  }
 }
 
 // Filter definitions for AI-powered filtering

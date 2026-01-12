@@ -271,7 +271,7 @@ export function getTaskWidgetTitle(widgetType) {
  * Check if opportunity is in a closed state
  */
 export function isOpportunityClosed(stage) {
-  return stage === 'Closed Won' || stage === 'Closed Lost' || stage === 'Delivered'
+  return stage === 'Closed Won' || stage === 'Closed Lost'
 }
 
 // Export helper for external use

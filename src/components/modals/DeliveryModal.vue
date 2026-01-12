@@ -54,19 +54,21 @@
     </div>
 
     <template #actions>
-      <button 
-        @click="handleConfirm"
+      <Button 
+        label="Mark as Delivered"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-green-600 !hover:bg-green-700 !border-green-600"
         :disabled="!deliveryDate || !deliveryLocation"
-        class="bg-green-600 hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-      >
-        Mark as Delivered
-      </button>
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

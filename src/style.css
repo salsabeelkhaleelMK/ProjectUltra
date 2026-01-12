@@ -34,13 +34,23 @@
   
   /* Button classes removed - using @motork/component-library Button component */
   
-  /* Input */
+  /* Form Inputs - Global Styles matching OfferWidget.vue */
   .input {
-    @apply w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all;
+    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 transition-all;
   }
   
   .input-with-icon {
-    @apply w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all pl-10;
+    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 transition-all pl-10;
+  }
+  
+  /* Select dropdowns */
+  select.input {
+    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 transition-all;
+  }
+  
+  /* Textareas */
+  textarea.input {
+    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 transition-all resize-none;
   }
   
   /* Badge */

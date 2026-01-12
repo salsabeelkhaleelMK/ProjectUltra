@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-xl p-5 mb-6 animate-fade-in relative">
-    <div class="flex justify-between items-center mb-4">
+    <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
       <h5 class="text-sm font-bold text-slate-800">{{ item ? 'Edit Offer' : 'Create Offer' }}</h5>
       <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -37,7 +37,7 @@
         <input 
           type="number" 
           v-model="offerData.price" 
-          class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+          class="input"
           placeholder="Enter offer price"
         />
       </div>
@@ -49,7 +49,7 @@
         </label>
         <select 
           v-model="offerData.financingType" 
-          class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+          class="input"
         >
           <option value="">Select payment method</option>
           <option value="cash">Cash</option>
@@ -65,7 +65,7 @@
           <input 
             type="number" 
             v-model="offerData.downPayment" 
-            class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+            class="input"
             placeholder="0"
           />
         </div>
@@ -74,7 +74,7 @@
           <input 
             type="number" 
             v-model="offerData.monthlyPayment" 
-            class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+            class="input"
             placeholder="Calculated automatically"
           />
         </div>
@@ -83,7 +83,7 @@
           <input 
             type="number" 
             v-model="offerData.term" 
-            class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+            class="input"
             placeholder="36"
           />
         </div>
@@ -93,7 +93,7 @@
             type="number" 
             step="0.1" 
             v-model="offerData.interestRate" 
-            class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+            class="input"
             placeholder="3.5"
           />
         </div>
@@ -105,7 +105,7 @@
         <input 
           type="date" 
           v-model="offerData.deliveryDate" 
-          class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+          class="input"
         />
       </div>
       
@@ -115,7 +115,7 @@
         <input 
           type="date" 
           v-model="offerData.validUntil" 
-          class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+          class="input"
         />
       </div>
       
@@ -125,14 +125,14 @@
         <textarea 
           v-model="offerData.notes" 
           rows="3"
-          class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500 resize-none"
+          class="input"
           placeholder="Any special terms, conditions, or notes about this offer..."
         ></textarea>
       </div>
     </div>
     
     <!-- Action Buttons -->
-    <div class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
+    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
       <button 
         @click="$emit('cancel')" 
         class="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
@@ -169,6 +169,14 @@ const props = defineProps({
   selectedVehicle: {
     type: Object,
     default: null
+  },
+  hideHeader: {
+    type: Boolean,
+    default: false
+  },
+  hideActions: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -273,4 +281,10 @@ const handleSave = () => {
   
   emit('save', offerPayload)
 }
+
+defineExpose({
+  submit: handleSave,
+  isValid: canSave,
+  offerData
+})
 </script>

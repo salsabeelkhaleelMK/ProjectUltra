@@ -1,14 +1,44 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="heading-main">Page Views by Vehicle</h2>
-      <select class="input !py-1.5 !px-3 text-sm w-auto">
-        <option>This month</option>
-        <option>Last month</option>
-      </select>
-    </div>
+    <!-- Loading Skeleton -->
+    <template v-if="loading">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
+        <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div
+          v-for="n in 5"
+          :key="`skeleton-${n}`"
+          class="bg-gray-50 rounded-lg border border-gray-200 p-3"
+        >
+          <div class="mb-2">
+            <div class="h-3 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>
+            <div class="flex items-baseline gap-1.5">
+              <div class="h-5 bg-gray-200 rounded w-12 animate-pulse"></div>
+              <div class="h-3 bg-gray-200 rounded w-10 animate-pulse"></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+            <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
+          </div>
+          <div class="h-8 bg-gray-100 rounded animate-pulse"></div>
+        </div>
+      </div>
+    </template>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <!-- Actual Content -->
+    <template v-else>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="heading-main">Page Views by Vehicle</h2>
+        <select class="input !py-1.5 !px-3 text-sm w-auto">
+          <option>This month</option>
+          <option>Last month</option>
+        </select>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       <div
         v-for="vehicle in vehicles"
         :key="vehicle.id"
@@ -64,6 +94,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -74,6 +105,10 @@ const props = defineProps({
   vehicles: {
     type: Array,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

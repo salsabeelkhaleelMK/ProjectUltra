@@ -4,29 +4,29 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Start date</label>
-          <input type="date" v-model="financingData.startDate" class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700">
+          <input type="date" v-model="financingData.startDate" class="input">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Expiration date</label>
-          <input type="date" v-model="financingData.expDate" class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700">
+          <input type="date" v-model="financingData.expDate" class="input">
         </div>
       </div>
       <div>
         <label class="block text-xs font-medium text-slate-700 mb-1">Financial product name</label>
-        <input type="text" v-model="financingData.productName" class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700">
+        <input type="text" v-model="financingData.productName" class="input">
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Deposit</label>
-          <input type="number" v-model="financingData.deposit" class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700">
+          <input type="number" v-model="financingData.deposit" class="input">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Total loan amount</label>
-          <input type="number" v-model="financingData.loanAmount" class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700">
+          <input type="number" v-model="financingData.loanAmount" class="input">
         </div>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
+    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
       <button @click="$emit('cancel')" class="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
       <button @click="handleSave" :disabled="!financingData.productName" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
     </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const props = defineProps({
   item: {
@@ -48,6 +48,10 @@ const props = defineProps({
   taskId: {
     type: [String, Number],
     required: true
+  },
+  hideActions: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -93,4 +97,9 @@ const handleSave = () => {
     isEdit: !!props.item
   })
 }
+
+defineExpose({
+  submit: handleSave,
+  isValid: computed(() => !!financingData.value.productName)
+})
 </script>

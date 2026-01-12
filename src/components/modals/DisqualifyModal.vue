@@ -52,19 +52,21 @@
     </div>
 
     <template #actions>
-      <button 
-        @click="handleConfirm"
+      <Button
+        label="Confirm Disqualification"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-red-600 !hover:bg-red-700 !border-red-600"
         :disabled="!category || !failureReason"
-        class="bg-red-600 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed text-white font-medium px-6 py-3 rounded-lg text-base transition-colors"
-      >
-        Confirm Disqualification
-      </button>
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

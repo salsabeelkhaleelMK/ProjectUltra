@@ -2105,7 +2105,7 @@ export const mockOpportunities = [
       date.setDate(date.getDate() - 1) // Offer sent 1 day ago (less than 3 days)
       return date.toISOString()
     })()
-    // STAGE: Offer Sent (has offer activity less than 3 days old - will be calculated by stageMapper)
+    // STAGE: In Negotiation (has offer activity less than 3 days old - will be calculated by stageMapper)
   },
   // REMOVED ID 21 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)
   {

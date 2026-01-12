@@ -4,7 +4,7 @@
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
       <DialogContent 
         :class="[
-          'fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%] bg-white rounded-xl shadow-2xl w-full mx-4 overflow-hidden',
+          'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-sm shadow-2xl w-full max-w-[calc(100%-2rem)] overflow-hidden border border-gray-100 flex flex-col',
           sizeClass,
           { 'animate-fade-in': animate }
         ]"
@@ -13,35 +13,46 @@
       >
         <!-- Header Slot Override or Default Header -->
         <slot name="header">
-          <DialogHeader class="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-            <div>
-              <DialogTitle class="font-bold text-lg text-gray-900">{{ title }}</DialogTitle>
-              <DialogDescription v-if="subtitle" class="text-xs text-gray-500 mt-1">{{ subtitle }}</DialogDescription>
+          <DialogHeader class="px-6 py-4 md:py-5 border-b border-gray-100 bg-white shrink-0">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <DialogTitle class="text-lg md:text-xl font-bold text-gray-900 leading-tight tracking-tight break-words">{{ title }}</DialogTitle>
+                <DialogDescription v-if="subtitle" class="text-xs text-gray-500 mt-1.5 break-words">{{ subtitle }}</DialogDescription>
+              </div>
+              <button
+                v-if="showCloseButton"
+                @click="emit('close')"
+                type="button"
+                class="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors -mt-1"
+                aria-label="Close"
+              >
+                <i class="fa-solid fa-xmark text-base md:text-lg"></i>
+              </button>
             </div>
-            <DialogClose 
-              v-if="showCloseButton"
-              class="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <i class="fa-solid fa-times"></i>
-            </DialogClose>
           </DialogHeader>
         </slot>
 
         <!-- Body Slot -->
-        <div class="p-5">
+        <div class="overflow-y-auto max-h-[calc(80vh-140px)] flex-1">
           <slot></slot>
         </div>
 
-        <!-- Footer Slot Override or Default Footer -->
+        <!-- Footer Slot - Always visible with at least cancel button -->
         <slot name="footer">
-          <DialogFooter class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+          <DialogFooter 
+            class="px-6 py-4 bg-gray-50 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border-gray-100 shrink-0"
+          >
             <Button
+              v-if="!hideCancelButton"
               :label="cancelLabel"
               variant="outline"
               size="small"
+              class="rounded-sm w-full sm:w-auto order-2 sm:order-1"
               @click="handleCancel"
             />
-            <slot name="actions"></slot>
+            <div class="flex gap-3 order-1 sm:order-2 w-full sm:w-auto">
+              <slot name="actions"></slot>
+            </div>
           </DialogFooter>
         </slot>
       </DialogContent>
@@ -50,7 +61,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import { 
   Dialog, 
   DialogContent, 
@@ -59,10 +70,11 @@ import {
   DialogHeader, 
   DialogOverlay, 
   DialogPortal, 
-  DialogTitle, 
-  DialogClose 
+  DialogTitle
 } from '@motork/component-library/future/primitives'
 import { Button } from '@motork/component-library'
+
+const $slots = useSlots()
 
 const props = defineProps({
   show: {
@@ -88,6 +100,10 @@ const props = defineProps({
   cancelLabel: {
     type: String,
     default: 'Cancel'
+  },
+  hideCancelButton: {
+    type: Boolean,
+    default: false
   },
   clickOutsideToClose: {
     type: Boolean,
@@ -142,6 +158,3 @@ const handlePointerDownOutside = (event) => {
   }
 }
 </script>
-
-
-

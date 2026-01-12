@@ -7,20 +7,30 @@
     @close="$emit('close')"
     @cancel="$emit('close')"
   >
-    <div class="p-6 overflow-y-auto max-h-[70vh]">
-      <UnifiedAddForm
-        ref="formRef"
-        :initial-contact="contact"
-        :hide-contact-selection="true"
-        :force-type="type"
-        @submit="handleSave"
+    <UnifiedAddForm
+      ref="formRef"
+      :initial-contact="contact"
+      :hide-contact-selection="true"
+      :force-type="type"
+      @submit="handleSave"
+    />
+
+    <template #actions>
+      <Button
+        :label="formRef?.isSubmitting ? 'Saving...' : 'Save'"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        :disabled="formRef?.isSubmitting || !formRef?.canSubmit"
+        @click="formRef?.submit"
       />
-    </div>
+    </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import UnifiedAddForm from '@/components/addnew/UnifiedAddForm.vue'
 

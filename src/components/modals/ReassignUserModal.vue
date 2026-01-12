@@ -1,5 +1,10 @@
 <template>
-  <ModalShell :show="show" @close="$emit('close')" title="Reassign">
+  <ModalShell 
+    :show="show" 
+    @close="$emit('close')" 
+    @cancel="$emit('close')"
+    title="Reassign"
+  >
     <p class="text-sm text-gray-600 mb-4">
       Select a user or team to reassign:
     </p>
@@ -53,29 +58,23 @@
       </div>
     </div>
     
-    <!-- Override footer slot to prevent default footer -->
-    <template #footer>
-      <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-        <button
-          @click="$emit('close')"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          @click="handleConfirm"
-          :disabled="!selectedAssignee"
-          class="px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Reassign
-        </button>
-      </div>
+    <!-- actions slot -->
+    <template #actions>
+      <Button
+        label="Reassign"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        :disabled="!selectedAssignee"
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { Button } from '@motork/component-library'
 import { useUsersStore } from '@/stores/users'
 import ModalShell from '@/components/shared/ModalShell.vue'
 

@@ -1,5 +1,11 @@
 <template>
-  <ModalShell :show="show" @close="$emit('close')" title="Select Vehicle" size="6xl">
+  <ModalShell 
+    :show="show" 
+    @close="$emit('close')" 
+    @cancel="$emit('close')"
+    title="Select Vehicle" 
+    size="6xl"
+  >
     <div class="space-y-6 max-h-[75vh] overflow-y-auto px-2">
       <!-- Section 1: Recommended Vehicles (includes requested if available) -->
       <div v-if="allRecommendedVehicles.length">
@@ -85,7 +91,7 @@
                 <input
                   v-model="customVehicle.brand"
                   type="text"
-                  class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  class="input"
                   placeholder="e.g., Audi"
                 />
               </div>
@@ -94,7 +100,7 @@
                 <input
                   v-model="customVehicle.model"
                   type="text"
-                  class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  class="input"
                   placeholder="e.g., e-tron GT"
                 />
               </div>
@@ -103,7 +109,7 @@
                 <input
                   v-model="customVehicle.year"
                   type="number"
-                  class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  class="input"
                   placeholder="2024"
                 />
               </div>
@@ -112,7 +118,7 @@
                 <input
                   v-model="customVehicle.price"
                   type="number"
-                  class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  class="input"
                   placeholder="98000"
                 />
               </div>
@@ -132,25 +138,16 @@
       </div>
     </div>
     
-    <!-- Footer with selected vehicle info -->
-    <template #footer v-if="selectedVehicle">
-      <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i class="fa-solid fa-check-circle text-green-600 text-lg"></i>
-          <div>
-            <p class="text-xs text-gray-500">Selected Vehicle</p>
-            <p class="font-bold text-sm text-gray-800">
-              {{ selectedVehicle.brand }} {{ selectedVehicle.model }} ({{ selectedVehicle.year }})
-            </p>
-          </div>
-        </div>
-        <button
-          @click="handleConfirm"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg text-sm transition-colors shadow-sm"
-        >
-          Confirm Selection
-        </button>
-      </div>
+    <!-- Footer with selected vehicle info and actions -->
+    <template #actions>
+      <Button
+        v-if="selectedVehicle"
+        label="Confirm Selection"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>

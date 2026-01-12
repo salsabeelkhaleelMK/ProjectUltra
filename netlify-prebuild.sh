@@ -54,3 +54,4 @@ EOF
 echo ".npmrc file created successfully"
 echo "CodeArtifact authentication complete!"
 
+

@@ -62,6 +62,7 @@
                 :owner="task.assignee"
                 :source="task.source || ''"
                 :delivery-substatus="task.deliverySubstatus"
+                :activities="task.activities || []"
                 @reassign="handleReassign"
               />
             </div>
@@ -198,61 +199,37 @@
       />
     </div>
 
-    <!-- Overview Modal Widgets (Financing, Trade-in, Purchase) -->
-    <Teleport to="body">
-      <div 
-        v-if="showOverviewModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
-        @click.self="closeOverviewModal"
-      >
-        <div 
-          v-if="overviewModalType === 'financing' || overviewModalType === 'tradein'"
-          class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        >
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h5 class="text-sm font-bold text-slate-800">
-                {{ overviewModalType === 'financing' ? 'Add Financing' : 'Add Trade-in' }}
-              </h5>
-              <button @click="closeOverviewModal" class="text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <FinancingWidget
-              v-if="overviewModalType === 'financing'"
-              :item="null"
-              :task-type="type"
-              :task-id="task.id"
-              @save="handleOverviewModalSave"
-              @cancel="closeOverviewModal"
-            />
-            <TradeInWidget
-              v-if="overviewModalType === 'tradein'"
-              :item="null"
-              :task-type="type"
-              :task-id="task.id"
-              @save="handleOverviewModalSave"
-              @cancel="closeOverviewModal"
-            />
-          </div>
-        </div>
-        
-        <div 
-          v-if="overviewModalType === 'purchase'"
-          class="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        >
-          <OfferWidget
-            :item="null"
-            :task-type="type"
-            :task-id="task.id"
-            :requested-car="type === 'lead' ? task.requestedCar : null"
-            :recommended-cars="[]"
-            @save="handleOverviewModalSave"
-            @cancel="closeOverviewModal"
-          />
-        </div>
-      </div>
-    </Teleport>
+    <!-- Financing Modal -->
+    <FinancingModal
+      :show="overviewModalType === 'financing' && showOverviewModal"
+      :item="null"
+      :task-type="type"
+      :task-id="task.id"
+      @save="handleOverviewModalSave"
+      @close="closeOverviewModal"
+    />
+    
+    <!-- Trade-In Modal -->
+    <TradeInModal
+      :show="overviewModalType === 'tradein' && showOverviewModal"
+      :item="null"
+      :task-type="type"
+      :task-id="task.id"
+      @save="handleOverviewModalSave"
+      @close="closeOverviewModal"
+    />
+    
+    <!-- Offer/Purchase Modal -->
+    <OfferModal
+      :show="overviewModalType === 'purchase' && showOverviewModal"
+      :item="null"
+      :task-type="type"
+      :task-id="task.id"
+      :requested-car="type === 'lead' ? task.requestedCar : null"
+      :recommended-cars="[]"
+      @save="handleOverviewModalSave"
+      @close="closeOverviewModal"
+    />
     
     <!-- Reassign Modal -->
     <ReassignUserModal
@@ -286,12 +263,13 @@ import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummar
 import CommunicationWidget from '@/components/customer/activities/CommunicationWidget.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
-import FinancingWidget from '@/components/customer/activities/FinancingWidget.vue'
-import TradeInWidget from '@/components/customer/activities/TradeInWidget.vue'
-import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
+import FinancingModal from '@/components/modals/FinancingModal.vue'
+import TradeInModal from '@/components/modals/TradeInModal.vue'
+import OfferModal from '@/components/modals/OfferModal.vue'
+import ModalShell from '@/components/shared/ModalShell.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 
@@ -505,6 +483,14 @@ const allActivities = computed(() => [
   ...props.storeAdapter.currentActivities.value,
   ...inlineContent.value
 ])
+
+// Computed title for overview modals
+const overviewModalTitle = computed(() => {
+  if (overviewModalType.value === 'financing') return 'Add Financing'
+  if (overviewModalType.value === 'tradein') return 'Add Trade-in'
+  if (overviewModalType.value === 'purchase') return 'Create Purchase Offer'
+  return ''
+})
 
 // Handle vehicle selection from OpportunityManagementWidget
 const handleVehicleSelected = async (data) => {

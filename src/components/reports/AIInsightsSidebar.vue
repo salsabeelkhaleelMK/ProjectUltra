@@ -49,7 +49,7 @@
             @keyup.enter="handleAsk"
             type="text"
             placeholder="Ask me anything"
-            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+            class="input"
           >
         </div>
         

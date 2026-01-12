@@ -1,15 +1,46 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="heading-main">Page Views: Organic vs. Paid</h2>
-      <select class="input text-sm w-auto">
-        <option>This month</option>
-        <option>Last month</option>
-        <option>This quarter</option>
-      </select>
-    </div>
+    <!-- Loading Skeleton -->
+    <template v-if="loading">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
+        <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+      </div>
+      <div class="space-y-4">
+        <div class="flex items-end gap-1 h-64 overflow-x-auto pb-2">
+          <div v-for="n in 30" :key="`bar-${n}`" class="flex flex-col items-center gap-1 min-w-[20px]">
+            <div class="w-full flex items-end justify-center h-full gap-0.5">
+              <div class="bg-gray-200 rounded-t w-2 h-full animate-pulse"></div>
+              <div class="bg-gray-200 rounded-t w-2 h-3/4 animate-pulse"></div>
+            </div>
+            <div class="h-3 bg-gray-200 rounded w-2 animate-pulse"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-center gap-6 pt-4 border-t border-gray-200">
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div class="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </template>
     
-    <div class="space-y-4">
+    <!-- Actual Content -->
+    <template v-else>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="heading-main">Page Views: Organic vs. Paid</h2>
+        <select class="input text-sm w-auto">
+          <option>This month</option>
+          <option>Last month</option>
+          <option>This quarter</option>
+        </select>
+      </div>
+      
+      <div class="space-y-4">
       <!-- Chart -->
       <div class="flex items-end gap-1 h-64 overflow-x-auto pb-2">
         <div
@@ -47,6 +78,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -57,6 +89,10 @@ const props = defineProps({
   data: {
     type: Array,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

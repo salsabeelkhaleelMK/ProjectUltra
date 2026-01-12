@@ -1,6 +1,28 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+    <!-- Loading Skeleton -->
     <div
+      v-if="loading"
+      v-for="n in 4"
+      :key="`skeleton-${n}`"
+      class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4"
+    >
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex-1">
+          <div class="h-3 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
+          <div class="flex items-baseline gap-1.5 mb-1">
+            <div class="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+            <div class="h-4 bg-gray-200 rounded w-10 animate-pulse"></div>
+          </div>
+          <div class="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+        </div>
+      </div>
+      <div class="h-8 mt-2 bg-gray-100 rounded animate-pulse"></div>
+    </div>
+    
+    <!-- Actual Content -->
+    <div
+      v-else
       v-for="kpi in kpis"
       :key="kpi.id"
       class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow group"
@@ -75,6 +97,10 @@ const props = defineProps({
   kpis: {
     type: Array,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

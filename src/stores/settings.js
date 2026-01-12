@@ -22,8 +22,7 @@ const DEFAULT_SETTINGS = {
     'Awaiting Appointment',
     'To be Called Back',
     'In Negotiation',
-    'Offer Sent',
-    'Awaiting Response'
+    'Needs Follow-up'
   ],
   
   // Lead Thresholds
@@ -93,4 +92,5 @@ export const useSettingsStore = defineStore('settings', () => {
     setSetting
   }
 })
+
 

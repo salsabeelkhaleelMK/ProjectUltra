@@ -3,7 +3,6 @@
     :show="show"
     :title="contact?.requestedCar ? 'Edit Requested Car' : 'Add Requested Car'"
     size="2xl"
-    :show-close-button="true"
     @close="$emit('close')"
     @cancel="$emit('close')"
   >
@@ -155,21 +154,15 @@
       </div>
     </form>
     
-    <template #footer>
-      <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-        <Button
-          label="Cancel"
-          variant="outline"
-          type="button"
-          @click="$emit('close')"
-        />
-        <Button
-          :label="contact?.requestedCar ? 'Update Car' : 'Add Car'"
-          variant="primary"
-          :disabled="!isValid"
-          @click="handleSubmit"
-        />
-      </div>
+    <template #actions>
+      <Button
+        :label="contact?.requestedCar ? 'Update Car' : 'Add Car'"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        :disabled="!isValid"
+        @click="handleSubmit"
+      />
     </template>
   </ModalShell>
 </template>

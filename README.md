@@ -124,8 +124,6 @@ TaskShell.vue - Unified task layout shell
 ContactInfo.vue - Expandable contact card
 StageOwnerBar.vue - Stage/owner/source/probability chips
 AddNewButton.vue - Context-aware dropdown (changes actions per tab/type)
-ScheduleAppointmentWidget.vue - Modal for scheduling (reused across widgets)
-RescheduleWidget.vue - Inline postpone form
 VehicleWidget.vue - Requested car display
 ComingSoonModal.vue - Placeholder modal
 ActivitySummarySidebar.vue - Right sidebar with activity timeline

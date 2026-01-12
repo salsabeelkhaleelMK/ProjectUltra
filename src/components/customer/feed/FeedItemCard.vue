@@ -11,7 +11,7 @@
         <span class="text-xs font-bold text-slate-800">{{ customerInitials }}</span>
         <span class="text-[10px] text-gray-400">{{ item.action || 'added' }}</span>
         <span class="text-[10px] text-gray-400">• {{ formatTime(item.timestamp) }}</span>
-        <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-[9px] px-1.5 py-0.5 rounded border border-blue-100">Auto-detected</span>
+        <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-[10px] px-1 py-0.5 rounded border border-blue-100">Auto-detected</span>
         <div class="ml-auto relative">
           <button 
             @click.stop="showMenu = !showMenu"
@@ -110,7 +110,7 @@
               <h4 class="text-sm font-bold text-slate-800">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
               <p class="text-xs text-gray-500">€ {{ formatCurrency(item.data.price) }}</p>
             </div>
-            <span v-if="item.data.isMainOffer" class="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Main Offer</span>
+            <span v-if="item.data.isMainOffer" class="bg-purple-600 text-white text-[10px] font-bold px-1 py-0.5 rounded">Main Offer</span>
           </div>
           <div v-else-if="item.type === 'purchase'" class="flex items-center gap-3">
             <div class="flex-1">

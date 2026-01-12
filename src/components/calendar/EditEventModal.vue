@@ -97,6 +97,8 @@
       <Button
         label="Save Changes"
         variant="primary"
+        size="small"
+        class="rounded-sm"
         @click="handleSave"
       />
     </template>

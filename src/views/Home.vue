@@ -2,13 +2,8 @@
   <div class="page-container">
     <!-- Content -->
     <div class="p-4 md:p-6 lg:p-8">
-      <!-- Loading State -->
-      <div v-if="loading" class="flex items-center justify-center py-12">
-        <div class="text-gray-500">Loading dashboard...</div>
-      </div>
-      
       <!-- Dashboard Content - 3 Column Grid -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <!-- Quick Actions Widget -->
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div class="p-4 border-b border-gray-100 bg-gray-50/50">
@@ -35,21 +30,38 @@
           </div>
           
           <div class="p-4 space-y-3">
-            <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
-              <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
-              <p class="text-sm">All caught up!</p>
-              <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
-            </div>
-            <ActionableQuestionCard
-              v-for="question in notifications.slice(0, 5)"
-              :key="question.id"
-              :question="question"
-              @answer-yes="handleAnswerYes"
-              @answer-no="handleAnswerNo"
-              @reassign="handleReassign"
-              @view-task="handleViewTask"
-              @dismiss="handleDismiss"
-            />
+            <!-- Loading Skeleton -->
+            <template v-if="loadingNotifications">
+              <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="space-y-2">
+                  <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                  <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                  <div class="flex gap-2 mt-3">
+                    <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+                    <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </template>
+            
+            <!-- Actual Content -->
+            <template v-else>
+              <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
+                <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
+                <p class="text-sm">All caught up!</p>
+                <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
+              </div>
+              <ActionableQuestionCard
+                v-for="question in notifications.slice(0, 5)"
+                :key="question.id"
+                :question="question"
+                @answer-yes="handleAnswerYes"
+                @answer-no="handleAnswerNo"
+                @reassign="handleReassign"
+                @view-task="handleViewTask"
+                @dismiss="handleDismiss"
+              />
+            </template>
           </div>
         </div>
         
@@ -78,7 +90,7 @@
           </div>
           
           <div class="p-4">
-            <TodaysAppointments :appointments="appointmentsToday" />
+            <TodaysAppointments :appointments="appointmentsToday" :loading="loadingAppointments" />
           </div>
         </div>
         
@@ -107,7 +119,7 @@
           </div>
           
           <div class="p-4">
-            <TodaysTasks :tasks="tasksDueToday" />
+            <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
           </div>
         </div>
       </div>
@@ -146,7 +158,9 @@ const {
   totalNotificationsCount, 
   appointmentsToday, 
   tasksDueToday, 
-  loading, 
+  loadingNotifications,
+  loadingAppointments,
+  loadingTasks,
   loadDashboard 
 } = useDashboard()
 

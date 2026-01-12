@@ -40,9 +40,17 @@ function enrichOpportunityWithCustomer(opportunity) {
 function enrichOpportunityWithStage(opportunity) {
   if (!opportunity) return null
   
-  const oppWithCustomer = enrichOpportunityWithCustomer(opportunity)
+  // Backward compatibility: Migrate old stage names
+  let migratedStage = opportunity.stage
+  if (opportunity.stage === 'Offer Sent') {
+    migratedStage = 'In Negotiation'
+  } else if (opportunity.stage === 'Awaiting Response') {
+    migratedStage = 'Needs Follow-up'
+  }
+  
+  const oppWithCustomer = enrichOpportunityWithCustomer({ ...opportunity, stage: migratedStage })
   const activities = mockActivities.filter(a => a.opportunityId === opportunity.id)
-  const displayStage = getDisplayStage({ ...oppWithCustomer, apiStatus: opportunity.stage, activities }, 'opportunity')
+  const displayStage = getDisplayStage({ ...oppWithCustomer, apiStatus: migratedStage, activities }, 'opportunity')
   
   // Calculate delivery substatus only for Closed Won opportunities
   const deliverySubstatus = displayStage === 'Closed Won' 
@@ -51,7 +59,8 @@ function enrichOpportunityWithStage(opportunity) {
   
   return {
     ...oppWithCustomer,
-    apiStatus: opportunity.stage,
+    stage: migratedStage, // Use migrated stage
+    apiStatus: migratedStage,
     displayStage,
     deliverySubstatus,
     activities // Include activities for stage calculation

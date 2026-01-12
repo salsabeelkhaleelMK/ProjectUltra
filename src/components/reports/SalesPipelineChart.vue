@@ -1,13 +1,48 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="section-title !mb-0">Sales Pipeline</h2>
-      <select class="input !py-1.5 !px-3 text-sm w-auto">
-        <option>This month</option>
-        <option>Last month</option>
-        <option>This quarter</option>
-      </select>
-    </div>
+    <!-- Loading Skeleton -->
+    <template v-if="loading">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
+        <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+      </div>
+      <div class="mb-4 pb-4 border-b border-gray-200">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div v-for="n in 4" :key="`stage-${n}`" class="flex items-center gap-2">
+            <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+            <div class="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
+            <div class="h-4 bg-gray-200 rounded w-12 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="h-40 md:h-48 lg:h-56 bg-gray-100 rounded animate-pulse"></div>
+      </div>
+      <div class="flex flex-wrap gap-4 mt-4">
+        <div v-for="n in 4" :key="`legend-${n}`" class="flex items-center gap-2">
+          <div class="w-3 h-3 bg-gray-200 rounded-full animate-pulse"></div>
+          <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-200">
+        <div v-for="n in 4" :key="`time-${n}`" class="flex items-center gap-2">
+          <div class="h-4 bg-gray-200 rounded w-4 animate-pulse"></div>
+          <div class="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
+          <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+        </div>
+      </div>
+    </template>
+    
+    <!-- Actual Content -->
+    <template v-else>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="section-title !mb-0">Sales Pipeline</h2>
+        <select class="input !py-1.5 !px-3 text-sm w-auto">
+          <option>This month</option>
+          <option>Last month</option>
+          <option>This quarter</option>
+        </select>
+      </div>
 
     <!-- Stage Stats - Horizontal Flow -->
     <div class="mb-4 pb-4 border-b border-gray-200">
@@ -81,6 +116,7 @@
         <span class="text-xs text-gray-500">on avg.</span>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -91,6 +127,10 @@ const props = defineProps({
   pipeline: {
     type: Object,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

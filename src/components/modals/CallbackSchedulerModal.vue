@@ -1,5 +1,10 @@
 <template>
-  <ModalShell :show="show" @close="$emit('close')" title="Schedule Callback">
+  <ModalShell 
+    :show="show" 
+    @close="$emit('close')" 
+    @cancel="$emit('close')"
+    title="Schedule Callback"
+  >
     <div class="space-y-5">
       <p class="text-sm text-gray-600">
         Schedule a callback with {{ entityName }} to follow up at a convenient time.
@@ -16,7 +21,7 @@
             type="date"
             :min="minDate"
             required
-            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="input"
           />
         </div>
         <div>
@@ -27,7 +32,7 @@
             v-model="formData.time"
             type="time"
             required
-            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="input"
           />
         </div>
       </div>
@@ -97,30 +102,28 @@
           Set reminder 15 minutes before callback
         </label>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="flex gap-3 pt-2">
-        <button
-          @click="handleConfirm"
-          :disabled="!isValid"
-          class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors"
-        >
-          <i class="fa-solid fa-calendar-check mr-2"></i>
-          Schedule Callback
-        </button>
-        <button
-          @click="$emit('close')"
-          class="px-5 py-2.5 border border-gray-200 hover:bg-gray-50 text-slate-700 font-medium rounded-lg text-sm transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
     </div>
+
+    <template #actions>
+      <Button
+        label="Schedule Callback"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        :disabled="!isValid"
+        @click="handleConfirm"
+      >
+        <template #icon-left>
+          <i class="fa-solid fa-calendar-check"></i>
+        </template>
+      </Button>
+    </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import { mockUsers } from '@/api/mockData'
 

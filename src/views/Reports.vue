@@ -20,25 +20,25 @@
         <!-- Left Column - Main Content (2/3 width) -->
         <div class="lg:col-span-2 space-y-4 md:space-y-6">
           <!-- Dashboard KPIs -->
-          <DashboardKPIs :kpis="dashboardKPIs" />
+          <DashboardKPIs :kpis="dashboardKPIs" :loading="loadingKPIs" />
           
           <!-- Sales Pipeline -->
-          <SalesPipelineChart :pipeline="salesPipeline" />
+          <SalesPipelineChart :pipeline="salesPipeline" :loading="loadingSalesPipeline" />
           
           <!-- Team Performance -->
-          <TeamPerformanceTable :team-members="teamPerformance" />
+          <TeamPerformanceTable :team-members="teamPerformance" :loading="loadingTeamPerformance" />
           
           <!-- Page Views by Vehicle -->
-          <PageViewsByVehicle :vehicles="pageViewsByVehicle" />
+          <PageViewsByVehicle :vehicles="pageViewsByVehicle" :loading="loadingPageViewsByVehicle" />
         </div>
         
         <!-- Right Column - Sidebar (1/3 width) -->
         <div class="space-y-4 md:space-y-6">
-          <TodaysEventsSidebar :events="todaysEvents" />
+          <TodaysEventsSidebar :events="todaysEvents" :loading="loadingTodaysEvents" />
           <AIInsightsSidebar />
           
           <!-- Page Views Chart -->
-          <PageViewsChart :data="pageViewsOrganicPaid" />
+          <PageViewsChart :data="pageViewsOrganicPaid" :loading="loadingPageViewsOrganicPaid" />
         </div>
       </div>
     </div>
@@ -64,12 +64,22 @@ const todaysEvents = ref([])
 const pageViewsByVehicle = ref([])
 const pageViewsOrganicPaid = ref([])
 
+const loadingKPIs = ref(true)
+const loadingSalesPipeline = ref(true)
+const loadingTeamPerformance = ref(true)
+const loadingTodaysEvents = ref(true)
+const loadingPageViewsByVehicle = ref(true)
+const loadingPageViewsOrganicPaid = ref(true)
+
 onMounted(async () => {
-  dashboardKPIs.value = await fetchDashboardKPIs()
-  salesPipeline.value = await fetchSalesPipeline()
-  teamPerformance.value = await fetchTeamPerformance()
-  todaysEvents.value = await fetchTodaysEvents()
-  pageViewsByVehicle.value = await fetchPageViewsByVehicle()
-  pageViewsOrganicPaid.value = await fetchPageViewsOrganicPaid()
+  // Load all data in parallel with individual loading states
+  Promise.all([
+    fetchDashboardKPIs().then(data => { dashboardKPIs.value = data; loadingKPIs.value = false }),
+    fetchSalesPipeline().then(data => { salesPipeline.value = data; loadingSalesPipeline.value = false }),
+    fetchTeamPerformance().then(data => { teamPerformance.value = data; loadingTeamPerformance.value = false }),
+    fetchTodaysEvents().then(data => { todaysEvents.value = data; loadingTodaysEvents.value = false }),
+    fetchPageViewsByVehicle().then(data => { pageViewsByVehicle.value = data; loadingPageViewsByVehicle.value = false }),
+    fetchPageViewsOrganicPaid().then(data => { pageViewsOrganicPaid.value = data; loadingPageViewsOrganicPaid.value = false })
+  ])
 })
 </script>

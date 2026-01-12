@@ -93,15 +93,6 @@
       </button>
     </div>
 
-    <!-- Custom Footer -->
-    <template #footer>
-      <div class="px-5 py-4 bg-gray-50 border-t border-gray-100">
-        <p class="text-[10px] text-gray-400 text-center">
-          <i class="fa-solid fa-lock mr-1"></i>
-          Your calendar data is securely synced and never shared with third parties.
-        </p>
-      </div>
-    </template>
   </ModalShell>
 </template>
 

@@ -98,15 +98,17 @@
               />
             </div>
 
-            <!-- Offer Sent → Awaiting Response -->
+            <!-- In Negotiation → Needs Follow-up -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Offer Sent → Awaiting Response</label>
-              <label class="block text-xs text-gray-500 mb-1">Auto-transition Days</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">In Negotiation → Needs Follow-up</label>
+              <label class="block text-xs text-gray-500 mb-1">Auto-transition Days (Fixed: 3 days)</label>
               <input
                 type="number"
                 v-model.number="localSettings.offerSentToAwaitingResponseDays"
                 min="1"
                 class="input w-full"
+                disabled
+                value="3"
               />
             </div>
           </div>
@@ -244,8 +246,7 @@ const availableStages = [
   'Awaiting Appointment',
   'To be Called Back',
   'In Negotiation',
-  'Offer Sent',
-  'Awaiting Response'
+  'Needs Follow-up'
 ]
 
 // Local copy of settings for editing

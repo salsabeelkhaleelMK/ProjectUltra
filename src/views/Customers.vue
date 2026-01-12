@@ -22,21 +22,6 @@
           />
         </button>
       </div>
-      <!-- Add New button -->
-      <div class="mb-6 flex justify-end">
-        <div 
-          v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
-          class="flex items-center gap-2"
-        >
-          <i class="fa-solid fa-plus"></i>
-          <Button
-            label="Add new"
-            variant="primary"
-            size="large"
-            @click="showAddModal = true"
-          />
-        </div>
-      </div>
 
       <!-- Table -->
       <div class="table-wrapper w-full">
@@ -59,6 +44,16 @@
             debounce: 300
           }"
         >
+          <!-- Toolbar slot for Add New button -->
+          <template #toolbar>
+            <button 
+              v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
+              @click="showAddModal = true"
+              class="btn-primary-lg"
+            >
+              <i class="fa-solid fa-plus"></i> Add new
+            </button>
+          </template>
           <template #empty-state>
             <div class="empty-state">
               <i class="fa-solid fa-inbox empty-state-icon"></i>

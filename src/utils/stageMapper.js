@@ -16,8 +16,7 @@ export const OPPORTUNITY_STAGES = {
   AWAITING_APPOINTMENT: 'Awaiting Appointment',
   TO_BE_CALLED_BACK: 'To be Called Back',
   IN_NEGOTIATION: 'In Negotiation',
-  OFFER_SENT: 'Offer Sent',
-  AWAITING_RESPONSE: 'Awaiting Response',
+  NEEDS_FOLLOW_UP: 'Needs Follow-up',
   CONTRACT_PENDING: 'Contract Pending',
   CLOSED_WON: 'Closed Won',
   CLOSED_LOST: 'Closed Lost',
@@ -157,20 +156,35 @@ function calculateOpportunityDisplayStage(opportunity) {
       return OPPORTUNITY_STAGES.CONTRACT_PENDING
     }
     
-    // Offer states
+    // Check if offer has been pending for 3+ days
     const lastOffer = getLastOffer(activities)
     if (lastOffer) {
-      const settingsStore = useSettingsStore()
-      const threshold = settingsStore.getSetting('offerSentToAwaitingResponseDays')
       const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
       
-      if (daysSinceOffer >= threshold) {
-        return OPPORTUNITY_STAGES.AWAITING_RESPONSE
+      // Auto-transition to Needs Follow-up after 3 days
+      if (daysSinceOffer >= 3) {
+        return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
       }
-      return OPPORTUNITY_STAGES.OFFER_SENT
     }
     
     return OPPORTUNITY_STAGES.IN_NEGOTIATION
+  }
+  
+  // Backward compatibility: old "Offer Sent" data
+  if (apiStatus === 'Offer Sent') {
+    const lastOffer = getLastOffer(activities)
+    if (lastOffer) {
+      const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
+      if (daysSinceOffer >= 3) {
+        return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
+      }
+    }
+    return OPPORTUNITY_STAGES.IN_NEGOTIATION
+  }
+  
+  // Backward compatibility: old "Awaiting Response" data
+  if (apiStatus === 'Awaiting Response') {
+    return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
   }
   
   // Qualified and early stages
@@ -231,8 +245,7 @@ function mapOpportunityStageToApiStatus(displayStage) {
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: API_STATUSES.IN_NEGOTIATION,
-    [OPPORTUNITY_STAGES.OFFER_SENT]: API_STATUSES.IN_NEGOTIATION,
-    [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: API_STATUSES.IN_NEGOTIATION,
+    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CLOSED_WON]: API_STATUSES.CLOSED_WON,
     [OPPORTUNITY_STAGES.CLOSED_LOST]: API_STATUSES.CLOSED_LOST,
@@ -264,21 +277,14 @@ function getOpportunityTransitions() {
       OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: [
-      OPPORTUNITY_STAGES.OFFER_SENT,
+      OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP,
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
-    [OPPORTUNITY_STAGES.OFFER_SENT]: [
-      OPPORTUNITY_STAGES.AWAITING_RESPONSE,
+    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: [
+      OPPORTUNITY_STAGES.CONTRACT_PENDING,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.CONTRACT_PENDING,
-      OPPORTUNITY_STAGES.CLOSED_LOST,
-      OPPORTUNITY_STAGES.ABANDONED
-    ],
-    [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: [
-      OPPORTUNITY_STAGES.CONTRACT_PENDING,
-      OPPORTUNITY_STAGES.OFFER_SENT,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
@@ -451,8 +457,7 @@ export function getStageColor(displayStage, entityType = 'opportunity') {
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: 'bg-purple-50 text-purple-700 border-purple-200',
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    [OPPORTUNITY_STAGES.OFFER_SENT]: 'bg-orange-50 text-orange-700 border-orange-200',
-    [OPPORTUNITY_STAGES.AWAITING_RESPONSE]: 'bg-pink-50 text-pink-700 border-pink-200',
+    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: 'bg-pink-50 text-pink-700 border-pink-200',
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     [OPPORTUNITY_STAGES.CLOSED_WON]: 'bg-green-100 text-green-800 border-green-300',
     [OPPORTUNITY_STAGES.CLOSED_LOST]: 'bg-red-50 text-red-700 border-red-200',

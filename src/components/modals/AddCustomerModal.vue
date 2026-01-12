@@ -122,20 +122,14 @@
       </div>
     </div>
     
-    <template #footer>
-      <div class="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-        <Button
-          label="Cancel"
-          variant="outline"
-          size="small"
-          @click="$emit('close')"
-        />
-        <Button
-          :label="`Create ${itemType}`"
-          variant="primary"
-          @click="handleAdd"
-        />
-      </div>
+    <template #actions>
+      <Button
+        :label="`Create ${itemType}`"
+        variant="primary"
+        size="small"
+        class="rounded-sm"
+        @click="handleAdd"
+      />
     </template>
   </ModalShell>
 </template>

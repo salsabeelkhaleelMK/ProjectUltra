@@ -36,19 +36,21 @@
     </div>
 
     <template #actions>
-      <button 
-        @click="handleConfirm"
+      <Button 
+        label="Close as Lost"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-red-600 !hover:bg-red-700 !border-red-600"
         :disabled="!selectedReason"
-        class="bg-red-600 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-      >
-        Close as Lost
-      </button>
+        @click="handleConfirm"
+      />
     </template>
   </ModalShell>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
 
 const props = defineProps({

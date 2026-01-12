@@ -223,7 +223,7 @@
           <label class="block text-xs font-medium text-gray-600 mb-1.5">Template</label>
           <select 
             v-model="selectedTemplate" 
-            class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+            class="input"
           >
             <option value="followup-1">Follow-up 1</option>
             <option value="followup-2">Follow-up 2</option>
@@ -274,7 +274,7 @@
               <input 
                 type="date" 
                 v-model="customDate"
-                class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+                class="input"
               >
             </div>
             <div>
@@ -282,7 +282,7 @@
               <input 
                 type="time" 
                 v-model="customTime"
-                class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+                class="input"
               >
             </div>
           </div>
@@ -376,7 +376,7 @@
               <label class="block text-xs font-medium text-gray-600 mb-1.5">Dealership</label>
               <select 
                 v-model="assignment.dealership" 
-                class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+                class="input"
               >
                 <option v-for="dealership in dealerships" :key="dealership" :value="dealership">
                   {{ dealership }}
@@ -388,7 +388,7 @@
               <label class="block text-xs font-medium text-gray-600 mb-1.5">Team</label>
               <select 
                 v-model="assignment.team" 
-                class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+                class="input"
               >
                 <option v-for="team in teams" :key="team" :value="team">
                   {{ team }}
@@ -400,7 +400,7 @@
               <label class="block text-xs font-medium text-gray-600 mb-1.5">Assignee</label>
               <select 
                 v-model="assignment.assigneeId" 
-                class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-blue-500"
+                class="input"
               >
                 <option v-for="user in assignableUsers" :key="user.id" :value="user.id">
                   {{ user.name }}{{ user.id === currentUser.id ? ' (Me)' : '' }}
@@ -591,67 +591,52 @@
     </div>
 
     <!-- Note Modal -->
-    <Teleport to="body">
-      <div 
-        v-if="showNoteModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        @click.self="showNoteModal = false"
-      >
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h5 class="text-sm font-bold text-slate-800">Add Note</h5>
-              <button @click="showNoteModal = false" class="text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <NoteWidget
-              :item="null"
-              :task-type="'lead'"
-              :task-id="lead.id"
-              :borderless="false"
-              @save="handleNoteSave"
-              @cancel="showNoteModal = false"
-            />
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <ModalShell
+      :show="showNoteModal"
+      title="Add Note"
+      size="2xl"
+      @close="showNoteModal = false"
+    >
+      <NoteWidget
+        ref="noteWidgetRef"
+        :item="null"
+        :task-type="'lead'"
+        :task-id="lead.id"
+        :borderless="false"
+        :hide-actions="true"
+        :hide-header="true"
+        @save="handleNoteSave"
+        @cancel="showNoteModal = false"
+      />
+      <template #actions>
+        <Button
+          label="Save Note"
+          variant="primary"
+          size="small"
+          class="rounded-sm"
+          :disabled="!noteWidgetRef?.canSubmit()"
+          @click="noteWidgetRef?.submit"
+        />
+      </template>
+    </ModalShell>
 
     <!-- Schedule Appointment Modal -->
-    <Teleport to="body">
-      <div 
-        v-if="showScheduleAppointmentModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        @click.self="showScheduleAppointmentModal = false"
-      >
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h5 class="text-sm font-bold text-slate-800">Schedule Appointment</h5>
-              <button @click="showScheduleAppointmentModal = false" class="text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <ScheduleAppointmentWidget
-              :show="true"
-              @confirm="handleScheduleAppointmentConfirm"
-              @cancel="showScheduleAppointmentModal = false"
-            />
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <ScheduleAppointmentModal
+      :show="showScheduleAppointmentModal"
+      @confirm="handleScheduleAppointmentConfirm"
+      @close="showScheduleAppointmentModal = false"
+    />
 
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Teleport } from 'vue'
+import { Button } from '@motork/component-library'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
-import ScheduleAppointmentWidget from '@/components/customer/ScheduleAppointmentWidget.vue'
+import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
 import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
+import ModalShell from '@/components/shared/ModalShell.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
@@ -683,6 +668,7 @@ const showOutcomeSelection = ref(false)
 const selectedOutcome = ref(null)
 const showNoteModal = ref(false)
 const showScheduleAppointmentModal = ref(false)
+const noteWidgetRef = ref(null)
 const appointmentScheduled = ref(false)
 const scheduledAppointmentData = ref(null)
 
