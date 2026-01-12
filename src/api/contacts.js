@@ -1,19 +1,23 @@
-import { mockContacts, mockCustomers } from './mockData'
+import { mockCustomers } from './mockData'
 import { mockLeads, mockOpportunities, mockActivities, mockCalendarEvents, mockTasks } from './mockData'
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
+// Filter contacts (customers without company field)
+const getContacts = () => {
+  return mockCustomers.filter(c => !c.company || c.company === '')
+}
+
 export const fetchContacts = async (filters = {}) => {
   await delay()
   
-  let results = [...mockContacts]
+  let results = getContacts()
   
   if (filters.search) {
     const search = filters.search.toLowerCase()
     results = results.filter(contact => 
       contact.name.toLowerCase().includes(search) ||
-      contact.email.toLowerCase().includes(search) ||
-      contact.company?.toLowerCase().includes(search)
+      contact.email.toLowerCase().includes(search)
     )
   }
   
@@ -22,7 +26,8 @@ export const fetchContacts = async (filters = {}) => {
 
 export const fetchContactById = async (id) => {
   await delay()
-  const contact = mockContacts.find(c => c.id === parseInt(id))
+  const contacts = getContacts()
+  const contact = contacts.find(c => c.id === parseInt(id))
   if (!contact) throw new Error('Contact not found')
   return contact
 }
@@ -30,50 +35,64 @@ export const fetchContactById = async (id) => {
 export const createContact = async (contactData) => {
   await delay()
   const newContact = {
-    id: mockContacts.length + 1,
+    id: mockCustomers.length + 1,
     ...contactData,
-    createdAt: new Date().toISOString()
+    company: null, // Ensure no company field for contacts
+    createdAt: new Date().toISOString(),
+    lastContact: new Date().toISOString()
   }
-  mockContacts.push(newContact)
+  mockCustomers.push(newContact)
   return newContact
 }
 
 export const updateContact = async (id, updates) => {
   await delay()
-  const index = mockContacts.findIndex(c => c.id === parseInt(id))
+  const contacts = getContacts()
+  const index = contacts.findIndex(c => c.id === parseInt(id))
   if (index === -1) throw new Error('Contact not found')
   
-  mockContacts[index] = { ...mockContacts[index], ...updates }
-  return mockContacts[index]
+  const customerIndex = mockCustomers.findIndex(c => c.id === parseInt(id))
+  if (customerIndex !== -1) {
+    // Ensure company stays null for contacts
+    mockCustomers[customerIndex] = { ...mockCustomers[customerIndex], ...updates, company: null }
+  }
+  
+  return mockCustomers[customerIndex]
 }
 
 export const deleteContact = async (id) => {
   await delay()
-  const index = mockContacts.findIndex(c => c.id === parseInt(id))
+  const index = mockCustomers.findIndex(c => c.id === parseInt(id))
   if (index === -1) throw new Error('Contact not found')
   
-  mockContacts.splice(index, 1)
+  mockCustomers.splice(index, 1)
   return { success: true }
 }
 
 export const addRequestedCarToContact = async (contactId, carData) => {
   await delay()
-  const contact = mockContacts.find(c => c.id === parseInt(contactId))
+  const contacts = getContacts()
+  const contact = contacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   
+  // Find in mockCustomers and update
+  const customerIndex = mockCustomers.findIndex(c => c.id === parseInt(contactId))
+  if (customerIndex === -1) throw new Error('Contact not found')
+  
   // Set the requested car (replacing any existing one)
-  contact.requestedCar = {
+  mockCustomers[customerIndex].requestedCar = {
     ...carData,
     id: Date.now()
   }
   
-  return { ...contact }
+  return { ...mockCustomers[customerIndex] }
 }
 
 // Convert contact to lead
 export const convertContactToLead = async (contactId) => {
   await delay()
-  const contact = mockContacts.find(c => c.id === parseInt(contactId))
+  const contacts = getContacts()
+  const contact = contacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   if (!contact.requestedCar) throw new Error('Contact must have requested car')
   
@@ -81,7 +100,7 @@ export const convertContactToLead = async (contactId) => {
   const { createLead } = await import('./leads.js')
   
   const newLead = await createLead({
-    customerId: contact.customerId,
+    customerId: contact.id,
     requestedCar: contact.requestedCar,
     source: contact.source || 'Direct',
     tags: contact.tags || [],
@@ -96,7 +115,8 @@ export const convertContactToLead = async (contactId) => {
 // Convert contact to opportunity
 export const convertContactToOpportunity = async (contactId) => {
   await delay()
-  const contact = mockContacts.find(c => c.id === parseInt(contactId))
+  const contacts = getContacts()
+  const contact = contacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   if (!contact.requestedCar) throw new Error('Contact must have requested car')
   
@@ -104,7 +124,7 @@ export const convertContactToOpportunity = async (contactId) => {
   const { createOpportunity } = await import('./opportunities.js')
   
   const newOpp = await createOpportunity({
-    customerId: contact.customerId,
+    customerId: contact.id,
     vehicle: contact.requestedCar, // Opportunity uses 'vehicle' not 'requestedCar'
     source: contact.source || 'Direct',
     tags: contact.tags || [],
@@ -136,9 +156,9 @@ export const fetchCustomerCars = async (customerId) => {
   await delay()
   const cars = []
   
-  // Get customer's contact ID (contacts have customerId field)
-  const contact = mockContacts.find(c => c.customerId === parseInt(customerId))
-  const contactId = contact?.id || customerId
+  // Get customer from mockCustomers
+  const customer = mockCustomers.find(c => c.id === parseInt(customerId))
+  const contactId = customer?.id || customerId
   
   // 1. Requested cars - from leads/contacts requestedCar field
   const leads = mockLeads.filter(lead => lead.customerId === parseInt(customerId))
@@ -154,13 +174,13 @@ export const fetchCustomerCars = async (customerId) => {
     }
   })
   
-  // Also check contact's requestedCar
-  if (contact?.requestedCar) {
+  // Also check customer's requestedCar
+  if (customer?.requestedCar) {
     cars.push({
-      ...contact.requestedCar,
-      id: `requested-contact-${contact.id}`,
+      ...customer.requestedCar,
+      id: `requested-contact-${customer.id}`,
       type: 'requested',
-      contactId: contact.id
+      contactId: customer.id
     })
   }
   

@@ -90,9 +90,8 @@ import { Button, Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import { useContactsStore } from '@/stores/contacts'
+import { useCustomersStore } from '@/stores/customers'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
-import * as customersApi from '@/api/customers'
 import { mockActivities } from '@/api/mockData'
 
 const router = useRouter()
@@ -100,11 +99,7 @@ const route = useRoute()
 const userStore = useUserStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
-const contactsStore = useContactsStore()
-
-// Customers data
-const customers = ref([])
-const loadingCustomers = ref(false)
+const customersStore = useCustomersStore()
 
 // Compute stats from stores
 const stats = computed(() => {
@@ -122,7 +117,7 @@ const stats = computed(() => {
     opp.stage === 'Closed Lost'
   )
   return {
-    contacts: customers.value.length,
+    contacts: customersStore.totalCustomers,
     openLeads: activeLeads.length,
     openOpportunities: openOpportunities.length - inNegotiation.length, // Exclude in-negotiation from open
     inNegotiation: inNegotiation.length,
@@ -255,7 +250,7 @@ const stageTabs = computed(() => {
   const allTabs = [
     { 
       key: 'contacts', 
-      label: 'Contacts & Accounts', 
+      label: 'Customers', 
       count: stats.value.contacts,
       borderColor: 'border-t-purple-600',
       badgeColor: 'bg-purple-600 text-white'
@@ -339,12 +334,12 @@ const handleAdd = () => {
 }
 
 const rows = computed(() => {
-  // Customers rows (replacing contacts)
-  let filteredCustomers = customers.value
+  // Customers rows (unified contacts + accounts)
+  let filteredCustomers = customersStore.customers
   if (contactFilterType.value === 'contacts') {
-    filteredCustomers = customers.value.filter(c => !c.company || c.company === '')
+    filteredCustomers = customersStore.contacts
   } else if (contactFilterType.value === 'accounts') {
-    filteredCustomers = customers.value.filter(c => c.company && c.company !== '')
+    filteredCustomers = customersStore.accounts
   }
   
   // Helper to extract location from address
@@ -535,16 +530,7 @@ const getBadgeTheme = (tabKey, isActive) => {
 
 // Load data on mount
 onMounted(async () => {
-  loadingCustomers.value = true
-  try {
-    const customersResult = await customersApi.fetchCustomers()
-    customers.value = customersResult.data || []
-  } catch (err) {
-    console.error('Error loading customers:', err)
-  } finally {
-    loadingCustomers.value = false
-  }
-  await contactsStore.loadContacts()
+  await customersStore.loadCustomers()
   await leadsStore.loadLeads()
   await opportunitiesStore.loadOpportunities()
 })

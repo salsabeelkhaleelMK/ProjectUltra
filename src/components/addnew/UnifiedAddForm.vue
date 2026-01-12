@@ -421,7 +421,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Button } from '@motork/component-library'
-import { useContactsStore } from '@/stores/contacts'
+import { useCustomersStore } from '@/stores/customers'
 
 const props = defineProps({
   initialContact: {
@@ -440,7 +440,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit'])
 
-const contactsStore = useContactsStore()
+const customersStore = useCustomersStore()
 
 // Contact Mode
 const contactMode = ref(props.initialContact ? 'existing' : 'existing') // 'existing' or 'new'
@@ -509,8 +509,8 @@ const errors = reactive({
 let searchTimeout = null
 
 onMounted(() => {
-  if (contactsStore.contacts.length === 0) {
-    contactsStore.loadContacts()
+  if (customersStore.customers.length === 0) {
+    customersStore.loadCustomers()
   }
   document.addEventListener('click', handleClickOutside)
 })
@@ -522,11 +522,11 @@ onUnmounted(() => {
 // Computed
 const filteredContacts = computed(() => {
   if (!searchQuery.value.trim()) {
-    return contactsStore.contacts.slice(0, 10)
+    return customersStore.customers.slice(0, 10)
   }
   
   const query = searchQuery.value.toLowerCase()
-  return contactsStore.contacts.filter(contact => 
+  return customersStore.customers.filter(contact => 
     contact.name.toLowerCase().includes(query) ||
     contact.email.toLowerCase().includes(query) ||
     (contact.company && contact.company.toLowerCase().includes(query))

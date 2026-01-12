@@ -106,7 +106,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import { useContactsStore } from '@/stores/contacts'
+import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@motork/component-library'
 import TaskShell from '@/components/customer/CustomerShell.vue'
 import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
@@ -115,14 +115,13 @@ import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportuni
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
-import { fetchCustomerById } from '@/api/customers'
 import { mockActivities } from '@/api/mockData'
 
 const route = useRoute()
 const router = useRouter()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
-const contactsStore = useContactsStore()
+const customersStore = useCustomersStore()
 
 const loading = ref(false)
 const error = ref(null)
@@ -147,7 +146,7 @@ const taskType = computed(() => {
 const task = computed(() => {
   if (taskType.value === 'contact') {
     // Use customerData if available, otherwise fallback to contact
-    const customer = customerData.value || contactsStore.currentContact
+    const customer = customerData.value || customersStore.currentCustomer
     if (!customer) return null
     // Map customer/contact to task-like structure
     return {
@@ -203,15 +202,17 @@ const loadCustomerData = async (explicitId = null) => {
   
   try {
     // Fetch customer data, leads, opportunities, tasks, and cars
+    // Determine customer type from route query or task
+    const customerType = route.query.type === 'account' ? 'account' : 'contact'
     const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
-      fetchCustomerById(customerId),
+      customersStore.loadCustomerById(customerId, customerType),
       fetchLeadsByCustomerId(customerId),
       fetchOpportunitiesByCustomerId(customerId),
       fetchTasksByCustomerId(customerId),
       fetchCustomerCars(customerId)
     ])
     
-    customerData.value = customer
+    customerData.value = customer || customersStore.currentCustomer
     customerLeads.value = leadsResult.data || []
     customerOpportunities.value = oppsResult.data || []
     customerTasks.value = tasksResult.data || []
@@ -267,11 +268,13 @@ const loadTask = async () => {
 // Handle contact car addition
 const handleContactCarAdded = async (carData) => {
   try {
-    await contactsStore.addRequestedCar(taskId.value, carData)
-    // Reload contact to show updated data
+    // Determine customer type from task
+    const customerType = task.value?.type === 'contact' ? 'contact' : 'account'
+    await customersStore.addRequestedCar(taskId.value, carData)
+    // Reload customer to show updated data
     await loadTask()
   } catch (err) {
-    console.error('Error adding car to contact:', err)
+    console.error('Error adding car to customer:', err)
     error.value = err.message || 'Failed to add car'
   }
 }
@@ -280,7 +283,7 @@ const handleContactCarAdded = async (carData) => {
 const handleConvertToLead = async () => {
   try {
     loading.value = true
-    const newLead = await contactsStore.convertToLead(taskId.value)
+    const newLead = await customersStore.convertToLead(taskId.value)
     // Navigate to the new lead view on the same page
     router.replace({ path: `/customer/${newLead.id}`, query: { type: 'lead' } })
   } catch (err) {
@@ -294,7 +297,7 @@ const handleConvertToLead = async () => {
 const handleConvertToOpportunity = async () => {
   try {
     loading.value = true
-    const newOpp = await contactsStore.convertToOpportunity(taskId.value)
+    const newOpp = await customersStore.convertToOpportunity(taskId.value)
     // Navigate to the new opportunity view on the same page
     router.replace({ path: `/customer/${newOpp.id}`, query: { type: 'opportunity' } })
   } catch (err) {
@@ -360,9 +363,9 @@ const handleAddModalSave = async (data) => {
     
     // Process the data from UnifiedAddForm
     if (addModalType.value === 'lead') {
-      await contactsStore.convertToLead(customerId, data.vehicleData)
+      await customersStore.convertToLead(customerId)
     } else {
-      await contactsStore.convertToOpportunity(customerId, data.vehicleData)
+      await customersStore.convertToOpportunity(customerId)
     }
     
     // Reload data to show the new item

@@ -11,14 +11,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useContactsStore } from '@/stores/contacts'
+import { useCustomersStore } from '@/stores/customers'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import UnifiedAddForm from '@/components/addnew/UnifiedAddForm.vue'
 
 const router = useRouter()
-const contactsStore = useContactsStore()
+const customersStore = useCustomersStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 
@@ -28,14 +28,15 @@ const handleSubmit = async (formData) => {
   try {
     const { contactMode, selectedContact, contactData, vehicleData, markAsLead, markAsOpportunity } = formData
     
-    // Step 1: Get or create contact
+    // Step 1: Get or create customer (contact or account)
     let contact = selectedContact
     if (contactMode === 'new') {
-      contact = await contactsStore.addContact({
+      contact = await customersStore.addCustomer({
         ...contactData,
         initials: contactData.name.split(' ').map(n => n[0]).join('').toUpperCase(),
         source: 'Direct',
-        tags: []
+        tags: [],
+        company: contactData.company || null // Will determine if it's account or contact
       })
     }
     
@@ -106,8 +107,8 @@ const handleSubmit = async (formData) => {
     } else {
       // Neither checkbox checked
       if (vehicleData && Object.keys(vehicleData).length > 0) {
-        // Save vehicle to contact
-        await contactsStore.addRequestedCarToContact(contact.id, vehicleData)
+        // Save vehicle to customer
+        await customersStore.addRequestedCar(contact.id, vehicleData)
       }
       
       // Just redirect to contacts (contact already created/selected)
