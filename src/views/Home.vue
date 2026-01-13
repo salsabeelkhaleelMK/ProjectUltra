@@ -2,124 +2,134 @@
   <div class="page-container">
     <!-- Content -->
     <div class="p-4 md:p-6 lg:p-8">
-      <!-- Dashboard Content - 3 Column Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <!-- Quick Actions Widget -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
-                <h2 class="font-bold text-slate-800 text-sm">Quick Actions</h2>
-                <Badge
-                  v-if="totalNotificationsCount > 0"
-                  :text="String(totalNotificationsCount)"
+      <!-- Main Content Grid - 2/3 vs 1/3 starting from top -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-start">
+        
+        <!-- Left Column - Main Content (2/3 width) -->
+        <div class="lg:col-span-2 space-y-4 md:space-y-6">
+          <!-- Performance Widget -->
+          <PerformanceWidget />
+          
+          <!-- Tasks Due Today Widget -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-tasks text-gray-400 text-sm"></i>
+                  <h2 class="heading-main">Tasks Due Today</h2>
+                  <Badge
+                    v-if="tasksDueToday.length > 0"
+                    :text="String(tasksDueToday.length)"
+                    size="small"
+                    theme="red"
+                  />
+                </div>
+                <Button
+                  label="View all tasks →"
+                  variant="ghost"
                   size="small"
-                  theme="blue"
+                  @click="$router.push('/tasks')"
+                  class="text-xs"
                 />
               </div>
-              <Button
-                v-if="totalNotificationsCount > 5"
-                label="View all →"
-                variant="ghost"
-                size="small"
-                @click="$router.push('/tasks')"
-                class="text-xs"
-              />
+            </div>
+            
+            <div class="p-4">
+              <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
             </div>
           </div>
-          
-          <div class="p-4 space-y-3">
-            <!-- Loading Skeleton -->
-            <template v-if="loadingNotifications">
-              <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div class="space-y-2">
-                  <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                  <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-                  <div class="flex gap-2 mt-3">
-                    <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
-                    <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+        </div>
+        
+        <!-- Right Column - Sidebar (1/3 width) -->
+        <div class="space-y-4 md:space-y-6">
+          <!-- Quick Actions Widget -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
+                  <h2 class="heading-main">Quick Actions</h2>
+                  <Badge
+                    v-if="totalNotificationsCount > 0"
+                    :text="String(totalNotificationsCount)"
+                    size="small"
+                    theme="blue"
+                  />
+                </div>
+                <Button
+                  v-if="totalNotificationsCount > 5"
+                  label="View all →"
+                  variant="ghost"
+                  size="small"
+                  @click="$router.push('/tasks')"
+                  class="text-xs"
+                />
+              </div>
+            </div>
+            
+            <div class="p-4 space-y-3">
+              <!-- Loading Skeleton -->
+              <template v-if="loadingNotifications">
+                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div class="space-y-2">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    <div class="flex gap-2 mt-3">
+                      <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+                      <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+                    </div>
                   </div>
                 </div>
+              </template>
+              
+              <!-- Actual Content -->
+              <template v-else>
+                <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
+                  <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
+                  <p class="text-sm">All caught up!</p>
+                  <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
+                </div>
+                <ActionableQuestionCard
+                  v-for="question in notifications.slice(0, 5)"
+                  :key="question.id"
+                  :question="question"
+                  @answer-yes="handleAnswerYes"
+                  @answer-no="handleAnswerNo"
+                  @reassign="handleReassign"
+                  @view-task="handleViewTask"
+                  @dismiss="handleDismiss"
+                />
+              </template>
+            </div>
+          </div>
+          
+          <!-- Appointments Today Widget -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
+                  <h2 class="heading-main">Appointments Today</h2>
+                  <Badge
+                    v-if="appointmentsToday.length > 0"
+                    :text="String(appointmentsToday.length)"
+                    size="small"
+                    theme="blue"
+                  />
+                </div>
+                <Button
+                  label="View calendar →"
+                  variant="ghost"
+                  size="small"
+                  @click="$router.push('/calendar')"
+                  class="text-xs"
+                />
               </div>
-            </template>
+            </div>
             
-            <!-- Actual Content -->
-            <template v-else>
-              <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
-                <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
-                <p class="text-sm">All caught up!</p>
-                <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
-              </div>
-              <ActionableQuestionCard
-                v-for="question in notifications.slice(0, 5)"
-                :key="question.id"
-                :question="question"
-                @answer-yes="handleAnswerYes"
-                @answer-no="handleAnswerNo"
-                @reassign="handleReassign"
-                @view-task="handleViewTask"
-                @dismiss="handleDismiss"
-              />
-            </template>
-          </div>
-        </div>
-        
-        <!-- Appointments Today Widget -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
-                <h2 class="font-bold text-slate-800 text-sm">Appointments Today</h2>
-                <Badge
-                  v-if="appointmentsToday.length > 0"
-                  :text="String(appointmentsToday.length)"
-                  size="small"
-                  theme="blue"
-                />
-              </div>
-              <Button
-                label="View calendar →"
-                variant="ghost"
-                size="small"
-                @click="$router.push('/calendar')"
-                class="text-xs"
-              />
+            <div class="p-4">
+              <TodaysAppointments :appointments="appointmentsToday" :loading="loadingAppointments" />
             </div>
-          </div>
-          
-          <div class="p-4">
-            <TodaysAppointments :appointments="appointmentsToday" :loading="loadingAppointments" />
-          </div>
-        </div>
-        
-        <!-- Tasks Due Today Widget -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-tasks text-gray-400 text-sm"></i>
-                <h2 class="font-bold text-slate-800 text-sm">Tasks Due Today</h2>
-                <Badge
-                  v-if="tasksDueToday.length > 0"
-                  :text="String(tasksDueToday.length)"
-                  size="small"
-                  theme="red"
-                />
-              </div>
-              <Button
-                label="View all tasks →"
-                variant="ghost"
-                size="small"
-                @click="$router.push('/tasks')"
-                class="text-xs"
-              />
-            </div>
-          </div>
-          
-          <div class="p-4">
-            <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
           </div>
         </div>
       </div>
@@ -147,6 +157,7 @@ import ActionableQuestionCard from '@/components/home/ActionableQuestionCard.vue
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import TodaysAppointments from '@/components/home/TodaysAppointments.vue'
 import TodaysTasks from '@/components/home/TodaysTasks.vue'
+import PerformanceWidget from '@/components/home/PerformanceWidget.vue'
 import { formatDate } from '@/utils/formatters'
 
 const router = useRouter()

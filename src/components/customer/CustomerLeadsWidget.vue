@@ -147,7 +147,7 @@ const getStageBadgeClass = (stage) => {
 }
 
 const handleLeadClick = (lead) => {
-  const url = router.resolve({ path: `/customer/${lead.id}`, query: { type: 'lead' } })
+  const url = router.resolve({ path: `/tasks/${lead.id}`, query: { type: 'lead' } })
   window.open(url.href, '_blank')
 }
 </script>

@@ -37,7 +37,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToTasks = () => {
-  router.push('/tasks/1')
+  router.push('/tasks')
 }
 </script>
 

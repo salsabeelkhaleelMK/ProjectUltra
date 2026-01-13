@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex overflow-hidden bg-gray-50">
+  <div class="h-screen flex overflow-hidden overflow-x-hidden bg-white">
     <!-- Left Icon Sidebar (Desktop Only) -->
     <IconSidebar />
     

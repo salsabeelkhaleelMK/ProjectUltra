@@ -1,7 +1,19 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader title="Customers" subtitle="Manage contacts, accounts, leads and opportunities" />
+    <PageHeader title="Customers">
+      <template #actions>
+        <!-- Add New Button -->
+        <button 
+          v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
+          @click="router.push('/add-new')"
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+        >
+          <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+          <span class="hidden sm:inline">Add new</span>
+        </button>
+      </template>
+    </PageHeader>
     
     <!-- Filters + Table -->
     <div class="p-4 md:p-8">
@@ -14,7 +26,7 @@
           class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
           :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
         >
-          <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
+          <span class="heading-tab whitespace-nowrap">{{ tab.label }}</span>
           <Badge
             :text="String(tab.count)"
             size="small"
@@ -44,15 +56,15 @@
             debounce: 300
           }"
         >
-          <!-- Toolbar slot for Add New button -->
           <template #toolbar>
-            <button 
-              v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
-              @click="showAddModal = true"
-              class="btn-primary-lg"
-            >
-              <i class="fa-solid fa-plus"></i> Add new
-            </button>
+            <div class="flex justify-end">
+              <button 
+                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+              >
+                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
+                <span class="hidden sm:inline">Switch back to old design</span>
+              </button>
+            </div>
           </template>
           <template #empty-state>
             <div class="empty-state">
@@ -534,7 +546,7 @@ const handleRowClick = (row) => {
   // Handle customers - navigate to customer profile on /customer/:id page
   if (row.stageKey === 'contacts') {
     const customerId = row.customerId || row.id.split('-')[1]
-    router.push({ path: `/customer/${customerId}`, query: { type: 'contact' } })
+    router.push({ path: `/customer/${customerId}` })
     return
   }
   
@@ -542,17 +554,17 @@ const handleRowClick = (row) => {
   const idMatch = row.id.match(/-(\d+)$/)
   
   if (activeTab.value === 'open-leads' && row.id.startsWith('lead-')) {
-    // Navigate to standalone customer view
+    // Navigate to tasks view for lead
     const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
-    router.push({ path: `/customer/${leadId}`, query: { stage: 'lead' } })
+    router.push({ path: `/tasks/${leadId}`, query: { type: 'lead' } })
   } else if (row.id.startsWith('opp-')) {
-    // Navigate to standalone customer view with opportunity type
+    // Navigate to tasks view for opportunity
     const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/customer/${oppId}`, query: { stage: 'opportunity' } })
+    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
   } else if (row.stageKey === 'won' || row.stageKey === 'lost') {
-    // For won/lost rows, navigate to the opportunity
+    // For won/lost rows, navigate to the opportunity in tasks view
     const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/customer/${oppId}`, query: { stage: 'opportunity' } })
+    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
   }
 }
 

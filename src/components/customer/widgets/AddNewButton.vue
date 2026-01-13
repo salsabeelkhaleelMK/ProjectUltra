@@ -7,15 +7,16 @@
     <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
     <div class="relative" :class="inline ? 'mx-0' : 'mx-4'">
       <button 
-        @click.stop="showMenu = !showMenu"
+        @click.stop="handleButtonClick"
         :class="buttonClass"
       >
         <i class="fa-solid fa-plus text-xs"></i>
+        <span v-if="showButtonText" class="ml-1.5">{{ buttonText }}</span>
       </button>
       
-      <!-- Dropdown Menu -->
+      <!-- Dropdown Menu (only show if there are multiple actions or it's communication tab) -->
       <div 
-        v-if="showMenu"
+        v-if="showMenu && shouldShowDropdown"
         class="absolute top-full right-0 md:left-1/2 md:-translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
         v-click-outside="() => showMenu = false"
       >
@@ -86,7 +87,7 @@
         
         <!-- Communication Actions -->
         <template v-if="hasCommunicationActions">
-          <div class="border-t border-gray-100 my-1"></div>
+          <div v-if="hasVehicleActions || hasCommonActions" class="border-t border-gray-100 my-1"></div>
           <button 
             v-if="filteredActions.includes('email')"
             @click="handleAction('email')" 
@@ -156,15 +157,6 @@ const emit = defineEmits(['action'])
 
 const showMenu = ref(false)
 
-const buttonClass = computed(() => {
-  if (props.inline) {
-    // Overview usage: blue button with rounded corners, icon only
-    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium w-9 h-9 rounded-lg shadow-sm transition-all flex items-center justify-center z-20 relative'
-  }
-  // Default usage (other tabs): original gray rounded pill with separators
-  return 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium w-9 h-9 rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
-})
-
 // Map actions to their owning tab (if any)
 // Actions without a mapping are considered \"overview-only\"
 const actionToTab = {
@@ -190,6 +182,54 @@ const filteredActions = computed(() => {
   return props.actions.filter(action => allowedActions.includes(action))
 })
 
+// Check if we should show button text (single action, not communication tab)
+const showButtonText = computed(() => {
+  // Don't show text for communication tab (has multiple options)
+  if (props.activeTab === 'communication') {
+    return false
+  }
+  // Show text if there's only one filtered action
+  return filteredActions.value.length === 1
+})
+
+// Get button text based on the single action
+const buttonText = computed(() => {
+  if (!showButtonText.value || filteredActions.value.length !== 1) {
+    return ''
+  }
+  
+  const action = filteredActions.value[0]
+  const textMap = {
+    note: 'add note',
+    attachment: 'add attachment'
+  }
+  return textMap[action] || ''
+})
+
+// Check if we should show dropdown (multiple actions or communication tab)
+const shouldShowDropdown = computed(() => {
+  // Always show dropdown for communication tab
+  if (props.activeTab === 'communication') {
+    return true
+  }
+  // Show dropdown if there are multiple actions
+  return filteredActions.value.length > 1
+})
+
+const buttonClass = computed(() => {
+  if (props.inline) {
+    // Overview usage: blue button with rounded corners, icon only
+    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium w-9 h-9 rounded-lg shadow-sm transition-all flex items-center justify-center z-20 relative'
+  }
+  // Default usage (other tabs): original gray rounded pill with separators
+  // If showing text, adjust padding
+  const baseClass = 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
+  if (showButtonText.value) {
+    return `${baseClass} px-4 h-9`
+  }
+  return `${baseClass} w-9 h-9`
+})
+
 const hasCommunicationActions = computed(() => {
   return filteredActions.value.some(action => ['email', 'whatsapp', 'sms'].includes(action))
 })
@@ -205,6 +245,16 @@ const hasCommonActions = computed(() => {
 const handleAction = (action) => {
   showMenu.value = false
   emit('action', action)
+}
+
+const handleButtonClick = () => {
+  // If there's only one action and it's not communication tab, directly trigger it
+  if (showButtonText.value && filteredActions.value.length === 1) {
+    handleAction(filteredActions.value[0])
+  } else {
+    // Otherwise, show dropdown
+    showMenu.value = !showMenu.value
+  }
 }
 </script>
 

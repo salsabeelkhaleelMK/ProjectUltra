@@ -1,9 +1,9 @@
 <template>
-  <div class="overflow-y-auto space-y-4">
-    <!-- Quick Filters Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="label-upper">Quick Filters</h3>
+  <div class="overflow-y-auto space-y-3">
+    <!-- Quick Filters Card - Always Visible -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-3">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="label-upper text-xs">Quick Filters</h3>
         <button 
           v-if="hasActiveFilters"
           @click="$emit('clear-all')"
@@ -13,7 +13,7 @@
         </button>
       </div>
       
-      <div class="space-y-2.5">
+      <div class="space-y-2">
         <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Only mine</span>
           <div 
@@ -72,115 +72,154 @@
       </div>
     </div>
     
-    <!-- Event Type Filter Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-      <h3 class="label-upper mb-3">Event Types</h3>
-      <input 
-        :value="eventTypeSearch"
-        @input="$emit('update:event-type-search', $event.target.value)"
-        type="text" 
-        placeholder="Search..." 
-        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg mb-2 focus:outline-none focus:border-blue-500"
+    <!-- Event Type Filter Card - Collapsible -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <button
+        @click="expandedSections.eventTypes = !expandedSections.eventTypes"
+        class="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
       >
-      <div class="space-y-1 max-h-48 overflow-y-auto">
-        <label 
-          v-for="type in filteredEventTypes" 
-          :key="type.value"
-          class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-        >
-          <input 
-            type="checkbox" 
-            :value="type.value"
-            :checked="modelValue.eventTypes.includes(type.value)"
-            @change="toggleArrayFilter('eventTypes', type.value)"
-            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        <div class="flex items-center gap-2">
+          <h3 class="label-upper text-xs">Event Types</h3>
+          <span 
+            v-if="modelValue.eventTypes.length > 0"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
           >
-          <span class="text-sm text-gray-700">{{ type.label }}</span>
-        </label>
-      </div>
+            {{ modelValue.eventTypes.length }}
+          </span>
+        </div>
+        <i 
+          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+          :class="{ 'rotate-180': expandedSections.eventTypes }"
+        ></i>
+      </button>
+      <transition name="accordion">
+        <div v-if="expandedSections.eventTypes" class="px-3 pb-3">
+          <input 
+            :value="eventTypeSearch"
+            @input="$emit('update:event-type-search', $event.target.value)"
+            type="text" 
+            placeholder="Search..." 
+            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg mb-2 focus:outline-none focus:border-blue-500"
+          >
+          <div class="space-y-1 max-h-48 overflow-y-auto">
+            <label 
+              v-for="type in filteredEventTypes" 
+              :key="type.value"
+              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+            >
+              <input 
+                type="checkbox" 
+                :value="type.value"
+                :checked="modelValue.eventTypes.includes(type.value)"
+                @change="toggleArrayFilter('eventTypes', type.value)"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              >
+              <span class="text-sm text-gray-700">{{ type.label }}</span>
+            </label>
+          </div>
+        </div>
+      </transition>
     </div>
     
-    <!-- Dealership Filter Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-      <h3 class="label-upper mb-3">Dealerships</h3>
-      <div class="space-y-1 max-h-40 overflow-y-auto">
-        <label 
-          v-for="d in dealerships" 
-          :key="d"
-          class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-        >
-          <input 
-            type="checkbox" 
-            :value="d"
-            :checked="modelValue.dealerships.includes(d)"
-            @change="toggleArrayFilter('dealerships', d)"
-            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+    <!-- Dealership Filter Card - Collapsible -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <button
+        @click="expandedSections.dealerships = !expandedSections.dealerships"
+        class="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+      >
+        <div class="flex items-center gap-2">
+          <h3 class="label-upper text-xs">Dealerships</h3>
+          <span 
+            v-if="modelValue.dealerships.length > 0"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
           >
-          <span class="text-sm text-gray-700">{{ d }}</span>
-        </label>
-      </div>
+            {{ modelValue.dealerships.length }}
+          </span>
+        </div>
+        <i 
+          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+          :class="{ 'rotate-180': expandedSections.dealerships }"
+        ></i>
+      </button>
+      <transition name="accordion">
+        <div v-if="expandedSections.dealerships" class="px-3 pb-3">
+          <div class="space-y-1 max-h-40 overflow-y-auto">
+            <label 
+              v-for="d in dealerships" 
+              :key="d"
+              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+            >
+              <input 
+                type="checkbox" 
+                :value="d"
+                :checked="modelValue.dealerships.includes(d)"
+                @change="toggleArrayFilter('dealerships', d)"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              >
+              <span class="text-sm text-gray-700">{{ d }}</span>
+            </label>
+          </div>
+        </div>
+      </transition>
     </div>
     
-    <!-- Team Filter Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-      <h3 class="label-upper mb-3">Teams</h3>
-      <div class="space-y-1 max-h-40 overflow-y-auto">
-        <label 
-          v-for="t in teams" 
-          :key="t"
-          class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-        >
-          <input 
-            type="checkbox" 
-            :value="t"
-            :checked="modelValue.teams.includes(t)"
-            @change="toggleArrayFilter('teams', t)"
-            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+    <!-- Team Filter Card - Collapsible -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <button
+        @click="expandedSections.teams = !expandedSections.teams"
+        class="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+      >
+        <div class="flex items-center gap-2">
+          <h3 class="label-upper text-xs">Teams</h3>
+          <span 
+            v-if="modelValue.teams.length > 0"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
           >
-          <span class="text-sm text-gray-700">{{ t }}</span>
-        </label>
-      </div>
-    </div>
-    
-    <!-- Users Filter Card -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-      <h3 class="label-upper mb-3">Users</h3>
-      <div class="space-y-1 max-h-40 overflow-y-auto">
-        <label 
-          v-for="u in users" 
-          :key="u.id"
-          class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-        >
-          <input 
-            type="checkbox" 
-            :value="u.id"
-            :checked="modelValue.users.includes(u.id)"
-            @change="toggleArrayFilter('users', u.id)"
-            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          >
-          <span class="text-sm text-gray-700">{{ u.name }}</span>
-        </label>
-      </div>
+            {{ modelValue.teams.length }}
+          </span>
+        </div>
+        <i 
+          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+          :class="{ 'rotate-180': expandedSections.teams }"
+        ></i>
+      </button>
+      <transition name="accordion">
+        <div v-if="expandedSections.teams" class="px-3 pb-3">
+          <div class="space-y-1 max-h-40 overflow-y-auto">
+            <label 
+              v-for="t in teams" 
+              :key="t"
+              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+            >
+              <input 
+                type="checkbox" 
+                :value="t"
+                :checked="modelValue.teams.includes(t)"
+                @change="toggleArrayFilter('teams', t)"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              >
+              <span class="text-sm text-gray-700">{{ t }}</span>
+            </label>
+          </div>
+        </div>
+      </transition>
     </div>
     
     <!-- Apply Filters Button -->
-    <div class="sticky bottom-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3">
-      <div class="flex items-center justify-center gap-2 w-full">
-        <i class="fa-solid fa-check"></i>
-        <Button
-          label="Apply Filters"
-          variant="primary"
-          @click="$emit('apply')"
-          class="w-full"
-        />
-      </div>
+    <div class="sticky bottom-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3 mt-3">
+      <button
+        @click="$emit('apply')"
+        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+      >
+        <i class="fa-solid fa-check text-gray-400 group-hover:text-indigo-500"></i>
+        <span>Apply Filters</span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Button } from '@motork/component-library'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -210,6 +249,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'update:event-type-search', 'apply', 'clear-all'])
+
+// Collapsible sections state - all collapsed by default
+const expandedSections = ref({
+  eventTypes: false,
+  dealerships: false,
+  teams: false
+})
 
 const filteredEventTypes = computed(() => {
   if (!props.eventTypeSearch) return props.eventTypes
@@ -242,3 +288,28 @@ const toggleArrayFilter = (key, value) => {
   emit('update:modelValue', { ...props.modelValue, [key]: newArray })
 }
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+/* Accordion transition */
+.accordion-enter-active,
+.accordion-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.accordion-enter-from,
+.accordion-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.accordion-enter-to,
+.accordion-leave-from {
+  max-height: 500px;
+  opacity: 1;
+}
+</style>

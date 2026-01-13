@@ -1,6 +1,9 @@
 <template>
   <div class="page-container">
-    <PageHeader title="Add New Customer" subtitle="Create contacts, leads, or opportunities" />
+    <PageHeader title="Add New Customer">
+      <template #actions>
+      </template>
+    </PageHeader>
     
     <div class="p-4 md:p-8">
       <UnifiedAddForm ref="formRef" @submit="handleSubmit" />

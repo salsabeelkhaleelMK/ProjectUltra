@@ -1,9 +1,9 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader title="Reports" subtitle="Performance tracking and insights">
+    <PageHeader title="Reports">
       <template #actions>
-        <select class="input text-sm w-auto">
+        <select class="px-4 py-2 rounded-2xl border border-gray-200 bg-white text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all cursor-pointer">
           <option>This month</option>
           <option>Last month</option>
           <option>This quarter</option>

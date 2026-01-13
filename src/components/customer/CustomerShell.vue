@@ -1,8 +1,8 @@
 <template>
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
-    <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm">
-      <div class="px-4 md:px-8 py-4 md:py-6">
+    <header class="bg-white border-b border-gray-200 shrink-0">
+      <div class="px-4 md:px-8 py-3 md:py-4">
         <ContactInfo
           :initials="task.customer.initials"
           :name="task.customer.name"
@@ -15,6 +15,7 @@
           phone-label="Phone"
           third-field-label="Address"
           @action="handleContactInfoAction"
+          @add-tag="showAddTagModal = true"
         >
           <template #tags>
             <span 
@@ -29,8 +30,9 @@
             <button
               v-if="isTasksView"
               @click="openCustomerPage"
-              class="w-7 h-7 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+              class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
               title="Open in new page"
+              aria-label="Open customer page"
             >
               <i class="fa-solid fa-external-link text-xs"></i>
             </button>
@@ -63,38 +65,15 @@
                 :source="task.source || ''"
                 :delivery-substatus="task.deliverySubstatus"
                 :activities="task.activities || []"
+                :entity-type="type"
                 @reassign="handleReassign"
               />
             </div>
 
-            <!-- Requested Car Widget (moved to top of feed, before management widget) -->
-            <VehicleWidget
-              v-if="task.requestedCar"
-              :brand="task.requestedCar.brand"
-              :model="task.requestedCar.model"
-              :year="task.requestedCar.year"
-              :image="task.requestedCar.image || ''"
-              :price="task.requestedCar.price || null"
-              :request-message="task.requestedCar.requestMessage || ''"
-              :request-type="task.requestedCar.requestType || ''"
-              :source="task.source || ''"
-              :dealership="task.requestedCar.dealership || ''"
-              :registration="task.requestedCar.registration || ''"
-              :kilometers="task.requestedCar.kilometers || null"
-              :fuel-type="task.requestedCar.fuelType || ''"
-              :gear-type="task.requestedCar.gearType || ''"
-              :vin="task.requestedCar.vin || ''"
-              :stock-days="task.requestedCar.stockDays !== undefined ? task.requestedCar.stockDays : null"
-              :channel="task.requestedCar.channel || 'Email'"
-              :ad-campaign="task.requestedCar.adCampaign || ''"
-              :expected-purchase-date="task.requestedCar.expectedPurchaseDate || ''"
-              :fiscal-entity="task.requestedCar.fiscalEntity || ''"
-              :source-details="task.requestedCar.sourceDetails || ''"
-              :ad-medium="task.requestedCar.adMedium || ''"
-              :ad-source="task.requestedCar.adSource || ''"
-              label="Requested Car"
-              class="mb-6"
-            />
+            <!-- Type-specific extra pinned widgets (e.g. Requested Vehicle) - Moved to top -->
+            <div class="space-y-6 mb-6">
+              <slot name="pinned-extra" :task="task" />
+            </div>
 
             <!-- Manage Next Steps widget -->
             <div v-if="managementWidget" class="mb-6">
@@ -110,11 +89,6 @@
                 @vehicle-selected="handleVehicleSelected"
                 @create-offer="handleCreateOffer"
               />
-            </div>
-
-            <!-- Type-specific extra pinned widgets (e.g. Requested Vehicle) -->
-            <div class="space-y-6 mb-6">
-              <slot name="pinned-extra" :task="task" />
             </div>
 
             <!-- Feed timeline (other overview items) -->
@@ -248,6 +222,14 @@
       @create="handleAppointmentCreated"
       @cancel="showCreateAppointmentModal = false"
     />
+    
+    <!-- Add Tag Modal -->
+    <AddTagModal
+      :show="showAddTagModal"
+      :existing-tags="task.tags || []"
+      @close="showAddTagModal = false"
+      @add="handleAddTag"
+    />
   </div>
 </template>
 
@@ -263,12 +245,12 @@ import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummar
 import CommunicationWidget from '@/components/customer/activities/CommunicationWidget.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
-import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
 import FinancingModal from '@/components/modals/FinancingModal.vue'
 import TradeInModal from '@/components/modals/TradeInModal.vue'
 import OfferModal from '@/components/modals/OfferModal.vue'
+import AddTagModal from '@/components/modals/AddTagModal.vue'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
@@ -355,6 +337,7 @@ const showOverviewModal = ref(false)
 const overviewModalType = ref(null)
 const showCreateAppointmentModal = ref(false)
 const showReassignModal = ref(false)
+const showAddTagModal = ref(false)
 
 const {
   activeTab,
@@ -519,6 +502,38 @@ const handleCreateOffer = async (data) => {
     }
   } catch (error) {
     console.error('Error creating offer:', error)
+  }
+}
+
+// Handle tag addition
+const handleAddTag = async (tagName) => {
+  const currentTags = props.task.tags || []
+  
+  // Check if tag already exists
+  if (currentTags.includes(tagName)) {
+    showAddTagModal.value = false
+    return
+  }
+  
+  const updatedTags = [...currentTags, tagName]
+  
+  try {
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { tags: updatedTags })
+    } else if (props.type === 'opportunity') {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { tags: updatedTags })
+    }
+    
+    // Reload the task to get updated data
+    if (props.type === 'lead' && props.storeAdapter.loadLeadById) {
+      await props.storeAdapter.loadLeadById(props.task.id)
+    } else if (props.type === 'opportunity' && props.storeAdapter.loadOpportunityById) {
+      await props.storeAdapter.loadOpportunityById(props.task.id)
+    }
+    
+    showAddTagModal.value = false
+  } catch (error) {
+    console.error('Error adding tag:', error)
   }
 }
 </script>

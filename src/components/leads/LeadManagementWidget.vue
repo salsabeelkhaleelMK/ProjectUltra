@@ -4,22 +4,16 @@
     class="bg-white border border-gray-200 rounded-xl shadow-sm"
   >
     <!-- Header -->
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+    <div class="p-4 border-b border-gray-100 bg-gray-50/50">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-clipboard-check text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Manage next steps</h3>
+        <h3 class="font-bold text-gray-800 text-sm">Manage next steps</h3>
       </div>
-      <span 
-        class="text-xs px-3 py-1 rounded-full font-medium border"
-        :class="stageColorClass"
-      >
-        {{ leadState.displayStage }}
-      </span>
     </div>
 
     <!-- Deadline Warning Banner -->
     <div 
-      v-if="leadState.showDeadlineBanner && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
+      v-if="!leadState.isClosedState && leadState.showDeadlineBanner && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
       class="mx-4 mt-4 px-4 py-3 rounded-lg border flex items-center justify-between"
       :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
     >
@@ -72,11 +66,21 @@
     </div>
 
     <div class="p-5 space-y-6">
+      <!-- Debug info (remove after fixing) -->
+      <div v-if="false" class="text-xs text-gray-500 mb-2 p-2 bg-gray-100 rounded">
+        Debug: isClosedState={{ leadState.isClosedState }}, 
+        displayStage={{ leadState.displayStage }}, 
+        isDisqualified={{ lead?.isDisqualified }},
+        showLQWidget={{ leadState.showLQWidget }}
+      </div>
+      
       <!-- Active States -->
-      <template v-if="!leadState.isClosedState">
+      <template v-if="!debugIsClosedState">
         <!-- LQ Widget - The main call simulation task (preserved) -->
+        <!-- Key based on lead ID ensures component resets when switching tasks -->
         <LQWidget
           v-if="leadState.showLQWidget" 
+          :key="lead.id"
           :lead="lead"
           @postponed="handlePostponed"
           @validated="handleValidated"
@@ -113,13 +117,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
-import { getStageColor } from '@/utils/stageMapper'
+import { getStageColor, LEAD_STAGES } from '@/utils/stageMapper'
 import { formatDate, formatTime, formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
-import { useLeadStateMachine } from '@/composables/useLeadStateMachine'
+import { useLeadStateMachine, getTransitionHandler } from '@/composables/useLeadStateMachine'
 
 // Components
 import LQWidget from '@/components/leads/tasks/LQWidget.vue'
@@ -150,7 +154,53 @@ const deadlineStatus = computed(() => {
 })
 
 // Use lead state machine
-const leadState = useLeadStateMachine(() => props.lead)
+// Ensure we use the most up-to-date lead from store if available, otherwise use props
+const leadState = useLeadStateMachine(() => {
+  // Try to get the latest lead from store first
+  const storeLead = leadsStore.currentLead
+  const leadToUse = (storeLead && storeLead.id === props.lead?.id) ? storeLead : props.lead
+  
+  // Debug: Log lead state for troubleshooting
+  if (leadToUse) {
+    console.log('LeadManagementWidget - Lead state:', {
+      id: leadToUse.id,
+      stage: leadToUse.stage,
+      apiStatus: leadToUse.apiStatus,
+      isDisqualified: leadToUse.isDisqualified,
+      displayStage: leadToUse.displayStage,
+      callbackDate: leadToUse.callbackDate,
+      callbackScheduled: leadToUse.callbackScheduled
+    })
+  }
+  
+  return leadToUse
+})
+
+// Force computed to run and log the result
+watch(() => leadState.isClosedState.value, (newVal) => {
+  console.log('isClosedState changed to:', newVal, 'for lead:', props.lead?.id)
+}, { immediate: true })
+
+// Also log directly when lead changes
+watch(() => props.lead, (newLead) => {
+  if (newLead) {
+    console.log('Props lead changed:', {
+      id: newLead.id,
+      isDisqualified: newLead.isDisqualified,
+      stage: newLead.stage,
+      displayStage: newLead.displayStage,
+      isClosedStateValue: leadState.isClosedState.value,
+      displayStageValue: leadState.displayStage.value
+    })
+  }
+}, { immediate: true, deep: true })
+
+// Direct access to force computed evaluation
+const debugIsClosedState = computed(() => {
+  const result = leadState.isClosedState.value
+  console.log('debugIsClosedState computed accessed:', result, 'for lead:', props.lead?.id)
+  return result
+})
 
 const stageColorClass = computed(() => {
   return getStageColor(leadState.displayStage.value, 'lead')
@@ -276,7 +326,7 @@ async function handleQualified() {
     if (userStore.canAccessOpportunities()) {
       router.push({ path: `/tasks/${opportunityId}`, query: { type: 'opportunity' } })
     } else {
-      router.push('/tasks/1')
+      router.push('/tasks')
     }
   } catch (err) {
     console.error('Failed to qualify lead:', err)
@@ -383,22 +433,44 @@ async function handleDisqualified(data) {
   }
   
   try {
-    const isDuplicate = data.reason === 'Duplicate'
+    // Use state machine transition handler
+    const currentStage = leadState.displayStage.value
+    const targetStage = data.reason === 'Duplicate' ? LEAD_STAGES.CLOSED_DUPLICATE 
+      : data.category === 'Not Interested' ? LEAD_STAGES.CLOSED_NOT_INTERESTED 
+      : LEAD_STAGES.CLOSED_INVALID
     
-    await leadsStore.modifyLead(props.lead.id, {
-      isDisqualified: true,
-      disqualifyReason: data.reason,
-      isDuplicate: isDuplicate,
-      stage: isDuplicate ? 'Closed Failed' : 'Not Valid',
-      status: 'Disqualified'
-    })
+    const transitionHandler = getTransitionHandler(currentStage, targetStage)
     
-    await leadsStore.addActivity(props.lead.id, {
-      type: 'note',
-      user: 'You',
-      action: 'disqualified lead',
-      content: `Lead disqualified - Category: ${data.category}, Reason: ${data.reason}`
-    })
+    if (transitionHandler) {
+      const { updates, activities } = transitionHandler(props.lead, targetStage, data)
+      
+      // Apply updates
+      await leadsStore.modifyLead(props.lead.id, updates)
+      
+      // Log all activities
+      for (const activity of activities) {
+        await leadsStore.addActivity(props.lead.id, activity)
+      }
+    } else {
+      // Fallback to direct update if no handler found
+      const isDuplicate = data.reason === 'Duplicate'
+      await leadsStore.modifyLead(props.lead.id, {
+        isDisqualified: true,
+        disqualifyReason: data.reason,
+        isDuplicate: isDuplicate,
+        stage: isDuplicate ? 'Closed Failed' : 'Not Valid',
+        status: 'Disqualified',
+        scheduledAppointment: null,
+        nextActionDue: null
+      })
+      
+      await leadsStore.addActivity(props.lead.id, {
+        type: 'note',
+        user: 'You',
+        action: 'disqualified lead',
+        content: `Lead disqualified - Category: ${data.category}, Reason: ${data.reason}`
+      })
+    }
     
     router.push('/tasks')
   } catch (err) {
@@ -408,19 +480,42 @@ async function handleDisqualified(data) {
 
 async function handleReopen() {
   try {
-    await leadsStore.modifyLead(props.lead.id, {
-      isDisqualified: false,
-      disqualifyReason: null,
-      stage: 'Open Lead',
-      status: 'Open'
-    })
+    // Use state machine transition handler
+    const currentStage = leadState.displayStage.value
+    const targetStage = LEAD_STAGES.NEW // Reopen to New stage
     
-    await leadsStore.addActivity(props.lead.id, {
-      type: 'note',
-      user: 'You',
-      action: 'reopened lead',
-      content: 'Lead has been reopened for qualification'
-    })
+    const transitionHandler = getTransitionHandler(currentStage, targetStage)
+    
+    if (transitionHandler) {
+      const { updates, activities } = transitionHandler(props.lead)
+      
+      // Apply updates
+      await leadsStore.modifyLead(props.lead.id, updates)
+      
+      // Log all activities
+      for (const activity of activities) {
+        await leadsStore.addActivity(props.lead.id, activity)
+      }
+    } else {
+      // Fallback to direct update if no handler found
+      await leadsStore.modifyLead(props.lead.id, {
+        isDisqualified: false,
+        disqualifyReason: null,
+        disqualifyCategory: null,
+        isDuplicate: false,
+        stage: 'Open Lead',
+        status: 'Open',
+        nextActionDue: null, // Clear any old due dates
+        scheduledAppointment: null // Clear any old appointments
+      })
+      
+      await leadsStore.addActivity(props.lead.id, {
+        type: 'note',
+        user: 'You',
+        action: 'reopened lead',
+        content: 'Lead has been reopened for qualification'
+      })
+    }
     
     await leadsStore.loadLeadById(props.lead.id)
   } catch (err) {

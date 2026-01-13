@@ -36,7 +36,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="section-title !mb-0">Sales Pipeline</h2>
+        <h2 class="heading-main">Sales Pipeline</h2>
         <select class="input !py-1.5 !px-3 text-sm w-auto">
           <option>This month</option>
           <option>Last month</option>

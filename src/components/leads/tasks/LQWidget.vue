@@ -149,15 +149,24 @@
         <div class="flex items-center justify-between">
           <div>
             <h4 class="font-bold text-slate-800 mb-1 text-sm">Call Ended</h4>
-            <p class="text-xs text-gray-600">Extract information from the transcription</p>
+            <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
           </div>
-      <button 
-            @click="extractInformation"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-      >
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            Extract information
-      </button>
+          <div class="flex gap-2">
+            <button 
+              @click="extractInformation"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              Extract information
+            </button>
+            <button 
+              @click="logManualCall"
+              class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+            >
+              <i class="fa-solid fa-clipboard-check text-xs"></i>
+              Log outcome
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -640,7 +649,7 @@ import ModalShell from '@/components/shared/ModalShell.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
-import { formatDate, formatTime } from '@/utils/formatters'
+import { formatDate, formatTime, formatDueDate } from '@/utils/formatters'
 import { useLeadStateMachine } from '@/composables/useLeadStateMachine'
 import { LEAD_STAGES } from '@/utils/stageMapper'
 
@@ -769,7 +778,11 @@ const statusBadge = computed(() => {
   if (isOverdue.value) {
     return { text: 'Overdue', class: 'bg-red-100 text-red-700' }
   }
-  return { text: 'Pending', class: 'bg-orange-100 text-orange-700' }
+  // For Pending, show "Task Pending - Due [date]" format
+  const pendingText = props.lead.nextActionDue 
+    ? `Task Pending - Due ${formatDueDate(props.lead.nextActionDue)}`
+    : 'Task Pending'
+  return { text: pendingText, class: 'bg-orange-100 text-orange-700' }
 })
 
 // Use contactAttempts and maxContactAttempts from state machine
@@ -824,8 +837,8 @@ const endCall = () => {
     channel: 'phone'
   }
   
-  // Immediately show outcome selection
-  showOutcomeSelection.value = true
+  // Don't automatically show outcome selection - wait for user to click "Log outcome"
+  showOutcomeSelection.value = false
 }
 
 const copyNumber = async () => {
@@ -856,8 +869,11 @@ const extractInformation = () => {
   }
   
   // Show outcome selection after extraction
+  // Hide the call ended section and show outcome selection
   showOutcomeSelection.value = true
   callEnded.value = false
+  // Ensure call is not active
+  isCallActive.value = false
 }
 
 const handleScheduleAppointmentConfirm = async (appointmentData) => {

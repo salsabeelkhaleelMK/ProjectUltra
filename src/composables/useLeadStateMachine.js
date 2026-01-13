@@ -6,7 +6,7 @@
  */
 
 import { computed } from 'vue'
-import { LEAD_STAGES } from '@/utils/stageMapper'
+import { LEAD_STAGES, getDisplayStage } from '@/utils/stageMapper'
 import { useSettingsStore } from '@/stores/settings'
 
 export const LEAD_STATE_CONFIG = {
@@ -160,8 +160,88 @@ export const LEAD_STATE_CONFIG = {
 
 // Helper function to get state config for a lead
 export function getLeadStateConfig(lead) {
-  const displayStage = lead?.displayStage || lead?.stage || LEAD_STAGES.NEW
+  // Always calculate displayStage from the lead object to ensure correct mapping
+  const displayStage = getDisplayStage(lead, 'lead')
   return LEAD_STATE_CONFIG[displayStage] || LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
+}
+
+// Transition handlers - define what happens when transitioning between states
+export const LEAD_TRANSITION_HANDLERS = {
+  // Transition to any closed state
+  toClosed: (lead, targetStage, disqualifyData) => {
+    const updates = {
+      isDisqualified: true,
+      disqualifyReason: disqualifyData?.reason || null,
+      disqualifyCategory: disqualifyData?.category || null,
+      scheduledAppointment: null, // Cancel any future appointments
+      nextActionDue: null // Clear deadline
+    }
+    
+    // Set stage based on disqualify reason
+    if (disqualifyData?.reason === 'Duplicate') {
+      updates.isDuplicate = true
+      updates.stage = 'Closed Failed'
+    } else if (disqualifyData?.category === 'Not Interested') {
+      updates.stage = 'Not Interested'
+    } else {
+      updates.stage = 'Not Valid'
+    }
+    
+    updates.status = 'Disqualified'
+    
+    // Generate activity logs
+    const activities = [
+      {
+        type: 'note',
+        user: 'You',
+        action: 'disqualified lead',
+        content: `Lead disqualified - Category: ${disqualifyData?.category || 'Unknown'}, Reason: ${disqualifyData?.reason || 'Unknown'}`
+      }
+    ]
+    
+    // Add appointment cancellation activity if there was one
+    if (lead.scheduledAppointment) {
+      activities.push({
+        type: 'appointment',
+        user: 'You',
+        action: 'cancelled appointment',
+        content: `Appointment cancelled due to lead disqualification`,
+        data: {
+          cancelledReason: 'Lead disqualified',
+          originalAppointment: lead.scheduledAppointment
+        }
+      })
+    }
+    
+    return {
+      updates,
+      activities
+    }
+  },
+  
+  // Transition from closed state back to open (reopen)
+  reopen: (lead) => {
+    return {
+      updates: {
+        isDisqualified: false,
+        disqualifyReason: null,
+        disqualifyCategory: null,
+        isDuplicate: false,
+        stage: 'Open Lead',
+        status: 'Open',
+        nextActionDue: null, // Clear any old due dates
+        scheduledAppointment: null // Clear any old appointments
+      },
+      activities: [
+        {
+          type: 'note',
+          user: 'You',
+          action: 'reopened lead',
+          content: 'Lead has been reopened for qualification'
+        }
+      ]
+    }
+  }
 }
 
 // Helper functions for auto-disqualification
@@ -176,36 +256,133 @@ export function getAutoDisqualifyReason(lead) {
   }
 }
 
+// Get transition handler for a specific transition
+export function getTransitionHandler(fromStage, toStage) {
+  // Transition to any closed state
+  if (toStage.startsWith('Closed')) {
+    return LEAD_TRANSITION_HANDLERS.toClosed
+  }
+  
+  // Reopen transition
+  if (fromStage.startsWith('Closed') && !toStage.startsWith('Closed')) {
+    return LEAD_TRANSITION_HANDLERS.reopen
+  }
+  
+  return null
+}
+
 // Composable function
 export function useLeadStateMachine(lead) {
   const settingsStore = useSettingsStore()
   
+  // Helper to get lead value - handles both refs and getter functions
+  const getLeadValue = () => {
+    if (typeof lead === 'function') {
+      return lead()
+    }
+    return lead?.value || lead
+  }
+  
   const displayStage = computed(() => {
-    return lead.value?.displayStage || lead.value?.stage || LEAD_STAGES.NEW
+    const leadValue = getLeadValue()
+    if (!leadValue) {
+      return LEAD_STAGES.NEW
+    }
+    
+    // Defensive: Ensure isDisqualified is explicitly set (default to false)
+    // This prevents undefined/null from causing issues
+    const leadWithDefaults = {
+      ...leadValue,
+      isDisqualified: leadValue.isDisqualified === true
+    }
+    
+    // Always calculate displayStage from the lead object to ensure correct mapping
+    const calculatedStage = getDisplayStage(leadWithDefaults, 'lead')
+    // Fallback to NEW if calculation returns null/undefined or invalid value
+    if (!calculatedStage || typeof calculatedStage !== 'string') {
+      return LEAD_STAGES.NEW
+    }
+    
+    // Double-check: If lead is not disqualified, calculated stage should never be closed
+    if (leadWithDefaults.isDisqualified !== true && calculatedStage.startsWith('Closed')) {
+      console.warn('Lead state machine error: Non-disqualified lead calculated as closed stage', {
+        leadId: leadValue.id,
+        isDisqualified: leadValue.isDisqualified,
+        calculatedStage,
+        stage: leadValue.stage,
+        apiStatus: leadValue.apiStatus
+      })
+      return LEAD_STAGES.NEW
+    }
+    
+    return calculatedStage
   })
   
   const stateConfig = computed(() => {
-    return getLeadStateConfig(lead.value)
+    return getLeadStateConfig(getLeadValue())
   })
   
   const isClosedState = computed(() => {
-    return displayStage.value.startsWith('Closed')
+    const leadValue = getLeadValue()
+    
+    // CRITICAL: Only return true if lead is explicitly disqualified
+    // This is the primary check - if not disqualified, can never be closed
+    const isDisqualified = leadValue?.isDisqualified === true
+    
+    // Debug: Always log to see what's happening
+    const stage = displayStage.value
+    console.log('isClosedState computed:', {
+      leadId: leadValue?.id,
+      isDisqualified,
+      leadIsDisqualified: leadValue?.isDisqualified,
+      displayStage: stage,
+      leadStage: leadValue?.stage,
+      leadApiStatus: leadValue?.apiStatus
+    })
+    
+    if (!isDisqualified) {
+      // Lead is not disqualified, so it cannot be in a closed state
+      console.log('isClosedState: returning false (not disqualified)')
+      return false
+    }
+    
+    // Lead IS disqualified - now check if stage is closed
+    // Only return true if stage is explicitly a closed stage
+    if (!stage || typeof stage !== 'string') {
+      console.log('isClosedState: returning false (no stage)')
+      return false
+    }
+    
+    // Check if it's one of the closed stages
+    const isClosed = stage === LEAD_STAGES.CLOSED_INVALID || 
+                     stage === LEAD_STAGES.CLOSED_NOT_INTERESTED || 
+                     stage === LEAD_STAGES.CLOSED_DUPLICATE ||
+                     stage.startsWith('Closed')
+    
+    console.log('isClosedState: returning', isClosed, 'for disqualified lead')
+    return isClosed
   })
   
   const isDisqualified = computed(() => {
-    return lead.value?.isDisqualified || isClosedState.value
+    const leadValue = getLeadValue()
+    // Only return true if explicitly set to true
+    return leadValue?.isDisqualified === true
   })
   
   const showLQWidget = computed(() => {
     const config = stateConfig.value
     if (typeof config.showLQWidget === 'function') {
-      return config.showLQWidget(lead.value)
+      return config.showLQWidget(getLeadValue())
     }
     return config.showLQWidget ?? false
   })
   
   const showDeadlineBanner = computed(() => {
-    return stateConfig.value.showDeadlineBanner && lead.value?.nextActionDue
+    // Never show deadline banner for closed leads
+    if (isClosedState.value) {
+      return false
+    }
+    return stateConfig.value.showDeadlineBanner && getLeadValue()?.nextActionDue
   })
   
   const canPostpone = computed(() => {
@@ -221,7 +398,7 @@ export function useLeadStateMachine(lead) {
   })
   
   const contactAttempts = computed(() => {
-    return (lead.value?.contactAttempts || []).length || 0
+    return (getLeadValue()?.contactAttempts || []).length || 0
   })
   
   const shouldShowAutoDisqualifyWarning = computed(() => {
@@ -231,7 +408,7 @@ export function useLeadStateMachine(lead) {
   const primaryAction = computed(() => {
     const action = stateConfig.value.primaryAction
     if (typeof action === 'function') {
-      return action({ lead: lead.value, displayStage: displayStage.value })
+      return action({ lead: getLeadValue(), displayStage: displayStage.value })
     }
     return action
   })

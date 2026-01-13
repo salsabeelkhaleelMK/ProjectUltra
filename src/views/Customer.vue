@@ -1,30 +1,13 @@
 <template>
-  <div class="h-full flex flex-col overflow-hidden bg-gray-50">
+  <div class="h-full flex flex-col overflow-hidden bg-white">
     <!-- Loading State -->
-    <div v-if="loading" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-        <p class="text-gray-500">Loading...</p>
-      </div>
-    </div>
-
-    <!-- Error/Not Found State -->
-    <div v-else-if="error || !task" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <i class="fa-solid fa-exclamation-circle text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-500 mb-2">{{ error || 'Task not found' }}</p>
-        <Button
-          label="Back to Customers"
-          variant="primary"
-          size="medium"
-          @click="$router.push('/customers')"
-        />
-      </div>
+    <div v-if="loading || !task || (task && task.id !== taskId)" class="flex-1 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
     </div>
 
     <!-- TaskShell - Only show when task ID matches route ID -->
     <TaskShell
-      v-else-if="task && task.id === taskId"
+      v-else
       :task="task"
       :type="taskType"
       :management-widget="managementWidget"
@@ -35,6 +18,16 @@
       @convert-to-opportunity="handleConvertToOpportunity"
     >
       <template #pinned-extra="{ task }">
+        <!-- Customer Summary Widget -->
+        <CustomerSummaryWidget 
+          :summary="task.summary || customerData?.summary"
+          :preferences="task.preferences || customerData?.preferences"
+          :customer-data="customerData"
+        />
+        
+        <!-- Customer Cars Carousel - All cars from leads/opportunities -->
+        <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
+        
         <!-- Customer Overview Widgets -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <CustomerLeadsWidget 
@@ -49,35 +42,6 @@
             @add-opportunity="openAddModal('opportunity')"
           />
         </div>
-        <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
-        
-        <!-- Requested Vehicle Widget for contacts only (leads/opportunities handled in CustomerShell) -->
-        <VehicleWidget
-          v-if="task.type === 'contact' && task.requestedCar"
-          :brand="task.requestedCar.brand"
-          :model="task.requestedCar.model"
-          :year="task.requestedCar.year"
-          :image="task.requestedCar.image || ''"
-          :price="task.requestedCar.price || null"
-          :request-message="task.requestedCar.requestMessage || ''"
-          :request-type="task.requestedCar.requestType || ''"
-          :source="task.source || ''"
-          :dealership="task.requestedCar.dealership || ''"
-          :registration="task.requestedCar.registration || ''"
-          :kilometers="task.requestedCar.kilometers || null"
-          :fuel-type="task.requestedCar.fuelType || ''"
-          :gear-type="task.requestedCar.gearType || ''"
-          :vin="task.requestedCar.vin || ''"
-          :stock-days="task.requestedCar.stockDays !== undefined ? task.requestedCar.stockDays : null"
-          :channel="task.requestedCar.channel || 'Email'"
-          :ad-campaign="task.requestedCar.adCampaign || ''"
-          :expected-purchase-date="task.requestedCar.expectedPurchaseDate || ''"
-          :fiscal-entity="task.requestedCar.fiscalEntity || ''"
-          :source-details="task.requestedCar.sourceDetails || ''"
-          :ad-medium="task.requestedCar.adMedium || ''"
-          :ad-source="task.requestedCar.adSource || ''"
-          label="Requested Car"
-        />
       </template>
     </TaskShell>
 
@@ -90,14 +54,6 @@
       @close="showAddModal = false"
       @save="handleAddModalSave"
     />
-
-    <!-- Loading state for ID mismatch (prevents showing stale data) -->
-    <div v-else class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-        <p class="text-gray-500">Loading...</p>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -107,13 +63,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
-import { Button } from '@motork/component-library'
 import TaskShell from '@/components/customer/CustomerShell.vue'
-import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'
 import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportunitiesWidget.vue'
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
+import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { mockActivities } from '@/api/mockData'
 
@@ -134,45 +89,33 @@ const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
 
-// Get task ID and type from route
+// Get task ID from route - customer page always shows contact view
 const taskId = computed(() => parseInt(route.params.id))
-const taskType = computed(() => {
-  const queryType = route.query.type || route.query.stage
-  // Accept 'contact', 'lead', 'opportunity' (default to 'contact' for customer route)
-  return queryType || 'contact'
-})
+const taskType = computed(() => 'contact')
 
-// Get task from store and ensure it has type property
+// Get task from store - always a contact/customer
 const task = computed(() => {
-  if (taskType.value === 'contact') {
-    // Use customerData if available, otherwise fallback to contact
-    const customer = customerData.value || customersStore.currentCustomer
-    if (!customer) return null
-    // Map customer/contact to task-like structure
-    return {
-      ...customer,
+  // Use customerData if available, otherwise fallback to contact
+  const customer = customerData.value || customersStore.currentCustomer
+  if (!customer) return null
+  // Map customer/contact to task-like structure
+  return {
+    ...customer,
+    id: customer.id,
+    type: 'contact',
+    customer: {
       id: customer.id,
-      type: 'contact',
-      customer: {
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        address: customer.address || '',
-        initials: customer.initials
-      },
-      source: customer.source || 'Direct',
-      tags: customer.tags || [],
-      stage: 'Contact', // Contacts don't have stages
-      assignee: null,
-      assigneeId: null
-    }
-  } else if (taskType.value === 'lead') {
-    const lead = leadsStore.currentLead
-    return lead ? { ...lead, type: 'lead' } : null
-  } else {
-    const opp = opportunitiesStore.currentOpportunity
-    return opp ? { ...opp, type: 'opportunity' } : null
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address || '',
+      initials: customer.initials
+    },
+    source: customer.source || 'Direct',
+    tags: customer.tags || [],
+    stage: 'Contact', // Contacts don't have stages
+    assignee: null,
+    assigneeId: null
   }
 })
 
@@ -197,12 +140,12 @@ const addNewConfig = computed(() => ({
 
 // Load customer-related data
 const loadCustomerData = async (explicitId = null) => {
-  const customerId = explicitId || (taskType.value === 'contact' ? taskId.value : task.value?.customerId)
+  const customerId = explicitId || taskId.value
   if (!customerId) return
   
   try {
     // Fetch customer data, leads, opportunities, tasks, and cars
-    // Determine customer type from route query or task
+    // Determine customer type from route query (for account vs contact)
     const customerType = route.query.type === 'account' ? 'account' : 'contact'
     const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
       customersStore.loadCustomerById(customerId, customerType),
@@ -245,18 +188,8 @@ const loadTask = async () => {
   error.value = null
 
   try {
-    if (taskType.value === 'contact') {
-      // Load customer data directly
-      await loadCustomerData()
-    } else if (taskType.value === 'lead') {
-      await leadsStore.loadLeadById(taskId.value)
-      // Also load associated customer data for widgets
-      await loadCustomerData()
-    } else {
-      await opportunitiesStore.loadOpportunityById(taskId.value)
-      // Also load associated customer data for widgets
-      await loadCustomerData()
-    }
+    // Always load customer data - customer page only shows contacts
+    await loadCustomerData()
   } catch (err) {
     error.value = err.message || 'Failed to load task'
     console.error('Error loading task:', err)
@@ -284,8 +217,8 @@ const handleConvertToLead = async () => {
   try {
     loading.value = true
     const newLead = await customersStore.convertToLead(taskId.value)
-    // Navigate to the new lead view on the same page
-    router.replace({ path: `/customer/${newLead.id}`, query: { type: 'lead' } })
+    // Navigate to tasks view for the new lead
+    router.push({ path: `/tasks/${newLead.id}`, query: { type: 'lead' } })
   } catch (err) {
     console.error('Error converting to lead:', err)
     error.value = err.message || 'Failed to convert to lead'
@@ -298,8 +231,8 @@ const handleConvertToOpportunity = async () => {
   try {
     loading.value = true
     const newOpp = await customersStore.convertToOpportunity(taskId.value)
-    // Navigate to the new opportunity view on the same page
-    router.replace({ path: `/customer/${newOpp.id}`, query: { type: 'opportunity' } })
+    // Navigate to tasks view for the new opportunity
+    router.push({ path: `/tasks/${newOpp.id}`, query: { type: 'opportunity' } })
   } catch (err) {
     console.error('Error converting to opportunity:', err)
     error.value = err.message || 'Failed to convert to opportunity'
@@ -311,34 +244,19 @@ const handleConvertToOpportunity = async () => {
 const showAddModal = ref(false)
 const addModalType = ref('lead')
 
-// Get contact data for modal (extract customer from task)
+// Get contact data for modal (always a contact on customer page)
 const getContactForModal = computed(() => {
   if (!task.value) {
     return { id: null, name: 'Unknown', email: '', phone: '', initials: '?' }
   }
   
   const t = task.value
-  const isContact = taskType.value === 'contact'
-  
-  // For contacts, use task properties directly
-  if (isContact) {
-    return {
-      id: t.id,
-      name: t.name || 'Unknown',
-      email: t.email || '',
-      phone: t.phone || '',
-      initials: t.initials || '?'
-    }
-  }
-  
-  // For leads/opportunities, extract from customer property
-  const customer = t.customer || {}
   return {
-    id: customer.id || t.customerId || t.id,
-    name: customer.name || 'Unknown',
-    email: customer.email || '',
-    phone: customer.phone || '',
-    initials: customer.initials || '?'
+    id: t.id,
+    name: t.name || 'Unknown',
+    email: t.email || '',
+    phone: t.phone || '',
+    initials: t.initials || '?'
   }
 })
 
@@ -354,8 +272,8 @@ const handleAddModalSave = async (data) => {
     loading.value = true
     showAddModal.value = false
     
-    // Get the customer ID from the current task
-    const customerId = taskType.value === 'contact' ? taskId.value : task.value?.customerId
+    // Get the customer ID from the current task (always a contact on customer page)
+    const customerId = taskId.value
     
     if (!customerId) {
       throw new Error('Customer ID not found')
@@ -380,25 +298,12 @@ const handleAddModalSave = async (data) => {
 
 // Load task on mount
 onMounted(async () => {
-  // Ensure stores are loaded first
-  if (taskType.value === 'lead') {
-    await leadsStore.loadLeads()
-  } else if (taskType.value === 'opportunity') {
-    await opportunitiesStore.loadOpportunities()
-  }
   await loadTask()
 })
 
 // Watch for route changes to reload task
 watch(() => route.params.id, (newId) => {
   if (newId) {
-    loadTask()
-  }
-})
-
-// Watch for stage/type changes
-watch(() => [route.query.stage, route.query.type], () => {
-  if (taskId.value) {
     loadTask()
   }
 })

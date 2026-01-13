@@ -38,7 +38,18 @@
           :globalFilterOptions="{
             debounce: 300
           }"
-        />
+        >
+          <template #toolbar>
+            <div class="flex justify-end">
+              <button 
+                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+              >
+                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
+                <span class="hidden sm:inline">Switch back to old design</span>
+              </button>
+            </div>
+          </template>
+        </DataTable>
       </div>
     </template>
   </div>

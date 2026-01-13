@@ -3,7 +3,7 @@
   <transition name="fade">
     <div 
       v-if="isOpen"
-      class="fixed inset-0 bg-black/50 z-40 md:hidden"
+      class="fixed inset-0 bg-black/50 z-[70] md:hidden"
       @click="$emit('close')"
     ></div>
   </transition>
@@ -12,7 +12,7 @@
   <transition name="slide">
     <div 
       v-if="isOpen"
-      class="fixed top-0 left-0 bottom-0 w-64 bg-[#1a1a1a] z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom"
+      class="fixed top-0 left-0 bottom-0 w-64 bg-[#1a1a1a] z-[80] md:hidden overflow-y-auto safe-area-top safe-area-bottom"
     >
       <!-- Header -->
       <div class="p-4 border-b border-gray-700 flex items-center justify-between">
@@ -24,9 +24,10 @@
         </div>
         <button 
           @click="$emit('close')"
-          class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          class="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0"
+          aria-label="Close menu"
         >
-          <i class="fa-solid fa-xmark"></i>
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
       
@@ -61,7 +62,7 @@
         <!-- Primary Navigation -->
         <div class="px-4 space-y-1 mb-4">
           <router-link 
-            to="/tasks/1" 
+            to="/tasks" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/tasks') }"
@@ -133,10 +134,16 @@
             </router-link>
           </div>
           
-          <button class="mobile-sidebar-link">
+          <router-link 
+            v-if="userStore.canAccessSettings()"
+            to="/settings" 
+            @click="$emit('close')"
+            class="mobile-sidebar-link"
+            :class="{ 'mobile-sidebar-link-active': isActive('/settings') }"
+          >
             <i class="fa-solid fa-gear w-5"></i>
             <span>Settings</span>
-          </button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -147,6 +154,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
   isOpen: {
@@ -159,6 +167,7 @@ const emit = defineEmits(['close'])
 
 const route = useRoute()
 const leadsStore = useLeadsStore()
+const userStore = useUserStore()
 
 const showAddMenu = ref(false)
 const showListsMenu = ref(false)

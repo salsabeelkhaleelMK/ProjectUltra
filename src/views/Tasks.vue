@@ -1,11 +1,26 @@
 <template>
-  <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-gray-50">
-    <!-- Left Sidebar - Unified Task Cards (Full-screen overlay on mobile) - Only show in card view -->
-    <div 
-      v-if="viewMode === 'card'"
-      class="lg:relative lg:block"
-      :class="showTaskListMobile ? 'fixed inset-0 z-[60] md:relative md:z-auto' : 'hidden lg:block'"
-    >
+  <div class="h-full flex flex-col lg:flex-row overflow-hidden" style="background-color: #f5f5f5;">
+    <!-- Unified Mobile Header - Shows when task is selected (both views) -->
+    <div v-if="currentTask" class="lg:hidden border-b border-gray-200 shrink-0" style="background-color: #f5f5f5;">
+      <div class="px-4 py-3 flex items-center justify-between gap-3">
+        <!-- Back Button -->
+        <button
+          @click="handleBackToTaskList"
+          class="w-11 h-11 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+          aria-label="Back to task list"
+        >
+          <i class="fa-solid fa-arrow-left text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card View - Similar structure to table view -->
+    <div v-if="viewMode === 'card'" class="flex-1 flex flex-col lg:flex-row overflow-hidden min-w-0">
+      <!-- Card List (left side on desktop, full screen on mobile when no task selected) -->
+      <div 
+        class="flex flex-col overflow-hidden"
+        :class="currentTask ? 'hidden lg:flex shrink-0' : 'w-full lg:w-auto lg:shrink-0'"
+      >
         <EntityListSidebar
           title="Tasks"
           :items="filteredTasks"
@@ -47,11 +62,11 @@
             return task.vehicle ? `${task.vehicle.brand} ${task.vehicle.model}` : 'No vehicle specified'
           }"
           :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
-          :show-mobile-close="true"
+          :show-mobile-close="false"
           @select="selectTask"
           @menu-click="toggleCardMenu"
           @menu-close="openCardMenu = null"
-          @close="showTaskListMobile = false"
+          @close="handleBackToTaskList"
           :show-type-filter="shouldShowTypeFilter"
           @filter-change="typeFilter = $event"
           @sort-change="handleSortChange"
@@ -66,9 +81,17 @@
               :theme="task.type === 'lead' ? 'blue' : 'gray'"
             />
             
-            <!-- Hot Badge (for leads) -->
+            <!-- Urgency Badge (for leads when urgency is enabled) -->
             <Badge
-              v-if="task && task.priority === 'Hot'"
+              v-if="task && task.type === 'lead' && settingsStore.getSetting('urgencyEnabled') !== false && task.urgencyLevel"
+              :text="`${getUrgencyIcon(task.urgencyLevel)} ${task.urgencyLevel}`"
+              size="small"
+              :class="getUrgencyColorClass(task.urgencyLevel)"
+            />
+            
+            <!-- Hot Badge (for leads, fallback if urgency disabled) -->
+            <Badge
+              v-if="task && task.priority === 'Hot' && (settingsStore.getSetting('urgencyEnabled') === false || task.type !== 'lead')"
               text="HOT"
               size="small"
               theme="red"
@@ -76,7 +99,11 @@
           </template>
           
           <template #location="{ item: task }">
-            {{ getLocationDisplay(task) }}
+            {{ getCustomerCity(task) || 'Unknown' }}
+          </template>
+          
+          <template #source="{ item: task }">
+            {{ task.source || task.customer?.source || 'Unknown' }}
           </template>
           
           <template #vehicle-status="{ item: task }">
@@ -84,7 +111,16 @@
           </template>
           
           <template #owner="{ item: task }">
-            <span v-if="task.assignee">{{ task.assignee }}</span>
+            <template v-if="task.assignee">
+              <div class="flex items-center gap-2">
+                <div 
+                  class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-[9px] shrink-0"
+                >
+                  {{ getAssigneeInitials(task.assignee) }}
+                </div>
+                <span class="text-gray-600 font-medium">{{ task.assignee }}</span>
+              </div>
+            </template>
             <span v-else>Unassigned</span>
           </template>
           
@@ -101,6 +137,14 @@
           </template>
           
           <template #menu="{ item: task }">
+            <!-- Reopen Lead (only for closed leads) -->
+            <button 
+              v-if="task.type === 'lead' && (task.isDisqualified || (task.stage && task.stage.startsWith('Closed')) || (task.displayStage && task.displayStage.startsWith('Closed')))"
+              @click.stop="reopenLead(task)"
+              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-rotate-left text-blue-500"></i> Reopen Lead
+            </button>
             <button 
               @click.stop="reassignTask(task)"
               class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
@@ -123,6 +167,38 @@
             </button>
           </template>
         </EntityListSidebar>
+      </div>
+      
+      <!-- Task Detail Panel for Card View (right side on desktop, full screen on mobile) -->
+      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden lg:border-l border-gray-200">
+        <TaskShell
+          :task="currentTask"
+          :type="currentTask.type"
+          :management-widget="managementWidget"
+          :store-adapter="storeAdapter"
+          :add-new-config="addNewConfig"
+        >
+          <template #pinned-extra="{ task }">
+            <VehicleWidget
+              v-if="vehicleWidgetData"
+              v-bind="vehicleWidgetData"
+            />
+          </template>
+        </TaskShell>
+      </div>
+      
+      <!-- Empty State for Card View (right side on desktop, hidden on mobile) -->
+      <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border-gray-200">
+        <div class="flex-1 flex items-center justify-center p-8">
+          <div class="text-center max-w-sm">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center">
+              <i class="fa-solid fa-tasks text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2">No task selected</h3>
+            <p class="text-sm text-gray-500">Select a task from the list to view its details and manage activities</p>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Table View - Takes remaining space, detail panel shown alongside when task selected -->
@@ -134,7 +210,8 @@
         :type-filter="typeFilter"
         :sort-option="sortOption"
         :show-type-filter="shouldShowTypeFilter"
-        :show-mobile-close="true"
+        :show-closed="showClosed"
+        :show-mobile-close="false"
         :open-menu-id="openCardMenu"
         :get-vehicle-type="getVehicleType"
         :get-vehicle-type-badge-class="getVehicleTypeBadgeClass"
@@ -146,14 +223,15 @@
         @menu-close="openCardMenu = null"
         @filter-change="typeFilter = $event"
         @sort-change="handleSortChange"
+        @toggle-closed="showClosed = $event"
         @reassign="reassignTask"
-        @close="showTaskListMobile = false"
+          @close="handleBackToTaskList"
         @view-change="handleViewChange"
-        :class="currentTask ? 'lg:w-1/2' : 'w-full'"
+        :class="currentTask ? 'hidden lg:flex shrink-0' : 'flex-1 w-full'"
       />
       
-      <!-- Task Detail Panel for Table View -->
-      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden border-l border-gray-200 lg:w-1/2">
+      <!-- Task Detail Panel for Table View (right side on desktop, full screen on mobile) -->
+      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden lg:border-l border-gray-200">
         <TaskShell
           :task="currentTask"
           :type="currentTask.type"
@@ -162,54 +240,13 @@
           :add-new-config="addNewConfig"
         >
           <template #pinned-extra="{ task }">
-            <!-- Additional widgets can be added here if needed -->
+            <!-- VehicleWidget - Shows requested car for leads/opportunities -->
+            <VehicleWidget
+              v-if="vehicleWidgetData"
+              v-bind="vehicleWidgetData"
+            />
           </template>
         </TaskShell>
-      </div>
-    </div>
-    
-    <!-- Main Content - Task Details (Card View Only) -->
-    <div v-if="viewMode === 'card' && currentTask" class="flex-1 flex flex-col overflow-hidden">
-
-      <!-- Mobile View Toggle + Action Buttons -->
-      <div class="lg:hidden fixed bottom-6 right-4 flex flex-col gap-3 z-30">
-        <!-- View Toggle Button (mobile) -->
-        <button
-          @click="handleViewChange(viewMode === 'card' ? 'table' : 'card')"
-          class="w-14 h-14 bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 transition-all hover:scale-110"
-          :title="viewMode === 'card' ? 'Switch to Table' : 'Switch to Cards'"
-        >
-          <i :class="viewMode === 'card' ? 'fa-solid fa-table text-lg' : 'fa-solid fa-list text-lg'"></i>
-        </button>
-        
-        
-        <!-- Task List Button -->
-        <button
-          @click="showTaskListMobile = !showTaskListMobile"
-          class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110"
-          title="Tasks"
-        >
-          <i class="fa-solid fa-list text-lg"></i>
-        </button>
-      </div>
-      
-      <TaskShell
-        :task="currentTask"
-        :type="currentTask.type"
-        :management-widget="managementWidget"
-        :store-adapter="storeAdapter"
-        :add-new-config="addNewConfig"
-      >
-        <template #pinned-extra="{ task }">
-          <!-- Additional widgets can be added here if needed -->
-        </template>
-      </TaskShell>
-    </div>
-    
-    <div v-if="!currentTask && viewMode === 'card'" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <i class="fa-solid fa-tasks text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-500">Select a task to view details</p>
       </div>
     </div>
     
@@ -236,6 +273,11 @@ import TaskShell from '@/components/customer/CustomerShell.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
+import { getTransitionHandler } from '@/composables/useLeadStateMachine'
+import { LEAD_STAGES, getDisplayStage } from '@/utils/stageMapper'
+import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
+import { useSettingsStore } from '@/stores/settings'
+import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -243,6 +285,7 @@ const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 const userStore = useUserStore()
 const usersStore = useUsersStore()
+const settingsStore = useSettingsStore()
 
 // View mode state with localStorage persistence (default to table)
 const viewMode = ref(localStorage.getItem('tasksViewMode') || 'table')
@@ -382,6 +425,16 @@ const getLocationDisplay = (task) => {
   return source
 }
 
+// Helper function to get assignee initials
+const getAssigneeInitials = (assigneeName) => {
+  if (!assigneeName) return '?'
+  const parts = assigneeName.split(' ')
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+  return assigneeName.substring(0, 2).toUpperCase()
+}
+
 // Helper function to format vehicle status (type / kilometers)
 const getVehicleStatusDisplay = (task) => {
   const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
@@ -419,6 +472,7 @@ const getTaskStatusDisplay = (task) => {
 
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
+const showClosed = ref(false) // Toggle to show/hide closed (disqualified) leads
 const openCardMenu = ref(null)
 const showTaskListMobile = ref(false)
 const showReassignModal = ref(false)
@@ -427,11 +481,21 @@ const taskToReassign = ref(null)
 // Combine leads and opportunities with type property and composite key
 // Filter based on user role
 const allTasks = computed(() => {
-  // Filter out disqualified leads
-  const activeLeads = leadsStore.leads.filter(lead => !lead.isDisqualified)
-  const leads = activeLeads.map(lead => {
+  // Filter out disqualified leads (unless showClosed is enabled)
+  const visibleLeads = showClosed.value 
+    ? leadsStore.leads 
+    : leadsStore.leads.filter(lead => !lead.isDisqualified)
+  const leads = visibleLeads.map(lead => {
+    // Calculate displayStage for lead
+    const displayStage = getDisplayStage(lead, 'lead')
+    
     // Ensure customer object is preserved
-    const task = { ...lead, type: 'lead', compositeId: `lead-${lead.id}` }
+    const task = { 
+      ...lead, 
+      type: 'lead', 
+      compositeId: `lead-${lead.id}`,
+      displayStage  // Add calculated displayStage
+    }
     // Explicitly ensure customer is present (spread should handle this, but being defensive)
     if (!task.customer && lead.customer) {
       task.customer = lead.customer
@@ -473,18 +537,65 @@ const filteredTasks = computed(() => {
     tasks = tasks.filter(task => task.type === typeFilter.value)
   }
   
+  // Calculate urgency scores for leads (if urgency is enabled) - needed for display
+  const urgencyEnabled = settingsStore.getSetting('urgencyEnabled') !== false
+  if (urgencyEnabled) {
+    tasks = tasks.map(task => {
+      if (task.type === 'lead' && !task.urgencyScore) {
+        const urgencyResult = calculateLeadUrgency(task)
+        return {
+          ...task,
+          urgencyScore: urgencyResult.score,
+          urgencyLevel: urgencyResult.level
+        }
+      }
+      return task
+    })
+  }
+  
   // Apply sort
   if (sortOption.value === 'urgent-first') {
-    // Sort by priority (Hot first), then by date
-    tasks = [...tasks].sort((a, b) => {
-      // Hot priority first
-      if (a.priority === 'Hot' && b.priority !== 'Hot') return -1
-      if (a.priority !== 'Hot' && b.priority === 'Hot') return 1
-      // Then by date (most recent first)
-      const dateA = new Date(a.lastActivity || a.createdAt || 0)
-      const dateB = new Date(b.lastActivity || b.createdAt || 0)
-      return dateB - dateA
-    })
+    // For leads: use urgency scoring if enabled
+    
+    if (urgencyEnabled) {
+      // Urgency scores already calculated above, use them for sorting
+      // Sort: leads by urgency score DESC, then by createdAt DESC (tiebreaker)
+      // Opportunities keep existing priority-based sorting
+      tasks = [...tasks].sort((a, b) => {
+        // If both are leads, sort by urgency score
+        if (a.type === 'lead' && b.type === 'lead') {
+          const scoreA = a.urgencyScore || 0
+          const scoreB = b.urgencyScore || 0
+          if (scoreA !== scoreB) {
+            return scoreB - scoreA // Higher score first
+          }
+          // Tiebreaker: most recent first
+          const dateA = new Date(a.createdAt || 0)
+          const dateB = new Date(b.createdAt || 0)
+          return dateB - dateA
+        }
+        // If one is lead and one is opportunity, leads come first when urgency sorting
+        if (a.type === 'lead' && b.type === 'opportunity') return -1
+        if (a.type === 'opportunity' && b.type === 'lead') return 1
+        // Both opportunities: use priority then date
+        if (a.priority === 'Hot' && b.priority !== 'Hot') return -1
+        if (a.priority !== 'Hot' && b.priority === 'Hot') return 1
+        const dateA = new Date(a.lastActivity || a.createdAt || 0)
+        const dateB = new Date(b.lastActivity || b.createdAt || 0)
+        return dateB - dateA
+      })
+    } else {
+      // Fallback to priority-based sorting if urgency disabled
+      tasks = [...tasks].sort((a, b) => {
+        // Hot priority first
+        if (a.priority === 'Hot' && b.priority !== 'Hot') return -1
+        if (a.priority !== 'Hot' && b.priority === 'Hot') return 1
+        // Then by date (most recent first)
+        const dateA = new Date(a.lastActivity || a.createdAt || 0)
+        const dateB = new Date(b.lastActivity || b.createdAt || 0)
+        return dateB - dateA
+      })
+    }
   } else if (sortOption.value === 'assigned-to-me') {
     // Filter to only tasks assigned to current user
     const currentUserName = userStore.currentUser.name
@@ -539,7 +650,17 @@ const shouldShowTypeFilter = computed(() => {
 
 // Get current task based on route ID and query param type
 const currentTask = computed(() => {
+  // If no ID in route, return null (show list only)
+  if (!route.params.id) {
+    return null
+  }
+  
   const taskId = parseInt(route.params.id)
+  // If taskId is NaN or invalid, return null
+  if (isNaN(taskId)) {
+    return null
+  }
+  
   const routeType = route.query.type // 'lead' or 'opportunity' from query param
   
   // Always use compositeId for matching to avoid conflicts between leads and opportunities with same ID
@@ -571,6 +692,54 @@ const currentActivities = computed(() => {
     return leadsStore.currentLeadActivities
   } else {
     return opportunitiesStore.currentOpportunityActivities
+  }
+})
+
+// Computed helper to get vehicle data for VehicleWidget
+const vehicleWidgetData = computed(() => {
+  if (!currentTask.value) return null
+  
+  let vehicle = null
+  
+  // For leads: use requestedCar
+  if (currentTask.value.type === 'lead' && currentTask.value.requestedCar) {
+    vehicle = currentTask.value.requestedCar
+  }
+  // For opportunities: prefer vehicle over requestedCar
+  else if (currentTask.value.type === 'opportunity') {
+    vehicle = currentTask.value.vehicle || currentTask.value.requestedCar
+  }
+  
+  if (!vehicle || !vehicle.brand || !vehicle.model) return null
+  
+  // Map vehicle and task data to VehicleWidget props
+  return {
+    show: true,
+    label: 'Requested Car',
+    brand: vehicle.brand,
+    model: vehicle.model,
+    year: vehicle.year,
+    image: vehicle.image || '',
+    price: vehicle.price || null,
+    requestMessage: vehicle.requestMessage || '',
+    requestType: currentTask.value.requestType || vehicle.requestType || '',
+    source: currentTask.value.source || vehicle.source || '',
+    dealership: vehicle.dealership || '',
+    registration: vehicle.registration || '',
+    kilometers: vehicle.kilometers !== undefined ? vehicle.kilometers : null,
+    fuelType: vehicle.fuelType || '',
+    gearType: vehicle.gearType || '',
+    vin: vehicle.vin || '',
+    stockDays: vehicle.stockDays !== undefined ? vehicle.stockDays : null,
+    showOpenAd: true,
+    showTechnicalSpecs: true,
+    channel: 'Email', // Default, could be enhanced if task has channel field
+    adCampaign: currentTask.value.sourceDetails || vehicle.adCampaign || '',
+    expectedPurchaseDate: vehicle.expectedPurchaseDate || '',
+    fiscalEntity: currentTask.value.fiscalEntity || '',
+    sourceDetails: currentTask.value.sourceDetails || '',
+    adMedium: vehicle.adMedium || '',
+    adSource: vehicle.adSource || ''
   }
 })
 
@@ -620,6 +789,7 @@ watch(currentTask, (task) => {
   }
 }, { immediate: true })
 
+
 const loadTaskById = (id) => {
   const taskId = parseInt(id)
   const task = allTasks.value.find(t => t.id === taskId)
@@ -636,12 +806,14 @@ const loadTaskById = (id) => {
 const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
-  // When selecting a task, switch to card view to show the detail
-  if (viewMode.value === 'table') {
-    viewMode.value = 'card'
-  }
+  // When selecting a task in table view, stay in table view and show split view
+  // The split view will show table on left and detail panel on right
   router.push({ path: `/tasks/${id}`, query: { type } })
-  showTaskListMobile.value = false // Close mobile list after selection
+}
+
+const handleBackToTaskList = () => {
+  // Navigate back to task list (no task selected)
+  router.push({ path: '/tasks' })
 }
 
 const toggleCardMenu = (taskId) => {
@@ -697,6 +869,54 @@ const unmarkAsHot = async (task) => {
     await leadsStore.modifyLead(task.id, { priority: 'Normal' })
   } else if (task.type === 'opportunity') {
     await opportunitiesStore.modifyOpportunity(task.id, { priority: 'Normal' })
+  }
+}
+
+const reopenLead = async (task) => {
+  openCardMenu.value = null
+  if (task.type !== 'lead') return
+  
+  try {
+    const currentStage = task.displayStage || task.stage || LEAD_STAGES.NEW
+    const targetStage = LEAD_STAGES.NEW // Reopen to New stage
+    
+    const transitionHandler = getTransitionHandler(currentStage, targetStage)
+    
+    if (transitionHandler) {
+      const { updates, activities } = transitionHandler(task)
+      
+      // Apply updates
+      await leadsStore.modifyLead(task.id, updates)
+      
+      // Log all activities
+      for (const activity of activities) {
+        await leadsStore.addActivity(task.id, activity)
+      }
+    } else {
+      // Fallback to direct update if no handler found
+      await leadsStore.modifyLead(task.id, {
+        isDisqualified: false,
+        disqualifyReason: null,
+        disqualifyCategory: null,
+        isDuplicate: false,
+        stage: 'Open Lead',
+        status: 'Open',
+        nextActionDue: null,
+        scheduledAppointment: null
+      })
+      
+      await leadsStore.addActivity(task.id, {
+        type: 'note',
+        user: 'You',
+        action: 'reopened lead',
+        content: 'Lead has been reopened for qualification'
+      })
+    }
+    
+    // Reload the lead to refresh the UI
+    await leadsStore.loadLeadById(task.id)
+  } catch (err) {
+    console.error('Failed to reopen lead:', err)
   }
 }
 

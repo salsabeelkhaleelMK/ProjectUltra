@@ -4,17 +4,11 @@
     class="bg-white border border-gray-200 rounded-xl shadow-sm mb-8"
   >
     <!-- Header -->
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+    <div class="p-4 border-b border-gray-100 bg-gray-50/50">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-clipboard-check text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Manage next steps</h3>
+        <h3 class="font-bold text-gray-800 text-sm">Manage next steps</h3>
       </div>
-      <span 
-        class="text-xs px-3 py-1 rounded-full font-medium border"
-        :class="stageColorClass"
-      >
-        {{ opportunity.displayStage || opportunity.stage }}
-      </span>
     </div>
 
     <div class="p-5 space-y-6">

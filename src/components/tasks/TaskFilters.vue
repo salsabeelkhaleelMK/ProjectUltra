@@ -26,7 +26,7 @@
     </div>
     
     <!-- Sort Dropdown (Icon only) -->
-    <div class="relative" :class="showTypeFilter ? 'ml-auto' : ''" ref="sortContainer">
+    <div class="relative ml-auto" ref="sortContainer">
       <button
         @click.stop="toggleSortMenu"
         class="relative w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-900"
@@ -53,6 +53,7 @@
             <span>Most Recent First</span>
           </button>
           <button 
+            v-if="typeFilter === 'lead'"
             @click="selectSort('urgent-first')"
             class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
             :class="{ 'bg-blue-50 text-blue-700': sortOption === 'urgent-first' }"
@@ -88,10 +89,11 @@ import { ref } from 'vue'
 const props = defineProps({
   typeFilter: { type: String, default: 'all' },
   sortOption: { type: String, default: 'recent-first' },
-  showTypeFilter: { type: Boolean, default: true }
+  showTypeFilter: { type: Boolean, default: true },
+  showClosed: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['filter-change', 'sort-change'])
+const emit = defineEmits(['filter-change', 'sort-change', 'toggle-closed'])
 
 const showSortMenu = ref(false)
 

@@ -1,17 +1,34 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader title="Calendar" subtitle="Appointments & Events">
+    <PageHeader title="Calendar">
       <template #actions>
+        <!-- Mobile Filter Button -->
+        <div class="lg:hidden flex items-center gap-2">
+          <button
+            @click="showFilterDrawer = true"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          >
+            <i class="fa-solid fa-filter text-gray-400 group-hover:text-indigo-500"></i>
+            <span class="hidden sm:inline">Filters</span>
+          </button>
+          <span 
+            v-if="activeFilterCount > 0" 
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
+          >
+            {{ activeFilterCount }}
+          </span>
+        </div>
+        
         <!-- Connect Calendar Button (Secondary) -->
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-            :class="{ 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100': connectedCalendars.length > 0 }"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            :class="{ 'bg-indigo-50 border-indigo-200 text-indigo-600': connectedCalendars.length > 0 }"
           >
-            <i class="fa-solid fa-link text-xs"></i>
-            <span>{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
+            <i class="fa-solid fa-link text-gray-400 group-hover:text-indigo-500" :class="{ 'text-indigo-500': connectedCalendars.length > 0 }"></i>
+            <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
           </button>
           <span 
             v-if="connectedCalendars.length > 0" 
@@ -24,10 +41,10 @@
         <!-- New Event Button (Secondary) -->
         <button
           @click="showCreateEventModal = true"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
-          <i class="fa-solid fa-plus"></i>
-          <span>New Event</span>
+          <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+          <span class="hidden sm:inline">New Event</span>
         </button>
       </template>
       <template v-if="appliedFilterChips.length > 0" #bottom>
@@ -64,24 +81,66 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Calendar Area (3/4) -->
         <div class="lg:col-span-3 overflow-y-auto">
-          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-2 md:p-3 lg:p-4">
             <FullCalendar :options="calendarOptions" />
           </div>
         </div>
         
-        <!-- Filters Sidebar (1/4) -->
-        <CalendarFiltersSidebar
-          v-model="filters"
-          v-model:event-type-search="eventTypeSearch"
-          :event-types="eventTypes"
-          :dealerships="dealerships"
-          :teams="teams"
-          :users="users"
-          @apply="applyFilters"
-          @clear-all="clearAllFilters"
-        />
+        <!-- Filters Sidebar (1/4) - Desktop Only -->
+        <div class="hidden lg:block">
+          <CalendarFiltersSidebar
+            v-model="filters"
+            v-model:event-type-search="eventTypeSearch"
+            :event-types="eventTypes"
+            :dealerships="dealerships"
+            :teams="teams"
+            :users="users"
+            @apply="applyFilters"
+            @clear-all="clearAllFilters"
+          />
+        </div>
       </div>
     </div>
+    
+    <!-- Mobile Filter Drawer Backdrop -->
+    <transition name="fade">
+      <div 
+        v-if="showFilterDrawer"
+        class="fixed inset-0 bg-black/50 z-[70] lg:hidden"
+        @click="showFilterDrawer = false"
+      ></div>
+    </transition>
+    
+    <!-- Mobile Filter Drawer -->
+    <transition name="slide-right">
+      <div 
+        v-if="showFilterDrawer"
+        class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-[80] lg:hidden overflow-y-auto shadow-xl"
+      >
+        <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10">
+          <h3 class="text-lg font-bold text-gray-900">Filters</h3>
+          <button 
+            @click="showFilterDrawer = false"
+            class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            aria-label="Close filters"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        <div class="p-4">
+          <CalendarFiltersSidebar
+            v-model="filters"
+            v-model:event-type-search="eventTypeSearch"
+            :event-types="eventTypes"
+            :dealerships="dealerships"
+            :teams="teams"
+            :users="users"
+            @apply="handleMobileApplyFilters"
+            @clear-all="clearAllFilters"
+          />
+        </div>
+      </div>
+    </transition>
     
     <CalendarConnectModal
       :show="showConnectModal"
@@ -122,7 +181,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -148,6 +207,7 @@ const showCreateEventModal = ref(false)
 const showConnectModal = ref(false)
 const showQuickViewModal = ref(false)
 const showEditEventModal = ref(false)
+const showFilterDrawer = ref(false)
 const selectedEvent = ref(null)
 const eventTypeSearch = ref('')
 const events = ref([])
@@ -194,6 +254,20 @@ const clearAllFilters = () => {
     users: []
   }
 }
+
+// Active filter count for mobile badge
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (appliedFilters.value.onlyMine) count++
+  if (appliedFilters.value.mostRelevant) count++
+  if (appliedFilters.value.includeCancelled) count++
+  if (appliedFilters.value.noShowsOnly) count++
+  count += appliedFilters.value.eventTypes.length
+  count += appliedFilters.value.dealerships.length
+  count += appliedFilters.value.teams.length
+  count += appliedFilters.value.users.length
+  return count
+})
 
 // Applied filter chips
 const appliedFilterChips = computed(() => {
@@ -246,6 +320,11 @@ const applyFilters = async () => {
   const result = await fetchCalendarEvents(filtersToApply)
   events.value = result
   calendarOptions.value.events = events.value
+}
+
+const handleMobileApplyFilters = async () => {
+  await applyFilters()
+  showFilterDrawer.value = false
 }
 
 const removeFilterChip = async (chip) => {
@@ -337,25 +416,50 @@ const newEvent = ref({
   dealership: ''
 })
 
-const calendarOptions = ref({
-  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-  initialView: 'dayGridMonth',
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-  },
-  events: events.value,
-  editable: true,
-  selectable: true,
-  selectMirror: true,
-  dayMaxEvents: true,
-  weekends: true,
-  select: handleDateSelect,
-  eventClick: handleEventClick,
-  eventColor: '#dbeafe',
-  eventClassNames: (arg) => {
-    return getEventCalendarClass(arg.event.extendedProps.type)
+// Responsive calendar options
+const getCalendarOptions = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
+  return {
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: isMobile ? 'prev,next' : 'prev,next today',
+      center: 'title',
+      right: isMobile ? 'today' : 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: events.value,
+    editable: true,
+    selectable: true,
+    selectMirror: true,
+    dayMaxEvents: true,
+    weekends: true,
+    select: handleDateSelect,
+    eventClick: handleEventClick,
+    eventColor: '#dbeafe',
+    eventClassNames: (arg) => {
+      return getEventCalendarClass(arg.event.extendedProps.type)
+    },
+    height: isMobile ? 'auto' : undefined,
+    aspectRatio: isMobile ? 1.2 : 1.8
+  }
+}
+
+const calendarOptions = ref(getCalendarOptions())
+
+// Update calendar options on window resize
+let resizeHandler = null
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    resizeHandler = () => {
+      calendarOptions.value = getCalendarOptions()
+    }
+    window.addEventListener('resize', resizeHandler)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined' && resizeHandler) {
+    window.removeEventListener('resize', resizeHandler)
   }
 })
 
@@ -541,5 +645,45 @@ const handleSaveEditedEvent = async (eventData) => {
 }
 .fc .fc-event.event-slate {
   @apply bg-slate-50 border border-slate-200 text-slate-700;
+}
+
+/* Mobile Filter Drawer Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+/* Mobile Calendar Adjustments */
+@media (max-width: 1023px) {
+  .fc .fc-toolbar {
+    @apply flex-col gap-2;
+  }
+  
+  .fc .fc-toolbar-chunk {
+    @apply flex justify-center;
+  }
+  
+  .fc .fc-button {
+    @apply text-xs px-2 py-1;
+  }
+  
+  .fc .fc-toolbar-title {
+    @apply text-sm;
+  }
 }
 </style>

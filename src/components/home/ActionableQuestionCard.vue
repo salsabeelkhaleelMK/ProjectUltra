@@ -53,7 +53,7 @@
     
     <!-- Question Text with highlighted customer name -->
     <div class="mb-2" @click="handleQuestionClick">
-      <p class="font-semibold text-slate-800 text-sm mb-1" v-html="getHighlightedQuestion()"></p>
+      <p class="text-slate-800 text-sm mb-1" v-html="getHighlightedQuestion()"></p>
     </div>
     
     <!-- Action Buttons -->

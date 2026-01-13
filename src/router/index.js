@@ -51,15 +51,7 @@ const routes = [
       {
         path: 'reports',
         name: 'reports',
-        component: () => import('@/views/Reports.vue'),
-        beforeEnter: (to, from, next) => {
-          const userStore = useUserStore()
-          if (userStore.canAccessReports()) {
-            next()
-          } else {
-            next('/access-denied')
-          }
-        }
+        component: () => import('@/views/Reports.vue')
       },
       {
         path: 'settings',

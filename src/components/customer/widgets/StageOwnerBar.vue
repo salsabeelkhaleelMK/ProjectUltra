@@ -4,7 +4,12 @@
     <div class="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5">
       <span class="label-upper text-[9px] md:text-xs">Stage</span>
       <div class="flex items-center gap-1.5">
-        <span class="text-[10px] md:text-xs font-bold text-gray-800">{{ stage }}</span>
+        <span 
+          class="text-xs px-1.5 py-0.5 rounded font-semibold border"
+          :class="stageColorClass"
+        >
+          {{ stage }}
+        </span>
         <Badge
           v-if="deliverySubstatus"
           :text="deliverySubstatus"
@@ -48,7 +53,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Badge } from '@motork/component-library'
-import { getDeliverySubstatusColor } from '@/utils/stageMapper'
+import { getDeliverySubstatusColor, getStageColor } from '@/utils/stageMapper'
 
 /**
  * Compact summary bar for a task's commercial metadata:
@@ -77,6 +82,10 @@ const props = defineProps({
   activities: {
     type: Array,
     default: () => []
+  },
+  entityType: {
+    type: String,
+    default: 'opportunity' // 'lead' or 'opportunity'
   }
 })
 
@@ -93,6 +102,11 @@ const substatusTheme = computed(() => {
   if (props.deliverySubstatus === 'Delivered') return 'green'
   if (props.deliverySubstatus === 'Awaiting Delivery') return 'blue'
   return 'gray'
+})
+
+// Get stage color class (same as used in LeadManagementWidget)
+const stageColorClass = computed(() => {
+  return getStageColor(props.stage, props.entityType)
 })
 
 // Helper function to get latest offer from activities

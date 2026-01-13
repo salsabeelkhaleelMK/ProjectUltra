@@ -6,22 +6,104 @@
 @layer components {
   /* Page Container */
   .page-container {
-    @apply h-full overflow-y-auto bg-gray-50;
+    @apply h-full overflow-y-auto overflow-x-hidden bg-white;
+  }
+  
+  /* Home page - revert to original gray background */
+  .home-page.page-container {
+    @apply bg-gray-50;
   }
   
   /* Page Header */
   .page-header {
-    @apply bg-white border-b border-gray-200 px-4 md:px-8 py-4 md:py-6;
-    min-height: fit-content;
+    background-color: #f5f5f5;
+    @apply border-b border-gray-200 px-4 md:px-8;
+    position: relative; /* Ensure proper positioning */
+    z-index: 1; /* Ensure it's above content but below modals */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding in width */
   }
   
-  .page-header-title {
-    @apply text-xl md:text-2xl font-bold text-gray-900;
+  .page-header-main {
+    @apply flex items-center;
+    min-height: 3.5rem; /* Use min-height to accommodate wrapped content */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
   
-  .page-header-subtitle {
-    @apply text-gray-500 mt-1 text-sm md:text-base;
+  .page-header-content {
+    @apply flex flex-col sm:flex-row sm:items-center sm:justify-between w-full;
+    gap: 0.75rem; /* Reduced gap for mobile */
+    min-width: 0; /* Allow flex items to shrink */
+    width: 100%; /* Ensure full width */
+    align-items: flex-start; /* Start alignment on mobile to allow wrapping */
   }
+  
+  @media (min-width: 640px) {
+    .page-header-content {
+      align-items: center; /* Center align on sm and up */
+    }
+  }
+  
+  /* Title container - ensure it's always visible */
+  .page-header-content > div:first-child {
+    @apply min-w-0;
+    flex: 0 1 auto; /* Don't force grow, allow shrink */
+    width: 100%; /* Full width on mobile */
+    order: 1; /* Ensure title comes first */
+  }
+  
+  @media (min-width: 640px) {
+    .page-header-content > div:first-child {
+      width: auto; /* Auto width on sm and up */
+      flex: 1 1 auto; /* Allow to grow on desktop */
+    }
+  }
+  
+  /* Actions container - wrap and shrink on mobile */
+  .page-header-content > div:last-child,
+  .page-header-actions {
+    @apply flex items-center gap-2 sm:gap-3;
+    flex-wrap: wrap; /* Allow actions to wrap if needed */
+    min-width: 0; /* Allow shrinking */
+    width: 100%; /* Full width on mobile to allow wrapping */
+    max-width: 100%; /* Prevent overflow */
+    box-sizing: border-box; /* Include padding in width calculation */
+    order: 2; /* Ensure actions come after title */
+  }
+  
+  @media (min-width: 640px) {
+    .page-header-content > div:last-child,
+    .page-header-actions {
+      width: auto; /* Auto width on sm and up */
+      flex-shrink: 0; /* Don't shrink on desktop */
+    }
+  }
+  
+  /* Ensure action buttons don't overflow - they should wrap instead */
+  .page-header-actions > * {
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    max-width: calc(100% - 0.25rem); /* Respect container width with small margin for gap */
+    box-sizing: border-box;
+  }
+  
+  @media (min-width: 768px) {
+    .page-header-main {
+      align-items: center; /* Center align on desktop */
+      min-height: 4rem; /* Use min-height for desktop */
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    .page-header-content {
+      gap: 1rem; /* Restore larger gap on desktop */
+    }
+  }
+  
+  .page-header-bottom {
+    @apply pb-4;
+  }
+  
   
   /* Card */
   .card {
@@ -78,17 +160,39 @@
     @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700;
   }
   
-  /* Semantic UI Components from Tasks View */
+  /* Semantic Font Hierarchy */
+  /* Page Title - Largest heading (used in PageHeader) */
+  .page-header-title {
+    @apply text-lg md:text-xl font-bold text-gray-900;
+    margin: 0;
+    line-height: 1.5;
+    padding: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Section/Widget Heading - Main content headings */
   .heading-main {
     @apply text-lg md:text-xl font-bold text-gray-900;
   }
   
+  /* Subheading - Secondary section headings */
+  .heading-sub {
+    @apply text-base font-semibold text-gray-900;
+  }
+  
+  /* Tab/Segment Label - For tab navigation and segmented controls */
+  .heading-tab {
+    @apply text-sm font-medium text-gray-900;
+  }
+  
+  /* Uppercase Label - For metadata and labels */
   .label-upper {
     @apply text-xs font-bold uppercase tracking-wider text-gray-400;
   }
   
   .badge-ui {
-    @apply text-[10px] font-bold uppercase px-2 py-0.5 rounded border leading-none flex items-center justify-center;
+    @apply text-[9px] md:text-[10px] font-bold uppercase px-1.5 md:px-2 py-0.5 rounded border leading-none flex items-center justify-center;
   }
 
   .metadata-bar {

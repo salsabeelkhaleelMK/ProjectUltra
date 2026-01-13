@@ -1,11 +1,11 @@
 <template>
-  <div class="w-full">
+  <div class="w-full bg-white">
     <!-- Row 1: Header with customer info, actions, and expander arrow -->
     <div class="flex items-center justify-between gap-3 md:gap-4">
       <div class="flex items-center gap-3 md:gap-4 flex-1">
         <!-- Customer Avatar -->
         <div 
-          class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold border-2 border-white shadow-sm shrink-0"
+          class="w-14 h-14 rounded flex items-center justify-center text-lg font-bold shadow-sm shrink-0"
           :class="avatarColorClass"
         >
           {{ initials }}
@@ -19,6 +19,13 @@
           </div>
           <div class="flex flex-wrap items-center gap-2 mt-1">
             <slot name="tags"></slot>
+            <button
+              @click.stop="handleAddTag"
+              class="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline flex items-center gap-1"
+            >
+              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>add tag</span>
+            </button>
           </div>
         </div>
       </div>
@@ -29,8 +36,9 @@
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
             class="w-9 h-9 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg shrink-0 transition-colors"
+            aria-label="Quick actions"
           >
-            <i class="fa-solid fa-plus text-sm"></i>
+            <i class="fa-solid fa-plus text-base"></i>
           </button>
           
           <!-- Quick Action Dropdown Menu -->
@@ -235,7 +243,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action'])
+const emit = defineEmits(['action', 'add-tag'])
 
 const showContactInfo = ref(false)
 const showQuickActionMenu = ref(false)
@@ -256,5 +264,9 @@ const copyToClipboard = async (text, field) => {
   } catch (err) {
     console.error('Failed to copy:', err)
   }
+}
+
+const handleAddTag = () => {
+  emit('add-tag')
 }
 </script>

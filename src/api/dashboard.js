@@ -1,4 +1,4 @@
-import { mockDashboardKPIs, mockSalesPipeline, mockTeamPerformance, mockTodaysEvents, mockPageViewsByVehicle, mockPageViewsOrganicPaid } from './mockData'
+import { mockDashboardKPIs, mockSalesPipeline, mockTeamPerformance, mockTodaysEvents, mockPageViewsByVehicle, mockPageViewsOrganicPaid, mockBDCOperatorMetrics, mockSalespersonMetrics, mockManagerFunnelMetrics } from './mockData'
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -30,6 +30,24 @@ export const fetchPageViewsByVehicle = async () => {
 export const fetchPageViewsOrganicPaid = async () => {
   await delay()
   return mockPageViewsOrganicPaid
+}
+
+export const fetchBDCOperatorMetrics = async (userId, period = 'month') => {
+  await delay()
+  // In a real implementation, this would filter by userId and period
+  return mockBDCOperatorMetrics
+}
+
+export const fetchSalespersonMetrics = async (userId, period = 'month') => {
+  await delay()
+  // In a real implementation, this would filter by userId and period
+  return mockSalespersonMetrics
+}
+
+export const fetchManagerFunnelMetrics = async (period = 'month') => {
+  await delay()
+  // In a real implementation, this would filter by period
+  return mockManagerFunnelMetrics
 }
 
 

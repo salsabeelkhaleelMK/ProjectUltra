@@ -1,19 +1,37 @@
 <template>
   <div class="page-container flex-1 flex flex-col overflow-hidden min-w-0">
-    <!-- Header -->
-    <PageHeader title="Tasks" subtitle="Manage your leads and opportunities">
-      <template #actions>
-        <!-- View Toggle -->
-        <ViewToggle
-          :view="viewMode"
-          :options="[
-            { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
-            { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
-          ]"
-          @update:view="$emit('view-change', $event)"
-        />
-      </template>
-    </PageHeader>
+    <!-- Header: Title + View Toggle + Show Closed -->
+    <header class="page-header shrink-0">
+      <div class="page-header-main">
+        <div class="page-header-content">
+          <div>
+            <h1 class="page-header-title">Tasks</h1>
+          </div>
+          
+          <!-- Right Actions: Show Closed + View Toggle -->
+          <div class="flex items-center gap-3">
+            <!-- Show Closed Toggle -->
+            <button
+              @click="$emit('toggle-closed', !showClosed)"
+              class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            >
+              <i class="fa-solid fa-eye-slash text-gray-400 group-hover:text-indigo-500"></i>
+              <span class="hidden sm:inline">Show Closed</span>
+            </button>
+            
+            <!-- View Toggle -->
+            <ViewToggle
+              :view="viewMode"
+              :options="[
+                { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
+                { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
+              ]"
+              @update:view="$emit('view-change', $event)"
+            />
+          </div>
+        </div>
+      </div>
+    </header>
     
     <!-- Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-8">
@@ -39,6 +57,16 @@
             placeholder: 'Q Search or ask a question'
           }"
         >
+          <template #toolbar>
+            <div class="flex justify-end">
+              <button 
+                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+              >
+                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
+                <span class="hidden sm:inline">Switch back to old design</span>
+              </button>
+            </div>
+          </template>
           <template #empty-state>
             <div class="empty-state">
               <i class="fa-solid fa-tasks empty-state-icon"></i>
@@ -53,10 +81,11 @@
 
 <script setup>
 import { ref, computed, h, watch, nextTick } from 'vue'
-import PageHeader from '@/components/layout/PageHeader.vue'
 import ViewToggle from '@/components/shared/ViewToggle.vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
+import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -65,6 +94,7 @@ const props = defineProps({
   typeFilter: { type: String, default: 'all' },
   sortOption: { type: String, default: 'recent-first' },
   showTypeFilter: { type: Boolean, default: true },
+  showClosed: { type: Boolean, default: false },
   showMobileClose: { type: Boolean, default: false },
   openMenuId: { type: [Number, String], default: null },
   searchPlaceholder: { type: String, default: 'Search tasks...' },
@@ -78,8 +108,9 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'reassign', 'close', 'view-change'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
+const settingsStore = useSettingsStore()
 const searchQuery = ref('')
 
 // DataTable state management
@@ -91,10 +122,11 @@ const pagination = ref({
 const globalFilter = ref('')
 const sorting = ref([])
 const columnFilters = ref([
-  { id: 'type', value: undefined },
-  { id: 'status', value: [] },
-  { id: 'source', value: [] },
-  { id: 'assignee', value: undefined }
+  { id: 'status', value: ['Valid', 'Qualified', 'Open Lead'], operator: 'in' },
+  { id: 'type', value: 'lead', operator: 'eq' },
+  { id: 'source', value: ['Marketing', 'Website'], operator: 'in' },
+  { id: 'assignee', value: undefined },
+  { id: 'urgencyLevel', value: undefined }
 ])
 const columnVisibility = ref({})
 
@@ -158,6 +190,26 @@ const filterDefinitions = computed(() => {
     ],
     aiHint: 'Task priority level'
   })
+  
+  // Urgency level filter (only for leads)
+  if (props.typeFilter === 'lead') {
+    defs.push({
+      key: 'urgencyLevel',
+      label: 'Urgency',
+      type: 'select',
+      operators: [
+        { value: 'eq', label: 'is' }
+      ],
+      options: [
+        { value: 'HOT', label: '🔥 Hot' },
+        { value: 'WARM', label: '🟡 Warm' },
+        { value: 'STANDARD', label: '🟢 Standard' },
+        { value: 'COLD', label: '⚪ Cold' }
+      ],
+      aiHint: 'Lead urgency level based on scoring',
+      pinned: true
+    })
+  }
   
   // Source filter
   defs.push({
@@ -416,6 +468,38 @@ const columns = computed(() => [
       }, stageStatus)
     }
   },
+  // Urgency level column (only show for leads when urgency is enabled)
+  ...(props.typeFilter === 'lead' && settingsStore.getSetting('urgencyEnabled') !== false ? [{
+    id: 'urgencyLevel',
+    accessorKey: 'urgencyLevel',
+    header: 'Urgency',
+    meta: {
+      title: 'Urgency'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      if (task.type !== 'lead') {
+        return h('span', { class: 'text-sm text-gray-400' }, '—')
+      }
+      
+      // Calculate urgency if not already calculated
+      let urgencyLevel = task.urgencyLevel
+      if (!urgencyLevel) {
+        const urgencyResult = calculateLeadUrgency(task)
+        urgencyLevel = urgencyResult.level
+      }
+      
+      const colorClass = getUrgencyColorClass(urgencyLevel)
+      const icon = getUrgencyIcon(urgencyLevel)
+      
+      return h('span', {
+        class: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${colorClass}`
+      }, [
+        h('span', {}, icon),
+        h('span', {}, urgencyLevel)
+      ])
+    }
+  }] : []),
   {
     id: 'actions',
     header: '',

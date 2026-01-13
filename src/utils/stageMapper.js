@@ -69,7 +69,10 @@ export function getDisplayStage(entity, type = 'opportunity') {
   if (type === 'opportunity') {
     return calculateOpportunityDisplayStage(entity)
   } else if (type === 'lead') {
-    return calculateLeadDisplayStage(entity)
+    // CRITICAL: Always recalculate from source data, never use existing displayStage
+    // Create a clean object with only source properties (exclude displayStage)
+    const { displayStage: _, ...sourceData } = entity
+    return calculateLeadDisplayStage(sourceData)
   }
   
   return entity.stage || entity.apiStatus
@@ -310,30 +313,82 @@ function getOpportunityTransitions() {
 // ========================================
 
 function calculateLeadDisplayStage(lead) {
-  const apiStatus = lead.stage || lead.apiStatus
+  if (!lead) {
+    return LEAD_STAGES.NEW
+  }
   
-  // Closed states
+  // CRITICAL: Always check isDisqualified FIRST before any stage logic
+  // If lead is not disqualified (false, null, undefined), it can NEVER be in a closed state
+  // Use explicit check: only true means disqualified
+  // Defensive: handle undefined/null as false
+  const isDisqualified = lead.isDisqualified === true
+  
+  // ACTIVE LEADS: If not disqualified, must return an active stage
+  if (!isDisqualified) {
+    // Lead is active - calculate active stage
+    const stageValue = lead.stage || lead.apiStatus
+    
+    // If no stage/apiStatus provided, default to NEW
+    if (!stageValue || typeof stageValue !== 'string') {
+      return LEAD_STAGES.NEW
+    }
+    
+    // If stage is already an active display stage, return it directly
+    if (stageValue === LEAD_STAGES.NEW || 
+        stageValue === LEAD_STAGES.TO_BE_CALLED_BACK || 
+        stageValue === LEAD_STAGES.VALID) {
+      return stageValue
+    }
+    
+    // Treat as API status and map to active display stage
+    const apiStatus = stageValue
+    
+    // Map validated/qualified to Valid stage
+    if (apiStatus === API_STATUSES.VALIDATED || apiStatus === 'Qualified') {
+      return LEAD_STAGES.VALID
+    }
+    
+    // Check for callback scheduled
+    if (lead.callbackDate || lead.callbackScheduled) {
+      return LEAD_STAGES.TO_BE_CALLED_BACK
+    }
+    
+    // Default: New lead (for 'Open Lead' and any other active status)
+    // This is the safe fallback - all active leads default to New
+    return LEAD_STAGES.NEW
+  }
+  
+  // CLOSED LEADS: Only reach here if isDisqualified === true
+  const stageValue = lead.stage || lead.apiStatus
+  
+  // If no stage/apiStatus provided, default to CLOSED_INVALID
+  if (!stageValue || typeof stageValue !== 'string') {
+    return LEAD_STAGES.CLOSED_INVALID
+  }
+  
+  // If stage is already a closed display stage, return it directly
+  if (stageValue === LEAD_STAGES.CLOSED_INVALID ||
+      stageValue === LEAD_STAGES.CLOSED_NOT_INTERESTED ||
+      stageValue === LEAD_STAGES.CLOSED_DUPLICATE) {
+    return stageValue
+  }
+  
+  // Treat as API status and map to closed display stage
+  const apiStatus = stageValue
+  
   if (apiStatus === API_STATUSES.CLOSED_FAILED || apiStatus === API_STATUSES.NOT_VALID) {
     return LEAD_STAGES.CLOSED_INVALID
   }
   if (apiStatus === API_STATUSES.NOT_INTERESTED) {
     return LEAD_STAGES.CLOSED_NOT_INTERESTED
   }
-  if (lead.isDuplicate) {
+  // Only mark as duplicate if it's actually disqualified
+  if (lead.isDuplicate === true || apiStatus === API_STATUSES.CLOSED_FAILED) {
     return LEAD_STAGES.CLOSED_DUPLICATE
   }
   
-  // Active states
-  if (apiStatus === API_STATUSES.VALIDATED || apiStatus === 'Qualified') {
-    return LEAD_STAGES.VALID
-  }
-  
-  if (lead.callbackDate || lead.callbackScheduled) {
-    return LEAD_STAGES.TO_BE_CALLED_BACK
-  }
-  
-  // Default: New lead
-  return LEAD_STAGES.NEW
+  // Default closed state if disqualified but stage doesn't match
+  return LEAD_STAGES.CLOSED_INVALID
 }
 
 function mapLeadStageToApiStatus(displayStage) {
@@ -452,29 +507,30 @@ function hasSuccessfulContact(lead) {
 // ========================================
 
 export function getStageColor(displayStage, entityType = 'opportunity') {
+  // Match styling from task status chip: bg-{color}-100 text-{color}-700 (no border in color class, border is added separately)
   const opportunityColors = {
-    [OPPORTUNITY_STAGES.QUALIFIED]: 'bg-blue-50 text-blue-700 border-blue-200',
-    [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: 'bg-purple-50 text-purple-700 border-purple-200',
-    [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    [OPPORTUNITY_STAGES.IN_NEGOTIATION]: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: 'bg-pink-50 text-pink-700 border-pink-200',
-    [OPPORTUNITY_STAGES.CONTRACT_PENDING]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    [OPPORTUNITY_STAGES.CLOSED_WON]: 'bg-green-100 text-green-800 border-green-300',
-    [OPPORTUNITY_STAGES.CLOSED_LOST]: 'bg-red-50 text-red-700 border-red-200',
-    [OPPORTUNITY_STAGES.ABANDONED]: 'bg-gray-50 text-gray-700 border-gray-200'
+    [OPPORTUNITY_STAGES.QUALIFIED]: 'bg-blue-100 text-blue-700',
+    [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: 'bg-purple-100 text-purple-700',
+    [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: 'bg-indigo-100 text-indigo-700',
+    [OPPORTUNITY_STAGES.IN_NEGOTIATION]: 'bg-yellow-100 text-yellow-700',
+    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: 'bg-pink-100 text-pink-700',
+    [OPPORTUNITY_STAGES.CONTRACT_PENDING]: 'bg-emerald-100 text-emerald-700',
+    [OPPORTUNITY_STAGES.CLOSED_WON]: 'bg-green-100 text-green-700',
+    [OPPORTUNITY_STAGES.CLOSED_LOST]: 'bg-red-100 text-red-700',
+    [OPPORTUNITY_STAGES.ABANDONED]: 'bg-gray-100 text-gray-700'
   }
   
   const leadColors = {
-    [LEAD_STAGES.NEW]: 'bg-slate-100 text-slate-700 border-slate-200',
-    [LEAD_STAGES.TO_BE_CALLED_BACK]: 'bg-purple-100 text-purple-700 border-purple-200',
-    [LEAD_STAGES.VALID]: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    [LEAD_STAGES.CLOSED_INVALID]: 'bg-gray-100 text-gray-600 border-gray-200',
-    [LEAD_STAGES.CLOSED_NOT_INTERESTED]: 'bg-red-100 text-red-700 border-red-200',
-    [LEAD_STAGES.CLOSED_DUPLICATE]: 'bg-orange-100 text-orange-700 border-orange-200'
+    [LEAD_STAGES.NEW]: 'bg-slate-100 text-slate-700',
+    [LEAD_STAGES.TO_BE_CALLED_BACK]: 'bg-purple-100 text-purple-700',
+    [LEAD_STAGES.VALID]: 'bg-emerald-100 text-emerald-700',
+    [LEAD_STAGES.CLOSED_INVALID]: 'bg-gray-100 text-gray-600',
+    [LEAD_STAGES.CLOSED_NOT_INTERESTED]: 'bg-red-100 text-red-700',
+    [LEAD_STAGES.CLOSED_DUPLICATE]: 'bg-orange-100 text-orange-700'
   }
   
   const colors = entityType === 'opportunity' ? opportunityColors : leadColors
-  return colors[displayStage] || 'bg-gray-50 text-gray-700 border-gray-200'
+  return colors[displayStage] || 'bg-gray-100 text-gray-700'
 }
 
 // Get color classes for delivery substatus badges

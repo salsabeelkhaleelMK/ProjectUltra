@@ -174,7 +174,7 @@ const getStageBadgeClass = (stage) => {
 }
 
 const handleOpportunityClick = (opp) => {
-  const url = router.resolve({ path: `/customer/${opp.id}`, query: { type: 'opportunity' } })
+  const url = router.resolve({ path: `/tasks/${opp.id}`, query: { type: 'opportunity' } })
   window.open(url.href, '_blank')
 }
 </script>

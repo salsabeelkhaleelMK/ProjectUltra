@@ -3,7 +3,9 @@
     <!-- Hamburger Menu (Mobile Only) -->
     <button 
       @click="$emit('toggle-sidebar')"
-      class="md:hidden w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+      class="md:hidden w-11 h-11 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
     >
       <i class="fa-solid fa-bars text-lg"></i>
     </button>
@@ -124,7 +126,7 @@ const toggleUserMenu = () => {
 const switchRole = (role) => {
   userStore.switchRole(role)
   showUserMenu.value = false
-  router.push('/tasks')
+  router.push('/home')
 }
 
 // Click outside handler

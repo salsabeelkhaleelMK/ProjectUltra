@@ -30,7 +30,27 @@ const DEFAULT_SETTINGS = {
   excludeNotValidFromConversion: true,
   
   // Task Widgets
-  autoCloseWidgetsOnClose: true
+  autoCloseWidgetsOnClose: true,
+  
+  // Lead Urgency Scoring
+  urgencyEnabled: true,
+  urgencyWeights: {
+    intent: 40,
+    behavioral: 35,
+    temporal: 25
+  },
+  urgencyThresholds: {
+    hot: 80,
+    warm: 50,
+    standard: 20
+  },
+  
+  // Dormant Opportunities
+  dormantOpportunityEnabled: true,
+  dormantOpportunityAfterAppointmentDays: 7,
+  dormantOpportunityAfterAppointmentHours: 0,
+  dormantOpportunityAfterOfferDays: 7,
+  dormantOpportunityAfterOfferHours: 0
 }
 
 // Load settings from localStorage

@@ -47,6 +47,14 @@
             </div>
           </div>
         </div>
+        
+        <!-- Request message - moved to collapsed area -->
+        <div v-if="requestMessage" class="mt-4 pt-4 border-t border-gray-200">
+          <div class="text-xs text-gray-500 font-medium mb-2">Request Message</div>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+            <p class="text-sm text-slate-700 leading-relaxed">{{ requestMessage }}</p>
+          </div>
+        </div>
       </div>
       
       <!-- Separator and toggle button -->
@@ -151,15 +159,6 @@
           <button class="bg-white border border-gray-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
             <i class="fa-solid fa-list-check text-gray-400 group-hover:text-blue-500"></i> View technical specs
           </button>
-        </div>
-      </div>
-      
-      <!-- Request message -->
-      <div v-if="requestMessage" class="border-t border-gray-200 my-6"></div>
-      <div v-if="requestMessage" class="mb-6 px-6">
-        <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">REQUEST MESSAGE</h4>
-        <div class="bg-white border border-gray-200 rounded-lg p-4">
-          <p class="text-sm text-slate-700 leading-relaxed">{{ requestMessage }}</p>
         </div>
       </div>
       </div>

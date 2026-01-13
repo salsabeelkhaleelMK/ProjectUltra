@@ -1,7 +1,10 @@
 <template>
   <div class="page-container">
     <!-- Header -->
-    <PageHeader title="Vehicles Inventory" :subtitle="`${filteredVehicles.length} vehicles`" />
+    <PageHeader title="Vehicles Inventory">
+      <template #actions>
+      </template>
+    </PageHeader>
     
     <!-- Content with padding -->
     <div class="p-4 md:p-8">
@@ -48,14 +51,22 @@
         >
           <!-- Toolbar slot for action buttons -->
           <template #toolbar>
-            <button 
-              v-if="vehicleFilter === 'customer-vehicles'" 
-              @click="showAddModal = true" 
-              class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-            >
-              <i class="fa-solid fa-plus"></i>
-              <span>Add new</span>
-            </button>
+            <div class="flex items-center justify-end gap-3">
+              <button 
+                v-if="vehicleFilter === 'customer-vehicles'" 
+                @click="showAddModal = true" 
+                class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              >
+                <i class="fa-solid fa-plus"></i>
+                <span>Add new</span>
+              </button>
+              <button 
+                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+              >
+                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
+                <span class="hidden sm:inline">Switch back to old design</span>
+              </button>
+            </div>
           </template>
           
           <template #empty-state>

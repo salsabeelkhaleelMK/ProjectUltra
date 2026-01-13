@@ -23,10 +23,10 @@
                 v-if="showCloseButton"
                 @click="emit('close')"
                 type="button"
-                class="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors -mt-1"
+                class="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors -mt-1"
                 aria-label="Close"
               >
-                <i class="fa-solid fa-xmark text-base md:text-lg"></i>
+                <i class="fa-solid fa-xmark text-lg"></i>
               </button>
             </div>
           </DialogHeader>

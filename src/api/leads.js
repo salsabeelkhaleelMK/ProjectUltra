@@ -43,11 +43,16 @@ function enrichLeadWithStage(lead) {
   
   const leadWithCustomer = enrichLeadWithCustomer(lead)
   
-  return {
+  // Explicitly preserve isDisqualified - critical for state machine
+  const enrichedLead = {
     ...leadWithCustomer,
     apiStatus: lead.stage,
-    displayStage: getDisplayStage({ ...leadWithCustomer, apiStatus: lead.stage }, 'lead')
+    // Ensure isDisqualified is explicitly set (default to false if missing)
+    isDisqualified: lead.isDisqualified === true,
+    displayStage: getDisplayStage({ ...leadWithCustomer, apiStatus: lead.stage, isDisqualified: lead.isDisqualified === true }, 'lead')
   }
+  
+  return enrichedLead
 }
 
 // ID generation helpers
