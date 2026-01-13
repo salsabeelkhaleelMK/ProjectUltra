@@ -99,7 +99,6 @@ import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
-import { mockActivities } from '@/api/mockData'
 
 const router = useRouter()
 const route = useRoute()
@@ -421,14 +420,6 @@ const rows = computed(() => {
     priority: lead.priority || 'Normal'
   }))
   
-  // Helper to get last appointment from activities
-  const getLastAppointment = (opportunityId) => {
-    const appointmentActivities = mockActivities
-      .filter(a => a.opportunityId === opportunityId && a.type === 'appointment')
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    return appointmentActivities.length > 0 ? appointmentActivities[0].timestamp : null
-  }
-
   const oppRows = opportunitiesStore.opportunities.map((opp) => {
     let stageKey = 'open-opportunities'
     if (opp.stage === 'In Negotiation' || opp.stage === 'In negotiation') {
@@ -438,7 +429,8 @@ const rows = computed(() => {
     } else if (opp.stage === 'Closed Lost') {
       stageKey = 'lost'
     }
-    const lastAppointment = getLastAppointment(opp.id)
+    // Use scheduledAppointment directly from opportunity object instead of fetching activities
+    const lastAppointment = opp.scheduledAppointment?.start || null
     return {
       id: `opp-${opp.id}`,
       stageKey,

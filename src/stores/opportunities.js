@@ -1,25 +1,33 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import * as opportunitiesApi from '@/api/opportunities'
-import { mockActivities } from '@/api/mockData'
 import { useSettingsStore } from '@/stores/settings'
 
 export const useOpportunitiesStore = defineStore('opportunities', () => {
   const opportunities = ref([])
   const currentOpportunity = ref(null)
+  const currentOpportunityActivities = ref([]) // Store activities in ref instead of computed
   const loading = ref(false)
   const error = ref(null)
-
-  // Computed: Current opportunity activities
-  const currentOpportunityActivities = computed(() => {
-    if (!currentOpportunity.value) return []
-    return mockActivities.filter(activity => activity.opportunityId === currentOpportunity.value.id)
-  })
 
   // Computed: Hot opportunities (priority === 'Hot')
   const hotOpportunities = computed(() => {
     return opportunities.value.filter(opp => opp.priority === 'Hot' && opp.stage !== 'Closed Lost')
   })
+
+  // Watch for currentOpportunity changes and load activities
+  watch(currentOpportunity, async (opportunity) => {
+    if (opportunity) {
+      try {
+        currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunity.id)
+      } catch (err) {
+        console.error('Failed to load opportunity activities:', err)
+        currentOpportunityActivities.value = []
+      }
+    } else {
+      currentOpportunityActivities.value = []
+    }
+  }, { immediate: true })
 
   const loadOpportunities = async (filters = {}) => {
     const result = await fetchOpportunities(filters)
@@ -57,6 +65,8 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       if (index !== -1) {
         opportunities.value[index] = loadedOpportunity
       }
+      
+      // Activities will be loaded via watch on currentOpportunity
       
       return currentOpportunity.value
     } catch (err) {
@@ -100,9 +110,11 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
         const currentStage = currentOpp?.stage
         // Only auto-close if transitioning from an active stage
         if (currentStage && currentStage !== 'Closed Won' && currentStage !== 'Closed Lost') {
+          // Fetch activities via API wrapper instead of direct mockActivities import
+          const allActivities = await opportunitiesApi.fetchOpportunityActivities(id)
+          
           // Find and mark NFU/OFB activities as completed
-          const nfuOfbActivities = mockActivities.filter(activity => 
-            activity.opportunityId === parseInt(id) && 
+          const nfuOfbActivities = allActivities.filter(activity => 
             (activity.type === 'nfu-task' || activity.type === 'ofb-task' || 
              activity.action?.includes('NFU') || activity.action?.includes('OFB'))
           )
@@ -157,8 +169,8 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     try {
       const newActivity = await opportunitiesApi.addOpportunityActivity(opportunityId, activity)
       if (currentOpportunity.value?.id === parseInt(opportunityId)) {
-        // Trigger reactivity by reloading
-        await loadOpportunityById(opportunityId)
+        // Reload activities via API wrapper
+        currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunityId)
       }
       return newActivity
     } catch (err) {
@@ -175,7 +187,8 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     try {
       const updated = await opportunitiesApi.updateOpportunityActivity(opportunityId, activityId, updates)
       if (currentOpportunity.value?.id === parseInt(opportunityId)) {
-        await loadOpportunityById(opportunityId)
+        // Reload activities via API wrapper
+        currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunityId)
       }
       return updated
     } catch (err) {
@@ -234,7 +247,8 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     try {
       await opportunitiesApi.deleteOpportunityActivity(opportunityId, activityId)
       if (currentOpportunity.value?.id === parseInt(opportunityId)) {
-        await loadOpportunityById(opportunityId)
+        // Reload activities via API wrapper
+        currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunityId)
       }
       return { success: true }
     } catch (err) {
@@ -250,7 +264,7 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     currentOpportunity,
     loading,
     error,
-    currentOpportunityActivities,
+    currentOpportunityActivities: computed(() => currentOpportunityActivities.value), // Return as computed for backward compatibility
     hotOpportunities,
     loadOpportunities,
     fetchOpportunities,

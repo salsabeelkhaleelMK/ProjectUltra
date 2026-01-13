@@ -1,4 +1,3 @@
-import { mockActivities } from '@/api/mockData'
 import { useSettingsStore } from '@/stores/settings'
 
 export type UrgencyLevel = 'HOT' | 'WARM' | 'STANDARD' | 'COLD'
@@ -33,12 +32,17 @@ export interface UrgencyResult {
  * Calculates the urgency score for a lead based on intent, behavior, and temporal factors.
  * 
  * @param lead - The lead object containing all relevant data
+ * @param activities - Optional array of activities for the lead (if not provided, uses empty array)
  * @param customWeights - Optional custom weights for scoring dimensions (defaults to settings)
  * @param customThresholds - Optional custom thresholds for urgency levels (defaults to settings)
  * @returns Urgency score (0-100) and urgency level (HOT/WARM/STANDARD/COLD)
+ * 
+ * NOTE: Activities should be passed from the caller. This function no longer imports mockData directly.
+ * Callers should fetch activities using fetchLeadActivities API wrapper before calling this function.
  */
 export function calculateLeadUrgency(
   lead: any,
+  activities: any[] = [],
   customWeights?: UrgencyWeights,
   customThresholds?: UrgencyThresholds
 ): UrgencyResult {
@@ -53,9 +57,6 @@ export function calculateLeadUrgency(
     warm: 50,
     standard: 20
   }
-
-  // Get lead activities
-  const activities = mockActivities.filter(a => a.leadId === lead.id) || []
 
   // Calculate intent score (0-40 points)
   const intentScore = calculateIntentScore(lead, activities)

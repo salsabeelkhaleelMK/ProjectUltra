@@ -1,25 +1,33 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import * as leadsApi from '@/api/leads'
-import { mockActivities } from '@/api/mockData'
 import { createOpportunityFromLead } from '@/api/opportunities'
 
 export const useLeadsStore = defineStore('leads', () => {
   const leads = ref([])
   const currentLead = ref(null)
+  const currentLeadActivities = ref([]) // Store activities in ref instead of computed
   const loading = ref(false)
   const error = ref(null)
-
-  // Computed: Current lead activities
-  const currentLeadActivities = computed(() => {
-    if (!currentLead.value) return []
-    return mockActivities.filter(activity => activity.leadId === currentLead.value.id)
-  })
 
   // Computed: Hot leads (priority === 'Hot')
   const hotLeads = computed(() => {
     return leads.value.filter(lead => lead.priority === 'Hot' && !lead.isDisqualified)
   })
+
+  // Watch for currentLead changes and load activities
+  watch(currentLead, async (lead) => {
+    if (lead) {
+      try {
+        currentLeadActivities.value = await leadsApi.fetchLeadActivities(lead.id)
+      } catch (err) {
+        console.error('Failed to load lead activities:', err)
+        currentLeadActivities.value = []
+      }
+    } else {
+      currentLeadActivities.value = []
+    }
+  }, { immediate: true })
 
   const loadLeads = async (filters = {}) => {
     const result = await fetchLeads(filters)
@@ -57,6 +65,8 @@ export const useLeadsStore = defineStore('leads', () => {
       if (index !== -1) {
         leads.value[index] = loadedLead
       }
+      
+      // Activities will be loaded via watch on currentLead
       
       return currentLead.value
     } catch (err) {
@@ -127,8 +137,8 @@ export const useLeadsStore = defineStore('leads', () => {
     try {
       const newActivity = await leadsApi.addLeadActivity(leadId, activity)
       if (currentLead.value?.id === parseInt(leadId)) {
-        // Trigger reactivity by reloading
-        await loadLeadById(leadId)
+        // Reload activities via API wrapper
+        currentLeadActivities.value = await leadsApi.fetchLeadActivities(leadId)
       }
       return newActivity
     } catch (err) {
@@ -145,7 +155,8 @@ export const useLeadsStore = defineStore('leads', () => {
     try {
       const updated = await leadsApi.updateLeadActivity(leadId, activityId, updates)
       if (currentLead.value?.id === parseInt(leadId)) {
-        await loadLeadById(leadId)
+        // Reload activities via API wrapper
+        currentLeadActivities.value = await leadsApi.fetchLeadActivities(leadId)
       }
       return updated
     } catch (err) {
@@ -162,7 +173,8 @@ export const useLeadsStore = defineStore('leads', () => {
     try {
       await leadsApi.deleteLeadActivity(leadId, activityId)
       if (currentLead.value?.id === parseInt(leadId)) {
-        await loadLeadById(leadId)
+        // Reload activities via API wrapper
+        currentLeadActivities.value = await leadsApi.fetchLeadActivities(leadId)
       }
       return { success: true }
     } catch (err) {
@@ -193,7 +205,8 @@ export const useLeadsStore = defineStore('leads', () => {
     error.value = null
     try {
       const lead = await leadsApi.fetchLeadById(leadId)
-      const activities = mockActivities.filter(a => a.leadId === leadId)
+      // Use API wrapper to fetch activities instead of direct mockActivities import
+      const activities = await leadsApi.fetchLeadActivities(leadId)
       const opportunity = await createOpportunityFromLead(lead, activities)
       
       // Mark lead as converted (or remove it)
@@ -216,7 +229,7 @@ export const useLeadsStore = defineStore('leads', () => {
     currentLead,
     loading,
     error,
-    currentLeadActivities,
+    currentLeadActivities: computed(() => currentLeadActivities.value), // Return as computed for backward compatibility
     hotLeads,
     loadLeads,
     fetchLeads,

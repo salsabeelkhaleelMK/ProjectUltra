@@ -70,7 +70,8 @@ import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
-import { mockActivities } from '@/api/mockData'
+import { fetchLeadActivities } from '@/api/leads'
+import { fetchOpportunityActivities } from '@/api/opportunities'
 
 const route = useRoute()
 const router = useRouter()
@@ -161,16 +162,24 @@ const loadCustomerData = async (explicitId = null) => {
     customerTasks.value = tasksResult.data || []
     customerCars.value = carsResult.data || []
     
-    // Fetch activities from mockActivities
+    // Fetch activities using API wrappers
     const allActivities = []
-    customerLeads.value.forEach(lead => {
-      const leadActivities = mockActivities.filter(a => a.leadId === lead.id)
-      allActivities.push(...leadActivities)
-    })
-    customerOpportunities.value.forEach(opp => {
-      const oppActivities = mockActivities.filter(a => a.opportunityId === opp.id)
-      allActivities.push(...oppActivities)
-    })
+    for (const lead of customerLeads.value) {
+      try {
+        const leadActivities = await fetchLeadActivities(lead.id)
+        allActivities.push(...leadActivities)
+      } catch (err) {
+        console.error(`Failed to load activities for lead ${lead.id}:`, err)
+      }
+    }
+    for (const opp of customerOpportunities.value) {
+      try {
+        const oppActivities = await fetchOpportunityActivities(opp.id)
+        allActivities.push(...oppActivities)
+      } catch (err) {
+        console.error(`Failed to load activities for opportunity ${opp.id}:`, err)
+      }
+    }
     customerActivities.value = allActivities
   } catch (err) {
     console.error('Error loading customer data:', err)

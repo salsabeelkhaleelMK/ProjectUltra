@@ -125,7 +125,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Button } from '@motork/component-library'
 import ModalShell from '@/components/shared/ModalShell.vue'
-import { mockUsers } from '@/api/mockData'
+import { useUsersStore } from '@/stores/users'
 
 const props = defineProps({
   show: {
@@ -152,6 +152,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'scheduled'])
 
+const usersStore = useUsersStore()
+
 const formData = ref({
   date: '',
   time: '',
@@ -161,7 +163,7 @@ const formData = ref({
   setReminder: true
 })
 
-const availableUsers = ref([])
+const availableUsers = computed(() => usersStore.users)
 
 const minDate = computed(() => {
   const today = new Date()
@@ -180,9 +182,6 @@ onMounted(() => {
   
   // Set default time to 10:00 AM
   formData.value.time = '10:00'
-  
-  // Load available users
-  availableUsers.value = mockUsers
   
   // Set default assignee
   formData.value.assigneeId = props.currentAssigneeId

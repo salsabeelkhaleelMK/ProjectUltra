@@ -1,0 +1,258 @@
+# ProjectUltra - Architecture Rules & Patterns
+
+## Data Layer Architecture (CRITICAL)
+
+### Repository → Service → API Wrapper → Store Pattern
+
+**NEVER directly import `mockData.js` from components, views, stores, or composables.**
+
+The data layer follows this strict hierarchy:
+
+1. **Repository Layer** (`src/repositories/`)
+   - Abstracts data access operations
+   - Maps to REST API endpoints (API Platform/Symfony)
+   - Current: Uses mock data arrays
+   - Future: Will call REST endpoints directly
+   - **Files**: `BaseRepository.js`, `LeadRepository.js`, `OpportunityRepository.js`, `ActivityRepository.js`, `ContactRepository.js`
+
+2. **Service Layer** (`src/services/`)
+   - Handles business logic and data transformation
+   - Enriches entities with related data (e.g., customer info, stages)
+   - **Files**: `leadService.js`, `opportunityService.js`
+
+3. **API Wrapper Layer** (`src/api/*.js`)
+   - Thin wrapper around services/repositories
+   - Handles async operations, delays (for mocking), error handling
+   - **Files**: `leads.js`, `opportunities.js`, `contacts.js`, etc.
+   - **Note**: `mockData.js` is ONLY used by repositories, never by API wrappers directly
+
+4. **Store Layer** (`src/stores/*.js`)
+   - Pinia stores for state management
+   - **MUST** use API wrappers, never repositories or mockData directly
+   - Examples: `leads.js`, `opportunities.js`, `contacts.js`
+
+5. **Component/View/Composable Layer**
+   - **MUST** use stores or API wrappers, never repositories or mockData directly
+   - Components should use stores for reactive state
+   - Views can use stores or API wrappers for data fetching
+   - Composables should receive data as parameters or use stores
+
+### API Platform REST API Structure
+
+**Endpoint Mapping** (when real API is integrated):
+- **Leads**: `/leads`
+  - `GET /leads` → `LeadRepository.findAll()`
+  - `GET /leads/{id}` → `LeadRepository.findById(id)`
+  - `POST /leads` → `LeadRepository.create(data)`
+  - `PUT /leads/{id}` → `LeadRepository.update(id, data)`
+  - `DELETE /leads/{id}` → `LeadRepository.delete(id)`
+  - `GET /leads/{id}/activities` → `ActivityRepository.findAllByLeadId(id)`
+  - `POST /leads/{id}/transition` → `StateMachineService.transitionLead()` (future)
+
+- **Opportunities**: `/opportunities`
+  - `GET /opportunities` → `OpportunityRepository.findAll()`
+  - `GET /opportunities/{id}` → `OpportunityRepository.findById(id)`
+  - `POST /opportunities` → `OpportunityRepository.create(data)`
+  - `PUT /opportunities/{id}` → `OpportunityRepository.update(id, data)`
+  - `DELETE /opportunities/{id}` → `OpportunityRepository.delete(id)`
+  - `GET /opportunities/{id}/activities` → `ActivityRepository.findAllByOpportunityId(id)`
+  - `POST /opportunities/{id}/transition` → `StateMachineService.transitionOpportunity()` (future)
+
+- **Activities**: `/activities`
+  - `GET /activities` → `ActivityRepository.findAll(filters)`
+  - `GET /activities/{id}` → `ActivityRepository.findById(id)`
+  - `POST /activities` → `ActivityRepository.create(data)`
+  - `PUT /activities/{id}` → `ActivityRepository.update(id, data)`
+  - `DELETE /activities/{id}` → `ActivityRepository.delete(id)`
+  - `GET /activities?leadId={id}` → `ActivityRepository.findAllByLeadId(id)`
+  - `GET /activities?opportunityId={id}` → `ActivityRepository.findAllByOpportunityId(id)`
+
+- **Contacts**: `/contacts`
+  - `GET /contacts` → `ContactRepository.findAll()`
+  - `GET /contacts/{id}` → `ContactRepository.findById(id)`
+  - `POST /contacts` → `ContactRepository.create(data)`
+  - `PUT /contacts/{id}` → `ContactRepository.update(id, data)`
+  - `DELETE /contacts/{id}` → `ContactRepository.delete(id)`
+
+### State Machine Architecture
+
+**State Machine Logic Separation**:
+
+1. **StateMachineService** (`src/services/stateMachine/StateMachineService.js`)
+   - Abstraction layer for state transitions
+   - Current: Uses frontend mock implementation
+   - Future: Will call backend API (POST /leads/{id}/transition or PATCH /leads/{id})
+   - Handles backend rules (transitions/validations)
+
+2. **Frontend State Machine Config** (`src/services/stateMachine/frontendStateMachine.js`)
+   - Frontend UI rules (widget rendering, conditional actions)
+   - Defines primary/secondary actions, task widgets, conditional rendering
+   - **Separated from backend transition logic**
+
+3. **Composables** (`src/composables/useLeadStateMachine.js`, `useOpportunityStateMachine.js`)
+   - Use StateMachineService for transitions
+   - Use frontendStateMachine config for UI rules
+   - **MUST NOT** contain backend transition logic
+
+### Data Flow Examples
+
+**✅ CORRECT - Fetching Leads:**
+```javascript
+// In a component/view
+import { useLeadsStore } from '@/stores/leads'
+const leadsStore = useLeadsStore()
+await leadsStore.fetchLeads(filters)
+
+// Store uses API wrapper
+import * as leadsApi from '@/api/leads'
+const result = await leadsApi.fetchLeads(filters)
+
+// API wrapper uses service
+import { LeadService } from '@/services/leadService'
+return await leadService.findAll(filters)
+
+// Service uses repository
+import { LeadRepository } from '@/repositories/LeadRepository'
+return await leadRepository.findAll(filters)
+```
+
+**❌ WRONG - Direct Mock Import:**
+```javascript
+// NEVER do this in components, views, stores, or composables
+import { mockLeads } from '@/api/mockData'
+const leads = mockLeads.filter(...)
+```
+
+**✅ CORRECT - Fetching Activities:**
+```javascript
+// In a component/view
+import { fetchLeadActivities } from '@/api/leads'
+const activities = await fetchLeadActivities(leadId)
+
+// Or use store
+import { useLeadsStore } from '@/stores/leads'
+const leadsStore = useLeadsStore()
+const activities = leadsStore.currentLeadActivities
+```
+
+**❌ WRONG - Direct Mock Import:**
+```javascript
+// NEVER do this
+import { mockActivities } from '@/api/mockData'
+const activities = mockActivities.filter(a => a.leadId === leadId)
+```
+
+### Migration Path (Mock → Real API)
+
+When migrating to real API:
+
+1. **Repository Layer**: Replace mock data operations with HTTP calls
+   - Update `BaseRepository` methods to use axios/fetch
+   - Add API configuration (base URL, headers, auth)
+   - Keep the same method signatures
+
+2. **Service Layer**: No changes needed (already abstracted)
+
+3. **API Wrapper Layer**: Remove mock delays, keep error handling
+
+4. **Store Layer**: No changes needed (already uses API wrappers)
+
+5. **Component/View Layer**: No changes needed (already uses stores/API wrappers)
+
+## Component Architecture
+
+### Vue 3 Composition API
+
+- **MUST** use `<script setup>` syntax for all components
+- **NEVER** use Options API (`export default { ... }`)
+- **ALWAYS** use Composition API patterns (`ref`, `computed`, `watch`, `onMounted`, etc.)
+
+### State Management
+
+- **ALWAYS** use Pinia stores for shared state
+- **NEVER** use prop drilling for deep component trees
+- **NEVER** use `provide/inject` for state (use Pinia stores instead)
+
+### Component Granularity
+
+- Keep components focused and small
+- Extract reusable logic into composables
+- Shared components go in `src/components/shared/`
+- Entity-specific components go in `src/components/{entity}/`
+
+## Code Quality
+
+### No Direct Mock Data Imports
+
+- **NEVER** import from `@/api/mockData` in:
+  - Components (`src/components/**/*.vue`)
+  - Views (`src/views/**/*.vue`)
+  - Stores (`src/stores/**/*.js`)
+  - Composables (`src/composables/**/*.js`)
+  - API wrappers (`src/api/*.js` except `mockData.js`)
+
+- **ONLY** repositories (`src/repositories/**/*.js`) can import `mockData.js`
+
+### Styling (Tailwind CSS)
+
+- **NO arbitrary values** (`w-[350px]`, `text-[14px]`)
+- **USE semantic classes only** (from `tailwind.config.js`)
+- **USE semantic tokens**: `text-primary`, `bg-surface`, `border-border`
+- **Mobile-first**: `class="flex flex-col md:flex-row"` (not `max-md:`)
+
+### TypeScript / JSDoc
+
+- Use JSDoc for function/parameter documentation
+- Use TypeScript for type definitions where applicable (`.ts` files)
+- Document complex data structures with interfaces
+
+### Accessibility
+
+- Use semantic HTML elements
+- Add `aria-label` attributes where needed
+- Ensure keyboard navigation works
+- Test with screen readers
+
+## File Organization
+
+### Directory Structure
+
+```
+src/
+├── api/              # API wrappers (thin layer, uses services/repositories)
+├── repositories/     # Data access layer (abstracts data source)
+├── services/         # Business logic layer
+│   └── stateMachine/ # State machine service and config
+├── stores/           # Pinia stores (state management)
+├── components/       # Vue components
+│   ├── shared/       # Reusable components
+│   ├── leads/        # Lead-specific components
+│   ├── opportunities/ # Opportunity-specific components
+│   └── ...
+├── composables/      # Reusable composition functions
+├── views/            # Page-level components (routes)
+├── router/           # Vue Router configuration
+└── utils/            # Utility functions
+```
+
+### Naming Conventions
+
+- **Components**: `PascalCase.vue` (e.g., `LeadManagementWidget.vue`)
+- **Composables**: `useSomething.js` (e.g., `useLeadUrgency.ts`)
+- **Stores**: `useXStore.js` (e.g., `useLeadsStore.js`)
+- **Services**: `xService.js` (e.g., `leadService.js`)
+- **Repositories**: `XRepository.js` (e.g., `LeadRepository.js`)
+
+## Testing & Mobile Responsiveness
+
+- **ALWAYS** test on mobile viewports
+- **CRITICAL**: Ensure mobile view doesn't break
+- Use responsive Tailwind classes (`flex-col md:flex-row`)
+- Test table layouts on mobile (columns should stack or hide, not scroll horizontally)
+
+## Build & Deploy
+
+- Run `npm run build` before pushing
+- Never commit `dist/` folder
+- Netlify builds from source via `netlify.toml`
+

@@ -162,7 +162,7 @@
 import { ref, computed, onMounted, toRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import { mockVehicles } from '@/api/mockData'
+import { fetchVehicles } from '@/api/vehicles'
 import { getStageColor } from '@/utils/stageMapper'
 import { useOpportunityActions } from '@/composables/useOpportunityActions'
 
@@ -406,9 +406,16 @@ function handleAutoCloseLost(data) {
 }
 
 // Load recommended cars on mount
-onMounted(() => {
-  recommendedCars.value = mockVehicles
-    .filter(car => car.stockDays !== null && car.stockDays !== undefined)
-    .slice(0, 5)
+onMounted(async () => {
+  try {
+    const result = await fetchVehicles({})
+    const allVehicles = result.data || []
+    recommendedCars.value = allVehicles
+      .filter(car => car.stockDays !== null && car.stockDays !== undefined)
+      .slice(0, 5)
+  } catch (err) {
+    console.error('Failed to load recommended cars:', err)
+    recommendedCars.value = []
+  }
 })
 </script>

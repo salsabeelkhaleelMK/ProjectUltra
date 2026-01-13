@@ -153,10 +153,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import VehicleCard from '@/components/shared/vehicles/VehicleCard.vue'
-import { mockVehicles } from '@/api/mockData'
+import { fetchVehicles } from '@/api/vehicles'
 
 const props = defineProps({
   show: {
@@ -181,6 +181,7 @@ const showConfigureForm = ref(false)
 const selectedVehicle = ref(null)
 const selectedVehicleId = ref(null)
 const selectedVehicleType = ref(null)
+const vehicles = ref([])
 
 // Custom vehicle configuration
 const customVehicle = ref({
@@ -192,6 +193,17 @@ const customVehicle = ref({
   image: ''
 })
 
+// Load vehicles on mount
+onMounted(async () => {
+  try {
+    const result = await fetchVehicles({})
+    vehicles.value = result.data || []
+  } catch (err) {
+    console.error('Failed to load vehicles:', err)
+    vehicles.value = []
+  }
+})
+
 // Check if requested vehicle is in stock
 const hasRequestedInStock = computed(() => {
   return props.requestedVehicle && 
@@ -201,19 +213,19 @@ const hasRequestedInStock = computed(() => {
 
 // Get all recommended vehicles (includes requested vehicle if in stock)
 const allRecommendedVehicles = computed(() => {
-  const vehicles = []
+  const recommended = []
   
   // Only add requested vehicle if it exists AND is in stock
   if (props.requestedVehicle && hasRequestedInStock.value) {
-    vehicles.push({
+    recommended.push({
       ...props.requestedVehicle,
       isRequested: true
     })
   }
   
   // Add other recommended vehicles
-  if (mockVehicles && mockVehicles.length > 0) {
-    const alternatives = mockVehicles.filter(v => {
+  if (vehicles.value && vehicles.value.length > 0) {
+    const alternatives = vehicles.value.filter(v => {
       // If no requested vehicle, show all
       if (!props.requestedVehicle) return true
       // Otherwise exclude the requested vehicle from alternatives
@@ -222,29 +234,29 @@ const allRecommendedVehicles = computed(() => {
     
     // Add first 3 alternatives if requested vehicle is shown, otherwise 4
     const limit = (props.requestedVehicle && hasRequestedInStock.value) ? 3 : 4
-    vehicles.push(...alternatives.slice(0, limit))
+    recommended.push(...alternatives.slice(0, limit))
   }
   
-  return vehicles
+  return recommended
 })
 
 // Filter stock vehicles based on search
 const filteredStock = computed(() => {
-  if (!mockVehicles || mockVehicles.length === 0) return []
+  if (!vehicles.value || vehicles.value.length === 0) return []
   
-  let vehicles = [...mockVehicles]
+  let filtered = [...vehicles.value]
   
   // Apply search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    vehicles = vehicles.filter(v => 
+    filtered = filtered.filter(v => 
       v.brand.toLowerCase().includes(query) ||
       v.model.toLowerCase().includes(query) ||
       v.year.toString().includes(query)
     )
   }
   
-  return vehicles
+  return filtered
 })
 
 // Validate custom vehicle

@@ -1,136 +1,42 @@
-import { mockLeads, mockActivities, mockCalendarEvents, mockUsers, mockCustomers } from './mockData'
-import { getDisplayStage } from '@/utils/stageMapper'
+import { mockCustomers, mockCalendarEvents, mockUsers } from './mockData'
+import { leadService } from '@/services/leadService'
+import { ActivityRepository } from '@/repositories/ActivityRepository'
+import { LeadRepository } from '@/repositories/LeadRepository'
 
-// Simulate API delay
+// Create repository instance for activities and ID generation
+const activityRepository = new ActivityRepository()
+const leadRepository = new LeadRepository()
+
+// Simulate API delay (acceptable for mocking - will be removed when real API is integrated)
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Enrich lead with customer data from mockCustomers
-function enrichLeadWithCustomer(lead) {
-  if (!lead) return null
-  
-  const customer = mockCustomers.find(c => c.id === lead.customerId)
-  if (!customer) {
-    // Fallback if customer not found
-    return {
-      ...lead,
-      customer: {
-        id: lead.customerId,
-        name: 'Unknown Customer',
-        initials: '??',
-        email: '',
-        phone: '',
-        address: ''
-      }
-    }
-  }
-  
-  return {
-    ...lead,
-    customer: {
-      id: customer.id,
-      name: customer.name,
-      initials: customer.initials,
-      email: customer.email,
-      phone: customer.phone,
-      address: customer.address
-    }
-  }
-}
-
-// Enrich lead with display stage and customer data
-function enrichLeadWithStage(lead) {
-  if (!lead) return null
-  
-  const leadWithCustomer = enrichLeadWithCustomer(lead)
-  
-  // Explicitly preserve isDisqualified - critical for state machine
-  const enrichedLead = {
-    ...leadWithCustomer,
-    apiStatus: lead.stage,
-    // Ensure isDisqualified is explicitly set (default to false if missing)
-    isDisqualified: lead.isDisqualified === true,
-    displayStage: getDisplayStage({ ...leadWithCustomer, apiStatus: lead.stage, isDisqualified: lead.isDisqualified === true }, 'lead')
-  }
-  
-  return enrichedLead
-}
-
 // ID generation helpers
+// NOTE: This will not be needed when using real API (server generates IDs)
 export const generateLeadId = () => {
-  return mockLeads.length > 0 ? Math.max(...mockLeads.map(l => l.id)) + 1 : 1
+  return leadRepository.generateId()
 }
 
 export const fetchLeads = async (filters = {}) => {
   await delay()
-  
-  let results = [...mockLeads]
-  
-  // Apply filters
-  if (filters.status) {
-    results = results.filter(lead => lead.status === filters.status)
-  }
-  if (filters.priority) {
-    results = results.filter(lead => lead.priority === filters.priority)
-  }
-  if (filters.assignee) {
-    results = results.filter(lead => lead.assignee === filters.assignee)
-  }
-  if (filters.search) {
-    const search = filters.search.toLowerCase()
-    results = results.filter(lead => {
-      const customer = mockCustomers.find(c => c.id === lead.customerId)
-      const customerName = customer?.name || ''
-      return customerName.toLowerCase().includes(search) ||
-        (lead.requestedCar && lead.requestedCar.brand && lead.requestedCar.brand.toLowerCase().includes(search)) ||
-        (lead.requestedCar && lead.requestedCar.model && lead.requestedCar.model.toLowerCase().includes(search))
-    })
-  }
-  
-  // Enrich with display stages
-  const enrichedResults = results.map(enrichLeadWithStage)
-  
-  return { data: enrichedResults, total: enrichedResults.length }
+  // Use service layer for business logic and enrichment
+  return await leadService.findAll(filters)
 }
 
 export const fetchLeadById = async (id) => {
   await delay()
-  const lead = mockLeads.find(l => l.id === parseInt(id))
-  if (!lead) throw new Error('Lead not found')
-  return enrichLeadWithStage(lead)
+  // Use service layer for business logic and enrichment
+  return await leadService.findById(id)
 }
 
 export const fetchLeadActivities = async (leadId) => {
   await delay()
-  return mockActivities.filter(activity => activity.leadId === parseInt(leadId))
+  return await activityRepository.findAllByLeadId(leadId)
 }
 
 export const createLead = async (leadData) => {
   await delay()
-  const newLead = {
-    id: generateLeadId(),
-    customerId: leadData.customerId,
-    status: leadData.status || 'Open',
-    priority: leadData.priority || 'Normal',
-    requestedCar: leadData.requestedCar,
-    carStatus: leadData.carStatus || null,
-    requestType: leadData.requestType || 'Generic Sales',
-    source: leadData.source || 'Direct',
-    fiscalEntity: leadData.fiscalEntity || '',
-    sourceDetails: leadData.sourceDetails || '',
-    assignee: leadData.assignee || null,
-    assigneeInitials: leadData.assigneeInitials || '',
-    createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString(),
-    nextActionDue: leadData.nextActionDue || null,
-    tags: leadData.tags || [],
-    stage: leadData.stage || 'Open Lead',
-    isDisqualified: leadData.isDisqualified || false,
-    disqualifyReason: leadData.disqualifyReason || null,
-    scheduledAppointment: leadData.scheduledAppointment || null,
-    contactAttempts: leadData.contactAttempts || []
-  }
-  mockLeads.push(newLead)
-  return enrichLeadWithStage(newLead)
+  // Use service layer for business logic and enrichment
+  return await leadService.create(leadData)
 }
 
 export const createLeadFromContact = async (contactId, carData) => {
@@ -139,8 +45,8 @@ export const createLeadFromContact = async (contactId, carData) => {
   const contact = mockContacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   
-  const newLead = {
-    id: generateLeadId(),
+  // Use service layer for business logic and enrichment
+  return await leadService.create({
     customerId: contact.customerId,
     requestedCar: carData,
     status: 'Open',
@@ -157,67 +63,55 @@ export const createLeadFromContact = async (contactId, carData) => {
     disqualifyReason: null,
     scheduledAppointment: null,
     contactAttempts: []
-  }
-  
-  mockLeads.push(newLead)
-  return enrichLeadWithStage(newLead)
+  })
 }
 
 export const updateLead = async (id, updates) => {
   await delay()
-  const index = mockLeads.findIndex(l => l.id === parseInt(id))
-  if (index === -1) throw new Error('Lead not found')
-  
-  // Remove displayStage from updates (it's calculated, not stored)
-  const { displayStage, ...updatesToStore } = updates
-  
-  mockLeads[index] = { ...mockLeads[index], ...updatesToStore, lastActivity: new Date().toISOString() }
-  return enrichLeadWithStage(mockLeads[index])
+  // Use service layer for business logic and enrichment
+  return await leadService.update(id, updates)
 }
 
 export const deleteLead = async (id) => {
   await delay()
-  const index = mockLeads.findIndex(l => l.id === parseInt(id))
-  if (index === -1) throw new Error('Lead not found')
-  
-  mockLeads.splice(index, 1)
-  return { success: true }
+  // Use service layer
+  return await leadService.delete(id)
 }
 
 export const addLeadActivity = async (leadId, activity) => {
   await delay()
-  const newActivity = {
-    id: mockActivities.length + 1,
+  // Use repository directly for activities
+  const newActivity = await activityRepository.create({
     leadId: parseInt(leadId),
     timestamp: new Date().toISOString(),
     ...activity
-  }
-  mockActivities.push(newActivity)
+  })
   return newActivity
 }
 
 export const updateLeadActivity = async (leadId, activityId, updates) => {
   await delay()
-  const activity = mockActivities.find(a => a.id === parseInt(activityId) && a.leadId === parseInt(leadId))
+  // Use repository directly for activities
+  const activity = await activityRepository.findByLeadIdAndActivityId(leadId, activityId)
   if (!activity) throw new Error('Activity not found')
-  
-  Object.assign(activity, updates, { timestamp: new Date().toISOString() })
-  return activity
+  return await activityRepository.update(activityId, updates)
 }
 
 export const deleteLeadActivity = async (leadId, activityId) => {
   await delay()
-  const index = mockActivities.findIndex(a => a.id === parseInt(activityId) && a.leadId === parseInt(leadId))
-  if (index === -1) throw new Error('Activity not found')
-  
-  mockActivities.splice(index, 1)
-  return { success: true }
+  return await activityRepository.deleteByLeadIdAndActivityId(leadId, activityId)
+}
+
+// Helper function for enrichment (used by other functions)
+function enrichLeadWithCustomer(lead) {
+  return leadService.enrichWithCustomer(lead)
 }
 
 // Schedule follow-up appointment for lead
+// NOTE: Calendar events will need their own repository in the future
 export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
   await delay()
-  const lead = mockLeads.find(l => l.id === parseInt(leadId))
+  const lead = await leadService.findById(leadId)
   if (!lead) throw new Error('Lead not found')
   
   // Create calendar event
@@ -249,10 +143,12 @@ export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
   
   mockCalendarEvents.push(calendarEvent)
   
-  // Update lead with appointment reference and due date
-  lead.scheduledAppointment = calendarEvent
-  lead.nextActionDue = appointmentStart.toISOString()
-  lead.lastActivity = new Date().toISOString()
+  // Update lead with appointment reference and due date using service
+  await leadService.update(leadId, {
+    scheduledAppointment: calendarEvent,
+    nextActionDue: appointmentStart.toISOString(),
+    lastActivity: new Date().toISOString()
+  })
   
   return calendarEvent
 }
@@ -261,8 +157,8 @@ export const scheduleLeadFollowUp = async (leadId, appointmentData) => {
 export const createLeadFromOpportunity = async (opportunityData, activities) => {
   await delay()
   
-  const newLead = {
-    id: generateLeadId(),
+  // Use service layer to create lead
+  const newLead = await leadService.create({
     customerId: opportunityData.customerId,
     status: 'Open',
     priority: 'Normal',
@@ -281,14 +177,11 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
     stage: 'Open Lead',
     isDisqualified: false,
     disqualifyReason: null
-  }
+  })
   
-  mockLeads.unshift(newLead)
-  
-  // Migrate activities
+  // Migrate activities using repository
   for (const activity of activities) {
-    const newActivity = {
-      id: mockActivities.length + 1,
+    await activityRepository.create({
       leadId: newLead.id,
       opportunityId: undefined, // Remove opportunity reference
       timestamp: activity.timestamp,
@@ -297,14 +190,14 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
       action: activity.action,
       content: activity.content,
       data: activity.data
-    }
-    mockActivities.push(newActivity)
+    })
   }
   
-  return enrichLeadWithStage(newLead)
+  return newLead
 }
 
 // Detect urgent leads that need qualification
+// NOTE: This business logic will move to Service Layer in Step 1.3 (or remain here as query logic)
 export const detectUrgentLeads = async (userId) => {
   await delay()
   
@@ -315,8 +208,10 @@ export const detectUrgentLeads = async (userId) => {
   const now = new Date()
   const THRESHOLD_DAYS = 7
   
-  // Get all leads assigned to this user
-  const userLeads = mockLeads.filter(lead => {
+  // Get all leads assigned to this user using service
+  const allLeadsResult = await leadService.findAll({})
+  const allLeads = allLeadsResult.data
+  const userLeads = allLeads.filter(lead => {
     const userByName = mockUsers.find(u => u.name === lead.assignee)
     return userByName && userByName.id === userId
   })
@@ -360,7 +255,11 @@ export const fetchTasksDueToday = async () => {
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
   
-  return mockLeads.filter(lead => {
+  // Use service to fetch all leads
+  const allLeadsResult = await leadService.findAll({})
+  const allLeads = allLeadsResult.data
+  
+  return allLeads.filter(lead => {
     if (!lead.nextActionDue) return false
     const dueDate = new Date(lead.nextActionDue)
     dueDate.setHours(0, 0, 0, 0)
@@ -375,7 +274,11 @@ export const fetchTasksDueUpcoming = async (days = 7) => {
   const endDate = new Date(today)
   endDate.setDate(endDate.getDate() + days)
   
-  return mockLeads.filter(lead => {
+  // Use service to fetch all leads
+  const allLeadsResult = await leadService.findAll({})
+  const allLeads = allLeadsResult.data
+  
+  return allLeads.filter(lead => {
     if (!lead.nextActionDue) return false
     const dueDate = new Date(lead.nextActionDue)
     return dueDate >= today && dueDate < endDate && !lead.isDisqualified

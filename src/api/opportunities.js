@@ -1,115 +1,39 @@
-import { mockOpportunities, mockActivities, mockCalendarEvents, mockUsers, mockCustomers } from './mockData'
-import { getDisplayStage, getDeliverySubstatus } from '@/utils/stageMapper'
+import { mockCalendarEvents, mockUsers } from './mockData'
+import { opportunityService } from '@/services/opportunityService'
+import { OpportunityRepository } from '@/repositories/OpportunityRepository'
+import { ActivityRepository } from '@/repositories/ActivityRepository'
+
+// Create repository instances for activities and operations that don't go through service
+const opportunityRepository = new OpportunityRepository()
+const activityRepository = new ActivityRepository()
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Enrich opportunity with customer data from mockCustomers
+// Helper function for enrichment (used by business logic functions)
 function enrichOpportunityWithCustomer(opportunity) {
-  if (!opportunity) return null
-  
-  const customer = mockCustomers.find(c => c.id === opportunity.customerId)
-  if (!customer) {
-    // Fallback if customer not found
-    return {
-      ...opportunity,
-      customer: {
-        id: opportunity.customerId,
-        name: 'Unknown Customer',
-        initials: '??',
-        email: '',
-        phone: '',
-        address: ''
-      }
-    }
-  }
-  
-  return {
-    ...opportunity,
-    customer: {
-      id: customer.id,
-      name: customer.name,
-      initials: customer.initials,
-      email: customer.email,
-      phone: customer.phone,
-      address: customer.address
-    }
-  }
-}
-
-// Enrich opportunity with display stage, delivery substatus, and customer data
-function enrichOpportunityWithStage(opportunity) {
-  if (!opportunity) return null
-  
-  // Backward compatibility: Migrate old stage names
-  let migratedStage = opportunity.stage
-  if (opportunity.stage === 'Offer Sent') {
-    migratedStage = 'In Negotiation'
-  } else if (opportunity.stage === 'Awaiting Response') {
-    migratedStage = 'Needs Follow-up'
-  }
-  
-  const oppWithCustomer = enrichOpportunityWithCustomer({ ...opportunity, stage: migratedStage })
-  const activities = mockActivities.filter(a => a.opportunityId === opportunity.id)
-  const displayStage = getDisplayStage({ ...oppWithCustomer, apiStatus: migratedStage, activities }, 'opportunity')
-  
-  // Calculate delivery substatus only for Closed Won opportunities
-  const deliverySubstatus = displayStage === 'Closed Won' 
-    ? getDeliverySubstatus({ ...oppWithCustomer, displayStage }, activities)
-    : null
-  
-  return {
-    ...oppWithCustomer,
-    stage: migratedStage, // Use migrated stage
-    apiStatus: migratedStage,
-    displayStage,
-    deliverySubstatus,
-    activities // Include activities for stage calculation
-  }
+  return opportunityService.enrichWithCustomer(opportunity)
 }
 
 export const fetchOpportunities = async (filters = {}) => {
   await delay()
-  
-  let results = [...mockOpportunities]
-  
-  if (filters.stage) {
-    results = results.filter(opp => opp.stage === filters.stage)
-  }
-  if (filters.assignee) {
-    results = results.filter(opp => opp.assignee === filters.assignee)
-  }
-  if (filters.search) {
-    const search = filters.search.toLowerCase()
-    results = results.filter(opp => {
-      const customer = mockCustomers.find(c => c.id === opp.customerId)
-      const customerName = customer?.name || ''
-      return customerName.toLowerCase().includes(search) ||
-        (opp.vehicle && opp.vehicle.brand && opp.vehicle.brand.toLowerCase().includes(search)) ||
-        (opp.vehicle && opp.vehicle.model && opp.vehicle.model.toLowerCase().includes(search))
-    })
-  }
-  
-  // Enrich with display stages
-  const enrichedResults = results.map(enrichOpportunityWithStage)
-  
-  return { data: enrichedResults, total: enrichedResults.length }
+  // Use service layer for business logic and enrichment
+  return await opportunityService.findAll(filters)
 }
 
 export const fetchOpportunityById = async (id) => {
   await delay()
-  const opportunity = mockOpportunities.find(o => o.id === parseInt(id))
-  if (!opportunity) throw new Error('Opportunity not found')
-  return enrichOpportunityWithStage(opportunity)
+  // Use service layer for business logic and enrichment
+  return await opportunityService.findById(id)
 }
 
 export const fetchOpportunityActivities = async (opportunityId) => {
   await delay()
-  return mockActivities.filter(activity => activity.opportunityId === parseInt(opportunityId))
+  return await activityRepository.findAllByOpportunityId(opportunityId)
 }
 
 export const fetchAppointmentByCustomerId = async (customerId) => {
   await delay()
-  // Find the most recent confirmed appointment for this customer
+  // NOTE: Calendar events will need their own repository in the future
   const appointments = mockCalendarEvents
     .filter(event => 
       event.customerId === parseInt(customerId) && 
@@ -123,25 +47,8 @@ export const fetchAppointmentByCustomerId = async (customerId) => {
 
 export const createOpportunity = async (opportunityData) => {
   await delay()
-  const newOpportunity = {
-    id: mockOpportunities.length + 1,
-    customerId: opportunityData.customerId,
-    requestedCar: opportunityData.requestedCar || null,
-    vehicle: opportunityData.vehicle || opportunityData.requestedCar || null,
-    selectedVehicle: opportunityData.selectedVehicle || null,
-    stage: opportunityData.stage || 'Qualified',
-    tags: opportunityData.tags || [],
-    value: opportunityData.value || 0,
-    expectedCloseDate: opportunityData.expectedCloseDate || null,
-    assignee: opportunityData.assignee || null,
-    source: opportunityData.source || 'Direct',
-    createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString(),
-    scheduledAppointment: opportunityData.scheduledAppointment || null,
-    contractDate: opportunityData.contractDate || null
-  }
-  mockOpportunities.push(newOpportunity)
-  return enrichOpportunityWithStage(newOpportunity)
+  // Use service layer for business logic and enrichment
+  return await opportunityService.create(opportunityData)
 }
 
 export const createOpportunityFromContact = async (contactId, carData) => {
@@ -150,8 +57,8 @@ export const createOpportunityFromContact = async (contactId, carData) => {
   const contact = mockContacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   
-  const newOpportunity = {
-    id: mockOpportunities.length + 1,
+  // Use service layer for business logic and enrichment
+  return await opportunityService.create({
     customerId: contact.customerId,
     vehicle: carData,
     requestedCar: carData,
@@ -165,77 +72,61 @@ export const createOpportunityFromContact = async (contactId, carData) => {
     expectedCloseDate: null,
     tags: [],
     value: carData.price || 0
-  }
-  
-  mockOpportunities.push(newOpportunity)
-  return enrichOpportunityWithStage(newOpportunity)
+  })
 }
 
 export const updateOpportunity = async (id, updates) => {
   await delay()
-  const index = mockOpportunities.findIndex(o => o.id === parseInt(id))
-  if (index === -1) throw new Error('Opportunity not found')
-  
-  // Remove displayStage from updates (it's calculated, not stored)
-  const { displayStage, ...updatesToStore } = updates
-  
-  mockOpportunities[index] = { ...mockOpportunities[index], ...updatesToStore }
-  return enrichOpportunityWithStage(mockOpportunities[index])
+  // Use service layer for business logic and enrichment
+  return await opportunityService.update(id, updates)
 }
 
 export const deleteOpportunity = async (id) => {
   await delay()
-  const index = mockOpportunities.findIndex(o => o.id === parseInt(id))
-  if (index === -1) throw new Error('Opportunity not found')
-  
-  mockOpportunities.splice(index, 1)
-  return { success: true }
+  // Use service layer
+  return await opportunityService.delete(id)
 }
 
 export const addOpportunityActivity = async (opportunityId, activity) => {
   await delay()
-  const newActivity = {
-    id: mockActivities.length + 1,
+  // Use repository directly for activities
+  const newActivity = await activityRepository.create({
     opportunityId: parseInt(opportunityId),
     timestamp: new Date().toISOString(),
     ...activity
-  }
-  mockActivities.push(newActivity)
+  })
   return newActivity
 }
 
 export const updateOpportunityActivity = async (opportunityId, activityId, updates) => {
   await delay()
-  const activity = mockActivities.find(a => a.id === parseInt(activityId) && a.opportunityId === parseInt(opportunityId))
+  // Use repository directly for activities
+  const activity = await activityRepository.findByOpportunityIdAndActivityId(opportunityId, activityId)
   if (!activity) throw new Error('Activity not found')
-  
-  Object.assign(activity, updates, { timestamp: new Date().toISOString() })
-  return activity
+  return await activityRepository.update(activityId, updates)
 }
 
 export const deleteOpportunityActivity = async (opportunityId, activityId) => {
   await delay()
-  const index = mockActivities.findIndex(a => a.id === parseInt(activityId) && a.opportunityId === parseInt(opportunityId))
-  if (index === -1) throw new Error('Activity not found')
-  
-  mockActivities.splice(index, 1)
-  return { success: true }
+  return await activityRepository.deleteByOpportunityIdAndActivityId(opportunityId, activityId)
 }
 
 // Add vehicle to opportunity (without creating offer or transitioning stage)
 export const addVehicleToOpportunity = async (opportunityId, vehicleData) => {
   await delay()
-  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  
+  // Use service to find opportunity (for validation)
+  const opportunity = await opportunityService.findById(opportunityId)
   if (!opportunity) throw new Error('Opportunity not found')
   
-  // Store the selected vehicle
-  opportunity.selectedVehicle = {
-    ...vehicleData.vehicle,
-    selectionType: vehicleData.type // 'requested', 'stock', 'recommended', 'custom'
-  }
-  
-  // Update last activity timestamp
-  opportunity.lastActivity = new Date().toISOString()
+  // Store the selected vehicle using service
+  await opportunityService.update(opportunityId, {
+    selectedVehicle: {
+      ...vehicleData.vehicle,
+      selectionType: vehicleData.type // 'requested', 'stock', 'recommended', 'custom'
+    },
+    lastActivity: new Date().toISOString()
+  })
   
   // Add activity to track vehicle selection
   const activity = await addOpportunityActivity(opportunityId, {
@@ -245,16 +136,20 @@ export const addVehicleToOpportunity = async (opportunityId, vehicleData) => {
     content: `Selected ${vehicleData.vehicle.brand} ${vehicleData.vehicle.model} (${vehicleData.vehicle.year}) for this opportunity`
   })
   
-  return opportunity
+  // Fetch updated opportunity using service
+  const updatedOpportunity = await opportunityService.findById(opportunityId)
+  return updatedOpportunity
 }
 
 // Create offer for opportunity (triggers stage transition to "In Negotiation")
 export const createOfferForOpportunity = async (opportunityId, offerData) => {
   await delay()
-  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  
+  // Use service to find opportunity
+  const opportunity = await opportunityService.findById(opportunityId)
   if (!opportunity) throw new Error('Opportunity not found')
   
-  // Create offer activity
+  // Create offer activity using repository
   const offerActivity = await addOpportunityActivity(opportunityId, {
     type: 'offer',
     user: 'You',
@@ -264,18 +159,20 @@ export const createOfferForOpportunity = async (opportunityId, offerData) => {
   
   // Transition stage from "Qualified" to "In Negotiation" when offer is created
   if (opportunity.stage === 'Qualified') {
-    opportunity.stage = 'In Negotiation'
+    await opportunityService.update(opportunityId, {
+      stage: 'In Negotiation',
+      lastActivity: new Date().toISOString()
+    })
   }
   
-  // Update last activity timestamp
-  opportunity.lastActivity = new Date().toISOString()
-  
-  return { opportunity, activity: offerActivity }
+  // Fetch updated opportunity using service
+  const updatedOpportunity = await opportunityService.findById(opportunityId)
+  return { opportunity: updatedOpportunity, activity: offerActivity }
 }
 
 // Conversion helpers
 export const generateOpportunityId = () => {
-  return mockOpportunities.length > 0 ? Math.max(...mockOpportunities.map(o => o.id)) + 1 : 1
+  return opportunityRepository.generateId()
 }
 
 export const createOpportunityFromLead = async (leadData, activities, options = {}) => {
@@ -290,8 +187,8 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
     }
   }
   
-  const newOpportunity = {
-    id: generateOpportunityId(),
+  // Use service layer to create opportunity
+  const newOpportunity = await opportunityService.create({
     customerId: leadData.customerId,
     requestedCar: leadData.requestedCar,
     vehicle: { ...leadData.requestedCar }, // Copy requestedCar to vehicle
@@ -307,14 +204,11 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
     customerPreferences: options.preferences || null, // Store customer preferences from call
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString()
-  }
+  })
   
-  mockOpportunities.unshift(newOpportunity)
-  
-  // Migrate activities
+  // Migrate activities using repository
   for (const activity of activities) {
-    const newActivity = {
-      id: mockActivities.length + 1,
+    await activityRepository.create({
       opportunityId: newOpportunity.id,
       leadId: undefined, // Remove lead reference
       timestamp: activity.timestamp,
@@ -323,14 +217,14 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
       action: activity.action,
       content: activity.content,
       data: activity.data
-    }
-    mockActivities.push(newActivity)
+    })
   }
   
-  return enrichOpportunityWithStage(newOpportunity)
+  return newOpportunity
 }
 
 // Detect stuck opportunities (inactive for 7+ days)
+// NOTE: This business logic will move to Service Layer in future iterations
 export const detectStuckOpportunities = async (userId) => {
   await delay()
   
@@ -341,11 +235,16 @@ export const detectStuckOpportunities = async (userId) => {
   const now = new Date()
   const THRESHOLD_DAYS = 7
   
-  // Get all opportunities assigned to this user
-  const userOpportunities = mockOpportunities.filter(opp => {
+  // Get all opportunities assigned to this user using service
+  const allOpportunitiesResult = await opportunityService.findAll({})
+  const allOpportunities = allOpportunitiesResult.data
+  const userOpportunities = allOpportunities.filter(opp => {
     const userByName = mockUsers.find(u => u.name === opp.assignee)
     return userByName && userByName.id === userId
   })
+  
+  // Get all activities for checking recent offers
+  const allActivities = await activityRepository.findAll({})
   
   for (const opp of userOpportunities) {
     // Only check Qualified or In Negotiation stages
@@ -365,7 +264,7 @@ export const detectStuckOpportunities = async (userId) => {
     }
     
     // Check for recent offers (last 7 days)
-    const hasRecentOffers = mockActivities.some(activity => {
+    const hasRecentOffers = allActivities.some(activity => {
       if (activity.opportunityId !== opp.id || activity.type !== 'offer') return false
       const activityDate = new Date(activity.timestamp)
       const daysAgo = Math.floor((now - activityDate) / (1000 * 60 * 60 * 24))
@@ -393,6 +292,7 @@ export const detectStuckOpportunities = async (userId) => {
 }
 
 // Actionable Questions Detection
+// NOTE: This business logic will move to Service Layer in future iterations
 export const fetchActionableQuestions = async (userId, userRole) => {
   await delay()
   
@@ -405,11 +305,16 @@ export const fetchActionableQuestions = async (userId, userRole) => {
   yesterday.setDate(yesterday.getDate() - 1)
   yesterday.setHours(0, 0, 0, 0)
   
-  // Get all opportunities assigned to this user
-  const userOpportunities = mockOpportunities.filter(opp => {
+  // Get all opportunities assigned to this user using service
+  const allOpportunitiesResult = await opportunityService.findAll({})
+  const allOpportunities = allOpportunitiesResult.data
+  const userOpportunities = allOpportunities.filter(opp => {
     const userByName = mockUsers.find(u => u.name === opp.assignee)
     return userByName && userByName.id === userId
   })
+  
+  // Get all activities for checking offers and communications
+  const allActivities = await activityRepository.findAll({})
   
   // Question 1: Appointment in last 1-3 days but no offer added (urgent window)
   for (const opp of userOpportunities) {
@@ -421,7 +326,7 @@ export const fetchActionableQuestions = async (userId, userRole) => {
     // Only show if appointment was 1-3 days ago (urgent actionable window)
     if (daysSinceAppointment >= 1 && daysSinceAppointment <= 3) {
       // Check if any offers exist for this opportunity
-      const hasOffers = mockActivities.some(
+      const hasOffers = allActivities.some(
         activity => activity.opportunityId === opp.id && activity.type === 'offer'
       )
       
@@ -456,7 +361,7 @@ export const fetchActionableQuestions = async (userId, userRole) => {
       // Only show if 1-2 days after NS task creation (urgent follow-up window)
       if (daysSinceNSTask >= 1 && daysSinceNSTask <= 2) {
         // Check if there are any communications after NS task creation
-        const hasCommunications = mockActivities.some(activity => {
+        const hasCommunications = allActivities.some(activity => {
           if (activity.opportunityId !== opp.id) return false
           if (!['call', 'email', 'sms', 'whatsapp', 'communication'].includes(activity.type)) return false
           
@@ -519,31 +424,41 @@ export const fetchActionableQuestions = async (userId, userRole) => {
 export const createNSTask = async (opportunityId, assigneeId) => {
   await delay()
   
-  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  // Use service to find opportunity
+  const opportunity = await opportunityService.findById(opportunityId)
   if (!opportunity) throw new Error('Opportunity not found')
   
-  // Update appointment to mark NS task as created
-  if (opportunity.scheduledAppointment) {
-    opportunity.scheduledAppointment.noShowCount = (opportunity.scheduledAppointment.noShowCount || 0) + 1
-    opportunity.scheduledAppointment.nsTaskCreatedAt = new Date().toISOString()
-    opportunity.scheduledAppointment.status = 'no-show'
+  // Update appointment to mark NS task as created using service
+  const appointment = opportunity.scheduledAppointment
+  if (appointment) {
+    const updatedAppointment = {
+      ...appointment,
+      noShowCount: (appointment.noShowCount || 0) + 1,
+      nsTaskCreatedAt: new Date().toISOString(),
+      status: 'no-show'
+    }
+    
+    await opportunityService.update(opportunityId, {
+      scheduledAppointment: updatedAppointment
+    })
   }
   
-  // Add NS task activity
-  const nsActivity = {
-    id: mockActivities.length + 1,
+  // Add NS task activity using repository
+  const nsActivity = await activityRepository.create({
     opportunityId: parseInt(opportunityId),
     type: 'ns-task-created',
     user: mockUsers.find(u => u.id === assigneeId)?.name || 'System',
     action: 'NS task created',
     content: `No-show task created for missed appointment`,
     timestamp: new Date().toISOString()
-  }
-  mockActivities.push(nsActivity)
+  })
+  
+  // Fetch updated opportunity using service
+  const updatedOpportunity = await opportunityService.findById(opportunityId)
   
   return {
     success: true,
-    noShowCount: opportunity.scheduledAppointment?.noShowCount || 0,
+    noShowCount: updatedOpportunity.scheduledAppointment?.noShowCount || 0,
     activity: nsActivity
   }
 }
@@ -552,15 +467,17 @@ export const createNSTask = async (opportunityId, assigneeId) => {
 export const updateOpportunityAssignee = async (opportunityId, assigneeId) => {
   await delay()
   
-  const opportunity = mockOpportunities.find(o => o.id === parseInt(opportunityId))
+  // Use service to find opportunity
+  const opportunity = await opportunityService.findById(opportunityId)
   if (!opportunity) throw new Error('Opportunity not found')
   
   const newAssignee = mockUsers.find(u => u.id === assigneeId)
   if (!newAssignee) throw new Error('User not found')
   
-  opportunity.assignee = newAssignee.name
-  
-  return opportunity
+  // Use service to update assignee
+  return await opportunityService.update(opportunityId, {
+    assignee: newAssignee.name
+  })
 }
 
 export const fetchTasksDueToday = async () => {
@@ -570,9 +487,13 @@ export const fetchTasksDueToday = async () => {
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
   
+  // Use service to fetch all opportunities
+  const allOpportunitiesResult = await opportunityService.findAll({})
+  const allOpportunities = allOpportunitiesResult.data
+  
   // Opportunities don't have nextActionDue, but we can check lastActivity or expectedCloseDate
   // For now, return opportunities with recent activity or due soon
-  return mockOpportunities.filter(opp => {
+  return allOpportunities.filter(opp => {
     if (opp.expectedCloseDate) {
       const closeDate = new Date(opp.expectedCloseDate)
       closeDate.setHours(0, 0, 0, 0)
@@ -589,7 +510,11 @@ export const fetchTasksDueUpcoming = async (days = 7) => {
   const endDate = new Date(today)
   endDate.setDate(endDate.getDate() + days)
   
-  return mockOpportunities.filter(opp => {
+  // Use service to fetch all opportunities
+  const allOpportunitiesResult = await opportunityService.findAll({})
+  const allOpportunities = allOpportunitiesResult.data
+  
+  return allOpportunities.filter(opp => {
     if (opp.expectedCloseDate) {
       const closeDate = new Date(opp.expectedCloseDate)
       return closeDate >= today && closeDate < endDate
