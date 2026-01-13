@@ -641,6 +641,8 @@ import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
 import { formatDate, formatTime } from '@/utils/formatters'
+import { useLeadStateMachine } from '@/composables/useLeadStateMachine'
+import { LEAD_STAGES } from '@/utils/stageMapper'
 
 const props = defineProps({
   lead: {
@@ -658,6 +660,9 @@ const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified',
 const usersStore = useUsersStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
+
+// Use lead state machine
+const leadState = useLeadStateMachine(() => props.lead)
 
 const isCallActive = ref(false)
 const callEnded = ref(false)
@@ -711,8 +716,7 @@ const callData = ref({})
 const extractedData = ref(null)
 
 onMounted(() => {
-  const stage = props.lead.displayStage || props.lead.stage
-  if (stage === 'Valid' || stage === 'Validated') {
+  if (leadState.displayStage.value === LEAD_STAGES.VALID) {
     selectedOutcome.value = 'interested'
     showOutcomeSelection.value = true
   }
@@ -737,17 +741,11 @@ const formattedCallDuration = computed(() => {
 })
 
 const dynamicTitle = computed(() => {
-  const stage = props.lead.displayStage || props.lead.stage
-  if (stage === 'Valid' || stage === 'Validated') return 'Lead Validated'
-  if (props.lead.callbackDate || props.lead.callbackScheduled) return 'Call Prospect'
-  return 'Call to Verify Contact Details'
+  return leadState.primaryAction.value?.title || 'Call to Verify Contact Details'
 })
 
 const dynamicDescription = computed(() => {
-  const stage = props.lead.displayStage || props.lead.stage
-  if (stage === 'Valid' || stage === 'Validated') return 'Lead is validated. Complete conversion details to create opportunity.'
-  if (props.lead.callbackDate || props.lead.callbackScheduled) return 'Customer requested a callback. Make the call at scheduled time.'
-  return 'Begin lead qualification by verifying customer contact information.'
+  return leadState.primaryAction.value?.description || 'Begin lead qualification by verifying customer contact information.'
 })
 
 const isOverdue = computed(() => {
@@ -774,13 +772,9 @@ const statusBadge = computed(() => {
   return { text: 'Pending', class: 'bg-orange-100 text-orange-700' }
 })
 
-const contactAttempts = computed(() => {
-  return props.lead.contactAttempts?.length || 0
-})
-
-const maxContactAttempts = computed(() => {
-  return settingsStore.getSetting('maxContactAttempts')
-})
+// Use contactAttempts and maxContactAttempts from state machine
+const contactAttempts = leadState.contactAttempts
+const maxContactAttempts = leadState.maxContactAttempts
 
 const existingNotes = computed(() => {
   return props.activities.filter(activity => activity.type === 'note')

@@ -460,7 +460,7 @@ export const mockLeads = [
     })(),
     nextActionDue: null,
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Not Valid',
     isDisqualified: true,
     disqualifyReason: 'Unreachable',
     disqualifyCategory: 'Not Valid',

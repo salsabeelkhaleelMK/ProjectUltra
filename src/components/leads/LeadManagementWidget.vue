@@ -13,13 +13,13 @@
         class="text-xs px-3 py-1 rounded-full font-medium border"
         :class="stageColorClass"
       >
-        {{ displayStage }}
+        {{ leadState.displayStage }}
       </span>
     </div>
 
     <!-- Deadline Warning Banner -->
     <div 
-      v-if="lead.nextActionDue && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
+      v-if="leadState.showDeadlineBanner && !deadlineBannerDismissed && (deadlineStatus.type === 'overdue' || deadlineStatus.type === 'urgent')"
       class="mx-4 mt-4 px-4 py-3 rounded-lg border flex items-center justify-between"
       :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
     >
@@ -73,10 +73,10 @@
 
     <div class="p-5 space-y-6">
       <!-- Active States -->
-      <template v-if="!isClosedState">
+      <template v-if="!leadState.isClosedState">
         <!-- LQ Widget - The main call simulation task (preserved) -->
         <LQWidget
-          v-if="displayStage === 'New' || !isClosedState" 
+          v-if="leadState.showLQWidget" 
           :lead="lead"
           @postponed="handlePostponed"
           @validated="handleValidated"
@@ -96,7 +96,7 @@
           <div>
             <h4 class="font-bold text-slate-800 text-sm">Lead Closed</h4>
             <p class="text-xs text-gray-500 mt-0.5">
-              Status: {{ displayStage }}
+              Status: {{ leadState.displayStage }}
               <span v-if="lead.disqualifyReason"> - {{ lead.disqualifyReason }}</span>
             </p>
           </div>
@@ -119,6 +119,7 @@ import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
 import { getStageColor } from '@/utils/stageMapper'
 import { formatDate, formatTime, formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import { useLeadStateMachine } from '@/composables/useLeadStateMachine'
 
 // Components
 import LQWidget from '@/components/leads/tasks/LQWidget.vue'
@@ -148,40 +149,79 @@ const deadlineStatus = computed(() => {
   return getDeadlineStatus(props.lead.nextActionDue)
 })
 
-// Computed properties
-const displayStage = computed(() => props.lead?.displayStage || props.lead?.stage || 'New Lead')
+// Use lead state machine
+const leadState = useLeadStateMachine(() => props.lead)
 
 const stageColorClass = computed(() => {
-  return getStageColor(displayStage.value, 'lead')
-})
-
-const contactAttempts = computed(() => {
-  return (props.lead.contactAttempts || []).length || 0
-})
-
-const isDisqualified = computed(() => {
-  return props.lead.isDisqualified || displayStage.value.startsWith('Closed')
-})
-
-const isClosedState = computed(() => {
-  return displayStage.value.startsWith('Closed')
+  return getStageColor(leadState.displayStage.value, 'lead')
 })
 
 // Event Handlers (preserved from original)
 async function handlePostponed(data) {
+  if (!leadState.canPostpone.value) {
+    console.warn('Cannot postpone in current state')
+    return
+  }
+  
   try {
     const dueDateTime = new Date(`${data.date}T${data.time}:00`)
     const isoTimestamp = dueDateTime.toISOString()
     
-    await leadsStore.modifyLead(props.lead.id, {
+    const updates = {
       nextActionDue: isoTimestamp
-    })
+    }
+    
+    // Add reassignment if provided
+    if (data.assigneeId || data.teamId) {
+      updates.assignee = data.assignee || null
+      updates.assigneeId = data.assigneeId || null
+      updates.assigneeType = data.assigneeType || 'user'
+      updates.teamId = data.teamId || null
+      updates.team = data.team || null
+    }
+    
+    await leadsStore.modifyLead(props.lead.id, updates)
+    
+    // Create appointment if requested
+    if (data.createAppointment) {
+      const endTime = new Date(dueDateTime)
+      endTime.setHours(endTime.getHours() + 1)
+      
+      await leadsStore.modifyLead(props.lead.id, {
+        scheduledAppointment: {
+          id: Date.now(),
+          title: `Follow-up Call - ${props.lead.customer.name}`,
+          start: isoTimestamp,
+          end: endTime.toISOString(),
+          type: 'Call',
+          assignee: data.assignee || props.lead.assignee,
+          assigneeId: data.assigneeId || props.lead.assigneeId,
+          assigneeType: data.assigneeType || props.lead.assigneeType || 'user',
+          teamId: data.teamId || props.lead.teamId,
+          team: data.team || props.lead.team,
+          status: 'scheduled'
+        }
+      })
+      
+      await leadsStore.addActivity(props.lead.id, {
+        type: 'appointment',
+        user: userStore.currentUser?.name || 'You',
+        action: 'scheduled follow-up call',
+        content: `Follow-up call scheduled for ${formatDate(dueDateTime)} at ${formatTime(dueDateTime)}`,
+        data: {
+          type: 'Call',
+          date: data.date,
+          time: data.time,
+          assignee: data.assignee || props.lead.assignee
+        }
+      })
+    }
     
     await leadsStore.addActivity(props.lead.id, {
       type: 'note',
       user: 'You',
       action: 'postponed lead qualification task',
-      content: `Task postponed to ${formatDate(dueDateTime)} at ${formatTime(dueDateTime)}`
+      content: `Task postponed to ${formatDate(dueDateTime)} at ${formatTime(dueDateTime)}${data.assignee ? ` and reassigned to ${data.assignee}` : ''}`
     })
     
     await leadsStore.loadLeadById(props.lead.id)
@@ -336,6 +376,12 @@ async function handleAppointmentScheduled(appointmentData) {
 }
 
 async function handleDisqualified(data) {
+  // Use state machine to determine if disqualification is allowed
+  if (leadState.isClosedState.value && !data.force) {
+    console.warn('Lead already closed')
+    return
+  }
+  
   try {
     const isDuplicate = data.reason === 'Duplicate'
     
