@@ -59,7 +59,9 @@
             if (task.type === 'lead') {
               return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
             }
-            return task.vehicle ? `${task.vehicle.brand} ${task.vehicle.model}` : 'No vehicle specified'
+            // For opportunities: prefer vehicle over requestedCar (matching vehicleWidgetData logic)
+            const vehicle = task.vehicle || task.requestedCar
+            return vehicle ? `${vehicle.brand} ${vehicle.model}` : 'No vehicle specified'
           }"
           :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
           :show-mobile-close="false"
@@ -114,7 +116,7 @@
             <template v-if="task.assignee">
               <div class="flex items-center gap-2">
                 <div 
-                  class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-[9px] shrink-0"
+                  class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0"
                 >
                   {{ getAssigneeInitials(task.assignee) }}
                 </div>
@@ -141,27 +143,27 @@
             <button 
               v-if="task.type === 'lead' && (task.isDisqualified || (task.stage && task.stage.startsWith('Closed')) || (task.displayStage && task.displayStage.startsWith('Closed')))"
               @click.stop="reopenLead(task)"
-              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
               <i class="fa-solid fa-rotate-left text-blue-500"></i> Reopen Lead
             </button>
             <button 
               @click.stop="reassignTask(task)"
-              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
               <i class="fa-solid fa-share text-gray-400"></i> Reassign
             </button>
             <button 
               v-if="task.priority !== 'Hot'"
               @click.stop="markAsHot(task)"
-              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
               <i class="fa-solid fa-fire text-orange-500"></i> Mark as hot
             </button>
             <button 
               v-else
               @click.stop="unmarkAsHot(task)"
-              class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
               <i class="fa-regular fa-snowflake text-gray-400"></i> Unmark as hot
             </button>
@@ -701,15 +703,19 @@ const vehicleWidgetData = computed(() => {
   
   let vehicle = null
   
-  // For leads: use requestedCar
-  if (currentTask.value.type === 'lead' && currentTask.value.requestedCar) {
-    vehicle = currentTask.value.requestedCar
+  // For leads: only use requestedCar if it exists and has brand/model
+  if (currentTask.value.type === 'lead') {
+    const requestedCar = currentTask.value.requestedCar
+    if (requestedCar && requestedCar.brand && requestedCar.model) {
+      vehicle = requestedCar
+    }
   }
   // For opportunities: prefer vehicle over requestedCar
   else if (currentTask.value.type === 'opportunity') {
     vehicle = currentTask.value.vehicle || currentTask.value.requestedCar
   }
   
+  // Additional validation check
   if (!vehicle || !vehicle.brand || !vehicle.model) return null
   
   // Map vehicle and task data to VehicleWidget props

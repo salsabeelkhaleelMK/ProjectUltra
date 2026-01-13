@@ -49,7 +49,15 @@ export const useLeadsStore = defineStore('leads', () => {
     loading.value = true
     error.value = null
     try {
-      currentLead.value = await leadsApi.fetchLeadById(id)
+      const loadedLead = await leadsApi.fetchLeadById(id)
+      currentLead.value = loadedLead
+      
+      // Sync back to leads list to keep list and detail view in sync
+      const index = leads.value.findIndex(l => l.id === parseInt(id))
+      if (index !== -1) {
+        leads.value[index] = loadedLead
+      }
+      
       return currentLead.value
     } catch (err) {
       error.value = err.message

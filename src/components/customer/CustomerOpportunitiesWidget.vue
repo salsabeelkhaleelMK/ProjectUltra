@@ -3,7 +3,7 @@
     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-briefcase text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-slate-800 text-sm">Opportunities</h3>
+        <h3 class="font-bold text-gray-900 text-sm">Opportunities</h3>
         <span v-if="opportunities.length > 0" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
           {{ opportunities.length }}
         </span>
@@ -32,7 +32,7 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-slate-800 text-sm">Opportunity #{{ opp.id }}</span>
+              <span class="font-semibold text-gray-900 text-sm">Opportunity #{{ opp.id }}</span>
               <span 
                 class="text-xs px-2 py-0.5 rounded-full font-medium"
                 :class="getStageBadgeClass(opp.stage)"
@@ -58,14 +58,14 @@
           >
             <div class="flex items-center gap-2">
               <span 
-                class="text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
+                class="text-xs px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
                 :class="getTaskTypeBadgeClass(task.type)"
               >
                 {{ task.type }}
               </span>
-              <span class="text-xs text-slate-700 font-medium">{{ task.description }}</span>
+              <span class="text-xs text-gray-700 font-medium">{{ task.description }}</span>
             </div>
-            <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+            <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>
         </div>
       </div>

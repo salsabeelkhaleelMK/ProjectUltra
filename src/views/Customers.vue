@@ -7,7 +7,7 @@
         <button 
           v-if="activeTab === 'contacts' || activeTab === 'open-leads' || activeTab === 'open-opportunities'"
           @click="router.push('/add-new')"
-          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
           <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
           <span class="hidden sm:inline">Add new</span>
@@ -722,7 +722,7 @@ const columns = computed(() => {
             h('div', {
               class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
             }, [
-              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-[10px]` }) : null,
+              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-xs` }) : null,
               h('span', rowData.nextAction)
             ])
           ])
@@ -774,7 +774,7 @@ const columns = computed(() => {
         cell: ({ row }) => {
           return h('div', { class: 'flex items-center gap-2' }, [
             h('div', {
-              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
             }, row.original.assigneeInitials),
             h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
           ])
@@ -856,7 +856,7 @@ const columns = computed(() => {
             h('div', {
               class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
             }, [
-              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-[10px]` }) : null,
+              rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-xs` }) : null,
               h('span', rowData.nextAction)
             ])
           ])
@@ -908,7 +908,7 @@ const columns = computed(() => {
         cell: ({ row }) => {
           return h('div', { class: 'flex items-center gap-2' }, [
             h('div', {
-              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+              class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
             }, row.original.assigneeInitials),
             h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
           ])

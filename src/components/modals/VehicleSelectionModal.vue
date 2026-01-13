@@ -9,7 +9,7 @@
     <div class="space-y-6 max-h-[75vh] overflow-y-auto px-2">
       <!-- Section 1: Recommended Vehicles (includes requested if available) -->
       <div v-if="allRecommendedVehicles.length">
-        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
           <i class="fa-solid fa-sparkles text-purple-600"></i>
           Recommended Vehicles
         </h3>
@@ -28,7 +28,7 @@
       
       <!-- Section 2: Browse Stock -->
       <div>
-        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
           <i class="fa-solid fa-warehouse text-green-600"></i>
           Browse Stock
         </h3>
@@ -67,7 +67,7 @@
       
       <!-- Section 3: Configure Custom -->
       <div>
-        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
           <i class="fa-solid fa-wrench text-orange-600"></i>
           Configure Custom Vehicle
         </h3>

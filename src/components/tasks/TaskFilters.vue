@@ -49,7 +49,7 @@
             class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
             :class="{ 'bg-blue-50 text-blue-700': sortOption === 'recent-first' }"
           >
-            <i class="fa-solid fa-check text-[10px] w-3" :class="sortOption === 'recent-first' ? 'opacity-100' : 'opacity-0'"></i>
+            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'recent-first' ? 'opacity-100' : 'opacity-0'"></i>
             <span>Most Recent First</span>
           </button>
           <button 
@@ -58,7 +58,7 @@
             class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
             :class="{ 'bg-blue-50 text-blue-700': sortOption === 'urgent-first' }"
           >
-            <i class="fa-solid fa-check text-[10px] w-3" :class="sortOption === 'urgent-first' ? 'opacity-100' : 'opacity-0'"></i>
+            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'urgent-first' ? 'opacity-100' : 'opacity-0'"></i>
             <span>Urgent first</span>
           </button>
           <button 
@@ -66,7 +66,7 @@
             class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
             :class="{ 'bg-blue-50 text-blue-700': sortOption === 'assigned-to-me' }"
           >
-            <i class="fa-solid fa-check text-[10px] w-3" :class="sortOption === 'assigned-to-me' ? 'opacity-100' : 'opacity-0'"></i>
+            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'assigned-to-me' ? 'opacity-100' : 'opacity-0'"></i>
             <span>Assigned to me</span>
           </button>
           <button 
@@ -74,7 +74,7 @@
             class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
             :class="{ 'bg-blue-50 text-blue-700': sortOption === 'assigned-to-my-team' }"
           >
-            <i class="fa-solid fa-check text-[10px] w-3" :class="sortOption === 'assigned-to-my-team' ? 'opacity-100' : 'opacity-0'"></i>
+            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'assigned-to-my-team' ? 'opacity-100' : 'opacity-0'"></i>
             <span>Assigned to my team</span>
           </button>
         </div>

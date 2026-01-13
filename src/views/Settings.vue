@@ -39,7 +39,7 @@
         <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Opportunity Task Widget Thresholds -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 lg:col-span-2">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Opportunity Task Widget Thresholds</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Opportunity Task Widget Thresholds</h2>
           <p class="text-sm text-gray-600 mb-6">Configure the number of days before task widgets are triggered for opportunities.</p>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -146,7 +146,7 @@
 
         <!-- Opportunity Abandonment -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Opportunity Abandonment</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Opportunity Abandonment</h2>
           <p class="text-sm text-gray-600 mb-6">Configure when opportunities are marked as abandoned.</p>
           
           <div class="space-y-6">
@@ -186,7 +186,7 @@
 
         <!-- Lead Management -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Lead Management</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Lead Management</h2>
           <p class="text-sm text-gray-600 mb-6">Configure lead qualification and conversion settings.</p>
           
           <div class="space-y-6">
@@ -218,7 +218,7 @@
 
         <!-- Dormant Opportunities -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 lg:col-span-2">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Dormant Opportunities</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Dormant Opportunities</h2>
           <p class="text-sm text-gray-600 mb-6">Configure when opportunities are marked as dormant.</p>
           
           <div class="space-y-6">
@@ -312,7 +312,7 @@
 
         <!-- Task Widgets -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Task Widgets</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Task Widgets</h2>
           <p class="text-sm text-gray-600 mb-6">Configure task widget behavior.</p>
           
           <div class="flex items-center gap-3">
@@ -333,7 +333,7 @@
         <div v-if="activeTab === 'urgency'">
         <!-- Lead Urgency Auto-Sorter -->
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h2 class="text-lg font-bold text-slate-800 mb-4">Lead Urgency Auto-Sorter</h2>
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Lead Urgency Auto-Sorter</h2>
           
           <!-- Explanation Section -->
           <div class="mb-6">

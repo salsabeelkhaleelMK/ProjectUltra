@@ -62,7 +62,7 @@
               :title="`Paid: ${day.paid}`"
             ></div>
           </div>
-          <span class="text-[9px] text-gray-500 mt-1">{{ index + 1 }}</span>
+          <span class="text-xs text-gray-500 mt-1">{{ index + 1 }}</span>
         </div>
       </div>
       

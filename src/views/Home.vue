@@ -16,7 +16,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-tasks text-gray-400 text-sm"></i>
-                  <h2 class="heading-main">Tasks Due Today</h2>
+                  <h2 class="heading-sub">Tasks Due Today</h2>
                   <Badge
                     v-if="tasksDueToday.length > 0"
                     :text="String(tasksDueToday.length)"
@@ -48,7 +48,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
-                  <h2 class="heading-main">Quick Actions</h2>
+                  <h2 class="heading-sub">Quick Actions</h2>
                   <Badge
                     v-if="totalNotificationsCount > 0"
                     :text="String(totalNotificationsCount)"
@@ -109,7 +109,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
-                  <h2 class="heading-main">Appointments Today</h2>
+                  <h2 class="heading-sub">Appointments Today</h2>
                   <Badge
                     v-if="appointmentsToday.length > 0"
                     :text="String(appointmentsToday.length)"

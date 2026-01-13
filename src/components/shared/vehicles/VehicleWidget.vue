@@ -16,26 +16,26 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <div class="font-bold text-slate-800 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
+                <div class="font-bold text-gray-900 text-sm md:text-base">{{ brand }} {{ model }} ({{ year }})</div>
               </div>
               <div class="mt-1.5 flex items-center gap-2">
                 <div 
                   v-if="stockDays !== undefined && stockDays !== null"
-                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-[10px] font-semibold rounded-md"
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-xs font-semibold rounded-md"
                 >
                   <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
                 </div>
                 <div 
                   v-else
-                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-semibold rounded-md"
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-xs font-semibold rounded-md"
                 >
                   <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
                 </div>
                 <button 
                   v-if="showOpenAd && price" 
-                  class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
+                  class="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors group/btn"
                 >
-                  Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400 group-hover/btn:text-gray-800"></i>
+                  Open Ad <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400 group-hover/btn:text-gray-800"></i>
                 </button>
               </div>
             </div>
@@ -43,7 +43,7 @@
           <div class="flex items-center gap-4">
             <div v-if="price" class="text-right">
               <div class="text-xs text-gray-500 font-medium mb-0.5">Price</div>
-              <div class="font-bold text-slate-800">€ {{ formatCurrency(price) }}</div>
+              <div class="font-bold text-gray-900">€ {{ formatCurrency(price) }}</div>
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@
         <div v-if="requestMessage" class="mt-4 pt-4 border-t border-gray-200">
           <div class="text-xs text-gray-500 font-medium mb-2">Request Message</div>
           <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-            <p class="text-sm text-slate-700 leading-relaxed">{{ requestMessage }}</p>
+            <p class="text-sm text-gray-700 leading-relaxed">{{ requestMessage }}</p>
           </div>
         </div>
       </div>
@@ -79,43 +79,43 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6">
           <div v-if="requestType">
             <div class="text-xs text-gray-500 mb-1">Request type</div>
-            <div class="font-medium text-slate-700">{{ requestType }}</div>
+            <div class="font-medium text-gray-700">{{ requestType }}</div>
           </div>
           <div v-if="source">
             <div class="text-xs text-gray-500 mb-1">Source</div>
-            <div class="font-medium text-slate-700">{{ source }}</div>
+            <div class="font-medium text-gray-700">{{ source }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">Source details</div>
-            <div class="font-medium" :class="sourceDetails ? 'text-slate-700' : 'text-gray-400'">{{ sourceDetails || '--' }}</div>
+            <div class="font-medium" :class="sourceDetails ? 'text-gray-700' : 'text-gray-400'">{{ sourceDetails || '--' }}</div>
           </div>
           <div v-if="dealership">
             <div class="text-xs text-gray-500 mb-1">Dealership</div>
-            <div class="font-medium text-slate-700">{{ dealership }}</div>
+            <div class="font-medium text-gray-700">{{ dealership }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">Channel</div>
-            <div class="font-medium text-slate-700">{{ channel || 'Email' }}</div>
+            <div class="font-medium text-gray-700">{{ channel || 'Email' }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">AdCampaign</div>
-            <div class="font-medium" :class="adCampaign ? 'text-slate-700' : 'text-gray-400'">{{ adCampaign || '--' }}</div>
+            <div class="font-medium" :class="adCampaign ? 'text-gray-700' : 'text-gray-400'">{{ adCampaign || '--' }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">AdMedium</div>
-            <div class="font-medium" :class="adMedium ? 'text-slate-700' : 'text-gray-400'">{{ adMedium || '--' }}</div>
+            <div class="font-medium" :class="adMedium ? 'text-gray-700' : 'text-gray-400'">{{ adMedium || '--' }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">AdSource</div>
-            <div class="font-medium" :class="adSource ? 'text-slate-700' : 'text-gray-400'">{{ adSource || '--' }}</div>
+            <div class="font-medium" :class="adSource ? 'text-gray-700' : 'text-gray-400'">{{ adSource || '--' }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">Expected purchase date</div>
-            <div class="font-medium" :class="expectedPurchaseDate ? 'text-slate-700' : 'text-gray-400'">{{ expectedPurchaseDate || '--' }}</div>
+            <div class="font-medium" :class="expectedPurchaseDate ? 'text-gray-700' : 'text-gray-400'">{{ expectedPurchaseDate || '--' }}</div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">Fiscal entity</div>
-            <div class="font-medium" :class="fiscalEntity ? 'text-slate-700' : 'text-gray-400'">{{ fiscalEntity || '--' }}</div>
+            <div class="font-medium" :class="fiscalEntity ? 'text-gray-700' : 'text-gray-400'">{{ fiscalEntity || '--' }}</div>
           </div>
         </div>
       </div>
@@ -130,19 +130,19 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6">
           <div v-if="registration">
             <div class="text-xs text-gray-500 mb-1">Registration</div>
-            <div class="font-medium text-slate-700">{{ registration }}</div>
+            <div class="font-medium text-gray-700">{{ registration }}</div>
           </div>
           <div v-if="kilometers !== undefined && kilometers !== null">
             <div class="text-xs text-gray-500 mb-1">Kilometers</div>
-            <div class="font-medium text-slate-700">{{ formatNumber(kilometers) }} Km</div>
+            <div class="font-medium text-gray-700">{{ formatNumber(kilometers) }} Km</div>
           </div>
           <div v-if="fuelType">
             <div class="text-xs text-gray-500 mb-1">Fuel type</div>
-            <div class="font-medium text-slate-700">{{ fuelType }}</div>
+            <div class="font-medium text-gray-700">{{ fuelType }}</div>
           </div>
           <div v-if="gearType">
             <div class="text-xs text-gray-500 mb-1">Gear type</div>
-            <div class="font-medium text-slate-700">{{ gearType }}</div>
+            <div class="font-medium text-gray-700">{{ gearType }}</div>
           </div>
           <div v-if="vin">
             <div class="text-xs text-gray-500 mb-1">VIN Number</div>
@@ -152,11 +152,11 @@
           </div>
           <div v-if="dealership">
             <div class="text-xs text-gray-500 mb-1">Dealership</div>
-            <div class="font-medium text-slate-700">{{ dealership }}</div>
+            <div class="font-medium text-gray-700">{{ dealership }}</div>
           </div>
         </div>
         <div v-if="showTechnicalSpecs" class="mt-6 flex justify-end">
-          <button class="bg-white border border-gray-200 text-slate-700 hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
+          <button class="bg-white border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
             <i class="fa-solid fa-list-check text-gray-400 group-hover:text-blue-500"></i> View technical specs
           </button>
         </div>

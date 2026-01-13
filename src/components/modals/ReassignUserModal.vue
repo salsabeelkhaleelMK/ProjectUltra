@@ -26,7 +26,7 @@
             <i class="fa-solid fa-users text-sm"></i>
           </div>
           <div class="flex-1">
-            <p class="font-medium text-slate-800">{{ team.name }}</p>
+            <p class="font-medium text-gray-900">{{ team.name }}</p>
             <p class="text-xs text-gray-500">Team</p>
           </div>
           <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-primary-600"></i>
@@ -50,7 +50,7 @@
             {{ user.initials }}
           </div>
           <div class="flex-1">
-            <p class="font-medium text-slate-800">{{ user.name }}</p>
+            <p class="font-medium text-gray-900">{{ user.name }}</p>
             <p class="text-xs text-gray-500 capitalize">{{ user.role }} • {{ user.email }}</p>
           </div>
           <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-primary-600"></i>

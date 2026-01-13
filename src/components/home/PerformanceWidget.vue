@@ -4,7 +4,7 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-chart-line text-gray-400 text-sm"></i>
-          <h2 class="heading-main">Performance</h2>
+          <h2 class="heading-sub">Performance</h2>
         </div>
         <select
           v-model="selectedPeriod"
@@ -63,7 +63,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Appointments Reserved</div>
-                <div class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">{{ bdcMetrics?.appointmentsReserved || 0 }}</div>
+                <div class="text-base font-bold text-gray-900 mb-1">{{ bdcMetrics?.appointmentsReserved || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="bdcMetrics?.appointmentsReservedTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -95,7 +95,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Lead-to-Opportunity Rate</div>
-                <div class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">{{ bdcMetrics?.leadToOpportunityConversion || 0 }}%</div>
+                <div class="text-base font-bold text-gray-900 mb-1">{{ bdcMetrics?.leadToOpportunityConversion || 0 }}%</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="bdcMetrics?.leadToOpportunityConversionTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -134,7 +134,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Contracts Closed</div>
-                <div class="text-lg sm:text-xl font-bold text-slate-800 mb-1">{{ salespersonMetrics?.contractsClosed?.[selectedPeriod] || 0 }}</div>
+                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.contractsClosed?.[selectedPeriod] || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('contractsClosed')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -166,7 +166,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Revenue</div>
-                <div class="text-lg sm:text-xl font-bold text-slate-800 mb-1">€{{ formatCurrency(salespersonMetrics?.revenue?.[selectedPeriod] || 0) }}</div>
+                <div class="text-base font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.revenue?.[selectedPeriod] || 0) }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('revenue')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -226,7 +226,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Pipeline Value</div>
-                <div class="text-base sm:text-lg font-bold text-slate-800 mb-1">€{{ formatCurrency(salespersonMetrics?.pipelineValue || 0) }}</div>
+                <div class="text-base font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.pipelineValue || 0) }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.pipelineValueTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -258,7 +258,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Win Rate</div>
-                <div class="text-base sm:text-lg font-bold text-slate-800 mb-1">{{ salespersonMetrics?.winRate || 0 }}%</div>
+                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.winRate || 0 }}%</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.winRateTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -294,7 +294,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">New Opportunities</div>
-                <div class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">{{ salespersonMetrics?.newOpportunities?.[selectedPeriod] || 0 }}</div>
+                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.newOpportunities?.[selectedPeriod] || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('newOpportunities')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -326,7 +326,7 @@
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Dormant Opportunities</div>
-                <div class="text-xl sm:text-2xl font-bold text-red-600 mb-1">{{ salespersonMetrics?.dormantOpportunities || 0 }}</div>
+                <div class="text-base font-bold text-red-600 mb-1">{{ salespersonMetrics?.dormantOpportunities || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.dormantOpportunitiesTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -375,7 +375,7 @@
             </div>
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">
+                <div class="text-base font-bold text-gray-900 mb-1">
                   {{ formatNumber(stage.count) }}
                 </div>
                 <div class="text-xs text-gray-600 leading-tight">{{ stage.name }}</div>
@@ -412,7 +412,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <!-- Bar Chart -->
           <div class="lg:col-span-2 bg-white rounded-lg p-4 md:p-5 border border-gray-200">
-            <h3 class="text-sm font-bold text-slate-800 mb-4">Sales Funnel</h3>
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Sales Funnel</h3>
             <div class="space-y-3">
               <div
                 v-for="(stage, index) in managerMetrics?.stages || []"
@@ -428,11 +428,11 @@
                         :class="getStageColorClass(stage.color)"
                         :style="{ width: `${stage.percentage}%`, minWidth: '2px' }"
                       >
-                        <span class="text-xs font-bold text-slate-800">{{ formatNumber(stage.count) }}</span>
+                        <span class="text-xs font-bold text-gray-900">{{ formatNumber(stage.count) }}</span>
                       </div>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-slate-800 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
+                  <span class="text-xs font-bold text-gray-900 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
                 </div>
               </div>
             </div>
@@ -466,7 +466,7 @@
               </svg>
               <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center">
-                  <div class="text-2xl sm:text-3xl font-bold text-green-700">
+                  <div class="text-base font-bold text-green-700">
                     {{ managerMetrics?.conversionRate || 0 }}%
                   </div>
                 </div>
@@ -495,7 +495,7 @@
             </div>
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">
+                <div class="text-base font-bold text-gray-900 mb-1">
                   {{ formatNumber(stage.count) }}
                 </div>
                 <div class="text-xs text-gray-600 leading-tight">{{ stage.name }}</div>

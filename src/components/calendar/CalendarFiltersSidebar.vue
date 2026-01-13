@@ -82,7 +82,7 @@
           <h3 class="label-upper text-xs">Event Types</h3>
           <span 
             v-if="modelValue.eventTypes.length > 0"
-            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ modelValue.eventTypes.length }}
           </span>
@@ -131,7 +131,7 @@
           <h3 class="label-upper text-xs">Dealerships</h3>
           <span 
             v-if="modelValue.dealerships.length > 0"
-            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ modelValue.dealerships.length }}
           </span>
@@ -173,7 +173,7 @@
           <h3 class="label-upper text-xs">Teams</h3>
           <span 
             v-if="modelValue.teams.length > 0"
-            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ modelValue.teams.length }}
           </span>

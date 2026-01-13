@@ -2,7 +2,7 @@
   <div class="metadata-bar w-full">
     <!-- Stage -->
     <div class="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5">
-      <span class="label-upper text-[9px] md:text-xs">Stage</span>
+      <span class="label-upper">Stage</span>
       <div class="flex items-center gap-1.5">
         <span 
           class="text-xs px-1.5 py-0.5 rounded font-semibold border"
@@ -30,10 +30,10 @@
 
     <!-- Owner -->
     <div class="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5">
-      <span class="label-upper text-[9px] md:text-xs">Owner</span>
+      <span class="label-upper">Owner</span>
       <button 
         @click="$emit('reassign')"
-        class="text-[10px] md:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
+        class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
       >
         {{ owner }}
       </button>
@@ -43,8 +43,8 @@
     <template v-if="source">
       <div class="metadata-divider"></div>
       <div class="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5">
-        <span class="label-upper text-[9px] md:text-xs">Source</span>
-        <span class="text-[10px] md:text-xs font-bold text-gray-800">{{ source }}</span>
+        <span class="label-upper">Source</span>
+        <span class="text-xs font-bold text-gray-900">{{ source }}</span>
       </div>
     </template>
   </div>

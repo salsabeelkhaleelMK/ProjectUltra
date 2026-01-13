@@ -53,7 +53,7 @@
     
     <!-- Question Text with highlighted customer name -->
     <div class="mb-2" @click="handleQuestionClick">
-      <p class="text-slate-800 text-sm mb-1" v-html="getHighlightedQuestion()"></p>
+      <p class="text-gray-900 text-sm mb-1" v-html="getHighlightedQuestion()"></p>
     </div>
     
     <!-- Action Buttons -->
@@ -88,7 +88,7 @@
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>
@@ -118,7 +118,7 @@
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>
@@ -139,7 +139,7 @@
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>

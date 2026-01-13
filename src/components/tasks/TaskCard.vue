@@ -2,7 +2,7 @@
   <div 
     ref="cardRef"
     @click="$emit('select', itemId)"
-    class="bg-white rounded-lg p-3 h-40 flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
+    class="bg-white rounded-lg p-3 h-44 flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
     :class="cardClass"
   >
     <!-- Menu Button -->
@@ -28,7 +28,7 @@
       <!-- Badges -->
       <div class="flex gap-2 mb-1">
         <span 
-          class="px-2 py-0.5 rounded text-[10px] font-medium border"
+          class="px-2 py-0.5 rounded text-xs font-medium border"
           :class="item.type === 'lead' 
             ? 'bg-blue-50 text-blue-700 border-blue-200' 
             : 'bg-purple-50 text-purple-700 border-purple-200'"
@@ -37,14 +37,14 @@
         </span>
         <span 
           v-if="item.displayStage || item.stage"
-          class="px-2 py-0.5 rounded text-[10px] font-medium border"
+          class="px-2 py-0.5 rounded text-xs font-medium border"
           :class="stageColorClass"
         >
           {{ item.displayStage || item.stage }}
         </span>
         <span 
           v-if="item.priority === 'Hot'"
-          class="px-2 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-700 border border-red-200"
+          class="px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200"
         >
           Hot
         </span>
@@ -54,7 +54,7 @@
       <h3 class="font-bold text-gray-900 text-base line-clamp-2 pt-1">{{ getName(item) }}</h3>
 
       <!-- Location and Source -->
-      <div class="flex gap-3 text-[10px] text-gray-500 mt-1">
+      <div class="flex gap-3 text-xs text-gray-500 mt-1">
         <span class="flex items-center gap-1.5">
           <i class="fa-solid fa-location-dot"></i>
           <slot name="location" :item="item"></slot>
@@ -69,8 +69,8 @@
     </div>
 
     <!-- Bottom Section: Vehicle and Status -->
-    <div class="pt-1">
-      <div class="flex justify-between text-xs">
+    <div class="pt-1 bg-gray-100 mt-2 mb-2">
+      <div class="flex justify-between text-xs px-3 py-1.5">
         <span class="font-medium text-gray-900">{{ getVehicleInfo(item) }}</span>
         <span class="font-medium text-gray-900">
           <slot name="vehicle-status" :item="item"></slot>
@@ -80,11 +80,11 @@
 
     <!-- Optional Footer: Owner + Due Date (hidden by default, can be shown via slot) -->
     <div v-if="$slots.owner || $slots.dates" class="flex items-center justify-between pt-1 border-t border-gray-100">
-      <div class="text-[10px] text-gray-400 flex items-center gap-2">
+      <div class="text-xs text-gray-400 flex items-center gap-2">
         <slot name="owner" :item="item">
           <template v-if="item.assignee">
             <div 
-              class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-[9px] shrink-0"
+              class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0"
             >
               {{ getAssigneeInitials(item.assignee) }}
             </div>
@@ -93,7 +93,7 @@
           <span v-else>Unassigned</span>
         </slot>
       </div>
-      <div class="text-[10px] text-gray-400 font-medium">
+      <div class="text-xs text-gray-400 font-medium">
         <slot name="dates" :item="item"></slot>
       </div>
     </div>

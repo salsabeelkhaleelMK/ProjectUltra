@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-bold text-slate-800">Full funnel</h3>
+      <h3 class="text-lg font-bold text-gray-900">Full funnel</h3>
       <i class="fa-solid fa-filter text-gray-400 text-sm"></i>
     </div>
 
@@ -29,7 +29,7 @@
                            'polygon(12px 0, calc(100% - 12px) 0, calc(100% - 12px) 100%, 12px 100%)'
                 }"
               >
-                <span class="text-slate-800 text-xs font-bold z-10">{{ stage.percentage }}%</span>
+                <span class="text-gray-900 text-xs font-bold z-10">{{ stage.percentage }}%</span>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@
               class="h-1 mb-2 rounded"
               :class="getStageColorClass(stage.color)"
             ></div>
-            <div class="text-2xl font-bold text-slate-800">{{ formatNumber(stage.count) }}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ formatNumber(stage.count) }}</div>
             <div class="text-xs text-gray-500 mt-1">{{ stage.name }}</div>
           </div>
         </div>
@@ -80,7 +80,7 @@
           </svg>
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center">
-              <div class="text-xl md:text-2xl font-bold text-slate-800">{{ conversionRate }}%</div>
+              <div class="text-xl md:text-2xl font-bold text-gray-900">{{ conversionRate }}%</div>
             </div>
           </div>
         </div>

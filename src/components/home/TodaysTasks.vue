@@ -41,7 +41,7 @@
               v-if="task.priority === 'Hot'"
               class="text-xs font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 flex items-center gap-1"
             >
-              <i class="fa-solid fa-fire text-[9px]"></i> HOT
+              <i class="fa-solid fa-fire text-xs"></i> HOT
             </span>
             <span 
               v-else
@@ -66,7 +66,7 @@
             </span>
           </div>
           
-          <h4 class="font-semibold text-slate-800 text-sm mb-1">
+          <h4 class="font-semibold text-gray-900 text-sm mb-1">
             {{ task.customer?.name || 'Unknown Customer' }}
           </h4>
           
@@ -79,7 +79,7 @@
           
           <div class="flex items-center gap-2 text-xs text-gray-500">
             <span 
-              class="px-2 py-0.5 rounded border text-[10px] font-bold uppercase"
+              class="px-2 py-0.5 rounded border text-xs font-bold uppercase"
               :class="task.type === 'lead' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200'"
             >
               {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}

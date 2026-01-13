@@ -75,7 +75,7 @@ export const getEventTypeTextClass = (type) => {
     'memo': 'text-gray-900',
     'recall': 'text-cyan-900',
     'absence': 'text-rose-900',
-    'other': 'text-slate-900'
+    'other': 'text-gray-900'
   }
   return colorMap[type] || 'text-blue-900'
 }

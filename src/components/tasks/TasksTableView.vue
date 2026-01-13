@@ -301,7 +301,9 @@ const getVehicleInfo = (task) => {
   if (task.type === 'lead') {
     return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
   }
-  return task.vehicle ? `${task.vehicle.brand} ${task.vehicle.model}` : 'No vehicle specified'
+  // For opportunities: prefer vehicle over requestedCar (matching vehicleWidgetData logic)
+  const vehicle = task.vehicle || task.requestedCar
+  return vehicle ? `${vehicle.brand} ${vehicle.model}` : 'No vehicle specified'
 }
 
 const getDateDisplay = (date) => {
@@ -447,7 +449,7 @@ const columns = computed(() => [
       const owner = props.getOwnerInfo(task)
       return h('div', { class: 'flex items-center gap-2' }, [
         h('div', {
-          class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0'
+          class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
         }, owner.initials),
         h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px]' }, owner.name)
       ])

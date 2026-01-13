@@ -53,7 +53,7 @@
           class="flex items-center gap-2"
         >
           <span class="text-sm text-gray-600">{{ stage.name }}</span>
-          <span class="text-base font-bold text-gray-900">{{ stage.percentage }}%</span>
+          <span class="text-sm font-bold text-gray-900">{{ stage.percentage }}%</span>
           <span class="text-xs text-gray-400">({{ stage.count }})</span>
         </div>
       </div>

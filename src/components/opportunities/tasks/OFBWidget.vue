@@ -2,7 +2,7 @@
   <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">Offer Feedback</h4>
+        <h4 class="font-bold text-gray-900 text-sm">Offer Feedback</h4>
         <p class="text-xs text-gray-500 mt-0.5">This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Consider creating a contract to finalize the deal.</p>
       </div>
     </div>

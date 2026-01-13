@@ -49,7 +49,15 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     loading.value = true
     error.value = null
     try {
-      currentOpportunity.value = await opportunitiesApi.fetchOpportunityById(id)
+      const loadedOpportunity = await opportunitiesApi.fetchOpportunityById(id)
+      currentOpportunity.value = loadedOpportunity
+      
+      // Sync back to opportunities list to keep list and detail view in sync
+      const index = opportunities.value.findIndex(o => o.id === parseInt(id))
+      if (index !== -1) {
+        opportunities.value[index] = loadedOpportunity
+      }
+      
       return currentOpportunity.value
     } catch (err) {
       error.value = err.message

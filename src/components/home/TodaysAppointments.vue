@@ -48,7 +48,7 @@
             </span>
           </div>
           
-          <h4 class="font-semibold text-slate-800 text-sm mb-1">
+          <h4 class="font-semibold text-gray-900 text-sm mb-1">
             {{ appointment.customer || appointment.title }}
           </h4>
           

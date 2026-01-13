@@ -35,14 +35,14 @@
       </h4>
       
       <!-- Year -->
-      <p class="text-[10px] text-gray-500 mb-1.5">{{ vehicle.year }}</p>
+      <p class="text-xs text-gray-500 mb-1.5">{{ vehicle.year }}</p>
       
       <!-- Stock Status -->
-      <div v-if="stockDays !== null && stockDays !== undefined" class="text-[10px] text-green-600 font-medium mb-2">
+      <div v-if="stockDays !== null && stockDays !== undefined" class="text-xs text-green-600 font-medium mb-2">
         <i class="fa-solid fa-check-circle mr-0.5"></i>
         In stock ({{ stockDays }} days)
       </div>
-      <div v-else class="text-[10px] text-orange-600 font-medium mb-2">
+      <div v-else class="text-xs text-orange-600 font-medium mb-2">
         <i class="fa-solid fa-clock mr-0.5"></i>
         Out of stock
       </div>

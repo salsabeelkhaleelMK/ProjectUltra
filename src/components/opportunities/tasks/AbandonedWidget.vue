@@ -2,7 +2,7 @@
   <div class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">Opportunity Abandoned</h4>
+        <h4 class="font-bold text-gray-900 text-sm">Opportunity Abandoned</h4>
         <p class="text-xs text-gray-500 mt-0.5">This opportunity has been inactive for {{ daysInactive }} days. Consider reopening it or closing as lost.</p>
       </div>
     </div>

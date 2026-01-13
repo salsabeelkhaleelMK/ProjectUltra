@@ -23,7 +23,7 @@
               @click.stop="handleAddTag"
               class="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline flex items-center gap-1"
             >
-              <i class="fa-solid fa-plus text-[10px]"></i>
+              <i class="fa-solid fa-plus text-xs"></i>
               <span>add tag</span>
             </button>
           </div>
@@ -49,56 +49,56 @@
           >
             <button 
               @click="handleAction('note')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Note
             </button>
             <button 
               @click="handleAction('financing')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Financing
             </button>
             <button 
               @click="handleAction('tradein')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Trade-in
             </button>
             <button 
               @click="handleAction('purchase')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Purchase
             </button>
             <button 
               @click="handleAction('attachment')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Attachment
             </button>
             <div class="border-t border-gray-100 my-1"></div>
             <button 
               @click="handleAction('whatsapp')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
             >
               <i class="fa-brands fa-whatsapp text-xs text-gray-400"></i> WhatsApp msg
             </button>
             <button 
               @click="handleAction('email')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
             >
               <i class="fa-regular fa-envelope text-xs text-gray-400"></i> Email
             </button>
             <button 
               @click="handleAction('sms')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
             >
               <i class="fa-solid fa-comment-dots text-xs text-gray-400"></i> SMS
             </button>
             <button 
               @click="handleAction('call')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
             >
               <i class="fa-solid fa-phone text-xs text-gray-400"></i> Call
             </button>
@@ -106,7 +106,7 @@
             <button 
               v-if="taskType === 'opportunity'"
               @click="handleAction('appointment')" 
-              class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
             >
               Appointment
             </button>
@@ -133,7 +133,7 @@
           <!-- Email -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-regular fa-envelope text-gray-500 text-[10px]"></i>
+              <i class="fa-regular fa-envelope text-gray-500 text-xs"></i>
             </div>
             <span class="text-xs text-gray-900 font-medium">{{ email }}</span>
             <button 
@@ -141,14 +141,14 @@
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
               title="Copy email"
             >
-              <i class="fa-regular fa-copy text-[10px]"></i>
+              <i class="fa-regular fa-copy text-xs"></i>
             </button>
           </div>
           
           <!-- Phone -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-phone text-gray-500 text-[10px]"></i>
+              <i class="fa-solid fa-phone text-gray-500 text-xs"></i>
             </div>
             <span class="text-xs text-gray-900 font-medium">{{ phone }}</span>
             <button 
@@ -156,15 +156,15 @@
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
               title="Copy phone"
             >
-              <i class="fa-regular fa-copy text-[10px]"></i>
+              <i class="fa-regular fa-copy text-xs"></i>
             </button>
           </div>
           
           <!-- Third Field (Address/Date) -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-map-marker-alt text-gray-500 text-[10px]" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
-              <i class="fa-regular fa-calendar text-gray-500 text-[10px]" v-else></i>
+              <i class="fa-solid fa-map-marker-alt text-gray-500 text-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
+              <i class="fa-regular fa-calendar text-gray-500 text-xs" v-else></i>
             </div>
             <span class="text-xs text-gray-900 font-medium">{{ thirdFieldValue }}</span>
           </div>
@@ -174,7 +174,7 @@
       <!-- Copied toast -->
       <div 
         v-if="copiedField"
-        class="absolute -bottom-6 left-0 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap"
+        class="absolute -bottom-6 left-0 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap"
       >
         {{ copiedField === 'email' ? 'Email' : 'Phone' }} copied!
       </div>

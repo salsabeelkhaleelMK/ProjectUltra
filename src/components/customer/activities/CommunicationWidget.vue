@@ -4,7 +4,7 @@
     <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">{{ type === 'email' ? 'Send Email' : type === 'whatsapp' ? 'Send WhatsApp' : type === 'sms' ? 'Send SMS' : 'Send Message' }}</h5>
     
     <div class="mb-3">
-      <label class="block text-xs font-medium text-slate-700 mb-1">Template</label>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Template</label>
       <select v-model="selectedTemplate" class="input">
         <option value="">Select a template...</option>
         <option>Follow-up</option>

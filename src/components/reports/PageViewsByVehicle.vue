@@ -45,9 +45,9 @@
         class="bg-gray-50 rounded-lg border border-gray-200 p-3"
       >
         <div class="mb-2">
-          <h3 class="text-xs font-bold text-gray-900 truncate mb-0.5">{{ vehicle.brand }} {{ vehicle.model }}</h3>
+          <h3 class="text-sm font-semibold text-gray-900 truncate mb-0.5">{{ vehicle.brand }} {{ vehicle.model }}</h3>
           <div class="flex items-baseline gap-1.5">
-            <span class="text-base font-bold text-gray-900 leading-tight">{{ vehicle.views }}</span>
+            <span class="text-sm font-bold text-gray-900 leading-tight">{{ vehicle.views }}</span>
             <span class="text-xs text-gray-500">views</span>
           </div>
         </div>
@@ -57,7 +57,7 @@
             class="text-xs font-bold flex items-center gap-0.5"
             :class="vehicle.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
           >
-            <i :class="vehicle.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-[10px]"></i>
+            <i :class="vehicle.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-xs"></i>
             {{ Math.abs(vehicle.change) }}%
           </span>
           <span class="text-xs text-gray-500">{{ vehicle.avgPerDay }} avg/day</span>

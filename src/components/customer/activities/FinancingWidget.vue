@@ -3,25 +3,25 @@
     <div class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Start date</label>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Start date</label>
           <input type="date" v-model="financingData.startDate" class="input">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Expiration date</label>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Expiration date</label>
           <input type="date" v-model="financingData.expDate" class="input">
         </div>
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1">Financial product name</label>
+        <label class="block text-xs font-medium text-gray-700 mb-1">Financial product name</label>
         <input type="text" v-model="financingData.productName" class="input">
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Deposit</label>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Deposit</label>
           <input type="number" v-model="financingData.deposit" class="input">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Total loan amount</label>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Total loan amount</label>
           <input type="number" v-model="financingData.loanAmount" class="input">
         </div>
       </div>

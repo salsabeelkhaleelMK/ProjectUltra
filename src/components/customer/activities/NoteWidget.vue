@@ -5,11 +5,11 @@
   >
     <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
-      <h5 class="text-sm font-bold text-slate-800">{{ item ? 'Edit Note' : 'Add Note' }}</h5>
+      <h5 class="text-sm font-bold text-gray-900">{{ item ? 'Edit Note' : 'Add Note' }}</h5>
       <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div>
-      <label class="block text-xs font-medium text-slate-700 mb-1">Note</label>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Note</label>
       <textarea 
         v-model="noteText"
         rows="4" 

@@ -98,7 +98,7 @@
       <div v-else class="bg-gray-50/50 border border-gray-100 rounded-lg p-4">
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-slate-800 text-sm">Lead Closed</h4>
+            <h4 class="font-bold text-gray-900 text-sm">Lead Closed</h4>
             <p class="text-xs text-gray-500 mt-0.5">
               Status: {{ leadState.displayStage }}
               <span v-if="lead.disqualifyReason"> - {{ lead.disqualifyReason }}</span>

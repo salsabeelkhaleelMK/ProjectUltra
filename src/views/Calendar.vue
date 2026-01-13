@@ -7,14 +7,14 @@
         <div class="lg:hidden flex items-center gap-2">
           <button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
           >
             <i class="fa-solid fa-filter text-gray-400 group-hover:text-indigo-500"></i>
             <span class="hidden sm:inline">Filters</span>
           </button>
           <span 
             v-if="activeFilterCount > 0" 
-            class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ activeFilterCount }}
           </span>
@@ -24,7 +24,7 @@
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
             :class="{ 'bg-indigo-50 border-indigo-200 text-indigo-600': connectedCalendars.length > 0 }"
           >
             <i class="fa-solid fa-link text-gray-400 group-hover:text-indigo-500" :class="{ 'text-indigo-500': connectedCalendars.length > 0 }"></i>
@@ -32,7 +32,7 @@
           </button>
           <span 
             v-if="connectedCalendars.length > 0" 
-            class="w-5 h-5 rounded-full bg-green-600 text-white text-[10px] font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ connectedCalendars.length }}
           </span>
@@ -41,7 +41,7 @@
         <!-- New Event Button (Secondary) -->
         <button
           @click="showCreateEventModal = true"
-          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
           <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
           <span class="hidden sm:inline">New Event</span>
@@ -63,7 +63,7 @@
               theme="blue"
               class="cursor-pointer hover:opacity-80"
             />
-            <i class="fa-solid fa-xmark text-[10px] text-blue-400 hover:text-blue-600"></i>
+            <i class="fa-solid fa-xmark text-xs text-blue-400 hover:text-blue-600"></i>
           </button>
           <Button
             label="Clear all"
@@ -524,7 +524,7 @@ const handleSaveEditedEvent = async (eventData) => {
 @reference "tailwindcss";
 /* FullCalendar custom styles - Improved readability */
 .fc {
-  @apply font-sans text-sm;
+  @apply text-sm;
 }
 
 .fc .fc-button {
@@ -644,7 +644,7 @@ const handleSaveEditedEvent = async (eventData) => {
   @apply bg-rose-50 border border-rose-200 text-rose-700;
 }
 .fc .fc-event.event-slate {
-  @apply bg-slate-50 border border-slate-200 text-slate-700;
+  @apply bg-gray-50 border border-gray-200 text-gray-700;
 }
 
 /* Mobile Filter Drawer Transitions */
@@ -679,7 +679,7 @@ const handleSaveEditedEvent = async (eventData) => {
   }
   
   .fc .fc-button {
-    @apply text-xs px-2 py-1;
+    @apply text-sm px-2 py-1;
   }
   
   .fc .fc-toolbar-title {

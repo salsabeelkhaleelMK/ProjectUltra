@@ -2,7 +2,7 @@
   <div class="bg-orange-50/50 border border-orange-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">Open Opportunity Feedback</h4>
+        <h4 class="font-bold text-gray-900 text-sm">Open Opportunity Feedback</h4>
         <p class="text-xs text-gray-500 mt-0.5">This opportunity has been open for {{ daysOpen }} days without any offer. Consider creating an offer to move forward.</p>
       </div>
     </div>

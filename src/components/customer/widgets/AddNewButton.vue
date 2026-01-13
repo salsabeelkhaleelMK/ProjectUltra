@@ -25,14 +25,14 @@
           <button 
             v-if="filteredActions.includes('addVehicle')"
             @click="handleAction('addVehicle')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Add Vehicle
           </button>
           <button 
             v-if="filteredActions.includes('configureVehicle')"
             @click="handleAction('configureVehicle')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Configure Vehicle
           </button>
@@ -44,42 +44,42 @@
           <button 
             v-if="filteredActions.includes('note')"
             @click="handleAction('note')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Note
           </button>
           <button 
             v-if="filteredActions.includes('financing')"
             @click="handleAction('financing')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Financing
           </button>
           <button 
             v-if="filteredActions.includes('tradein')"
             @click="handleAction('tradein')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Trade-in
           </button>
           <button 
             v-if="filteredActions.includes('requestedCar')"
             @click="handleAction('requestedCar')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Requested car
           </button>
           <button 
             v-if="filteredActions.includes('purchase')"
             @click="handleAction('purchase')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Purchase
           </button>
           <button 
             v-if="filteredActions.includes('attachment')"
             @click="handleAction('attachment')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
           >
             Attachment
           </button>
@@ -91,21 +91,21 @@
           <button 
             v-if="filteredActions.includes('email')"
             @click="handleAction('email')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
             <i class="fa-regular fa-envelope text-xs text-gray-400"></i> Send Email
           </button>
           <button 
             v-if="filteredActions.includes('whatsapp')"
             @click="handleAction('whatsapp')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
             <i class="fa-brands fa-whatsapp text-xs text-gray-400"></i> Send WhatsApp
           </button>
           <button 
             v-if="filteredActions.includes('sms')"
             @click="handleAction('sms')" 
-            class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
           >
             <i class="fa-solid fa-comment-dots text-xs text-gray-400"></i> Send SMS
           </button>
@@ -223,7 +223,7 @@ const buttonClass = computed(() => {
   }
   // Default usage (other tabs): original gray rounded pill with separators
   // If showing text, adjust padding
-  const baseClass = 'bg-gray-50 hover:bg-white border border-gray-200 text-slate-700 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
+  const baseClass = 'bg-gray-50 hover:bg-white border border-gray-200 text-gray-700 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
   if (showButtonText.value) {
     return `${baseClass} px-4 h-9`
   }

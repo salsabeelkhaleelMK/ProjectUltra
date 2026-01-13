@@ -2,7 +2,7 @@
   <div class="bg-teal-50/50 border border-teal-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">Delivery Feedback</h4>
+        <h4 class="font-bold text-gray-900 text-sm">Delivery Feedback</h4>
         <p class="text-xs text-gray-500 mt-0.5">Vehicle was delivered {{ daysSinceDelivery }} days ago. Ask the customer if they're satisfied with the vehicle.</p>
       </div>
     </div>

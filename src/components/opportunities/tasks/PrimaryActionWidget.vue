@@ -5,7 +5,7 @@
   >
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">{{ action.title }}</h4>
+        <h4 class="font-bold text-gray-900 text-sm">{{ action.title }}</h4>
         <p class="text-xs text-gray-500 mt-0.5">{{ action.description }}</p>
       </div>
     </div>

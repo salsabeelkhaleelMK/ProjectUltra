@@ -2,7 +2,7 @@
   <div class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">{{ dynamicTitle }}</h4>
+        <h4 class="font-bold text-gray-900 text-sm">{{ dynamicTitle }}</h4>
         <p class="text-xs text-gray-500 mt-0.5">
           {{ dynamicDescription }}
         </p>
@@ -31,8 +31,8 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-phone text-gray-600 text-xs"></i>
-          <span class="text-xs font-semibold text-slate-700">Contact Attempts:</span>
-          <span class="text-xs font-bold text-slate-800">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
+          <span class="text-xs font-semibold text-gray-700">Contact Attempts:</span>
+          <span class="text-xs font-bold text-gray-900">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
         </div>
         <div 
           v-if="contactAttempts >= maxContactAttempts - 1"
@@ -46,7 +46,7 @@
 
     <!-- Phone Number Row -->
     <div class="flex items-center gap-2 mb-3">
-      <span class="text-sm text-slate-700 font-medium">{{ lead.customer.phone }}</span>
+      <span class="text-sm text-gray-700 font-medium">{{ lead.customer.phone }}</span>
       <button 
         @click="copyNumber"
         class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
@@ -75,7 +75,7 @@
       <button 
         @click="logManualCall"
         :disabled="isCallActive"
-        class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-clipboard-check text-xs"></i>
         Log Call Outcome
@@ -148,7 +148,7 @@
       <div v-if="callEnded && !isCallActive" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-bold text-slate-800 mb-1 text-sm">Call Ended</h4>
+            <h4 class="font-bold text-gray-900 mb-1 text-sm">Call Ended</h4>
             <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
           </div>
           <div class="flex gap-2">
@@ -161,7 +161,7 @@
             </button>
             <button 
               @click="logManualCall"
-              class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+              class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
             >
               <i class="fa-solid fa-clipboard-check text-xs"></i>
               Log outcome
@@ -174,7 +174,7 @@
     <!-- Inline Outcome Selection (replaces modal) -->
     <div v-if="showOutcomeSelection" class="mt-4 space-y-4 border-t border-gray-200 pt-4">
       <div>
-        <h4 class="font-semibold text-slate-800 mb-2 text-sm">What's the outcome?</h4>
+        <h4 class="font-semibold text-gray-900 mb-2 text-sm">What's the outcome?</h4>
         <div class="grid grid-cols-3 gap-2">
           <button 
             @click="selectOutcome('no-answer')"
@@ -213,7 +213,7 @@
 
       <!-- No Answer Follow-up (Inline) -->
       <div v-if="selectedOutcome === 'no-answer'" class="space-y-4 bg-white border border-gray-200 rounded-lg p-4">
-        <h5 class="font-semibold text-slate-800 text-sm">Send follow-up message</h5>
+        <h5 class="font-semibold text-gray-900 text-sm">Send follow-up message</h5>
         <div class="grid grid-cols-4 gap-2">
           <button 
             v-for="channel in followupChannels"
@@ -241,12 +241,12 @@
           
           <div class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
             <p class="text-xs font-semibold text-gray-600 mb-1 uppercase">Message preview</p>
-            <p class="text-xs text-slate-700">{{ messagePreview }}</p>
+            <p class="text-xs text-gray-700">{{ messagePreview }}</p>
           </div>
         </div>
         
         <div>
-          <h5 class="font-semibold text-slate-800 text-sm mb-2">Next call attempt</h5>
+          <h5 class="font-semibold text-gray-900 text-sm mb-2">Next call attempt</h5>
           <div class="grid grid-cols-3 gap-2">
             <button 
               @click="rescheduleTime = 'tomorrow-9am'"
@@ -378,7 +378,7 @@
       <div v-if="selectedOutcome === 'interested'" class="space-y-4">
         <!-- Assignment Section (full width) -->
         <div class="bg-white border border-gray-200 rounded-lg p-4">
-          <h5 class="font-semibold text-slate-800 text-sm mb-3">Assign to salesman</h5>
+          <h5 class="font-semibold text-gray-900 text-sm mb-3">Assign to salesman</h5>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
@@ -421,7 +421,7 @@
         
         <!-- Customer Preferences Section (full width, below assignment) -->
         <div class="bg-white border border-gray-200 rounded-lg p-4">
-          <h5 class="font-semibold text-slate-800 text-sm mb-3">Customer preferences</h5>
+          <h5 class="font-semibold text-gray-900 text-sm mb-3">Customer preferences</h5>
           
           <!-- Purchase Method, Trade-in, and Note Buttons -->
           <div class="flex gap-2">
@@ -454,26 +454,26 @@
           <div class="flex items-start justify-between mb-3">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-calendar-check text-blue-600"></i>
-              <h5 class="text-sm font-semibold text-slate-800">Existing Appointment</h5>
+              <h5 class="text-sm font-semibold text-gray-900">Existing Appointment</h5>
             </div>
             <span class="text-xs font-semibold text-blue-600 uppercase">Scheduled</span>
           </div>
           <div class="grid grid-cols-2 gap-3 text-sm mb-3">
             <div>
               <span class="text-gray-600">Date:</span>
-              <span class="ml-2 font-medium text-slate-800">{{ formatDate(lead.scheduledAppointment.start) }}</span>
+              <span class="ml-2 font-medium text-gray-900">{{ formatDate(lead.scheduledAppointment.start) }}</span>
             </div>
             <div>
               <span class="text-gray-600">Time:</span>
-              <span class="ml-2 font-medium text-slate-800">{{ formatTime(lead.scheduledAppointment.start) }}</span>
+              <span class="ml-2 font-medium text-gray-900">{{ formatTime(lead.scheduledAppointment.start) }}</span>
             </div>
             <div>
               <span class="text-gray-600">Type:</span>
-              <span class="ml-2 font-medium text-slate-800 capitalize">{{ lead.scheduledAppointment.type }}</span>
+              <span class="ml-2 font-medium text-gray-900 capitalize">{{ lead.scheduledAppointment.type }}</span>
             </div>
             <div>
               <span class="text-gray-600">Assigned to:</span>
-              <span class="ml-2 font-medium text-slate-800">{{ lead.scheduledAppointment.assignee }}</span>
+              <span class="ml-2 font-medium text-gray-900">{{ lead.scheduledAppointment.assignee }}</span>
             </div>
           </div>
           <button 
@@ -500,7 +500,7 @@
                 class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
               />
               <div class="flex-1">
-                <div class="text-sm font-semibold text-slate-800">Qualify without appointment</div>
+                <div class="text-sm font-semibold text-gray-900">Qualify without appointment</div>
                 <div class="text-xs text-gray-500 mt-0.5">Proceed directly to opportunity stage</div>
               </div>
             </label>
@@ -518,7 +518,7 @@
                 class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
               />
               <div class="flex-1">
-                <div class="text-sm font-semibold text-slate-800">Schedule Appointment</div>
+                <div class="text-sm font-semibold text-gray-900">Schedule Appointment</div>
                 <div class="text-xs text-gray-500 mt-0.5">
                   {{ appointmentScheduled ? 'Appointment scheduled' : 'Book a meeting or test drive' }}
                 </div>
@@ -544,28 +544,28 @@
             <div class="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <span class="text-gray-600">Date:</span>
-                <span class="ml-2 font-medium text-slate-800">{{ formatDate(scheduledAppointmentData.datetime) }}</span>
+                <span class="ml-2 font-medium text-gray-900">{{ formatDate(scheduledAppointmentData.datetime) }}</span>
               </div>
               <div>
                 <span class="text-gray-600">Time:</span>
-                <span class="ml-2 font-medium text-slate-800">{{ scheduledAppointmentData.time }}</span>
+                <span class="ml-2 font-medium text-gray-900">{{ scheduledAppointmentData.time }}</span>
               </div>
               <div>
                 <span class="text-gray-600">Type:</span>
-                <span class="ml-2 font-medium text-slate-800 capitalize">{{ scheduledAppointmentData.type }}</span>
+                <span class="ml-2 font-medium text-gray-900 capitalize">{{ scheduledAppointmentData.type }}</span>
               </div>
               <div>
                 <span class="text-gray-600">Assigned to:</span>
-                <span class="ml-2 font-medium text-slate-800">{{ scheduledAppointmentData.assignee }}</span>
+                <span class="ml-2 font-medium text-gray-900">{{ scheduledAppointmentData.assignee }}</span>
               </div>
             </div>
             <div v-if="scheduledAppointmentData.location" class="text-sm">
               <span class="text-gray-600">Location:</span>
-              <span class="ml-2 font-medium text-slate-800">{{ scheduledAppointmentData.location }}</span>
+              <span class="ml-2 font-medium text-gray-900">{{ scheduledAppointmentData.location }}</span>
             </div>
             <div v-if="scheduledAppointmentData.notes" class="text-sm">
               <span class="text-gray-600">Notes:</span>
-              <p class="mt-1 text-slate-700">{{ scheduledAppointmentData.notes }}</p>
+              <p class="mt-1 text-gray-700">{{ scheduledAppointmentData.notes }}</p>
             </div>
           </div>
         </InlineFormContainer>

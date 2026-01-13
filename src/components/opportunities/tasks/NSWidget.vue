@@ -2,7 +2,7 @@
   <div class="bg-yellow-50/50 border border-yellow-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">{{ noShowTitle }}</h4>
+        <h4 class="font-bold text-gray-900 text-sm">{{ noShowTitle }}</h4>
         <p class="text-xs text-gray-500 mt-0.5">Appointment was scheduled for {{ appointmentDate }} but customer did not show up. {{ noShowMessage }}</p>
       </div>
     </div>

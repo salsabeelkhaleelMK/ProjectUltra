@@ -7,7 +7,7 @@
       class="w-full flex items-center justify-between text-xs text-gray-500 hover:text-gray-700 py-0.5 transition-colors"
     >
       <span class="font-medium">Survey / Feedback</span>
-      <i class="fa-solid fa-chevron-down text-[10px]"></i>
+      <i class="fa-solid fa-chevron-down text-xs"></i>
     </button>
     
     <!-- Expanded State -->
@@ -18,7 +18,7 @@
           @click="isExpanded = false"
           class="text-xs text-gray-400 hover:text-gray-600 font-medium py-0.5"
         >
-          <i class="fa-solid fa-chevron-up text-[10px]"></i>
+          <i class="fa-solid fa-chevron-up text-xs"></i>
         </button>
       </div>
       
@@ -87,13 +87,13 @@
           </button>
           <button
             @click="handleRefuse"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Customer Refused
           </button>
           <button
             @click="handleNotResponding"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Not Responding
           </button>

@@ -31,12 +31,12 @@
         <div class="flex-1">
           <h3 class="label-upper mb-0.5">{{ kpi.title }}</h3>
           <div class="flex items-baseline gap-1.5">
-            <span class="text-content-bold text-xl md:text-2xl font-bold leading-tight">{{ kpi.value }}</span>
+            <span class="text-base font-bold leading-tight">{{ kpi.value }}</span>
             <span
               class="text-xs font-bold flex items-center gap-0.5"
               :class="kpi.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
             >
-              <i :class="kpi.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-[10px]"></i>
+              <i :class="kpi.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-xs"></i>
               {{ Math.abs(kpi.change) }}%
             </span>
           </div>

@@ -36,7 +36,7 @@
         <i class="fa-solid fa-bell text-lg text-gray-600"></i>
         <span 
           v-if="actionItemsCount > 0"
-          class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
         >
           {{ actionItemsCount > 9 ? '9+' : actionItemsCount }}
         </span>

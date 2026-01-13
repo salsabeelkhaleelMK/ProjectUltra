@@ -2,7 +2,7 @@
   <div class="bg-red-50/50 border border-red-100 rounded-lg p-4 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-slate-800 text-sm">Unsold Feedback</h4>
+        <h4 class="font-bold text-gray-900 text-sm">Unsold Feedback</h4>
         <p class="text-xs text-gray-500 mt-0.5">This opportunity has been open for {{ daysOpen }} days without any offer. This is a follow-up to ensure progress. Consider creating an offer or closing the opportunity.</p>
       </div>
     </div>
