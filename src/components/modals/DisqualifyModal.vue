@@ -1,11 +1,14 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Disqualify Lead"
-    subtitle="Please select a reason for disqualification."
-    @cancel="handleCancel"
-  >
-    <div class="space-y-6">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Disqualify Lead</DialogTitle>
+          <DialogDescription>Please select a reason for disqualification.</DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-6">
       <!-- Category Radio Buttons -->
       <div>
         <label class="block label-upper mb-3">Category</label>
@@ -51,23 +54,41 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button
-        label="Confirm Disqualification"
-        variant="primary"
-        size="small"
-        class="rounded-sm !bg-red-600 !hover:bg-red-700 !border-red-600"
-        :disabled="!category || !failureReason"
-        @click="handleConfirm"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleCancel"
+          />
+          <Button
+            label="Confirm Disqualification"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto !bg-red-600 !hover:bg-red-700 !border-red-600"
+            :disabled="!category || !failureReason"
+            @click="handleConfirm"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -98,5 +119,11 @@ const handleConfirm = () => {
 
 const handleCancel = () => {
   emit('cancel')
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    handleCancel()
+  }
 }
 </script>

@@ -34,45 +34,21 @@
         </button>
       </div>
 
-      <!-- Table -->
-      <div class="table-wrapper w-full">
-        <DataTable 
-          :data="filteredRows" 
-          :columns="columns"
-          :meta="tableMeta"
-          @row-click="handleRowClick"
-          :columnFiltersOptions="{
-            filterDefs: filterDefinitions
-          }"
-          v-model:pagination="pagination"
-          v-model:globalFilter="globalFilter"
-          v-model:sorting="sorting"
-          v-model:columnFilters="columnFilters"
-          :paginationOptions="{
-            rowCount: filteredRows.length
-          }"
-          :globalFilterOptions="{
-            debounce: 300
-          }"
-        >
-          <template #toolbar>
-            <div class="flex justify-end">
-              <button 
-                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
-              >
-                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
-                <span class="hidden sm:inline">Switch back to old design</span>
-              </button>
+      <!-- Lazy Loaded Tab Content -->
+      <Suspense>
+        <component 
+          :is="tabComponent" 
+          :key="activeTab"
+        />
+        <template #fallback>
+          <div class="flex items-center justify-center py-12">
+            <div class="text-center">
+              <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+              <p class="text-sm text-gray-500">Loading...</p>
             </div>
-          </template>
-          <template #empty-state>
-            <div class="empty-state">
-              <i class="fa-solid fa-inbox empty-state-icon"></i>
-              <p class="empty-state-text">No records found</p>
-            </div>
-          </template>
-        </DataTable>
-      </div>
+          </div>
+        </template>
+      </Suspense>
     </div>
     
     <!-- Add Customer Modal -->
@@ -87,21 +63,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, h, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, computed, defineAsyncComponent } from 'vue'
+import { useRouter } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
-import { DataTable } from '@motork/component-library/future/components'
-import { Button, Badge } from '@motork/component-library'
+import { Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
-import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
-import { useCustomersTable } from '@/composables/useCustomersTable'
 
 const router = useRouter()
-const route = useRoute()
 const userStore = useUserStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
@@ -143,26 +115,7 @@ const getDefaultTab = () => {
 }
 
 const activeTab = ref(getDefaultTab())
-const searchQuery = ref('')
 const showAddModal = ref(false)
-const showDisqualified = ref(false)
-const contactFilterType = ref('all') // 'all', 'contacts', 'accounts'
-const filters = ref({
-  status: '',
-  priority: '',
-  source: ''
-})
-
-// DataTable state management
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10
-})
-
-const globalFilter = ref('')
-const sorting = ref([])
-const columnFilters = ref([])
-const columnVisibility = ref({})
 
 const newItem = ref({
   customerName: '',
@@ -172,6 +125,20 @@ const newItem = ref({
   vehicle: '',
   value: '',
   reason: ''
+})
+
+// Lazy load tab components
+const tabComponents = {
+  'contacts': defineAsyncComponent(() => import('@/components/customers/ContactsTab.vue')),
+  'open-leads': defineAsyncComponent(() => import('@/components/customers/OpenLeadsTab.vue')),
+  'open-opportunities': defineAsyncComponent(() => import('@/components/customers/OpenOpportunitiesTab.vue')),
+  'in-negotiation': defineAsyncComponent(() => import('@/components/customers/InNegotiationTab.vue')),
+  'won': defineAsyncComponent(() => import('@/components/customers/WonTab.vue')),
+  'lost': defineAsyncComponent(() => import('@/components/customers/LostTab.vue'))
+}
+
+const tabComponent = computed(() => {
+  return tabComponents[activeTab.value] || tabComponents['contacts']
 })
 
 const stageTabs = computed(() => {
@@ -261,176 +228,8 @@ const handleAdd = () => {
   showAddModal.value = false
 }
 
-const rows = computed(() => {
-  // Customers rows (unified contacts + accounts)
-  let filteredCustomers = customersStore.customers
-  if (contactFilterType.value === 'contacts') {
-    filteredCustomers = customersStore.contacts
-  } else if (contactFilterType.value === 'accounts') {
-    filteredCustomers = customersStore.accounts
-  }
-  
-  // Helper to extract location from address
-  const getLocation = (address) => {
-    if (!address) return 'N/A'
-    // Extract city from address (last part after comma)
-    const parts = address.split(',')
-    if (parts.length > 1) {
-      const cityPart = parts[parts.length - 1].trim()
-      // Remove postal code if present
-      const city = cityPart.replace(/^\d+\s*/, '').trim()
-      return city || address
-    }
-    return address
-  }
-
-  const customerRows = filteredCustomers.map((customer) => ({
-    id: `customer-${customer.id}`,
-    stageKey: 'contacts',
-    customer: customer.name,
-    accountType: customer.company && customer.company !== '' ? 'Account' : 'Contact',
-    telephone: customer.phone,
-    location: getLocation(customer.address),
-    createdAt: formatDate(customer.createdAt),
-    // For accounts, additional fields
-    name: customer.name,
-    accountOwner: customer.source || 'N/A', // Using source as placeholder for account owner
-    updatedAt: formatDate(customer.lastContact || customer.createdAt),
-    lastActivity: formatDate(customer.lastContact),
-    openOpportunities: opportunitiesStore.opportunities.filter(opp => 
-      opp.customerId === customer.id && 
-      opp.stage !== 'Closed Won' && 
-      opp.stage !== 'Closed Lost'
-    ).length,
-    wonOpportunities: opportunitiesStore.opportunities.filter(opp => 
-      opp.customerId === customer.id && 
-      opp.stage === 'Closed Won'
-    ).length,
-    initials: customer.initials || customer.name.slice(0,2).toUpperCase(),
-    type: customer.company && customer.company !== '' ? 'account' : 'contact',
-    customerId: customer.id
-  }))
-  
-  // Filter leads based on disqualified toggle
-  let filteredLeads = leadsStore.leads
-  if (showDisqualified.value) {
-    filteredLeads = leadsStore.leads.filter(lead => lead.isDisqualified === true)
-  } else {
-    filteredLeads = leadsStore.leads.filter(lead => !lead.isDisqualified)
-  }
-  
-  const leadRows = filteredLeads.map((lead) => ({
-    id: `lead-${lead.id}`,
-    stageKey: 'open-leads',
-    customer: lead.customer?.name || 'Unknown',
-    email: lead.customer?.email || '',
-    initials: lead.customer?.initials || lead.customer?.name?.slice(0,2).toUpperCase() || '?',
-    nextAction: formatDueDate(lead.nextActionDue) || 'No due date',
-    nextActionFull: formatDeadlineFull(lead.nextActionDue),
-    deadlineStatus: getDeadlineStatus(lead.nextActionDue),
-    car: `${lead.requestedCar?.brand || ''} ${lead.requestedCar?.model || ''}`.trim() || 'N/A',
-    carStatus: lead.requestedCar?.stockDays !== undefined && lead.requestedCar?.stockDays !== null ? 'In Stock' : 'Out of Stock',
-    carStatusClass: lead.requestedCar?.stockDays !== undefined && lead.requestedCar?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
-    requestType: lead.requestedCar?.requestType || 'Quotation',
-    source: lead.source || 'Marketing',
-    assignee: lead.assignee,
-    assigneeInitials: lead.assignee ? lead.assignee.slice(0,2).toUpperCase() : 'NA',
-    createdAt: formatDate(lead.createdAt),
-    lastActivity: formatDate(lead.lastActivity),
-    status: lead.status,
-    statusClass: getStatusClass(lead.status),
-    priority: lead.priority || 'Normal'
-  }))
-  
-  const oppRows = opportunitiesStore.opportunities.map((opp) => {
-    let stageKey = 'open-opportunities'
-    if (opp.stage === 'In Negotiation' || opp.stage === 'In negotiation') {
-      stageKey = 'in-negotiation'
-    } else if (opp.stage === 'Closed Won') {
-      stageKey = 'won'
-    } else if (opp.stage === 'Closed Lost') {
-      stageKey = 'lost'
-    }
-    // Use scheduledAppointment directly from opportunity object instead of fetching activities
-    const lastAppointment = opp.scheduledAppointment?.start || null
-    return {
-      id: `opp-${opp.id}`,
-      stageKey,
-      customer: opp.customer?.name || 'Unknown',
-      email: opp.customer?.email || '',
-      initials: opp.customer?.initials || opp.customer?.name?.slice(0,2).toUpperCase() || '?',
-      nextAction: formatDueDate(opp.expectedCloseDate) || 'No due date',
-      nextActionFull: formatDeadlineFull(opp.expectedCloseDate),
-      deadlineStatus: getDeadlineStatus(opp.expectedCloseDate),
-      car: `${opp.vehicle?.brand || ''} ${opp.vehicle?.model || ''}`.trim() || 'N/A',
-      carStatus: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'In Stock' : 'Out of Stock',
-      carStatusClass: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
-      requestType: opp.requestType || 'Opportunity',
-      source: opp.source || 'Marketing',
-      assignee: opp.assignee,
-      assigneeInitials: opp.assignee ? opp.assignee.slice(0,2).toUpperCase() : 'NA',
-      createdAt: formatDate(opp.createdAt),
-      lastAppointment: lastAppointment ? formatDate(lastAppointment) : 'N/A',
-      status: opp.stage,
-      statusClass: stageKey === 'in-negotiation' ? 'bg-orange-100 text-orange-700' : stageKey === 'won' ? 'bg-green-100 text-green-700' : stageKey === 'lost' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700',
-      priority: opp.priority || 'Normal'
-    }
-  })
-  
-  return [...customerRows, ...leadRows, ...oppRows]
-})
-
-const filteredRows = computed(() => {
-  let result = rows.value.filter(r => r.stageKey === activeTab.value)
-  
-  // Apply status filter
-  if (filters.value.status) {
-    result = result.filter(r => r.status === filters.value.status)
-  }
-  
-  // Apply priority filter
-  if (filters.value.priority) {
-    result = result.filter(r => r.priority === filters.value.priority)
-  }
-  
-  // Apply source filter
-  if (filters.value.source) {
-    result = result.filter(r => r.source === filters.value.source)
-  }
-  
-  // Note: Search is now handled by DataTable's globalFilter
-  return result
-})
-
 const setTab = (key) => {
   activeTab.value = key
-}
-
-const clearFilters = () => {
-  filters.value = {
-    status: '',
-    priority: '',
-    source: ''
-  }
-  columnFilters.value = []
-  globalFilter.value = ''
-}
-
-const getStatusClass = (status) => {
-  const statusMap = {
-    'Valid': 'bg-green-100 text-green-700',
-    'Not valid': 'bg-red-100 text-red-700',
-    'Qualified': 'bg-gray-100 text-gray-700',
-    'Not interested': 'bg-red-100 text-red-700',
-    'Open': 'bg-blue-100 text-blue-700'
-  }
-  return statusMap[status] || 'bg-gray-100 text-gray-700'
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  const d = new Date(dateString)
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 const getBadgeTheme = (tabKey, isActive) => {
@@ -449,39 +248,6 @@ const getBadgeTheme = (tabKey, isActive) => {
   return validThemes.includes(theme) ? theme : 'gray'
 }
 
-// Load data on mount
-onMounted(async () => {
-  await customersStore.fetchCustomers()
-  await leadsStore.fetchLeads()
-  await opportunitiesStore.fetchOpportunities()
-})
-
-const handleRowClick = (row) => {
-  // Handle customers - navigate to customer profile on /customer/:id page
-  if (row.stageKey === 'contacts') {
-    const customerId = row.customerId || row.id.split('-')[1]
-    router.push({ path: `/customer/${customerId}` })
-    return
-  }
-  
-  // Extract numeric ID from row.id (format: 'lead-1', 'opp-1', etc.)
-  const idMatch = row.id.match(/-(\d+)$/)
-  
-  if (activeTab.value === 'open-leads' && row.id.startsWith('lead-')) {
-    // Navigate to tasks view for lead
-    const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
-    router.push({ path: `/tasks/${leadId}`, query: { type: 'lead' } })
-  } else if (row.id.startsWith('opp-')) {
-    // Navigate to tasks view for opportunity
-    const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
-  } else if (row.stageKey === 'won' || row.stageKey === 'lost') {
-    // For won/lost rows, navigate to the opportunity in tasks view
-    const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
-  }
-}
-
-// Use composable for table configuration
-const { columns, filterDefinitions, tableMeta } = useCustomersTable(activeTab, handleRowClick)
+// Load initial stats on mount (for tab counts)
+// Individual tabs will load their own data when mounted
 </script>

@@ -1,12 +1,13 @@
 <template>
-  <ModalShell
-    :show="show"
-    :title="contact?.requestedCar ? 'Edit Requested Car' : 'Add Requested Car'"
-    size="2xl"
-    @close="$emit('close')"
-    @cancel="$emit('close')"
-  >
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{{ contact?.requestedCar ? 'Edit Requested Car' : 'Add Requested Car' }}</DialogTitle>
+        </DialogHeader>
+
+        <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Brand -->
       <div>
         <label class="block label-upper mb-2">Brand *</label>
@@ -152,25 +153,42 @@
           </div>
         </div>
       </div>
-    </form>
-    
-    <template #actions>
-      <Button
-        :label="contact?.requestedCar ? 'Update Car' : 'Add Car'"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="!isValid"
-        @click="handleSubmit"
-      />
-    </template>
-  </ModalShell>
+        </form>
+
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            :label="contact?.requestedCar ? 'Update Car' : 'Add Car'"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!isValid"
+            @click="handleSubmit"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -184,6 +202,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'saved'])
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 const showAdvanced = ref(false)
 

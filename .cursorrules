@@ -193,6 +193,18 @@ When migrating to real API:
 
 - **ONLY** repositories (`src/repositories/**/*.js`) can import `mockData.js`
 
+### Motork Component Library First (CRITICAL)
+
+- **ALWAYS check `@motork/component-library` (and `@motork/component-library/future/primitives`) before creating new UI components.**
+  - Prefer using existing Motork components/primitives over building custom wrappers.
+  - If a needed component exists in the library, **use it** instead of forking/re-implementing.
+  - Only create new components when there is a clear gap in the library, and the new component is app-specific.
+
+- **Modals/Dialogs**
+  - Use Motork dialog primitives directly:
+    - `import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogOverlay, DialogPortal, DialogTitle, DialogDescription } from '@motork/component-library/future/primitives'`
+  - **Do not introduce custom modal wrapper components** (e.g., a `ModalShell`-style wrapper). Keep modal markup in the modal component itself, using the primitives.
+
 ### Styling (Tailwind CSS)
 
 - **NO arbitrary values** (`w-[350px]`, `text-[14px]`)
@@ -255,4 +267,36 @@ src/
 - Run `npm run build` before pushing
 - Never commit `dist/` folder
 - Netlify builds from source via `netlify.toml`
+
+## Code Cleanup (Before Push)
+
+**CRITICAL**: Before pushing code, check for and delete obsolete files:
+
+1. **Duplicate Files**: Check for duplicate components/modals/widgets in multiple locations
+   - If files exist in both root directories and subdirectories, verify which one is actually imported
+   - Delete unused duplicates (files that are never imported anywhere)
+   - Common patterns:
+     - Duplicate widgets in `components/tasks/` root vs `components/tasks/opportunity/` or `components/tasks/lead/`
+     - Duplicate modals in `components/modals/` vs `components/calendar/`
+     - Duplicate utilities in root vs subdirectories
+
+2. **Re-export Files**: Check for re-export wrapper files that are redundant
+   - Files that only `export * from './subdirectory/index.js'` can be deleted if module resolution handles it automatically
+   - Example: `src/api/mockData.js` re-exporting from `src/api/mockData/index.js` is obsolete (imports resolve to index.js automatically)
+   - Example: `src/utils/stageMapper.js` re-exporting from `src/utils/stageMapper/index.js` is obsolete
+
+3. **Unused Files**: Search for files that are never imported
+   - Use grep to check if files are imported: `grep -r "from.*filename" src/`
+   - Delete files with zero imports (unless they're entry points like `main.js`, `router/index.js`)
+
+4. **Verification Steps**:
+   - Before deleting, verify the file is NOT imported anywhere: `grep -r "from.*filename" src/`
+   - Check if there are duplicates in subdirectories that are actually being used
+   - Ensure module resolution will still work after deletion (check import paths use extensions or directory resolution)
+
+5. **Common Obsolete Patterns**:
+   - Old refactored views that were replaced (e.g., `Leads.vue` → `Tasks.vue`)
+   - Duplicate components moved during refactoring
+   - Temporary files or backups (`*.old`, `*.bak`, `*.tmp`)
+   - Deprecated re-export wrappers marked with `@deprecated` comments
 

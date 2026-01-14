@@ -39,14 +39,16 @@
     </div>
 
     <!-- Add Vehicle Modal -->
-    <ModalShell
-      :show="showAddModal"
-      title="Add Customer Vehicle"
-      subtitle="Fill in the details for the new customer vehicle."
-      @close="handleCloseModal"
-      size="lg"
-    >
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+    <Dialog :open="showAddModal" @update:open="handleAddModalOpenChange">
+      <DialogPortal>
+        <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+        <DialogContent class="w-full sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add Customer Vehicle</DialogTitle>
+            <DialogDescription>Fill in the details for the new customer vehicle.</DialogDescription>
+          </DialogHeader>
+
+          <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- Vehicle Information -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -194,21 +196,25 @@
             class="input"
           ></textarea>
         </div>
-      </form>
+          </form>
 
-      <template #actions>
-        <Button
-          label="Cancel"
-          variant="outline"
-          @click="handleCloseModal"
-        />
-        <Button
-          label="Add Vehicle"
-          variant="primary"
-          @click="handleSubmit"
-        />
-      </template>
-    </ModalShell>
+          <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+            <Button
+              label="Cancel"
+              variant="outline"
+              class="w-full sm:w-auto"
+              @click="handleCloseModal"
+            />
+            <Button
+              label="Add Vehicle"
+              variant="primary"
+              class="w-full sm:w-auto"
+              @click="handleSubmit"
+            />
+          </DialogFooter>
+        </DialogContent>
+      </DialogPortal>
+    </Dialog>
   </div>
 </template>
 
@@ -217,8 +223,17 @@ import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import ModalShell from '@/components/shared/ModalShell.vue'
 import { Button, Badge } from '@motork/component-library'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import VehicleFilters from '@/components/vehicles/VehicleFilters.vue'
 import VehicleGrid from '@/components/vehicles/VehicleGrid.vue'
 import { useVehicleDetail } from '@/composables/useVehicleDetail'
@@ -239,6 +254,12 @@ const pagination = ref({
 const globalFilter = ref('')
 const sorting = ref([])
 const columnFilters = ref([])
+
+const handleAddModalOpenChange = (isOpen) => {
+  if (!isOpen) {
+    handleCloseModal()
+  }
+}
 
 // Filter vehicles based on active filter
 const filteredVehicles = computed(() => {

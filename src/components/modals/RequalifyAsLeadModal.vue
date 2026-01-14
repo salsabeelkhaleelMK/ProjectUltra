@@ -1,13 +1,15 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Requalify as Lead"
-    subtitle="This will convert the opportunity back to a lead. Some data will be lost."
-    size="lg"
-    @cancel="$emit('cancel')"
-  >
-    <!-- Body with scrollable content -->
-    <div class="space-y-6 max-h-[60vh] overflow-y-auto">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Requalify as Lead</DialogTitle>
+          <DialogDescription>This will convert the opportunity back to a lead. Some data will be lost.</DialogDescription>
+        </DialogHeader>
+
+        <!-- Body with scrollable content -->
+        <div class="space-y-6 max-h-[60vh] overflow-y-auto">
       <div class="flex items-start gap-4 mb-6">
         <div class="flex-shrink-0">
           <div class="w-12 h-12 rounded-sm bg-yellow-100 flex items-center justify-center border border-yellow-200">
@@ -77,21 +79,39 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button
-        label="Confirm Requalification"
-        variant="primary"
-        size="small"
-        class="rounded-sm !bg-yellow-600 !hover:bg-yellow-700 !border-yellow-600"
-        @click="$emit('confirm')"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('cancel')"
+          />
+          <Button
+            label="Confirm Requalification"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto !bg-yellow-600 !hover:bg-yellow-700 !border-yellow-600"
+            @click="$emit('confirm')"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 defineProps({
   show: {
@@ -100,5 +120,11 @@ defineProps({
   }
 })
 
-defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel'])
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('cancel')
+  }
+}
 </script>

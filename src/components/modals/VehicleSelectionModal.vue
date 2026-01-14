@@ -1,12 +1,13 @@
 <template>
-  <ModalShell 
-    :show="show" 
-    @close="$emit('close')" 
-    @cancel="$emit('close')"
-    title="Select Vehicle" 
-    size="6xl"
-  >
-    <div class="space-y-6 max-h-[75vh] overflow-y-auto px-2">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-6xl">
+        <DialogHeader>
+          <DialogTitle>Select Vehicle</DialogTitle>
+        </DialogHeader>
+
+        <div class="space-y-6">
       <!-- Section 1: Recommended Vehicles (includes requested if available) -->
       <div v-if="allRecommendedVehicles.length">
         <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -138,23 +139,40 @@
       </div>
     </div>
     
-    <!-- Footer with selected vehicle info and actions -->
-    <template #actions>
-      <Button
-        v-if="selectedVehicle"
-        label="Confirm Selection"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        @click="handleConfirm"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            v-if="selectedVehicle"
+            label="Confirm Selection"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleConfirm"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import { Button } from '@motork/component-library'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import VehicleCard from '@/components/shared/vehicles/VehicleCard.vue'
 import { fetchVehicles } from '@/api/vehicles'
 
@@ -174,6 +192,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'vehicle-selected'])
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 // State
 const searchQuery = ref('')

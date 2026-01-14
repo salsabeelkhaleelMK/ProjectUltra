@@ -289,29 +289,22 @@ export function useLeadStateMachine(lead) {
       return LEAD_STAGES.NEW
     }
     
-    // Defensive: Ensure isDisqualified is explicitly set (default to false)
-    // This prevents undefined/null from causing issues
-    const leadWithDefaults = {
-      ...leadValue,
-      isDisqualified: leadValue.isDisqualified === true
-    }
+    // CRITICAL: Always recalculate displayStage from source data
+    // This ensures the stage is correct even if the lead object's displayStage is stale
+    // getDisplayStage will recalculate from source properties (stage, isDisqualified, etc.)
+    // Explicitly access properties to ensure reactivity tracking
+    const isDisqualified = leadValue.isDisqualified // Track for reactivity
+    const stage = leadValue.stage || leadValue.apiStatus // Track for reactivity
+    const callbackDate = leadValue.callbackDate // Track for reactivity
+    const callbackScheduled = leadValue.callbackScheduled // Track for reactivity
+    const isDuplicate = leadValue.isDuplicate // Track for reactivity
     
-    // Always calculate displayStage from the lead object to ensure correct mapping
-    const calculatedStage = getDisplayStage(leadWithDefaults, 'lead')
-    // Fallback to NEW if calculation returns null/undefined or invalid value
-    if (!calculatedStage || typeof calculatedStage !== 'string') {
-      return LEAD_STAGES.NEW
-    }
+    // getDisplayStage will strip displayStage and recalculate from source
+    // We explicitly access the properties above to ensure Vue tracks them for reactivity
+    const calculatedStage = getDisplayStage(leadValue, 'lead')
     
-    // Double-check: If lead is not disqualified, calculated stage should never be closed
-    if (leadWithDefaults.isDisqualified !== true && calculatedStage.startsWith('Closed')) {
-      console.warn('Lead state machine error: Non-disqualified lead calculated as closed stage', {
-        leadId: leadValue.id,
-        isDisqualified: leadValue.isDisqualified,
-        calculatedStage,
-        stage: leadValue.stage,
-        apiStatus: leadValue.apiStatus
-      })
+    // Defensive: ensure we always return a valid stage
+    if (!calculatedStage) {
       return LEAD_STAGES.NEW
     }
     
@@ -319,34 +312,43 @@ export function useLeadStateMachine(lead) {
   })
   
   const stateConfig = computed(() => {
-    return getLeadStateConfig(getLeadValue())
+    // Use the computed displayStage to ensure consistency with defensive logic
+    const stage = displayStage.value
+    if (!stage) {
+      return LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
+    }
+    const config = LEAD_STATE_CONFIG[stage]
+    return config || LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
   })
   
   const isClosedState = computed(() => {
     const leadValue = getLeadValue()
-    
-    // CRITICAL: Only return true if lead is explicitly disqualified
-    // This is the primary check - if not disqualified, can never be closed
-    const isDisqualified = leadValue?.isDisqualified === true
-    
-    const stage = displayStage.value
-    
-    if (!isDisqualified) {
-      // Lead is not disqualified, so it cannot be in a closed state
+    if (!leadValue) {
       return false
     }
     
-    // Lead IS disqualified - now check if stage is closed
-    // Only return true if stage is explicitly a closed stage
+    // CRITICAL: Only return true if lead is explicitly disqualified
+    // This is the primary check - if not disqualified, can never be closed
+    // Normalize isDisqualified to boolean: only true is true, everything else is false
+    const isDisqualified = Boolean(leadValue.isDisqualified === true)
+    
+    // If not disqualified, definitely not closed - return early
+    if (!isDisqualified) {
+      return false
+    }
+    
+    // Lead IS disqualified - now verify stage is actually closed
+    const stage = displayStage.value
+    
+    // Defensive: if no stage, can't determine if closed
     if (!stage || typeof stage !== 'string') {
       return false
     }
     
-    // Check if it's one of the closed stages
+    // Check if it's one of the closed stages (exact match only)
     const isClosed = stage === LEAD_STAGES.CLOSED_INVALID || 
                      stage === LEAD_STAGES.CLOSED_NOT_INTERESTED || 
-                     stage === LEAD_STAGES.CLOSED_DUPLICATE ||
-                     stage.startsWith('Closed')
+                     stage === LEAD_STAGES.CLOSED_DUPLICATE
     
     return isClosed
   })

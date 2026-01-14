@@ -1,39 +1,58 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Add Financing"
-    subtitle="Record financing details for this customer"
-    size="lg"
-    @close="$emit('close')"
-    @cancel="$emit('close')"
-  >
-    <FinancingWidget
-      :item="item"
-      :task-type="taskType"
-      :task-id="taskId"
-      :hide-actions="true"
-      ref="widgetRef"
-      @save="handleSave"
-      @cancel="$emit('close')"
-    />
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Add Financing</DialogTitle>
+          <DialogDescription>Record financing details for this customer</DialogDescription>
+        </DialogHeader>
 
-    <template #actions>
-      <Button
-        label="Save Financing"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="!isValid"
-        @click="triggerSave"
-      />
-    </template>
-  </ModalShell>
+        <FinancingWidget
+          :item="item"
+          :task-type="taskType"
+          :task-id="taskId"
+          :hide-actions="true"
+          ref="widgetRef"
+          @save="handleSave"
+          @cancel="$emit('close')"
+        />
+
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            label="Save Financing"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!isValid"
+            @click="triggerSave"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import FinancingWidget from '@/components/customer/activities/FinancingWidget.vue'
 
 const props = defineProps({
@@ -67,6 +86,12 @@ const isValid = computed(() => {
 const triggerSave = () => {
   // Trigger the widget's submit method
   widgetRef.value?.submit()
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
 }
 
 const handleSave = (data) => {

@@ -15,25 +15,25 @@ import {
 } from '@/utils/opportunityRules'
 
 // Import task widget components
-import OOFBWidget from '@/components/opportunities/tasks/OOFBWidget.vue'
-import UFBWidget from '@/components/opportunities/tasks/UFBWidget.vue'
-import NFUWidget from '@/components/opportunities/tasks/NFUWidget.vue'
-import OFBWidget from '@/components/opportunities/tasks/OFBWidget.vue'
-import CFBWidget from '@/components/opportunities/tasks/CFBWidget.vue'
-import DFBWidget from '@/components/opportunities/tasks/DFBWidget.vue'
-import NSWidget from '@/components/opportunities/tasks/NSWidget.vue'
-import AbandonedWidget from '@/components/opportunities/tasks/AbandonedWidget.vue'
+import OOFBTask from '@/components/tasks/opportunity/OOFBTask.vue'
+import UFBTask from '@/components/tasks/opportunity/UFBTask.vue'
+import NFUTask from '@/components/tasks/opportunity/NFUTask.vue'
+import OFBTask from '@/components/tasks/opportunity/OFBTask.vue'
+import CFBTask from '@/components/tasks/opportunity/CFBTask.vue'
+import DFBTask from '@/components/tasks/opportunity/DFBTask.vue'
+import NSTask from '@/components/tasks/opportunity/NSTask.vue'
+import AbandonedTask from '@/components/tasks/opportunity/AbandonedTask.vue'
 
 // Map widget types to components
 const TASK_WIDGET_COMPONENTS = {
-  'OOFB': OOFBWidget,
-  'UFB': UFBWidget,
-  'NFU': NFUWidget,
-  'OFB': OFBWidget,
-  'CFB': CFBWidget,
-  'DFB': DFBWidget,
-  'NS': NSWidget,
-  'ABANDONED': AbandonedWidget
+  'OOFB': OOFBTask,
+  'UFB': UFBTask,
+  'NFU': NFUTask,
+  'OFB': OFBTask,
+  'CFB': CFBTask,
+  'DFB': DFBTask,
+  'NS': NSTask,
+  'ABANDONED': AbandonedTask
 }
 
 /**

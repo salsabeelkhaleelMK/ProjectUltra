@@ -251,7 +251,6 @@ import FinancingModal from '@/components/modals/FinancingModal.vue'
 import TradeInModal from '@/components/modals/TradeInModal.vue'
 import OfferModal from '@/components/modals/OfferModal.vue'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
-import ModalShell from '@/components/shared/ModalShell.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 

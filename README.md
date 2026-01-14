@@ -149,8 +149,9 @@ Colors: text-primary, bg-surface, border-border (from tailwind.config.js)
 Spacing: Use standard scale (p-4, gap-6, mt-8)
 Mobile-first: class="flex flex-col md:flex-row"
 No rounded corners on square buttons: Overview "Add New" button is blue and square; other tabs have gray rounded buttons
-Data Layer (src/api/mockData.js)
-All sample entities: mockLeads, mockOpportunities, mockVehicles, mockEvents
+Data Layer (src/api/mockData/)
+All sample entities organized in separate files: mockLeads, mockOpportunities, mockVehicles, mockEvents
+Mock data is split into organized files by entity type (users, customers, leads, opportunities, tasks, contacts, vehicles, calendar, activities, dashboard)
 All opportunity.stage values: "Qualified", "In Negotiation", "Closed Won" (never "Open")
 All contacts have address field
 All opportunities have priority field (supports hot flag)
@@ -169,6 +170,7 @@ Created composables (useTaskInlineWidgets, useTaskTabs) for shared logic
 Deleted redundant views: Leads.vue, Opportunities.vue, LeadDetail.vue, OpportunityDetail.vue, LeadContent.vue, OpportunityContent.vue, old dashboard files
 Removed console.log statements and unused code across the project
 Calendar refactor: Extracted CalendarConnectModal.vue
+Code organization: Split large files (LQWidget, Tasks.vue, LeadManagementWidget, stageMapper, mockData) into organized modules and composables
 ## Data Layer
 
 All sample entities are in `src/api/mockData.js`:

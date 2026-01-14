@@ -1,11 +1,14 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Mark as Delivered"
-    subtitle="Record the vehicle delivery date and details"
-    @cancel="handleCancel"
-  >
-    <div class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Mark as Delivered</DialogTitle>
+          <DialogDescription>Record the vehicle delivery date and details</DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-4">
       <!-- Delivery Date -->
       <div>
         <label class="block label-upper mb-2">Delivery Date</label>
@@ -53,23 +56,41 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button 
-        label="Mark as Delivered"
-        variant="primary"
-        size="small"
-        class="rounded-sm !bg-green-600 !hover:bg-green-700 !border-green-600"
-        :disabled="!deliveryDate || !deliveryLocation"
-        @click="handleConfirm"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleCancel"
+          />
+          <Button 
+            label="Mark as Delivered"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto !bg-green-600 !hover:bg-green-700 !border-green-600"
+            :disabled="!deliveryDate || !deliveryLocation"
+            @click="handleConfirm"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -120,5 +141,11 @@ const handleConfirm = () => {
 
 const handleCancel = () => {
   emit('cancel')
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    handleCancel()
+  }
 }
 </script>

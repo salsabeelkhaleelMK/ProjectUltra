@@ -1,14 +1,15 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Connect Calendar"
-    subtitle="Sync your external calendars to see all events in one place."
-    size="md"
-    @close="$emit('close')"
-    @cancel="$emit('close')"
-  >
-    <!-- Connecting State -->
-    <div v-if="connectingTo" class="text-center py-8">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Connect Calendar</DialogTitle>
+          <DialogDescription>Sync your external calendars to see all events in one place.</DialogDescription>
+        </DialogHeader>
+
+        <!-- Connecting State -->
+        <div v-if="connectingTo" class="text-center py-8">
       <div
         class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center animate-pulse"
         :class="connectingTo === 'google' ? 'bg-red-100' : 'bg-blue-100'"
@@ -23,7 +24,7 @@
     </div>
 
     <!-- Calendar Options -->
-    <div v-else class="space-y-3">
+        <div v-else class="space-y-3">
       <!-- Connected Calendars -->
       <div v-if="connectedCalendars.length > 0" class="mb-4">
         <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Connected</p>
@@ -93,11 +94,32 @@
       </button>
     </div>
 
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Close"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
-import ModalShell from '@/components/shared/ModalShell.vue'
+import { Button } from '@motork/component-library'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -114,7 +136,13 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close', 'connect', 'disconnect'])
+const emit = defineEmits(['close', 'connect', 'disconnect'])
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 </script>
 
 

@@ -1,11 +1,13 @@
 <template>
-  <ModalShell 
-    :show="show" 
-    @close="$emit('close')" 
-    @cancel="$emit('close')"
-    title="Add Tag"
-  >
-    <div class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add Tag</DialogTitle>
+        </DialogHeader>
+
+        <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">
           Tag Name
@@ -38,21 +40,40 @@
       </div>
     </div>
     
-    <template #actions>
-      <button
-        @click="handleAdd"
-        :disabled="!tagName.trim()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium text-sm"
-      >
-        Add Tag
-      </button>
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            label="Add Tag"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!tagName.trim()"
+            @click="handleAdd"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import { Button } from '@motork/component-library'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -68,6 +89,12 @@ const props = defineProps({
 const emit = defineEmits(['close', 'add'])
 
 const tagName = ref('')
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 watch(() => props.show, (newValue) => {
   if (newValue) {

@@ -1,0 +1,149 @@
+import { ref, computed } from 'vue'
+
+/**
+ * Composable for LQWidget outcome selection logic
+ * Manages outcome selection state, assignment, preferences, and related handlers
+ */
+export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contactAttemptsRef, maxContactAttemptsRef, currentUserRef) {
+  const showOutcomeSelection = ref(false)
+  const selectedOutcome = ref(null)
+  const appointmentScheduled = ref(false)
+  const scheduledAppointmentData = ref(null)
+  const showNoteModal = ref(false)
+  const showScheduleAppointmentModal = ref(false)
+
+  // No Answer state
+  const followupChannels = [
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'sms', label: 'SMS' },
+    { value: 'email', label: 'Email' },
+    { value: 'dont-send', label: "Don't send" }
+  ]
+  const followupChannel = ref('whatsapp')
+  const selectedTemplate = ref('followup-1')
+  const rescheduleTime = ref('custom')
+  const customDate = ref('')
+  const customTime = ref('09:00')
+
+  // Not Valid state
+  const disqualifyCategory = ref('Not Interested')
+  const disqualifyReason = ref('')
+
+  // Assignment state
+  const assignment = ref({
+    dealership: lead.value?.requestedCar?.dealership || 'Barcelona',
+    team: 'Audi Sales (New)',
+    assigneeId: currentUserRef?.value?.id || null
+  })
+
+  const preferences = ref({
+    tradeIn: false,
+    financing: false,
+    contactAvailability: false
+  })
+
+  const messageTemplates = computed(() => {
+    const customerName = lead.value?.customer?.name?.split(' ')[0] || ''
+    const carBrand = lead.value?.requestedCar?.brand || ''
+    const carModel = lead.value?.requestedCar?.model || ''
+    
+    return {
+      'followup-1': `Hi ${customerName}! I tried calling you earlier but couldn't reach you. When would be a good time to discuss the ${carBrand} ${carModel}?`,
+      'followup-2': `Hello ${customerName}, this is regarding your inquiry about the ${carBrand} ${carModel}. Please let me know when you're available for a call.`,
+      'custom': ''
+    }
+  })
+
+  const messagePreview = computed(() => {
+    if (selectedTemplate.value === 'custom') {
+      return 'Type your custom message...'
+    }
+    return messageTemplates.value[selectedTemplate.value] || ''
+  })
+
+  const hasExistingAppointment = computed(() => {
+    return !!lead.value?.scheduledAppointment
+  })
+
+  const calculateNextCallDate = () => {
+    if (rescheduleTime.value === 'tomorrow-9am') {
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      tomorrow.setHours(9, 0, 0, 0)
+      return tomorrow.toISOString()
+    } else if (rescheduleTime.value === 'monday') {
+      const monday = new Date()
+      const daysUntilMonday = (8 - monday.getDay()) % 7 || 7
+      monday.setDate(monday.getDate() + daysUntilMonday)
+      monday.setHours(9, 0, 0, 0)
+      return monday.toISOString()
+    } else if (rescheduleTime.value === 'custom' && customDate.value && customTime.value) {
+      const dateTime = new Date(`${customDate.value}T${customTime.value}:00`)
+      return dateTime.toISOString()
+    }
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(9, 0, 0, 0)
+    return tomorrow.toISOString()
+  }
+
+  const selectOutcome = (outcome) => {
+    selectedOutcome.value = outcome
+    if (outcome === 'interested' && extractedDataRef?.value) {
+      // Pre-populate from extracted data
+      preferences.value.tradeIn = extractedDataRef.value.tradeIn || false
+      preferences.value.financing = extractedDataRef.value.financing || false
+    }
+  }
+
+  const cancelOutcome = () => {
+    selectedOutcome.value = null
+    showOutcomeSelection.value = false
+    appointmentScheduled.value = false
+    scheduledAppointmentData.value = null
+  }
+
+  const resetOutcomeState = () => {
+    selectedOutcome.value = null
+    showOutcomeSelection.value = false
+    appointmentScheduled.value = false
+    scheduledAppointmentData.value = null
+    followupChannel.value = 'whatsapp'
+    selectedTemplate.value = 'followup-1'
+    rescheduleTime.value = 'custom'
+    customDate.value = ''
+    customTime.value = '09:00'
+    disqualifyCategory.value = 'Not Interested'
+    disqualifyReason.value = ''
+  }
+
+  return {
+    // State
+    showOutcomeSelection,
+    selectedOutcome,
+    appointmentScheduled,
+    scheduledAppointmentData,
+    showNoteModal,
+    showScheduleAppointmentModal,
+    followupChannels,
+    followupChannel,
+    selectedTemplate,
+    rescheduleTime,
+    customDate,
+    customTime,
+    disqualifyCategory,
+    disqualifyReason,
+    assignment,
+    preferences,
+    // Computed
+    messageTemplates,
+    messagePreview,
+    hasExistingAppointment,
+    // Methods
+    selectOutcome,
+    cancelOutcome,
+    calculateNextCallDate,
+    resetOutcomeState
+  }
+}
+

@@ -1,13 +1,14 @@
 <template>
-  <ModalShell
-    :show="show"
-    :title="modalTitle"
-    subtitle="Fill in the details below"
-    size="md"
-    @close="$emit('close')"
-    @cancel="$emit('close')"
-  >
-    <div class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{{ modalTitle }}</DialogTitle>
+          <DialogDescription>Fill in the details below</DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-4">
       <!-- Form fields based on active tab -->
       <div v-if="activeTab === 'contacts'">
         <label class="block label-upper mb-2">Contact Name</label>
@@ -122,22 +123,40 @@
       </div>
     </div>
     
-    <template #actions>
-      <Button
-        :label="`Create ${itemType}`"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        @click="handleAdd"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            :label="`Create ${itemType}`"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleAdd"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -180,6 +199,12 @@ watch(() => props.show, (newVal) => {
     }
   }
 })
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 const modalTitle = computed(() => {
   const titles = {

@@ -1,28 +1,18 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6">
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-briefcase text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-gray-900 text-sm">Opportunities</h3>
-        <span v-if="opportunities.length > 0" class="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-          {{ opportunities.length }}
-        </span>
-      </div>
-      <button 
-        @click.stop="$emit('add-opportunity')"
-        class="text-xs font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1 transition-colors"
-      >
-        <i class="fa-solid fa-plus-circle"></i>
-        Add Opportunity
-      </button>
-    </div>
-    
-    <div v-if="opportunities.length === 0" class="p-6 text-center text-gray-400">
-      <i class="fa-solid fa-inbox text-2xl mb-2"></i>
-      <p class="text-sm">No opportunities associated with this customer</p>
-    </div>
-    
-    <div v-else class="p-4 space-y-3">
+  <SectionCard
+    title="Opportunities"
+    icon="fa-solid fa-briefcase"
+    :count="opportunities.length"
+    count-color-class="bg-purple-100 text-purple-700"
+    show-add-button
+    add-button-label="Add Opportunity"
+    add-button-color-class="text-purple-600 hover:text-purple-700"
+    :has-empty-state="opportunities.length === 0"
+    empty-state-message="No opportunities associated with this customer"
+    @add="$emit('add-opportunity')"
+  >
+    <template #content>
+      <div class="space-y-3">
       <div
         v-for="opp in opportunities"
         :key="opp.id"
@@ -70,12 +60,14 @@
         </div>
       </div>
     </div>
-  </div>
+  </template>
+</SectionCard>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { getActiveTaskWidget } from '@/utils/opportunityRules'
+import SectionCard from '@/components/shared/SectionCard.vue'
 
 const props = defineProps({
   opportunities: {

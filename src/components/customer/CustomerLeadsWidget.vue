@@ -1,28 +1,18 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm mb-6">
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-user-circle text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-gray-900 text-sm">Leads</h3>
-        <span v-if="leads.length > 0" class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-          {{ leads.length }}
-        </span>
-      </div>
-      <button 
-        @click.stop="$emit('add-lead')"
-        class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
-      >
-        <i class="fa-solid fa-plus-circle"></i>
-        Add Lead
-      </button>
-    </div>
-    
-    <div v-if="leads.length === 0" class="p-6 text-center text-gray-400">
-      <i class="fa-solid fa-inbox text-2xl mb-2"></i>
-      <p class="text-sm">No leads associated with this customer</p>
-    </div>
-    
-    <div v-else class="p-4 space-y-3">
+  <SectionCard
+    title="Leads"
+    icon="fa-solid fa-user-circle"
+    :count="leads.length"
+    count-color-class="bg-blue-100 text-blue-700"
+    show-add-button
+    add-button-label="Add Lead"
+    add-button-color-class="text-blue-600 hover:text-blue-700"
+    :has-empty-state="leads.length === 0"
+    empty-state-message="No leads associated with this customer"
+    @add="$emit('add-lead')"
+  >
+    <template #content>
+      <div class="space-y-3">
       <div
         v-for="lead in leads"
         :key="lead.id"
@@ -69,11 +59,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </template>
+</SectionCard>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import SectionCard from '@/components/shared/SectionCard.vue'
 
 const props = defineProps({
   leads: {

@@ -1,11 +1,13 @@
 <template>
-  <ModalShell 
-    :show="show" 
-    @close="$emit('close')" 
-    @cancel="$emit('close')"
-    title="Schedule Callback"
-  >
-    <div class="space-y-5">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Schedule Callback</DialogTitle>
+        </DialogHeader>
+
+        <div class="space-y-5">
       <p class="text-sm text-gray-600">
         Schedule a callback with {{ entityName }} to follow up at a convenient time.
       </p>
@@ -104,27 +106,44 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button
-        label="Schedule Callback"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="!isValid"
-        @click="handleConfirm"
-      >
-        <template #icon-left>
-          <i class="fa-solid fa-calendar-check"></i>
-        </template>
-      </Button>
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            label="Schedule Callback"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!isValid"
+            @click="handleConfirm"
+          >
+            <template #icon-left>
+              <i class="fa-solid fa-calendar-check"></i>
+            </template>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import { useUsersStore } from '@/stores/users'
 
 const props = defineProps({
@@ -173,6 +192,12 @@ const minDate = computed(() => {
 const isValid = computed(() => {
   return formData.value.date && formData.value.time
 })
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 onMounted(() => {
   // Set default date to tomorrow

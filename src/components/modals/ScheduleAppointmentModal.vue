@@ -1,13 +1,14 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Schedule Appointment"
-    subtitle="Book an appointment with the customer"
-    size="lg"
-    @close="handleClose"
-    @cancel="handleClose"
-  >
-    <div class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Schedule Appointment</DialogTitle>
+          <DialogDescription>Book an appointment with the customer</DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-4">
       <div>
         <label class="block text-xs font-medium text-gray-500 mb-1.5">Appointment Type</label>
         <select v-model="appointmentType" class="input">
@@ -60,23 +61,41 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button
-        label="Confirm Appointment"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="!isValid"
-        @click="handleConfirm"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleClose"
+          />
+          <Button
+            label="Confirm Appointment"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!isValid"
+            @click="handleConfirm"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 
@@ -130,6 +149,12 @@ const resetForm = () => {
   appointmentDate.value = ''
   showTimeslots.value = false
   selectedTimeSlot.value = ''
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
 }
 
 const handleConfirm = () => {

@@ -1,37 +1,56 @@
 <template>
-  <ModalShell
-    :show="show"
-    :title="modalTitle"
-    :subtitle="modalSubtitle"
-    size="lg"
-    @close="$emit('close')"
-    @cancel="$emit('close')"
-  >
-    <UnifiedAddForm
-      ref="formRef"
-      :initial-contact="contact"
-      :hide-contact-selection="true"
-      :force-type="type"
-      @submit="handleSave"
-    />
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{{ modalTitle }}</DialogTitle>
+          <DialogDescription>{{ modalSubtitle }}</DialogDescription>
+        </DialogHeader>
 
-    <template #actions>
-      <Button
-        :label="formRef?.isSubmitting ? 'Saving...' : 'Save'"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="formRef?.isSubmitting || !formRef?.canSubmit"
-        @click="formRef?.submit"
-      />
-    </template>
-  </ModalShell>
+        <UnifiedAddForm
+          ref="formRef"
+          :initial-contact="contact"
+          :hide-contact-selection="true"
+          :force-type="type"
+          @submit="handleSave"
+        />
+
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            :label="formRef?.isSubmitting ? 'Saving...' : 'Save'"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="formRef?.isSubmitting || !formRef?.canSubmit"
+            @click="formRef?.submit"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import UnifiedAddForm from '@/components/addnew/UnifiedAddForm.vue'
 
 const props = defineProps({
@@ -60,6 +79,12 @@ const modalTitle = computed(() => {
 const modalSubtitle = computed(() => {
   return `Create a ${props.type} for ${props.contact.name}`
 })
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 
 const handleSave = (data) => {
   emit('save', data)

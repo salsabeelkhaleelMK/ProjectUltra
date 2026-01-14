@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import LeadManagementWidget from '@/components/leads/LeadManagementWidget.vue'
-import OpportunityManagementWidget from '@/components/opportunities/OpportunityManagementWidget.vue'
+import LeadManagementWidget from '@/components/tasks/lead/LeadManagementWidget.vue'
+import OpportunityManagementWidget from '@/components/tasks/opportunity/OpportunityManagementWidget.vue'
 
 /**
  * Composable for setting up EntityDetailLayout component props

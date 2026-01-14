@@ -1,11 +1,14 @@
 <template>
-  <ModalShell
-    :show="show"
-    title="Create New Event"
-    subtitle="Fill in the details for the new event."
-    @cancel="handleCancel"
-  >
-    <div class="space-y-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Create New Event</DialogTitle>
+          <DialogDescription>Fill in the details for the new event.</DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-4">
       <div>
         <label class="block label-upper mb-2">Event Type</label>
         <select v-model="localEvent.type" class="input">
@@ -92,22 +95,40 @@
       </div>
     </div>
 
-    <template #actions>
-      <Button
-        label="Create Event"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        @click="handleCreate"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleCancel"
+          />
+          <Button
+            label="Create Event"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="handleCreate"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
 import { Button } from '@motork/component-library'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 
@@ -184,6 +205,12 @@ onMounted(() => {
 const handleCreate = () => {
   if (localEvent.value.title && localEvent.value.date) {
     emit('create', { ...localEvent.value })
+  }
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    handleCancel()
   }
 }
 

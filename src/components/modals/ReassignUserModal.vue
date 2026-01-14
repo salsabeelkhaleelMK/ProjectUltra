@@ -1,15 +1,17 @@
 <template>
-  <ModalShell 
-    :show="show" 
-    @close="$emit('close')" 
-    @cancel="$emit('close')"
-    title="Reassign"
-  >
-    <p class="text-sm text-gray-600 mb-4">
-      Select a user or team to reassign:
-    </p>
-    
-    <div class="space-y-2 max-h-96 overflow-y-auto mb-4">
+  <Dialog :open="show" @update:open="handleOpenChange">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
+      <DialogContent class="w-full sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Reassign</DialogTitle>
+        </DialogHeader>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Select a user or team to reassign:
+        </p>
+        
+        <div class="space-y-2 max-h-96 overflow-y-auto mb-4">
       <!-- Teams Section -->
       <div v-if="assignableTeams.length" class="mb-3">
         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">Teams</p>
@@ -58,25 +60,41 @@
       </div>
     </div>
     
-    <!-- actions slot -->
-    <template #actions>
-      <Button
-        label="Reassign"
-        variant="primary"
-        size="small"
-        class="rounded-sm"
-        :disabled="!selectedAssignee"
-        @click="handleConfirm"
-      />
-    </template>
-  </ModalShell>
+        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            @click="$emit('close')"
+          />
+          <Button
+            label="Reassign"
+            variant="primary"
+            size="small"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!selectedAssignee"
+            @click="handleConfirm"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Button } from '@motork/component-library'
 import { useUsersStore } from '@/stores/users'
-import ModalShell from '@/components/shared/ModalShell.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   show: {
@@ -100,6 +118,12 @@ const getRoleAvatarClass = (role) => {
     'operator': 'bg-orange-100 text-orange-700'
   }
   return classes[role] || 'bg-gray-100 text-gray-700'
+}
+
+const handleOpenChange = (isOpen) => {
+  if (!isOpen) {
+    emit('close')
+  }
 }
 
 watch(() => props.show, (newVal) => {

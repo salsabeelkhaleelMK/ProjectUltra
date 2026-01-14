@@ -134,7 +134,7 @@
           <template #menu="{ item: task }">
             <!-- Reopen Lead (only for closed leads) -->
             <button 
-              v-if="task.type === 'lead' && (task.isDisqualified || (task.stage && task.stage.startsWith('Closed')) || (task.displayStage && task.displayStage.startsWith('Closed')))"
+              v-if="task.type === 'lead' && task.isDisqualified === true"
               @click.stop="reopenLead(task)"
               class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
@@ -251,12 +251,14 @@ import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
 import MobileDetailHeader from '@/components/shared/layout/MobileDetailHeader.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
 import { useTaskHelpers } from '@/composables/useTaskHelpers'
+import { useTaskFilters } from '@/composables/useTaskFilters'
+import { useTaskSorting } from '@/composables/useTaskSorting'
 import { formatCurrency } from '@/utils/formatters'
 import { getStageBadgeClass } from '@/utils/formatters'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import { getTransitionHandler } from '@/composables/useLeadStateMachine'
-import { LEAD_STAGES, getDisplayStage } from '@/utils/stageMapper'
-import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
+import { LEAD_STAGES } from '@/utils/stageMapper'
+import { getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
 import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 
@@ -334,174 +336,21 @@ const showTaskListMobile = ref(false)
 const showReassignModal = ref(false)
 const taskToReassign = ref(null)
 
-// Combine leads and opportunities with type property and composite key
-// Filter based on user role
-const allTasks = computed(() => {
-  // Filter out disqualified leads (unless showClosed is enabled)
-  const visibleLeads = showClosed.value 
-    ? leadsStore.leads 
-    : leadsStore.leads.filter(lead => !lead.isDisqualified)
-  const leads = visibleLeads.map(lead => {
-    // Calculate displayStage for lead
-    const displayStage = getDisplayStage(lead, 'lead')
-    
-    // Ensure customer object is preserved
-    const task = { 
-      ...lead, 
-      type: 'lead', 
-      compositeId: `lead-${lead.id}`,
-      displayStage  // Add calculated displayStage
-    }
-    // Explicitly ensure customer is present (spread should handle this, but being defensive)
-    if (!task.customer && lead.customer) {
-      task.customer = lead.customer
-    }
-    return task
-  })
-  const opportunities = opportunitiesStore.opportunities.map(opp => {
-    // Ensure customer object is preserved
-    const task = { ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }
-    // Explicitly ensure customer is present (spread should handle this, but being defensive)
-    if (!task.customer && opp.customer) {
-      task.customer = opp.customer
-    }
-    return task
-  })
-  
-  // Filter by role
-  let tasks = []
-  if (userStore.isOperator()) {
-    // Operators only see leads
-    tasks = leads
-  } else if (userStore.isSalesman()) {
-    // Salesmen only see opportunities
-    tasks = opportunities
-  } else {
-    // Managers see everything
-    tasks = [...leads, ...opportunities]
-  }
-  
-  return tasks
-})
+// Use task filters composable
+const { allTasks, filterByType, shouldShowTypeFilter } = useTaskFilters(showClosed)
+
+// Use task sorting composable
+const { sortTasks } = useTaskSorting()
 
 // Filter and sort tasks
 const filteredTasks = computed(() => {
-  let tasks = allTasks.value
-  
   // Apply type filter
-  if (typeFilter.value !== 'all') {
-    tasks = tasks.filter(task => task.type === typeFilter.value)
-  }
-  
-  // Calculate urgency scores for leads (if urgency is enabled) - needed for display
-  const urgencyEnabled = settingsStore.getSetting('urgencyEnabled') !== false
-  if (urgencyEnabled) {
-    tasks = tasks.map(task => {
-      if (task.type === 'lead' && !task.urgencyScore) {
-        const urgencyResult = calculateLeadUrgency(task)
-        return {
-          ...task,
-          urgencyScore: urgencyResult.score,
-          urgencyLevel: urgencyResult.level
-        }
-      }
-      return task
-    })
-  }
+  let tasks = filterByType(allTasks.value, typeFilter.value)
   
   // Apply sort
-  if (sortOption.value === 'urgent-first') {
-    // For leads: use urgency scoring if enabled
-    
-    if (urgencyEnabled) {
-      // Urgency scores already calculated above, use them for sorting
-      // Sort: leads by urgency score DESC, then by createdAt DESC (tiebreaker)
-      // Opportunities keep existing priority-based sorting
-      tasks = [...tasks].sort((a, b) => {
-        // If both are leads, sort by urgency score
-        if (a.type === 'lead' && b.type === 'lead') {
-          const scoreA = a.urgencyScore || 0
-          const scoreB = b.urgencyScore || 0
-          if (scoreA !== scoreB) {
-            return scoreB - scoreA // Higher score first
-          }
-          // Tiebreaker: most recent first
-          const dateA = new Date(a.createdAt || 0)
-          const dateB = new Date(b.createdAt || 0)
-          return dateB - dateA
-        }
-        // If one is lead and one is opportunity, leads come first when urgency sorting
-        if (a.type === 'lead' && b.type === 'opportunity') return -1
-        if (a.type === 'opportunity' && b.type === 'lead') return 1
-        // Both opportunities: use priority then date
-        if (a.priority === 'Hot' && b.priority !== 'Hot') return -1
-        if (a.priority !== 'Hot' && b.priority === 'Hot') return 1
-        const dateA = new Date(a.lastActivity || a.createdAt || 0)
-        const dateB = new Date(b.lastActivity || b.createdAt || 0)
-        return dateB - dateA
-      })
-    } else {
-      // Fallback to priority-based sorting if urgency disabled
-      tasks = [...tasks].sort((a, b) => {
-        // Hot priority first
-        if (a.priority === 'Hot' && b.priority !== 'Hot') return -1
-        if (a.priority !== 'Hot' && b.priority === 'Hot') return 1
-        // Then by date (most recent first)
-        const dateA = new Date(a.lastActivity || a.createdAt || 0)
-        const dateB = new Date(b.lastActivity || b.createdAt || 0)
-        return dateB - dateA
-      })
-    }
-  } else if (sortOption.value === 'assigned-to-me') {
-    // Filter to only tasks assigned to current user
-    const currentUserName = userStore.currentUser.name
-    tasks = tasks.filter(task => task.assignee === currentUserName)
-    // Then sort by date
-    tasks = [...tasks].sort((a, b) => {
-      const dateA = new Date(a.lastActivity || a.createdAt || 0)
-      const dateB = new Date(b.lastActivity || b.createdAt || 0)
-      return dateB - dateA
-    })
-  } else if (sortOption.value === 'assigned-to-my-team') {
-    // Filter to tasks assigned to user's team
-    const currentUser = userStore.currentUser
-    // Get team members based on role
-    // Salesmen see Sales team, Operators see BDC team, Managers see all
-    let teamMemberNames = []
-    if (currentUser.role === 'manager') {
-      // Managers see all users
-      teamMemberNames = usersStore.users.map(u => u.name)
-    } else if (currentUser.role === 'salesman') {
-      // Salesmen see Sales team (other salesmen)
-      teamMemberNames = usersStore.users.filter(u => u.role === 'salesman').map(u => u.name)
-    } else if (currentUser.role === 'operator') {
-      // Operators see BDC team (other operators)
-      teamMemberNames = usersStore.users.filter(u => u.role === 'operator').map(u => u.name)
-    }
-    tasks = tasks.filter(task => teamMemberNames.includes(task.assignee))
-    // Then sort by date
-    tasks = [...tasks].sort((a, b) => {
-      const dateA = new Date(a.lastActivity || a.createdAt || 0)
-      const dateB = new Date(b.lastActivity || b.createdAt || 0)
-      return dateB - dateA
-    })
-  } else {
-    // Default: sort by lastActivity or createdAt (most recent first)
-    tasks = [...tasks].sort((a, b) => {
-      const dateA = new Date(a.lastActivity || a.createdAt || 0)
-      const dateB = new Date(b.lastActivity || b.createdAt || 0)
-      return dateB - dateA
-    })
-  }
+  tasks = sortTasks(tasks, sortOption.value)
   
   return tasks
-})
-
-// Check if user has both leads and opportunities (only show filter if they have both types)
-const shouldShowTypeFilter = computed(() => {
-  const hasLeads = allTasks.value.some(task => task.type === 'lead')
-  const hasOpportunities = allTasks.value.some(task => task.type === 'opportunity')
-  return hasLeads && hasOpportunities
 })
 
 // Get current task based on route ID and query param type
