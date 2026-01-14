@@ -202,17 +202,10 @@
               />
             </div>
 
-            <div class="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="excludeNotValid"
-                v-model="localSettings.excludeNotValidFromConversion"
-                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label for="excludeNotValid" class="text-sm font-medium text-gray-700 cursor-pointer">
-                Exclude "NOT VALID" leads from conversion rate calculations
-              </label>
-            </div>
+            <Checkbox
+              v-model="localSettings.excludeNotValidFromConversion"
+              label='Exclude "NOT VALID" leads from conversion rate calculations'
+            />
           </div>
         </div>
 
@@ -224,15 +217,10 @@
           <div class="space-y-6">
             <!-- Toggle -->
             <div class="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="dormantEnabled"
-                v-model="localSettings.dormantOpportunityEnabled"
-                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label for="dormantEnabled" class="text-sm font-medium text-gray-700 cursor-pointer">
+              <Toggle v-model="localSettings.dormantOpportunityEnabled" name="dormantOpportunityEnabled" />
+              <span class="text-sm font-medium text-gray-700">
                 Enable Dormant Opportunity Detection
-              </label>
+              </span>
             </div>
 
             <div v-if="localSettings.dormantOpportunityEnabled" class="space-y-6 border-t border-gray-200 pt-6">
@@ -315,17 +303,10 @@
           <h2 class="text-lg font-bold text-gray-900 mb-4">Task Widgets</h2>
           <p class="text-sm text-gray-600 mb-6">Configure task widget behavior.</p>
           
-          <div class="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="autoCloseWidgets"
-              v-model="localSettings.autoCloseWidgetsOnClose"
-              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label for="autoCloseWidgets" class="text-sm font-medium text-gray-700 cursor-pointer">
-              Auto-close NFU/OFB widgets when opportunity is closed (Won/Lost)
-            </label>
-          </div>
+          <Checkbox
+            v-model="localSettings.autoCloseWidgetsOnClose"
+            label="Auto-close NFU/OFB widgets when opportunity is closed (Won/Lost)"
+          />
         </div>
         </div>
 
@@ -372,15 +353,10 @@
           <div class="space-y-6 border-t border-gray-200 pt-6">
             <!-- Enable/Disable Toggle -->
             <div class="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="urgencyEnabled"
-                v-model="localSettings.urgencyEnabled"
-                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label for="urgencyEnabled" class="text-sm font-medium text-gray-700 cursor-pointer">
+              <Toggle v-model="localSettings.urgencyEnabled" name="urgencyEnabled" />
+              <span class="text-sm font-medium text-gray-700">
                 Enable Urgency Auto-Sorter
-              </label>
+              </span>
             </div>
             
             <div v-if="localSettings.urgencyEnabled" class="space-y-6">
@@ -550,7 +526,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { Button } from '@motork/component-library'
+import { Button, Checkbox, Toggle } from '@motork/component-library'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
 const settingsStore = useSettingsStore()

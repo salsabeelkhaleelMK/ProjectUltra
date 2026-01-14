@@ -1,10 +1,12 @@
 import { ref, computed, onUnmounted } from 'vue'
+import { useToastStore } from '@/stores/toast'
 
 /**
  * Composable for LQWidget call interface logic
  * Manages call state, duration, notes, and transcription
  */
 export function useLQWidgetCall() {
+  const toastStore = useToastStore()
   const isCallActive = ref(false)
   const callEnded = ref(false)
   const callDuration = ref(0)
@@ -66,10 +68,9 @@ export function useLQWidgetCall() {
   const copyNumber = async (phoneNumber) => {
     try {
       await navigator.clipboard.writeText(phoneNumber)
-      // Show toast notification (you can add a toast component later)
-      alert('Phone number copied to clipboard!')
+      toastStore.pushToast('success', 'Phone number copied to clipboard!')
     } catch (err) {
-      console.error('Failed to copy:', err)
+      toastStore.pushToast('error', 'Failed to copy phone number')
     }
   }
 

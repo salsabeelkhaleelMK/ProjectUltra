@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" ref="dropdownRef">
+  <div class="relative" v-click-outside="closeDropdown">
     <button 
       @click="toggleDropdown"
       class="w-auto bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
@@ -23,39 +23,18 @@
     >
       <div
         v-if="isOpen"
-        class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-96 overflow-y-auto min-w-full"
+        class="absolute top-full right-0 mt-2 min-w-full z-50"
         style="z-index: 9999;"
       >
-        <button
-          v-for="action in actions"
-          :key="action.key"
-          @click="handleActionClick(action)"
-          class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-start gap-3 border-b border-gray-100 last:border-b-0 transition-colors whitespace-nowrap"
-          :class="{ 'opacity-50 cursor-not-allowed': action.disabled }"
-          :disabled="action.disabled"
-        >
-          <i 
-            :class="action.icon" 
-            class="text-gray-400 mt-0.5 w-4 flex-shrink-0"
-          ></i>
-          <div class="flex-1">
-            <div class="font-medium text-slate-700">{{ action.label }}</div>
-            <div v-if="action.description" class="text-xs text-gray-500 mt-0.5">
-              {{ action.description }}
-            </div>
-          </div>
-        </button>
-        
-        <div v-if="!actions || actions.length === 0" class="px-4 py-3 text-sm text-gray-500 text-center">
-          No actions available
-        </div>
+        <DropdownMenu :items="menuItems" className="min-w-full" />
       </div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref } from 'vue'
+import { DropdownMenu } from '@motork/component-library'
 
 const props = defineProps({
   actions: {
@@ -67,7 +46,6 @@ const props = defineProps({
 const emit = defineEmits(['action-selected'])
 
 const isOpen = ref(false)
-const dropdownRef = ref(null)
 
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value
@@ -89,19 +67,13 @@ const handleActionClick = (action) => {
   }
 }
 
-// Close dropdown when clicking outside
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    closeDropdown()
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+const menuItems = computed(() => {
+  return (props.actions || []).map(action => ({
+    key: action.key,
+    label: action.label,
+    disabled: !!action.disabled,
+    onClick: () => handleActionClick(action)
+  }))
 })
 </script>
 

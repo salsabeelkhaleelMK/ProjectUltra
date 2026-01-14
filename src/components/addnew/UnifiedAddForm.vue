@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="max-w-4xl mx-auto">
+  <form v-click-outside="() => (showResults = false)" @submit.prevent="handleSubmit" class="max-w-4xl mx-auto">
     <!-- Contact Section -->
     <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">Contact Information</h3>
@@ -347,16 +347,15 @@
       </p>
       
       <div v-if="!forceType" class="space-y-3">
-        <label 
+        <div 
           class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-blue-50 hover:border-blue-300' : 'cursor-not-allowed opacity-60'"
         >
-          <input 
-            type="checkbox" 
+          <Checkbox
             v-model="markAsLead"
             :disabled="!hasVehicleData"
-            class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            label=""
+          />
           <div>
             <span 
               class="font-medium"
@@ -366,18 +365,17 @@
             </span>
             <p class="text-xs text-gray-500">Create a new lead task with vehicle details</p>
           </div>
-        </label>
+        </div>
         
-        <label 
+        <div 
           class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-purple-50 hover:border-purple-300' : 'cursor-not-allowed opacity-60'"
         >
-          <input 
-            type="checkbox" 
+          <Checkbox
             v-model="markAsOpportunity"
             :disabled="!hasVehicleData"
-            class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            label=""
+          />
           <div>
             <span 
               class="font-medium"
@@ -387,7 +385,7 @@
             </span>
             <p class="text-xs text-gray-500">Create a new opportunity task with vehicle details</p>
           </div>
-        </label>
+        </div>
       </div>
 
       <!-- If forceType is set, just show confirmation -->
@@ -415,8 +413,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { Button, Checkbox } from '@motork/component-library'
 import { useCustomersStore } from '@/stores/customers'
 import { useAddFormValidation } from '@/composables/useAddFormValidation'
 import { useAddFormSubmission } from '@/composables/useAddFormSubmission'
@@ -510,11 +508,6 @@ onMounted(() => {
   if (customersStore.customers.length === 0) {
     customersStore.fetchCustomers()
   }
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 
 // Computed
@@ -580,12 +573,6 @@ const clearSelection = () => {
   selectedContact.value = null
   searchQuery.value = ''
   showResults.value = false
-}
-
-const handleClickOutside = (event) => {
-  if (!event.target.closest('form')) {
-    showResults.value = false
-  }
 }
 
 const handleClear = () => {

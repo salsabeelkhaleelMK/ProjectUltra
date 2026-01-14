@@ -41,42 +41,10 @@
       <transition name="dropdown">
         <div 
           v-if="showSortMenu"
-          class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+          class="absolute right-0 mt-2 z-50"
           v-click-outside="() => showSortMenu = false"
         >
-          <button 
-            @click="selectSort('recent-first')"
-            class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-            :class="{ 'bg-blue-50 text-blue-700': sortOption === 'recent-first' }"
-          >
-            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'recent-first' ? 'opacity-100' : 'opacity-0'"></i>
-            <span>Most Recent First</span>
-          </button>
-          <button 
-            v-if="typeFilter === 'lead'"
-            @click="selectSort('urgent-first')"
-            class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-            :class="{ 'bg-blue-50 text-blue-700': sortOption === 'urgent-first' }"
-          >
-            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'urgent-first' ? 'opacity-100' : 'opacity-0'"></i>
-            <span>Urgent first</span>
-          </button>
-          <button 
-            @click="selectSort('assigned-to-me')"
-            class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-            :class="{ 'bg-blue-50 text-blue-700': sortOption === 'assigned-to-me' }"
-          >
-            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'assigned-to-me' ? 'opacity-100' : 'opacity-0'"></i>
-            <span>Assigned to me</span>
-          </button>
-          <button 
-            @click="selectSort('assigned-to-my-team')"
-            class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-            :class="{ 'bg-blue-50 text-blue-700': sortOption === 'assigned-to-my-team' }"
-          >
-            <i class="fa-solid fa-check text-xs w-3" :class="sortOption === 'assigned-to-my-team' ? 'opacity-100' : 'opacity-0'"></i>
-            <span>Assigned to my team</span>
-          </button>
+          <DropdownMenu :items="sortMenuItems" className="w-56" />
         </div>
       </transition>
     </div>
@@ -84,7 +52,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { DropdownMenu } from '@motork/component-library'
 
 const props = defineProps({
   typeFilter: { type: String, default: 'all' },
@@ -106,20 +75,17 @@ const selectSort = (option) => {
   emit('sort-change', option)
 }
 
-// Click outside directive
-const vClickOutside = {
-  mounted(el, binding) {
-    el.clickOutsideEvent = (event) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event)
-      }
-    }
-    document.addEventListener('click', el.clickOutsideEvent)
-  },
-  unmounted(el) {
-    document.removeEventListener('click', el.clickOutsideEvent)
-  }
-}
+const sortMenuItems = computed(() => {
+  const base = [
+    { key: 'recent-first', label: 'Most Recent First', onClick: () => selectSort('recent-first') },
+    ...(props.typeFilter === 'lead'
+      ? [{ key: 'urgent-first', label: 'Urgent first', onClick: () => selectSort('urgent-first') }]
+      : []),
+    { key: 'assigned-to-me', label: 'Assigned to me', onClick: () => selectSort('assigned-to-me') },
+    { key: 'assigned-to-my-team', label: 'Assigned to my team', onClick: () => selectSort('assigned-to-my-team') }
+  ]
+  return base
+})
 </script>
 
 <style scoped>

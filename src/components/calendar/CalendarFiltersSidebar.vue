@@ -16,58 +16,38 @@
       <div class="space-y-2">
         <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Only mine</span>
-          <div 
-            class="w-8 h-4 rounded-full transition-colors relative"
-            :class="modelValue.onlyMine ? 'bg-blue-600' : 'bg-gray-300'"
-            @click="updateFilter('onlyMine', !modelValue.onlyMine)"
-          >
-            <div 
-              class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-              :class="modelValue.onlyMine ? 'left-[17px]' : 'left-0.5'"
-            ></div>
-          </div>
+          <Toggle
+            name="onlyMine"
+            :modelValue="modelValue.onlyMine"
+            @update:modelValue="(val) => updateFilter('onlyMine', val)"
+          />
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Most relevant</span>
-          <div 
-            class="w-8 h-4 rounded-full transition-colors relative"
-            :class="modelValue.mostRelevant ? 'bg-blue-600' : 'bg-gray-300'"
-            @click="updateFilter('mostRelevant', !modelValue.mostRelevant)"
-          >
-            <div 
-              class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-              :class="modelValue.mostRelevant ? 'left-[17px]' : 'left-0.5'"
-            ></div>
-          </div>
+          <Toggle
+            name="mostRelevant"
+            :modelValue="modelValue.mostRelevant"
+            @update:modelValue="(val) => updateFilter('mostRelevant', val)"
+          />
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Include cancelled</span>
-          <div 
-            class="w-8 h-4 rounded-full transition-colors relative"
-            :class="modelValue.includeCancelled ? 'bg-blue-600' : 'bg-gray-300'"
-            @click="updateFilter('includeCancelled', !modelValue.includeCancelled)"
-          >
-            <div 
-              class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-              :class="modelValue.includeCancelled ? 'left-[17px]' : 'left-0.5'"
-            ></div>
-          </div>
+          <Toggle
+            name="includeCancelled"
+            :modelValue="modelValue.includeCancelled"
+            @update:modelValue="(val) => updateFilter('includeCancelled', val)"
+          />
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
           <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">No-shows only</span>
-          <div 
-            class="w-8 h-4 rounded-full transition-colors relative"
-            :class="modelValue.noShowsOnly ? 'bg-blue-600' : 'bg-gray-300'"
-            @click="updateFilter('noShowsOnly', !modelValue.noShowsOnly)"
-          >
-            <div 
-              class="w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm"
-              :class="modelValue.noShowsOnly ? 'left-[17px]' : 'left-0.5'"
-            ></div>
-          </div>
+          <Toggle
+            name="noShowsOnly"
+            :modelValue="modelValue.noShowsOnly"
+            @update:modelValue="(val) => updateFilter('noShowsOnly', val)"
+          />
         </label>
       </div>
     </div>
@@ -94,28 +74,26 @@
       </button>
       <transition name="accordion">
         <div v-if="expandedSections.eventTypes" class="px-3 pb-3">
-          <input 
-            :value="eventTypeSearch"
-            @input="$emit('update:event-type-search', $event.target.value)"
-            type="text" 
-            placeholder="Search..." 
-            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg mb-2 focus:outline-none focus:border-blue-500"
-          >
+          <div class="mb-2">
+            <TextInput
+              name="eventTypeSearch"
+              :modelValue="eventTypeSearch"
+              placeholder="Search..."
+              @update:modelValue="(val) => $emit('update:event-type-search', val)"
+            />
+          </div>
           <div class="space-y-1 max-h-48 overflow-y-auto">
-            <label 
-              v-for="type in filteredEventTypes" 
+            <div
+              v-for="type in filteredEventTypes"
               :key="type.value"
-              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              class="px-2 py-1.5 rounded hover:bg-gray-50"
             >
-              <input 
-                type="checkbox" 
-                :value="type.value"
-                :checked="modelValue.eventTypes.includes(type.value)"
-                @change="toggleArrayFilter('eventTypes', type.value)"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              >
-              <span class="text-sm text-gray-700">{{ type.label }}</span>
-            </label>
+              <Checkbox
+                :modelValue="modelValue.eventTypes.includes(type.value)"
+                :label="type.label"
+                @update:modelValue="(checked) => setArrayFilter('eventTypes', type.value, checked)"
+              />
+            </div>
           </div>
         </div>
       </transition>
@@ -144,20 +122,17 @@
       <transition name="accordion">
         <div v-if="expandedSections.dealerships" class="px-3 pb-3">
           <div class="space-y-1 max-h-40 overflow-y-auto">
-            <label 
-              v-for="d in dealerships" 
+            <div
+              v-for="d in dealerships"
               :key="d"
-              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              class="px-2 py-1.5 rounded hover:bg-gray-50"
             >
-              <input 
-                type="checkbox" 
-                :value="d"
-                :checked="modelValue.dealerships.includes(d)"
-                @change="toggleArrayFilter('dealerships', d)"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              >
-              <span class="text-sm text-gray-700">{{ d }}</span>
-            </label>
+              <Checkbox
+                :modelValue="modelValue.dealerships.includes(d)"
+                :label="d"
+                @update:modelValue="(checked) => setArrayFilter('dealerships', d, checked)"
+              />
+            </div>
           </div>
         </div>
       </transition>
@@ -186,20 +161,17 @@
       <transition name="accordion">
         <div v-if="expandedSections.teams" class="px-3 pb-3">
           <div class="space-y-1 max-h-40 overflow-y-auto">
-            <label 
-              v-for="t in teams" 
+            <div
+              v-for="t in teams"
               :key="t"
-              class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
+              class="px-2 py-1.5 rounded hover:bg-gray-50"
             >
-              <input 
-                type="checkbox" 
-                :value="t"
-                :checked="modelValue.teams.includes(t)"
-                @change="toggleArrayFilter('teams', t)"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              >
-              <span class="text-sm text-gray-700">{{ t }}</span>
-            </label>
+              <Checkbox
+                :modelValue="modelValue.teams.includes(t)"
+                :label="t"
+                @update:modelValue="(checked) => setArrayFilter('teams', t, checked)"
+              />
+            </div>
           </div>
         </div>
       </transition>
@@ -220,6 +192,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { Checkbox, TextInput, Toggle } from '@motork/component-library'
 
 const props = defineProps({
   modelValue: {
@@ -279,11 +252,12 @@ const updateFilter = (key, value) => {
   emit('update:modelValue', { ...props.modelValue, [key]: value })
 }
 
-const toggleArrayFilter = (key, value) => {
+const setArrayFilter = (key, value, checked) => {
   const currentArray = props.modelValue[key]
-  const newArray = currentArray.includes(value)
-    ? currentArray.filter(v => v !== value)
-    : [...currentArray, value]
+  const hasValue = currentArray.includes(value)
+  const newArray = checked
+    ? (hasValue ? currentArray : [...currentArray, value])
+    : currentArray.filter(v => v !== value)
   
   emit('update:modelValue', { ...props.modelValue, [key]: newArray })
 }

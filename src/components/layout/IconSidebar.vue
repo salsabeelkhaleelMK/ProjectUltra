@@ -70,7 +70,7 @@
     <!-- Bottom Icons -->
     <div class="mt-auto pb-4 flex flex-col gap-6 items-center w-full">
       <!-- Lists Icon with Dropdown -->
-      <div class="relative" ref="listsContainer">
+      <div class="relative" v-click-outside="() => (showListsMenu = false)">
         <button
           @click.stop="toggleListsMenu"
           class="nav-icon"
@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
@@ -125,7 +125,6 @@ const leadsStore = useLeadsStore()
 const userStore = useUserStore()
 
 const showListsMenu = ref(false)
-const listsContainer = ref(null)
 
 const hotLeadsCount = computed(() => leadsStore.hotLeads.length)
 
@@ -136,20 +135,6 @@ const isActive = (path) => {
 const toggleListsMenu = () => {
   showListsMenu.value = !showListsMenu.value
 }
-
-const handleClickOutside = (event) => {
-  if (listsContainer.value && !listsContainer.value.contains(event.target)) {
-    showListsMenu.value = false
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <style scoped>

@@ -43,14 +43,17 @@
       </router-link>
       
       <!-- User Menu -->
-      <div class="relative" ref="userMenuContainer">
+      <div class="relative" v-click-outside="() => (showUserMenu = false)">
         <button 
           class="flex items-center gap-3 hover:bg-gray-50 rounded-lg px-3 py-2 transition-colors"
           @click.stop="toggleUserMenu"
         >
-          <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-            {{ userStore.currentUser.initials }}
-          </div>
+          <UserAvatar
+            class="w-8 h-8"
+            :name="userAvatarName"
+            :surname="userAvatarSurname"
+            color="blue"
+          />
           <div class="text-left hidden md:block">
             <div class="text-sm font-semibold text-gray-900">{{ userStore.currentUser.name }}</div>
             <div class="text-xs text-gray-500 capitalize">{{ userStore.currentUser.role }}</div>
@@ -97,7 +100,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { UserAvatar } from '@motork/component-library'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useActionableQuestions } from '@/composables/useActionableQuestions'
@@ -108,9 +112,22 @@ const { totalQuestionsCount, loadQuestions } = useActionableQuestions()
 
 const searchQuery = ref('')
 const showUserMenu = ref(false)
-const userMenuContainer = ref(null)
 
 const actionItemsCount = computed(() => totalQuestionsCount.value)
+
+const userAvatarName = computed(() => {
+  const full = userStore.currentUser?.name || ''
+  const parts = full.trim().split(/\s+/).filter(Boolean)
+  return parts[0] || full || 'User'
+})
+
+const userAvatarSurname = computed(() => {
+  const full = userStore.currentUser?.name || ''
+  const parts = full.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return parts[parts.length - 1]
+  // Surname is required by the component; fall back to a non-empty string.
+  return 'User'
+})
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
@@ -129,21 +146,9 @@ const switchRole = (role) => {
   router.push('/home')
 }
 
-// Click outside handler
-const handleClickOutside = (event) => {
-  if (userMenuContainer.value && !userMenuContainer.value.contains(event.target)) {
-    showUserMenu.value = false
-  }
-}
-
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
   // Load action items count
   loadQuestions()
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 

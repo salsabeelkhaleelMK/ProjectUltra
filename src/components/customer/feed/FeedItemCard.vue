@@ -25,20 +25,9 @@
           <div 
             v-if="showMenu"
             v-click-outside="() => showMenu = false"
-            class="absolute right-0 top-full mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden"
+            class="absolute right-0 top-full mt-1 z-10"
           >
-            <button 
-              @click="handleEdit"
-              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-pencil text-gray-400"></i> Edit
-            </button>
-            <button 
-              @click="handleDelete"
-              class="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-trash text-red-400"></i> Delete
-            </button>
+            <DropdownMenu :items="menuItems" className="w-32" />
           </div>
         </div>
       </div>
@@ -127,7 +116,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { DropdownMenu } from '@motork/component-library'
 import AppointmentWidget from '@/components/customer/activities/AppointmentWidget.vue'
 
 const props = defineProps({
@@ -149,23 +139,10 @@ const emit = defineEmits(['edit', 'delete'])
 
 const showMenu = ref(false)
 
-// Click outside directive
-const vClickOutside = {
-  mounted(el, binding) {
-    el.clickOutsideEvent = (event) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value()
-      }
-    }
-    // Use setTimeout to ensure the click that opened the menu doesn't immediately close it
-    setTimeout(() => {
-      document.addEventListener('click', el.clickOutsideEvent)
-    }, 0)
-  },
-  unmounted(el) {
-    document.removeEventListener('click', el.clickOutsideEvent)
-  }
-}
+const menuItems = computed(() => ([
+  { key: 'edit', label: 'Edit', onClick: handleEdit },
+  { key: 'delete', label: 'Delete', onClick: handleDelete }
+]))
 
 const getItemIcon = (type) => {
   const icons = {

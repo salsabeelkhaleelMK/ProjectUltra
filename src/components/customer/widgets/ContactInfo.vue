@@ -4,12 +4,12 @@
     <div class="flex items-center justify-between gap-3 md:gap-4">
       <div class="flex items-center gap-3 md:gap-4 flex-1">
         <!-- Customer Avatar -->
-        <div 
-          class="w-14 h-14 rounded flex items-center justify-center text-lg font-bold shadow-sm shrink-0"
-          :class="avatarColorClass"
-        >
-          {{ initials }}
-        </div>
+        <UserAvatar
+          class="w-14 h-14 rounded"
+          :name="avatarName"
+          :surname="avatarSurname"
+          :color="avatarColor"
+        />
         
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
@@ -47,69 +47,7 @@
             class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-50 overflow-hidden flex flex-col p-1"
             v-click-outside="() => showQuickActionMenu = false"
           >
-            <button 
-              @click="handleAction('note')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Note
-            </button>
-            <button 
-              @click="handleAction('financing')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Financing
-            </button>
-            <button 
-              @click="handleAction('tradein')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Trade-in
-            </button>
-            <button 
-              @click="handleAction('purchase')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Purchase
-            </button>
-            <button 
-              @click="handleAction('attachment')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Attachment
-            </button>
-            <div class="border-t border-gray-100 my-1"></div>
-            <button 
-              @click="handleAction('whatsapp')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
-            >
-              <i class="fa-brands fa-whatsapp text-xs text-gray-400"></i> WhatsApp msg
-            </button>
-            <button 
-              @click="handleAction('email')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
-            >
-              <i class="fa-regular fa-envelope text-xs text-gray-400"></i> Email
-            </button>
-            <button 
-              @click="handleAction('sms')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
-            >
-              <i class="fa-solid fa-comment-dots text-xs text-gray-400"></i> SMS
-            </button>
-            <button 
-              @click="handleAction('call')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium flex items-center gap-2"
-            >
-              <i class="fa-solid fa-phone text-xs text-gray-400"></i> Call
-            </button>
-            <div v-if="taskType === 'opportunity'" class="border-t border-gray-100 my-1"></div>
-            <button 
-              v-if="taskType === 'opportunity'"
-              @click="handleAction('appointment')" 
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors font-medium"
-            >
-              Appointment
-            </button>
+            <DropdownMenu :items="quickActionItems" className="w-full" />
           </div>
         </div>
         
@@ -171,34 +109,14 @@
         </div>
       </div>
       
-      <!-- Copied toast -->
-      <div 
-        v-if="copiedField"
-        class="absolute -bottom-6 left-0 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap"
-      >
-        {{ copiedField === 'email' ? 'Email' : 'Phone' }} copied!
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-// Click outside directive
-const vClickOutside = {
-  mounted(el, binding) {
-    el.clickOutsideEvent = (event) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value()
-      }
-    }
-    document.addEventListener('click', el.clickOutsideEvent)
-  },
-  unmounted(el) {
-    document.removeEventListener('click', el.clickOutsideEvent)
-  }
-}
+import { computed, ref } from 'vue'
+import { DropdownMenu, UserAvatar } from '@motork/component-library'
+import { useToastStore } from '@/stores/toast'
 
 const props = defineProps({
   initials: {
@@ -247,7 +165,50 @@ const emit = defineEmits(['action', 'add-tag'])
 
 const showContactInfo = ref(false)
 const showQuickActionMenu = ref(false)
-const copiedField = ref(null)
+const toastStore = useToastStore()
+
+const avatarName = computed(() => {
+  const full = props.name || ''
+  const parts = full.trim().split(/\s+/).filter(Boolean)
+  return parts[0] || full || 'Customer'
+})
+
+const avatarSurname = computed(() => {
+  const full = props.name || ''
+  const parts = full.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return parts[parts.length - 1]
+  return 'Customer'
+})
+
+const avatarColor = computed(() => {
+  const c = (props.avatarColorClass || '').toLowerCase()
+  if (c.includes('purple')) return 'purple'
+  if (c.includes('blue')) return 'blue'
+  if (c.includes('green')) return 'green'
+  if (c.includes('red')) return 'red'
+  if (c.includes('pink')) return 'pink'
+  return 'yellow'
+})
+
+const quickActionItems = computed(() => {
+  const base = [
+    { key: 'note', label: 'Note' },
+    { key: 'financing', label: 'Financing' },
+    { key: 'tradein', label: 'Trade-in' },
+    { key: 'purchase', label: 'Purchase' },
+    { key: 'attachment', label: 'Attachment' },
+    { key: 'whatsapp', label: 'WhatsApp msg' },
+    { key: 'email', label: 'Email' },
+    { key: 'sms', label: 'SMS' },
+    { key: 'call', label: 'Call' },
+    ...(props.taskType === 'opportunity' ? [{ key: 'appointment', label: 'Appointment' }] : [])
+  ]
+
+  return base.map(item => ({
+    ...item,
+    onClick: () => handleAction(item.key)
+  }))
+})
 
 const handleAction = (action) => {
   showQuickActionMenu.value = false
@@ -257,12 +218,9 @@ const handleAction = (action) => {
 const copyToClipboard = async (text, field) => {
   try {
     await navigator.clipboard.writeText(text)
-    copiedField.value = field
-    setTimeout(() => {
-      copiedField.value = null
-    }, 1500)
+    toastStore.pushToast('success', `${field === 'email' ? 'Email' : 'Phone'} copied!`)
   } catch (err) {
-    console.error('Failed to copy:', err)
+    toastStore.pushToast('error', 'Failed to copy')
   }
 }
 
