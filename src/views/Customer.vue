@@ -5,8 +5,8 @@
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
     </div>
 
-    <!-- TaskShell - Only show when task ID matches route ID -->
-    <TaskShell
+    <!-- EntityDetailLayout - Only show when task ID matches route ID -->
+    <EntityDetailLayout
       v-else
       :task="task"
       :type="taskType"
@@ -43,7 +43,7 @@
           />
         </div>
       </template>
-    </TaskShell>
+    </EntityDetailLayout>
 
     <!-- Add Lead/Opportunity Modal -->
     <AddLeadOpportunityModal
@@ -63,7 +63,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
-import TaskShell from '@/components/customer/CustomerShell.vue'
+import EntityDetailLayout from '@/components/shared/layout/EntityDetailLayout.vue'
 import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'
 import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportunitiesWidget.vue'
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'

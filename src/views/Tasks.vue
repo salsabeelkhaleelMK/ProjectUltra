@@ -1,18 +1,11 @@
 <template>
   <div class="h-full flex flex-col lg:flex-row overflow-hidden" style="background-color: #f5f5f5;">
     <!-- Unified Mobile Header - Shows when task is selected (both views) -->
-    <div v-if="currentTask" class="lg:hidden border-b border-gray-200 shrink-0" style="background-color: #f5f5f5;">
-      <div class="px-4 py-3 flex items-center justify-between gap-3">
-        <!-- Back Button -->
-        <button
-          @click="handleBackToTaskList"
-          class="w-11 h-11 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
-          aria-label="Back to task list"
-        >
-          <i class="fa-solid fa-arrow-left text-lg"></i>
-        </button>
-      </div>
-    </div>
+    <MobileDetailHeader
+      :show="!!currentTask"
+      back-label="Back to task list"
+      @back="handleBackToTaskList"
+    />
 
     <!-- Card View - Similar structure to table view -->
     <div v-if="viewMode === 'card'" class="flex-1 flex flex-col lg:flex-row overflow-hidden min-w-0">
@@ -172,22 +165,14 @@
       </div>
       
       <!-- Task Detail Panel for Card View (right side on desktop, full screen on mobile) -->
-      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden lg:border-l border-gray-200">
-        <TaskShell
-          :task="currentTask"
-          :type="currentTask.type"
-          :management-widget="managementWidget"
-          :store-adapter="storeAdapter"
-          :add-new-config="addNewConfig"
-        >
-          <template #pinned-extra="{ task }">
-            <VehicleWidget
-              v-if="vehicleWidgetData"
-              v-bind="vehicleWidgetData"
-            />
-          </template>
-        </TaskShell>
-      </div>
+      <TaskDetailView
+        v-if="currentTask"
+        :task="currentTask"
+        :management-widget="managementWidget"
+        :store-adapter="storeAdapter"
+        :add-new-config="addNewConfig"
+        :vehicle-widget-data="vehicleWidgetData"
+      />
       
       <!-- Empty State for Card View (right side on desktop, hidden on mobile) -->
       <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border-gray-200">
@@ -233,23 +218,14 @@
       />
       
       <!-- Task Detail Panel for Table View (right side on desktop, full screen on mobile) -->
-      <div v-if="currentTask" class="flex-1 flex flex-col overflow-hidden lg:border-l border-gray-200">
-        <TaskShell
-          :task="currentTask"
-          :type="currentTask.type"
-          :management-widget="managementWidget"
-          :store-adapter="storeAdapter"
-          :add-new-config="addNewConfig"
-        >
-          <template #pinned-extra="{ task }">
-            <!-- VehicleWidget - Shows requested car for leads/opportunities -->
-            <VehicleWidget
-              v-if="vehicleWidgetData"
-              v-bind="vehicleWidgetData"
-            />
-          </template>
-        </TaskShell>
-      </div>
+      <TaskDetailView
+        v-if="currentTask"
+        :task="currentTask"
+        :management-widget="managementWidget"
+        :store-adapter="storeAdapter"
+        :add-new-config="addNewConfig"
+        :vehicle-widget-data="vehicleWidgetData"
+      />
     </div>
     
     <!-- Reassign Modal -->
@@ -271,7 +247,8 @@ import { useUsersStore } from '@/stores/users'
 import { Badge } from '@motork/component-library'
 import EntityListSidebar from '@/components/tasks/TasksList.vue'
 import TasksTableView from '@/components/tasks/TasksTableView.vue'
-import TaskShell from '@/components/customer/CustomerShell.vue'
+import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
+import MobileDetailHeader from '@/components/shared/layout/MobileDetailHeader.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
@@ -749,7 +726,7 @@ const vehicleWidgetData = computed(() => {
   }
 })
 
-// Use composable to get TaskShell props (same as Lead.vue)
+// Use composable to get EntityDetailLayout props (same as Customer.vue)
 const taskShellProps = useTaskShell(currentTask)
 const managementWidget = taskShellProps.managementWidget
 const storeAdapter = taskShellProps.storeAdapter

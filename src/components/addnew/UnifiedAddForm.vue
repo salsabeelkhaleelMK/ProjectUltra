@@ -418,6 +418,8 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Button } from '@motork/component-library'
 import { useCustomersStore } from '@/stores/customers'
+import { useAddFormValidation } from '@/composables/useAddFormValidation'
+import { useAddFormSubmission } from '@/composables/useAddFormSubmission'
 
 const props = defineProps({
   initialContact: {
@@ -495,14 +497,14 @@ watch(() => props.initialContact, (newContact) => {
   }
 }, { immediate: true })
 
-// UI State
-const isSubmitting = ref(false)
-const errors = reactive({
-  name: '',
-  email: ''
-})
-
 let searchTimeout = null
+
+// Use validation composable
+const { errors, canSubmit, validateContactForm, clearErrors } = useAddFormValidation({
+  contactMode,
+  selectedContact,
+  contactFormData
+})
 
 onMounted(() => {
   if (customersStore.customers.length === 0) {
@@ -546,11 +548,17 @@ const hasVehicleData = computed(() => {
   )
 })
 
-const canSubmit = computed(() => {
-  if (contactMode.value === 'existing') {
-    return !!selectedContact.value
-  } else {
-    return !!(contactFormData.name && contactFormData.email)
+// Use submission composable
+const { isSubmitting, handleSubmit: submitHandler, resetSubmitting } = useAddFormSubmission({
+  contactMode,
+  selectedContact,
+  contactFormData,
+  vehicleFormData,
+  markAsLead,
+  markAsOpportunity,
+  validateContactForm,
+  onSubmit: (submissionData) => {
+    emit('submit', submissionData)
   }
 })
 
@@ -578,11 +586,6 @@ const handleClickOutside = (event) => {
   if (!event.target.closest('form')) {
     showResults.value = false
   }
-}
-
-const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
 }
 
 const handleClear = () => {
@@ -618,79 +621,14 @@ const handleClear = () => {
   markAsOpportunity.value = false
   
   // Clear errors
-  errors.name = ''
-  errors.email = ''
-}
-
-const handleSubmit = () => {
-  // Reset errors
-  errors.name = ''
-  errors.email = ''
-  
-  // Validate
-  if (contactMode.value === 'new') {
-    let isValid = true
-    
-    if (!contactFormData.name.trim()) {
-      errors.name = 'Contact name is required'
-      isValid = false
-    }
-    
-    if (!contactFormData.email.trim()) {
-      errors.email = 'Email is required'
-      isValid = false
-    } else if (!validateEmail(contactFormData.email)) {
-      errors.email = 'Please enter a valid email address'
-      isValid = false
-    }
-    
-    if (!isValid) return
-  } else {
-    if (!selectedContact.value) {
-      return
-    }
-  }
-  
-  isSubmitting.value = true
-  
-  // Clean vehicle data (remove empty values)
-  const cleanVehicleData = Object.entries(vehicleFormData).reduce((acc, [key, value]) => {
-    if (value !== null && value !== '' && value !== undefined) {
-      // Don't include default year if not modified
-      if (key === 'year' && value === new Date().getFullYear()) {
-        return acc
-      }
-      acc[key] = value
-    }
-    return acc
-  }, {})
-  
-  // Prepare contact data
-  const contactData = contactMode.value === 'new' ? {
-    name: contactFormData.name.trim(),
-    email: contactFormData.email.trim(),
-    phone: contactFormData.phone.trim(),
-    company: contactFormData.company.trim()
-  } : null
-  
-  // Emit submit event
-  emit('submit', {
-    contactMode: contactMode.value,
-    selectedContact: selectedContact.value,
-    contactData,
-    vehicleData: Object.keys(cleanVehicleData).length > 0 ? cleanVehicleData : null,
-    markAsLead: markAsLead.value,
-    markAsOpportunity: markAsOpportunity.value
-  })
+  clearErrors()
 }
 
 defineExpose({
-  resetSubmitting: () => {
-    isSubmitting.value = false
-  },
-  submit: handleSubmit,
+  resetSubmitting,
+  submit: submitHandler,
   clear: handleClear,
-  canSubmit: computed(() => canSubmit.value),
-  isSubmitting: computed(() => isSubmitting.value)
+  canSubmit,
+  isSubmitting
 })
 </script>

@@ -200,6 +200,7 @@ import EditEventModal from '@/components/modals/EditEventModal.vue'
 
 // Utilities
 import { getEventCalendarClass } from '@/utils/calendarHelpers'
+import { useCalendarEvents } from '@/composables/useCalendarEvents'
 
 const userStore = useUserStore()
 

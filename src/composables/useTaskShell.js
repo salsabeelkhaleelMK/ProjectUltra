@@ -5,8 +5,8 @@ import LeadManagementWidget from '@/components/leads/LeadManagementWidget.vue'
 import OpportunityManagementWidget from '@/components/opportunities/OpportunityManagementWidget.vue'
 
 /**
- * Composable for setting up TaskShell component props
- * Reduces boilerplate code needed to configure TaskShell
+ * Composable for setting up EntityDetailLayout component props
+ * Reduces boilerplate code needed to configure EntityDetailLayout
  * 
  * @param {Ref|ComputedRef} task - The task object (lead or opportunity)
  * @returns {Object} Object containing managementWidget, storeAdapter, and addNewConfig
@@ -23,7 +23,7 @@ export function useTaskShell(task) {
       : OpportunityManagementWidget
   })
 
-  // Create store adapter that wraps store methods for TaskShell
+  // Create store adapter that wraps store methods for EntityDetailLayout
   const storeAdapter = computed(() => {
     if (!task.value) return null
     

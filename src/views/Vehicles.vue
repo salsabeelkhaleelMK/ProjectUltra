@@ -3,80 +3,39 @@
     <!-- Header -->
     <PageHeader title="Vehicles Inventory">
       <template #actions>
+        <button 
+          @click="showAddModal = true" 
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+        >
+          <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+          <span class="hidden sm:inline">Add new</span>
+        </button>
       </template>
     </PageHeader>
     
     <!-- Content with padding -->
     <div class="p-4 md:p-8">
       <!-- Filter Tabs -->
-      <div class="flex items-center gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-        <button
-          v-for="tab in vehicleTabs"
-          :key="tab.key"
-          @click="setVehicleFilter(tab.key)"
-          class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
-          :class="vehicleFilter === tab.key ? tab.borderColor : 'border-t-border'"
-        >
-          <span class="text-sm font-medium text-foreground whitespace-nowrap">{{ tab.label }}</span>
-          <Badge
-            :text="String(tab.count)"
-            size="small"
-            :theme="vehicleFilter === tab.key ? 'blue' : 'gray'"
-          />
-        </button>
-      </div>
+      <VehicleFilters
+        :vehicle-tabs="vehicleTabs"
+        :vehicle-filter="vehicleFilter"
+        @filter-change="setVehicleFilter"
+      />
 
       <!-- Table -->
-      <div class="table-wrapper w-full">
-        <DataTable 
-          :data="filteredVehicles" 
-          :columns="columns"
-          :loading="vehiclesStore.loading"
-          :meta="tableMeta"
-          @row-click="handleRowClick"
-          :columnFiltersOptions="{
-            filterDefs: filterDefinitions
-          }"
-          v-model:pagination="pagination"
-          v-model:globalFilter="globalFilter"
-          v-model:sorting="sorting"
-          v-model:columnFilters="columnFilters"
-          :paginationOptions="{
-            rowCount: filteredVehicles.length
-          }"
-          :globalFilterOptions="{
-            debounce: 300,
-            placeholder: 'Q Search or ask a question'
-          }"
-        >
-          <!-- Toolbar slot for action buttons -->
-          <template #toolbar>
-            <div class="flex items-center justify-end gap-3">
-              <button 
-                v-if="vehicleFilter === 'customer-vehicles'" 
-                @click="showAddModal = true" 
-                class="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                <i class="fa-solid fa-plus"></i>
-                <span>Add new</span>
-              </button>
-              <button 
-                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
-              >
-                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
-                <span class="hidden sm:inline">Switch back to old design</span>
-              </button>
-            </div>
-          </template>
-          
-          <template #empty-state>
-            <div class="empty-state">
-              <i class="fa-solid fa-car empty-state-icon"></i>
-              <p class="empty-state-text">No vehicles found</p>
-            </div>
-          </template>
-        </DataTable>
-      </div>
+      <VehicleGrid
+        :filtered-vehicles="filteredVehicles"
+        :columns="columns"
+        :loading="vehiclesStore.loading"
+        :table-meta="tableMeta"
+        :filter-definitions="filterDefinitions"
+        v-model:pagination="pagination"
+        v-model:global-filter="globalFilter"
+        v-model:sorting="sorting"
+        v-model:column-filters="columnFilters"
+        @row-click="handleRowClick"
+      >
+      </VehicleGrid>
     </div>
 
     <!-- Add Vehicle Modal -->
@@ -259,8 +218,10 @@ import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import ModalShell from '@/components/shared/ModalShell.vue'
-import { DataTable } from '@motork/component-library/future/components'
 import { Button, Badge } from '@motork/component-library'
+import VehicleFilters from '@/components/vehicles/VehicleFilters.vue'
+import VehicleGrid from '@/components/vehicles/VehicleGrid.vue'
+import { useVehicleDetail } from '@/composables/useVehicleDetail'
 
 const router = useRouter()
 
@@ -310,72 +271,8 @@ const setVehicleFilter = (key) => {
   vehicleFilter.value = key
 }
 
-// Add Vehicle Modal State
-const showAddModal = ref(false)
-const newVehicle = ref({
-  brand: '',
-  model: '',
-  year: '',
-  vin: '',
-  plates: '',
-  fuelType: '',
-  gearType: '',
-  kilometers: '',
-  registration: '',
-  owner: '',
-  ownershipType: '',
-  ownedSince: '',
-  warrantyInfo: '',
-  stockDays: null // Customer vehicles have null stockDays
-})
-
-const handleCloseModal = () => {
-  showAddModal.value = false
-  // Reset form
-  newVehicle.value = {
-    brand: '',
-    model: '',
-    year: '',
-    vin: '',
-    plates: '',
-    fuelType: '',
-    gearType: '',
-    kilometers: '',
-    registration: '',
-    owner: '',
-    ownershipType: '',
-    ownedSince: '',
-    warrantyInfo: '',
-    stockDays: null
-  }
-}
-
-const handleSubmit = async () => {
-  try {
-    const vehicleData = {
-      brand: newVehicle.value.brand,
-      model: newVehicle.value.model,
-      year: parseInt(newVehicle.value.year) || null,
-      vin: newVehicle.value.vin || null,
-      plates: newVehicle.value.plates || null,
-      fuelType: newVehicle.value.fuelType || null,
-      gearType: newVehicle.value.gearType || null,
-      kilometers: parseInt(newVehicle.value.kilometers) || 0,
-      registration: newVehicle.value.registration || null,
-      owner: newVehicle.value.owner || null,
-      ownershipType: newVehicle.value.ownershipType || null,
-      ownedSince: newVehicle.value.ownedSince || null,
-      warrantyInfo: newVehicle.value.warrantyInfo || null,
-      stockDays: null, // Customer vehicles have null stockDays
-      status: 'Available'
-    }
-    
-    await vehiclesStore.addVehicle(vehicleData)
-    handleCloseModal()
-  } catch (error) {
-    console.error('Error adding vehicle:', error)
-  }
-}
+// Use composable for vehicle detail modal logic
+const { showAddModal, newVehicle, handleCloseModal, handleSubmit } = useVehicleDetail()
 
 // Filter definitions for AI-powered filtering
 const filterDefinitions = [
