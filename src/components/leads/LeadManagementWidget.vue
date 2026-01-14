@@ -160,11 +160,7 @@ const leadState = useLeadStateMachine(() => {
   const storeLead = leadsStore.currentLead
   const leadToUse = (storeLead && storeLead.id === props.lead?.id) ? storeLead : props.lead
   
-  // Debug: Log lead state for troubleshooting
   if (leadToUse) {
-    console.log('LeadManagementWidget - Lead state:', {
-      id: leadToUse.id,
-      stage: leadToUse.stage,
       apiStatus: leadToUse.apiStatus,
       isDisqualified: leadToUse.isDisqualified,
       displayStage: leadToUse.displayStage,
@@ -176,31 +172,6 @@ const leadState = useLeadStateMachine(() => {
   return leadToUse
 })
 
-// Force computed to run and log the result
-watch(() => leadState.isClosedState.value, (newVal) => {
-  console.log('isClosedState changed to:', newVal, 'for lead:', props.lead?.id)
-}, { immediate: true })
-
-// Also log directly when lead changes
-watch(() => props.lead, (newLead) => {
-  if (newLead) {
-    console.log('Props lead changed:', {
-      id: newLead.id,
-      isDisqualified: newLead.isDisqualified,
-      stage: newLead.stage,
-      displayStage: newLead.displayStage,
-      isClosedStateValue: leadState.isClosedState.value,
-      displayStageValue: leadState.displayStage.value
-    })
-  }
-}, { immediate: true, deep: true })
-
-// Direct access to force computed evaluation
-const debugIsClosedState = computed(() => {
-  const result = leadState.isClosedState.value
-  console.log('debugIsClosedState computed accessed:', result, 'for lead:', props.lead?.id)
-  return result
-})
 
 const stageColorClass = computed(() => {
   return getStageColor(leadState.displayStage.value, 'lead')
@@ -230,14 +201,14 @@ async function handlePostponed(data) {
       updates.team = data.team || null
     }
     
-    await leadsStore.modifyLead(props.lead.id, updates)
+    await leadsStore.updateLead(props.lead.id, updates)
     
     // Create appointment if requested
     if (data.createAppointment) {
       const endTime = new Date(dueDateTime)
       endTime.setHours(endTime.getHours() + 1)
       
-      await leadsStore.modifyLead(props.lead.id, {
+      await leadsStore.updateLead(props.lead.id, {
         scheduledAppointment: {
           id: Date.now(),
           title: `Follow-up Call - ${props.lead.customer.name}`,
@@ -274,7 +245,7 @@ async function handlePostponed(data) {
       content: `Task postponed to ${formatDate(dueDateTime)} at ${formatTime(dueDateTime)}${data.assignee ? ` and reassigned to ${data.assignee}` : ''}`
     })
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to postpone lead task:', err)
   }
@@ -282,7 +253,7 @@ async function handlePostponed(data) {
 
 async function handleValidated(data) {
   try {
-    await leadsStore.modifyLead(props.lead.id, {
+    await leadsStore.updateLead(props.lead.id, {
       stage: 'Validated'
     })
     
@@ -313,7 +284,7 @@ async function handleValidated(data) {
       })
     }
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to validate lead:', err)
   }
@@ -337,7 +308,7 @@ async function handleCallAttemptLogged(attempt) {
   try {
     const currentAttempts = props.lead.contactAttempts || []
     
-    await leadsStore.modifyLead(props.lead.id, {
+    await leadsStore.updateLead(props.lead.id, {
       contactAttempts: [...currentAttempts, attempt],
       lastContactAttempt: attempt.timestamp,
       totalContactAttempts: currentAttempts.length + 1
@@ -355,7 +326,7 @@ async function handleCallAttemptLogged(attempt) {
       }
     })
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to log call attempt:', err)
   }
@@ -371,7 +342,7 @@ async function handleNoteSaved(noteData) {
       data: noteData
     })
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to save note:', err)
   }
@@ -391,7 +362,7 @@ async function handleAppointmentScheduled(appointmentData) {
     const endTime = new Date(appointmentDateTime)
     endTime.setHours(endTime.getHours() + 1)
     
-    await leadsStore.modifyLead(props.lead.id, {
+    await leadsStore.updateLead(props.lead.id, {
       scheduledAppointment: {
         id: Date.now(),
         title: `${appointmentData.type} - ${props.lead.customer.name}`,
@@ -419,7 +390,7 @@ async function handleAppointmentScheduled(appointmentData) {
       }
     })
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to schedule appointment:', err)
   }
@@ -445,7 +416,7 @@ async function handleDisqualified(data) {
       const { updates, activities } = transitionHandler(props.lead, targetStage, data)
       
       // Apply updates
-      await leadsStore.modifyLead(props.lead.id, updates)
+      await leadsStore.updateLead(props.lead.id, updates)
       
       // Log all activities
       for (const activity of activities) {
@@ -454,7 +425,7 @@ async function handleDisqualified(data) {
     } else {
       // Fallback to direct update if no handler found
       const isDuplicate = data.reason === 'Duplicate'
-      await leadsStore.modifyLead(props.lead.id, {
+      await leadsStore.updateLead(props.lead.id, {
         isDisqualified: true,
         disqualifyReason: data.reason,
         isDuplicate: isDuplicate,
@@ -490,7 +461,7 @@ async function handleReopen() {
       const { updates, activities } = transitionHandler(props.lead)
       
       // Apply updates
-      await leadsStore.modifyLead(props.lead.id, updates)
+      await leadsStore.updateLead(props.lead.id, updates)
       
       // Log all activities
       for (const activity of activities) {
@@ -498,7 +469,7 @@ async function handleReopen() {
       }
     } else {
       // Fallback to direct update if no handler found
-      await leadsStore.modifyLead(props.lead.id, {
+      await leadsStore.updateLead(props.lead.id, {
         isDisqualified: false,
         disqualifyReason: null,
         disqualifyCategory: null,
@@ -517,7 +488,7 @@ async function handleReopen() {
       })
     }
     
-    await leadsStore.loadLeadById(props.lead.id)
+    await leadsStore.fetchLeadById(props.lead.id)
   } catch (err) {
     console.error('Failed to reopen lead:', err)
   }

@@ -14,7 +14,7 @@ export const useContactsStore = defineStore('contacts', () => {
   const totalContacts = computed(() => contacts.value.length)
   
   // Actions
-  async function loadContacts() {
+  const fetchContacts = async () => {
     loading.value = true
     error.value = null
     try {
@@ -27,7 +27,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function loadContactById(id) {
+  const fetchContactById = async (id) => {
     loading.value = true
     error.value = null
     try {
@@ -41,7 +41,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function addContact(contactData) {
+  const addContact = async (contactData) => {
     loading.value = true
     error.value = null
     try {
@@ -56,7 +56,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function modifyContact(id, updates) {
+  const modifyContact = async (id, updates) => {
     loading.value = true
     error.value = null
     try {
@@ -74,7 +74,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function removeContact(id) {
+  const removeContact = async (id) => {
     loading.value = true
     error.value = null
     try {
@@ -90,10 +90,10 @@ export const useContactsStore = defineStore('contacts', () => {
   
   function setSearchQuery(query) {
     searchQuery.value = query
-    loadContacts()
+    fetchContacts()
   }
   
-  async function addRequestedCar(contactId, carData) {
+  const addRequestedCar = async (contactId, carData) => {
     loading.value = true
     error.value = null
     try {
@@ -119,7 +119,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function convertToLead(contactId) {
+  const convertToLead = async (contactId) => {
     loading.value = true
     error.value = null
     try {
@@ -140,7 +140,7 @@ export const useContactsStore = defineStore('contacts', () => {
     }
   }
   
-  async function convertToOpportunity(contactId) {
+  const convertToOpportunity = async (contactId) => {
     loading.value = true
     error.value = null
     try {
@@ -168,8 +168,8 @@ export const useContactsStore = defineStore('contacts', () => {
     error,
     searchQuery,
     totalContacts,
-    loadContacts,
-    loadContactById,
+    fetchContacts,
+    fetchContactById,
     addContact,
     modifyContact,
     removeContact,

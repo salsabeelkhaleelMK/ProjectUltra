@@ -149,7 +149,7 @@ const loadCustomerData = async (explicitId = null) => {
     // Determine customer type from route query (for account vs contact)
     const customerType = route.query.type === 'account' ? 'account' : 'contact'
     const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
-      customersStore.loadCustomerById(customerId, customerType),
+      customersStore.fetchCustomerById(customerId, customerType),
       fetchLeadsByCustomerId(customerId),
       fetchOpportunitiesByCustomerId(customerId),
       fetchTasksByCustomerId(customerId),
@@ -270,10 +270,8 @@ const getContactForModal = computed(() => {
 })
 
 const openAddModal = (type) => {
-  console.log('openAddModal called with type:', type, 'task:', task.value)
   addModalType.value = type
   showAddModal.value = true
-  console.log('showAddModal set to:', showAddModal.value, 'contact:', getContactForModal.value)
 }
 
 const handleAddModalSave = async (data) => {

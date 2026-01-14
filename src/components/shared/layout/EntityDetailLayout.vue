@@ -416,7 +416,6 @@ const handleContactInfoAction = (action) => {
             }
           } catch (error) {
             // Silently handle DOM access errors
-            console.debug('Could not scroll to inline widget:', error)
           }
         }, 100)
       }, 50)

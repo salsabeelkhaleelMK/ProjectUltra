@@ -451,9 +451,9 @@ const getBadgeTheme = (tabKey, isActive) => {
 
 // Load data on mount
 onMounted(async () => {
-  await customersStore.loadCustomers()
-  await leadsStore.loadLeads()
-  await opportunitiesStore.loadOpportunities()
+  await customersStore.fetchCustomers()
+  await leadsStore.fetchLeads()
+  await opportunitiesStore.fetchOpportunities()
 })
 
 const handleRowClick = (row) => {

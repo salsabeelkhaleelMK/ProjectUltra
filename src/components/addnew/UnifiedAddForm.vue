@@ -508,7 +508,7 @@ const { errors, canSubmit, validateContactForm, clearErrors } = useAddFormValida
 
 onMounted(() => {
   if (customersStore.customers.length === 0) {
-    customersStore.loadCustomers()
+    customersStore.fetchCustomers()
   }
   document.addEventListener('click', handleClickOutside)
 })

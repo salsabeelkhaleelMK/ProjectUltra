@@ -34,7 +34,7 @@ export function useTaskShell(task) {
         updateActivity: (taskId, activityId, updates) => leadsStore.updateActivity(taskId, activityId, updates),
         deleteActivity: (taskId, activityId) => leadsStore.deleteActivity(taskId, activityId),
         updateLead: (taskId, updates) => leadsStore.updateLead(taskId, updates),
-        loadLeadById: (taskId) => leadsStore.loadLeadById(taskId)
+        loadLeadById: (taskId) => leadsStore.fetchLeadById(taskId)
       }
     } else {
       return {
@@ -45,7 +45,7 @@ export function useTaskShell(task) {
         addVehicle: (taskId, vehicleData) => opportunitiesStore.addVehicle(taskId, vehicleData),
         createOffer: (taskId, offerData) => opportunitiesStore.createOffer(taskId, offerData),
         updateOpportunity: (taskId, updates) => opportunitiesStore.updateOpportunity(taskId, updates),
-        loadOpportunityById: (taskId) => opportunitiesStore.loadOpportunityById(taskId)
+        loadOpportunityById: (taskId) => opportunitiesStore.fetchOpportunityById(taskId)
       }
     }
   })

@@ -206,5 +206,35 @@ export function getDeadlineStatus(isoTimestamp) {
   }
 }
 
+/**
+ * Get stage badge class for styling
+ * @param {string} stage - Stage or status string
+ * @returns {string} Tailwind CSS classes for badge
+ */
+export function getStageBadgeClass(stage) {
+  const classes = {
+    // Opportunity stages
+    'Open': 'bg-blue-50 text-blue-700',
+    'Open Opportunities': 'bg-blue-50 text-blue-700',
+    'Open opportunity': 'bg-blue-50 text-blue-700',
+    'Qualified': 'bg-purple-50 text-purple-700',
+    'In Negotiation': 'bg-orange-50 text-orange-700',
+    'Opportunity in negotiation': 'bg-orange-50 text-orange-700',
+    'Registration': 'bg-indigo-50 text-indigo-700',
+    'Closed': 'bg-gray-100 text-gray-700',
+    'Closed opportunity': 'bg-gray-100 text-gray-700',
+    'Closed Lost': 'bg-red-50 text-red-700',
+    'Closed Won': 'bg-green-50 text-green-700',
+    'Won': 'bg-green-50 text-green-700',
+    'Lost': 'bg-red-50 text-red-700',
+    // Lead statuses
+    'Valid': 'bg-green-50 text-green-700',
+    'Not valid': 'bg-red-50 text-red-700',
+    'To be validated': 'bg-yellow-50 text-yellow-700',
+    'Not interested': 'bg-gray-100 text-gray-700'
+  }
+  return classes[stage] || 'bg-gray-100 text-gray-700'
+}
+
 
 

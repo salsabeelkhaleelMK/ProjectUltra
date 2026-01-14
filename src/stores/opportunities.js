@@ -29,11 +29,6 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }, { immediate: true })
 
-  const loadOpportunities = async (filters = {}) => {
-    const result = await fetchOpportunities(filters)
-    return result
-  }
-
   const fetchOpportunities = async (filters = {}) => {
     loading.value = true
     error.value = null
@@ -47,10 +42,6 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     } finally {
       loading.value = false
     }
-  }
-
-  const loadOpportunityById = async (id) => {
-    return await fetchOpportunityById(id)
   }
 
   const fetchOpportunityById = async (id) => {
@@ -90,10 +81,6 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     } finally {
       loading.value = false
     }
-  }
-
-  const modifyOpportunity = async (id, updates) => {
-    return await updateOpportunity(id, updates)
   }
 
   const updateOpportunity = async (id, updates) => {
@@ -266,12 +253,9 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     error,
     currentOpportunityActivities: computed(() => currentOpportunityActivities.value), // Return as computed for backward compatibility
     hotOpportunities,
-    loadOpportunities,
     fetchOpportunities,
-    loadOpportunityById,
     fetchOpportunityById,
     createOpportunity,
-    modifyOpportunity,
     updateOpportunity,
     deleteOpportunity,
     addActivity,

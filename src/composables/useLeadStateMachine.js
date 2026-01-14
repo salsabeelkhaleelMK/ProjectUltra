@@ -329,27 +329,16 @@ export function useLeadStateMachine(lead) {
     // This is the primary check - if not disqualified, can never be closed
     const isDisqualified = leadValue?.isDisqualified === true
     
-    // Debug: Always log to see what's happening
     const stage = displayStage.value
-    console.log('isClosedState computed:', {
-      leadId: leadValue?.id,
-      isDisqualified,
-      leadIsDisqualified: leadValue?.isDisqualified,
-      displayStage: stage,
-      leadStage: leadValue?.stage,
-      leadApiStatus: leadValue?.apiStatus
-    })
     
     if (!isDisqualified) {
       // Lead is not disqualified, so it cannot be in a closed state
-      console.log('isClosedState: returning false (not disqualified)')
       return false
     }
     
     // Lead IS disqualified - now check if stage is closed
     // Only return true if stage is explicitly a closed stage
     if (!stage || typeof stage !== 'string') {
-      console.log('isClosedState: returning false (no stage)')
       return false
     }
     
@@ -359,7 +348,6 @@ export function useLeadStateMachine(lead) {
                      stage === LEAD_STAGES.CLOSED_DUPLICATE ||
                      stage.startsWith('Closed')
     
-    console.log('isClosedState: returning', isClosed, 'for disqualified lead')
     return isClosed
   })
   

@@ -219,7 +219,6 @@ watch(() => props.selectedId, async (newId) => {
       }
     } catch (error) {
       // Silently handle DOM access errors
-      console.debug('Could not scroll to selected item:', error)
     }
   }
 }, { immediate: true })
@@ -241,7 +240,6 @@ watch(filteredItems, async () => {
         }
       } catch (error) {
         // Silently handle DOM access errors
-        console.debug('Could not scroll to selected item:', error)
       }
     }, 100)
   }

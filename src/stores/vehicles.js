@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle } from '@/api/vehicles'
+import { fetchVehicles as fetchVehiclesApi, fetchVehicleById as fetchVehicleByIdApi, createVehicle, updateVehicle, deleteVehicle } from '@/api/vehicles'
 
 export const useVehiclesStore = defineStore('vehicles', () => {
   // State
@@ -24,11 +24,11 @@ export const useVehiclesStore = defineStore('vehicles', () => {
   )
   
   // Actions
-  async function loadVehicles() {
+  const fetchVehicles = async () => {
     loading.value = true
     error.value = null
     try {
-      const result = await fetchVehicles(filters.value)
+      const result = await fetchVehiclesApi(filters.value)
       vehicles.value = result.data
     } catch (err) {
       error.value = err.message
@@ -37,11 +37,11 @@ export const useVehiclesStore = defineStore('vehicles', () => {
     }
   }
   
-  async function loadVehicleById(id) {
+  const fetchVehicleById = async (id) => {
     loading.value = true
     error.value = null
     try {
-      currentVehicle.value = await fetchVehicleById(id)
+      currentVehicle.value = await fetchVehicleByIdApi(id)
     } catch (err) {
       error.value = err.message
     } finally {
@@ -49,7 +49,7 @@ export const useVehiclesStore = defineStore('vehicles', () => {
     }
   }
   
-  async function addVehicle(vehicleData) {
+  const addVehicle = async (vehicleData) => {
     loading.value = true
     error.value = null
     try {
@@ -64,7 +64,7 @@ export const useVehiclesStore = defineStore('vehicles', () => {
     }
   }
   
-  async function modifyVehicle(id, updates) {
+  const modifyVehicle = async (id, updates) => {
     loading.value = true
     error.value = null
     try {
@@ -82,7 +82,7 @@ export const useVehiclesStore = defineStore('vehicles', () => {
     }
   }
   
-  async function removeVehicle(id) {
+  const removeVehicle = async (id) => {
     loading.value = true
     error.value = null
     try {
@@ -98,7 +98,7 @@ export const useVehiclesStore = defineStore('vehicles', () => {
   
   function setFilters(newFilters) {
     filters.value = { ...filters.value, ...newFilters }
-    loadVehicles()
+    fetchVehicles()
   }
   
   return {
@@ -110,8 +110,8 @@ export const useVehiclesStore = defineStore('vehicles', () => {
     totalVehicles,
     availableVehicles,
     totalInventoryValue,
-    loadVehicles,
-    loadVehicleById,
+    fetchVehicles,
+    fetchVehicleById,
     addVehicle,
     modifyVehicle,
     removeVehicle,

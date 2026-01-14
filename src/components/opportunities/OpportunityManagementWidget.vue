@@ -343,7 +343,7 @@ function handleCancelAppointment() {
 function handleContractSet(contractData) {
   showContractDateModal.value = false
   // Update opportunity stage to Closed Won
-  opportunitiesStore.modifyOpportunity(props.opportunity.id, {
+  opportunitiesStore.updateOpportunity(props.opportunity.id, {
     stage: 'Closed Won',
     contractDate: contractData.contractDate
   })
@@ -362,14 +362,14 @@ function handleDelivered(deliveryData) {
 
 function handleClosedLost(reason) {
   showCloseAsLostModal.value = false
-  opportunitiesStore.modifyOpportunity(props.opportunity.id, {
+  opportunitiesStore.updateOpportunity(props.opportunity.id, {
     stage: 'Closed Lost',
     lossReason: reason
   })
 }
 
 function handleReopen() {
-  opportunitiesStore.modifyOpportunity(props.opportunity.id, {
+  opportunitiesStore.updateOpportunity(props.opportunity.id, {
     stage: 'Qualified'
   })
 }
@@ -392,14 +392,14 @@ function handleSaveAppointment(appointmentData) {
 
 function handleSetCallback(data) {
   // Set callback date to transition to "To be Called Back" stage
-  opportunitiesStore.modifyOpportunity(props.opportunity.id, {
+  opportunitiesStore.updateOpportunity(props.opportunity.id, {
     callbackDate: data.callbackDate
   })
 }
 
 function handleAutoCloseLost(data) {
   // Automatically close opportunity as lost after NS3
-  opportunitiesStore.modifyOpportunity(props.opportunity.id, {
+  opportunitiesStore.updateOpportunity(props.opportunity.id, {
     stage: 'Closed Lost',
     lossReason: data.reason || 'Multiple no-shows (NS3)'
   })

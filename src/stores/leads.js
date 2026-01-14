@@ -29,11 +29,6 @@ export const useLeadsStore = defineStore('leads', () => {
     }
   }, { immediate: true })
 
-  const loadLeads = async (filters = {}) => {
-    const result = await fetchLeads(filters)
-    return result
-  }
-
   const fetchLeads = async (filters = {}) => {
     loading.value = true
     error.value = null
@@ -47,10 +42,6 @@ export const useLeadsStore = defineStore('leads', () => {
     } finally {
       loading.value = false
     }
-  }
-
-  const loadLeadById = async (id) => {
-    return await fetchLeadById(id)
   }
 
   const fetchLeadById = async (id) => {
@@ -90,10 +81,6 @@ export const useLeadsStore = defineStore('leads', () => {
     } finally {
       loading.value = false
     }
-  }
-
-  const modifyLead = async (id, updates) => {
-    return await updateLead(id, updates)
   }
 
   const updateLead = async (id, updates) => {
@@ -190,7 +177,7 @@ export const useLeadsStore = defineStore('leads', () => {
     error.value = null
     try {
       const event = await leadsApi.scheduleLeadFollowUp(leadId, appointmentData)
-      await loadLeadById(leadId)
+      await fetchLeadById(leadId)
       return event
     } catch (err) {
       error.value = err.message
@@ -231,12 +218,9 @@ export const useLeadsStore = defineStore('leads', () => {
     error,
     currentLeadActivities: computed(() => currentLeadActivities.value), // Return as computed for backward compatibility
     hotLeads,
-    loadLeads,
     fetchLeads,
-    loadLeadById,
     fetchLeadById,
     createLead,
-    modifyLead,
     updateLead,
     deleteLead,
     addActivity,

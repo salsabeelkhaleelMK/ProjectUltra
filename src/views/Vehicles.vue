@@ -335,7 +335,7 @@ const filterDefinitions = [
 ]
 
 onMounted(() => {
-  vehiclesStore.loadVehicles()
+  vehiclesStore.fetchVehicles()
 })
 
 // Handle row click - navigate to vehicle detail or show vehicle info
@@ -346,7 +346,6 @@ const handleRowClick = (row) => {
   // Since there's no vehicle detail route yet, we'll just log it
   // You can add navigation here when vehicle detail page is created
   // router.push({ path: `/vehicles/${vehicle.id}` })
-  console.log('Vehicle clicked:', vehicle)
 }
 
 

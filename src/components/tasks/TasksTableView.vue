@@ -425,7 +425,6 @@ watch(() => [props.highlightId, props.tasks], async ([newHighlightId]) => {
         }
       } catch (error) {
         // Silently handle DOM access errors (element might have been removed)
-        console.debug('Could not scroll to highlighted row:', error)
       }
     }, 500)
   }

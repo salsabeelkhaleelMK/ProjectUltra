@@ -24,8 +24,8 @@ export const useCustomersStore = defineStore('customers', () => {
   const totalContacts = computed(() => contacts.value.length)
   const totalAccounts = computed(() => accounts.value.length)
   
-  // Load all customers (contacts + accounts)
-  async function loadCustomers(filters = {}) {
+  // Fetch all customers (contacts + accounts)
+  const fetchCustomers = async (filters = {}) => {
     loading.value = true
     error.value = null
     try {
@@ -51,8 +51,8 @@ export const useCustomersStore = defineStore('customers', () => {
     }
   }
   
-  // Load customer by ID (checks both contacts and accounts)
-  async function loadCustomerById(id, type = null) {
+  // Fetch customer by ID (checks both contacts and accounts)
+  const fetchCustomerById = async (id, type = null) => {
     loading.value = true
     error.value = null
     try {
@@ -81,7 +81,7 @@ export const useCustomersStore = defineStore('customers', () => {
   }
   
   // Create customer (routes to correct API based on type)
-  async function addCustomer(customerData) {
+  const addCustomer = async (customerData) => {
     loading.value = true
     error.value = null
     try {
@@ -103,7 +103,7 @@ export const useCustomersStore = defineStore('customers', () => {
   }
   
   // Update customer (routes to correct API)
-  async function updateCustomer(id, updates, type) {
+  const updateCustomer = async (id, updates, type) => {
     loading.value = true
     error.value = null
     try {
@@ -131,7 +131,7 @@ export const useCustomersStore = defineStore('customers', () => {
   }
   
   // Delete customer
-  async function removeCustomer(id, type) {
+  const removeCustomer = async (id, type) => {
     loading.value = true
     error.value = null
     try {
@@ -155,24 +155,24 @@ export const useCustomersStore = defineStore('customers', () => {
   // Set search query
   function setSearchQuery(query) {
     searchQuery.value = query
-    loadCustomers({ search: query })
+    fetchCustomers({ search: query })
   }
   
   // Legacy methods for backward compatibility
-  async function addContact(contactData) {
+  const addContact = async (contactData) => {
     return await addCustomer({ ...contactData, company: null })
   }
   
-  async function modifyContact(id, updates) {
+  const modifyContact = async (id, updates) => {
     return await updateCustomer(id, updates, 'contact')
   }
   
-  async function removeContact(id) {
+  const removeContact = async (id) => {
     return await removeCustomer(id, 'contact')
   }
   
   // Contact-specific methods (for backward compatibility)
-  async function addRequestedCar(customerId, carData) {
+  const addRequestedCar = async (customerId, carData) => {
     // Find customer to determine type
     const customer = customers.value.find(c => c.id === customerId)
     if (!customer) throw new Error('Customer not found')
@@ -186,7 +186,7 @@ export const useCustomersStore = defineStore('customers', () => {
     throw new Error('Requested cars not supported for accounts')
   }
   
-  async function convertToLead(customerId) {
+  const convertToLead = async (customerId) => {
     const customer = customers.value.find(c => c.id === customerId)
     if (!customer) throw new Error('Customer not found')
     
@@ -202,7 +202,7 @@ export const useCustomersStore = defineStore('customers', () => {
     throw new Error('Only contacts can be converted to leads')
   }
   
-  async function convertToOpportunity(customerId) {
+  const convertToOpportunity = async (customerId) => {
     const customer = customers.value.find(c => c.id === customerId)
     if (!customer) throw new Error('Customer not found')
     
@@ -234,8 +234,8 @@ export const useCustomersStore = defineStore('customers', () => {
     totalAccounts,
     
     // Actions
-    loadCustomers,
-    loadCustomerById,
+    fetchCustomers,
+    fetchCustomerById,
     addCustomer,
     updateCustomer,
     removeCustomer,

@@ -250,7 +250,9 @@ import TasksTableView from '@/components/tasks/TasksTableView.vue'
 import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
 import MobileDetailHeader from '@/components/shared/layout/MobileDetailHeader.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
-import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import { useTaskHelpers } from '@/composables/useTaskHelpers'
+import { formatCurrency } from '@/utils/formatters'
+import { getStageBadgeClass } from '@/utils/formatters'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import { getTransitionHandler } from '@/composables/useLeadStateMachine'
 import { LEAD_STAGES, getDisplayStage } from '@/utils/stageMapper'
@@ -265,6 +267,20 @@ const opportunitiesStore = useOpportunitiesStore()
 const userStore = useUserStore()
 const usersStore = useUsersStore()
 const settingsStore = useSettingsStore()
+
+// Use task helpers composable
+const {
+  getDateDisplay,
+  getVehicleType,
+  getVehicleTypeBadgeClass,
+  getOwnerInfo,
+  getCustomerCity,
+  getLocationDisplay,
+  getAssigneeInitials,
+  getVehicleStatusDisplay,
+  getTaskStatusDisplay,
+  getUnselectedClass: getUnselectedClassHelper
+} = useTaskHelpers()
 
 // View mode state with localStorage persistence (default to table)
 const viewMode = ref(localStorage.getItem('tasksViewMode') || 'table')
@@ -309,145 +325,6 @@ const handleViewChange = (newViewMode) => {
   }
 }
 
-// Helper function to display date with conditional logic (relative if today, absolute if future)
-const getDateDisplay = (isoTimestamp) => {
-  if (!isoTimestamp) return 'No deadline'
-  
-  const deadlineStatus = getDeadlineStatus(isoTimestamp)
-  
-  // If overdue, show "OVERDUE"
-  if (deadlineStatus.type === 'overdue') {
-    return 'OVERDUE'
-  }
-  
-  // If today or urgent (within 2 hours), show relative time
-  if (deadlineStatus.type === 'today' || deadlineStatus.type === 'urgent') {
-    return deadlineStatus.relativeTime
-  }
-  
-  // For future dates (normal), show absolute date/time
-  return formatDeadlineFull(isoTimestamp)
-}
-
-// Helper function to get vehicle type from mockData
-const getVehicleType = (task) => {
-  const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
-  if (!vehicle || !vehicle.type) return null
-  
-  // Map the type from mockData to display format
-  const typeMap = {
-    'New': { type: 'new', label: 'New' },
-    'New 0km': { type: '0km', label: 'New 0km' },
-    'Used': { type: 'used', label: 'Used' },
-    'Demo': { type: 'demo', label: 'Demo' }
-  }
-  
-  return typeMap[vehicle.type] || { type: vehicle.type.toLowerCase(), label: vehicle.type }
-}
-
-// Helper function to get vehicle type badge class
-const getVehicleTypeBadgeClass = (vehicleType) => {
-  if (!vehicleType) return ''
-  
-  const classes = {
-    'new': 'bg-green-50 text-green-700',
-    '0km': 'bg-blue-50 text-blue-700',
-    'used': 'bg-orange-50 text-orange-700',
-    'demo': 'bg-purple-50 text-purple-700'
-  }
-  
-  return classes[vehicleType.type] || 'bg-gray-50 text-gray-700'
-}
-
-// Helper function to get owner info (name and initials)
-const getOwnerInfo = (task) => {
-  if (!task || !task.assignee) {
-    return { name: 'Unassigned', initials: '?' }
-  }
-  
-  // Get initials from assigneeInitials if available, otherwise generate
-  const initials = task.assigneeInitials || task.assignee.split(' ').map(n => n[0]).join('')
-  
-  return {
-    name: task.assignee,
-    initials: initials
-  }
-}
-
-// Helper function to extract city from customer address
-const getCustomerCity = (task) => {
-  if (!task || !task.customer || !task.customer.address) {
-    return null
-  }
-  
-  const address = task.customer.address
-  // Address format: "Street, PostalCode City" or "Street, City"
-  // Extract city (last part after comma)
-  const parts = address.split(',')
-  if (parts.length > 1) {
-    const cityPart = parts[parts.length - 1].trim()
-    // Remove postal code if present (numbers at start)
-    const city = cityPart.replace(/^\d+\s*/, '').trim()
-    return city || null
-  }
-  return null
-}
-
-// Helper function to get location display (city • source)
-const getLocationDisplay = (task) => {
-  const city = getCustomerCity(task)
-  const source = task.source || 'Unknown'
-  
-  if (city) {
-    return `${city} • ${source}`
-  }
-  return source
-}
-
-// Helper function to get assignee initials
-const getAssigneeInitials = (assigneeName) => {
-  if (!assigneeName) return '?'
-  const parts = assigneeName.split(' ')
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-  }
-  return assigneeName.substring(0, 2).toUpperCase()
-}
-
-// Helper function to format vehicle status (type / kilometers)
-const getVehicleStatusDisplay = (task) => {
-  const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
-  if (!vehicle) {
-    return 'No vehicle'
-  }
-  
-  const vehicleType = getVehicleType(task)
-  const typeLabel = vehicleType ? vehicleType.label : (vehicle.type || 'Unknown')
-  
-  // Format kilometers
-  let kmDisplay = ''
-  if (vehicle.kilometers !== undefined && vehicle.kilometers !== null) {
-    if (vehicle.kilometers >= 1000) {
-      kmDisplay = `${(vehicle.kilometers / 1000).toFixed(0)}k`
-    } else {
-      kmDisplay = `${vehicle.kilometers}`
-    }
-  }
-  
-  if (kmDisplay) {
-    return `${typeLabel} / ${kmDisplay}`
-  }
-  return typeLabel
-}
-
-// Helper function to get task status for display (leads: status, opportunities: stage)
-const getTaskStatusDisplay = (task) => {
-  if (task.type === 'lead') {
-    return task.status || 'Unknown'
-  } else {
-    return task.stage || 'Unknown'
-  }
-}
 
 const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
 const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
@@ -732,21 +609,13 @@ const managementWidget = taskShellProps.managementWidget
 const storeAdapter = taskShellProps.storeAdapter
 const addNewConfig = taskShellProps.addNewConfig
 
-// Get unselected class based on task type
-const getUnselectedClass = computed(() => {
-  return (task) => {
-    if (task.type === 'lead') {
-      return 'bg-white border border-gray-200 hover:border-blue-300'
-    } else {
-      return 'bg-white border border-gray-200 hover:border-purple-300'
-    }
-  }
-})
+// Get unselected class based on task type (function from composable)
+const getUnselectedClass = getUnselectedClassHelper
 
 // Load data on mount
 onMounted(() => {
-  leadsStore.loadLeads()
-  opportunitiesStore.loadOpportunities()
+  leadsStore.fetchLeads()
+  opportunitiesStore.fetchOpportunities()
   
   const taskId = route.params.id
   if (taskId) {
@@ -765,9 +634,9 @@ watch(() => route.params.id, (newId) => {
 watch(currentTask, (task) => {
   if (task) {
     if (task.type === 'lead') {
-      leadsStore.loadLeadById(task.id)
+      leadsStore.fetchLeadById(task.id)
     } else {
-      opportunitiesStore.loadOpportunityById(task.id)
+      opportunitiesStore.fetchOpportunityById(task.id)
     }
   }
 }, { immediate: true })
@@ -779,9 +648,9 @@ const loadTaskById = (id) => {
   
   if (task) {
     if (task.type === 'lead') {
-      leadsStore.loadLeadById(taskId)
+      leadsStore.fetchLeadById(taskId)
     } else {
-      opportunitiesStore.loadOpportunityById(taskId)
+      opportunitiesStore.fetchOpportunityById(taskId)
     }
   }
 }
@@ -820,7 +689,7 @@ const handleReassignConfirm = async (assignee) => {
   const assigneeName = assignee.name
   
   if (task.type === 'lead') {
-    await leadsStore.modifyLead(task.id, { 
+    await leadsStore.updateLead(task.id, { 
       assignee: assigneeName,
       assigneeType: assignee.type,
       teamId: assignee.type === 'team' ? assignee.id : null
@@ -840,18 +709,18 @@ const handleReassignConfirm = async (assignee) => {
 const markAsHot = async (task) => {
   openCardMenu.value = null
   if (task.type === 'lead') {
-    await leadsStore.modifyLead(task.id, { priority: 'Hot' })
+    await leadsStore.updateLead(task.id, { priority: 'Hot' })
   } else if (task.type === 'opportunity') {
-    await opportunitiesStore.modifyOpportunity(task.id, { priority: 'Hot' })
+    await opportunitiesStore.updateOpportunity(task.id, { priority: 'Hot' })
   }
 }
 
 const unmarkAsHot = async (task) => {
   openCardMenu.value = null
   if (task.type === 'lead') {
-    await leadsStore.modifyLead(task.id, { priority: 'Normal' })
+    await leadsStore.updateLead(task.id, { priority: 'Normal' })
   } else if (task.type === 'opportunity') {
-    await opportunitiesStore.modifyOpportunity(task.id, { priority: 'Normal' })
+    await opportunitiesStore.updateOpportunity(task.id, { priority: 'Normal' })
   }
 }
 
@@ -869,7 +738,7 @@ const reopenLead = async (task) => {
       const { updates, activities } = transitionHandler(task)
       
       // Apply updates
-      await leadsStore.modifyLead(task.id, updates)
+      await leadsStore.updateLead(task.id, updates)
       
       // Log all activities
       for (const activity of activities) {
@@ -877,7 +746,7 @@ const reopenLead = async (task) => {
       }
     } else {
       // Fallback to direct update if no handler found
-      await leadsStore.modifyLead(task.id, {
+      await leadsStore.updateLead(task.id, {
         isDisqualified: false,
         disqualifyReason: null,
         disqualifyCategory: null,
@@ -897,35 +766,12 @@ const reopenLead = async (task) => {
     }
     
     // Reload the lead to refresh the UI
-    await leadsStore.loadLeadById(task.id)
+    await leadsStore.fetchLeadById(task.id)
   } catch (err) {
     console.error('Failed to reopen lead:', err)
   }
 }
 
-const getStageBadgeClass = (stage) => {
-  const classes = {
-    // Opportunity stages
-    'Open': 'bg-blue-50 text-blue-700',
-    'Open Opportunities': 'bg-blue-50 text-blue-700',
-    'Open opportunity': 'bg-blue-50 text-blue-700',
-    'Qualified': 'bg-purple-50 text-purple-700',
-    'In Negotiation': 'bg-orange-50 text-orange-700',
-    'Opportunity in negotiation': 'bg-orange-50 text-orange-700',
-    'Registration': 'bg-indigo-50 text-indigo-700',
-    'Closed': 'bg-gray-100 text-gray-700',
-    'Closed opportunity': 'bg-gray-100 text-gray-700',
-    'Closed Lost': 'bg-red-50 text-red-700',
-    'Won': 'bg-green-50 text-green-700',
-    'Lost': 'bg-red-50 text-red-700',
-    // Lead statuses
-    'Valid': 'bg-green-50 text-green-700',
-    'Not valid': 'bg-red-50 text-red-700',
-    'To be validated': 'bg-yellow-50 text-yellow-700',
-    'Not interested': 'bg-gray-100 text-gray-700'
-  }
-  return classes[stage] || 'bg-gray-100 text-gray-700'
-}
 </script>
 
 <style scoped>
