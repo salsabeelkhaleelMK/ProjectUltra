@@ -97,7 +97,7 @@
       <template v-else-if="question.type === 'offer-followup'">
         <button
           @click="handleViewTask"
-          class="px-3 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-xs font-medium text-brand-red bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
         >
           View Opportunity
         </button>
@@ -195,7 +195,7 @@ const getHighlightedQuestion = () => {
   const questionText = props.question.question
   
   // Make the question clickable to view the task
-  const highlightedName = `<a href="#" class="font-bold text-primary-600 hover:text-primary-700 hover:underline" onclick="event.preventDefault()">${customerName}</a>`
+  const highlightedName = `<a href="#" class="font-bold text-brand-red hover:text-brand-red-dark hover:underline" onclick="event.preventDefault()">${customerName}</a>`
   
   // Replace all instances of customer name with highlighted version
   return questionText.replace(new RegExp(customerName, 'g'), highlightedName)

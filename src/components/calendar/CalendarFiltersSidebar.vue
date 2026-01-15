@@ -181,9 +181,9 @@
     <div class="sticky bottom-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3 mt-3">
       <button
         @click="$emit('apply')"
-        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
-        <i class="fa-solid fa-check text-gray-400 group-hover:text-indigo-500"></i>
+        <i class="fa-solid fa-check text-gray-400 group-hover:text-brand-red"></i>
         <span>Apply Filters</span>
       </button>
     </div>

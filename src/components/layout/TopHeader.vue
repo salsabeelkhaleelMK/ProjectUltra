@@ -3,7 +3,7 @@
     <!-- Hamburger Menu (Mobile Only) -->
     <button 
       @click="$emit('toggle-sidebar')"
-      class="md:hidden w-11 h-11 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      class="md:hidden w-11 h-11 flex items-center justify-center text-gray-600 hover:text-brand-red hover:bg-red-50 rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
       aria-label="Open navigation menu"
       aria-expanded="false"
     >
@@ -18,7 +18,7 @@
           v-model="searchQuery"
           type="text" 
           placeholder="search everything" 
-          class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all placeholder-gray-400"
+          class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primary-600 focus:bg-white transition-all placeholder-gray-400"
           @keyup.enter="handleSearch"
         >
       </div>
@@ -36,7 +36,7 @@
         <i class="fa-solid fa-bell text-lg text-gray-600"></i>
         <span 
           v-if="actionItemsCount > 0"
-          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+          class="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
         >
           {{ actionItemsCount > 9 ? '9+' : actionItemsCount }}
         </span>
@@ -73,22 +73,22 @@
           <div class="p-2">
             <button 
               @click="switchRole('manager')"
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
-              :class="{ 'bg-blue-50 text-blue-700': userStore.currentUser.role === 'manager' }"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-brand-red rounded-lg transition-colors flex items-center gap-2"
+              :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'manager' }"
             >
               <i class="fa-solid fa-user-shield w-4"></i> Switch to Manager
             </button>
             <button 
               @click="switchRole('salesman')"
               class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
-              :class="{ 'bg-blue-50 text-blue-700': userStore.currentUser.role === 'salesman' }"
+              :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'salesman' }"
             >
               <i class="fa-solid fa-user-tie w-4"></i> Switch to Salesman
             </button>
             <button 
               @click="switchRole('operator')"
               class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
-              :class="{ 'bg-blue-50 text-blue-700': userStore.currentUser.role === 'operator' }"
+              :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'operator' }"
             >
               <i class="fa-solid fa-headset w-4"></i> Switch to Operator
             </button>

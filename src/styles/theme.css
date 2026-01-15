@@ -1,33 +1,56 @@
-/* Global UI Theme - Based on LeadDetail design system */
+/* Global UI Theme - MotorK Design System */
 
 /* Design Tokens */
 :root {
-  /* Colors */
-  --color-bg-primary: #f5f5f5; /* gray-50 */
-  --color-bg-secondary: #ffffff; /* white */
-  --color-bg-tertiary: #f8fafc; /* slate-50 */
+  /* Brand Colors */
+  --brand-red: #F80032;
+  --brand-red-dark: #D0002A;
+  --brand-dark: #282828;
+  --brand-gray: #F5F5F7;
+  --brand-slate: #6B7280;
+  --brand-blue: #0056B3;
+  --brand-blue-light: #E6F0FA;
+  --brand-white: #FFFFFF;
+  --brand-text-body: #484848;
+
+  /* Semantic Color Mappings (for backward compatibility) */
+  --color-bg-primary: var(--brand-gray);
+  --color-bg-secondary: var(--brand-white);
+  --color-bg-tertiary: #f8fafc;
   
-  --color-border: #e5e7eb; /* gray-200 */
-  --color-border-light: #f3f4f6; /* gray-100 */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
   
-  --color-text-primary: #111827; /* gray-900 */
-  --color-text-secondary: #374151; /* gray-700 */
-  --color-text-tertiary: #6b7280; /* gray-500 */
-  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-primary: var(--brand-dark);
+  --color-text-secondary: #374151;
+  --color-text-tertiary: var(--brand-slate);
+  --color-text-muted: #9ca3af;
   
-  --color-primary: #2563eb; /* blue-600 */
-  --color-primary-hover: #1d4ed8; /* blue-700 */
-  --color-primary-light: #dbeafe; /* blue-100 */
+  --color-primary: var(--brand-red);
+  --color-primary-hover: var(--brand-red-dark);
+  --color-primary-light: rgba(248, 0, 50, 0.1);
   
-  --color-success: #10b981; /* green-600 */
-  --color-success-light: #d1fae5; /* green-100 */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
   
-  --color-danger: #ef4444; /* red-600 */
-  --color-danger-light: #fee2e2; /* red-100 */
+  --color-danger: var(--brand-red);
+  --color-danger-light: rgba(248, 0, 50, 0.1);
   
-  --color-warning: #f59e0b; /* orange-600 */
-  --color-warning-light: #fed7aa; /* orange-100 */
-  
+  --color-warning: #f59e0b;
+  --color-warning-light: #fed7aa;
+
+  /* Typography */
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+
+  /* Typography Sizes */
+  --text-h1: 3rem; /* 48px base, can extend to 3.75rem (60px) */
+  --text-h2: 2rem; /* 32px base, can extend to 2.25rem (36px) */
+  --text-h3: 1.25rem; /* 20px base, can extend to 1.5rem (24px) */
+  --text-body: 1rem; /* 16px */
+  --text-button: 0.875rem; /* 14px base, can extend to 1rem (16px) */
+  --text-nav: 0.875rem; /* 14px */
+
   /* Spacing */
   --spacing-xs: 0.25rem; /* 1 */
   --spacing-sm: 0.5rem; /* 2 */
@@ -39,11 +62,13 @@
   --radius-sm: 0.375rem; /* rounded-md */
   --radius-md: 0.5rem; /* rounded-lg */
   --radius-lg: 0.75rem; /* rounded-xl */
+  --radius-2xl: 1rem; /* rounded-2xl */
   --radius-full: 9999px; /* rounded-full */
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
 }
-

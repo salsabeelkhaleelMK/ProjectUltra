@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="lg:hidden border-b border-gray-200 shrink-0" style="background-color: #f5f5f5;">
+  <div v-if="show" class="lg:hidden border-b border-gray-200 shrink-0 bg-brand-gray">
     <div class="px-4 py-3 flex items-center justify-between gap-3">
       <!-- Back Button -->
       <button

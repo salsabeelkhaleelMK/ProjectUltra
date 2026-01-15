@@ -7,14 +7,14 @@
         <div class="lg:hidden flex items-center gap-2">
           <button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
           >
-            <i class="fa-solid fa-filter text-gray-400 group-hover:text-indigo-500"></i>
+            <i class="fa-solid fa-filter text-gray-400 group-hover:text-brand-red"></i>
             <span class="hidden sm:inline">Filters</span>
           </button>
           <span 
             v-if="activeFilterCount > 0" 
-            class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center"
           >
             {{ activeFilterCount }}
           </span>
@@ -24,10 +24,10 @@
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
-            :class="{ 'bg-indigo-50 border-indigo-200 text-indigo-600': connectedCalendars.length > 0 }"
+            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            :class="{ 'bg-red-50 border-red-200 text-brand-red': connectedCalendars.length > 0 }"
           >
-            <i class="fa-solid fa-link text-gray-400 group-hover:text-indigo-500" :class="{ 'text-indigo-500': connectedCalendars.length > 0 }"></i>
+            <i class="fa-solid fa-link text-gray-400 group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
             <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
           </button>
           <span 
@@ -43,7 +43,7 @@
           @click="showCreateEventModal = true"
           class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
-          <i class="fa-solid fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+            <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">New Event</span>
         </button>
       </template>
@@ -436,7 +436,7 @@ const getCalendarOptions = () => {
     weekends: true,
     select: handleDateSelect,
     eventClick: handleEventClick,
-    eventColor: '#dbeafe',
+    eventColor: '#E6F0FA', // brand-blue-light
     eventClassNames: (arg) => {
       return getEventCalendarClass(arg.event.extendedProps.type)
     },

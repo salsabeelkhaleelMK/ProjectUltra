@@ -17,7 +17,7 @@
       <!-- Header -->
       <div class="p-4 border-b border-gray-700 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-[#F90032] rounded-lg flex items-center justify-center text-white shadow-lg">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-lg" style="background-color: #F80032;">
             <span class="font-bold text-lg">PU</span>
           </div>
           <span class="text-white font-bold">Project Ultra</span>
@@ -69,7 +69,7 @@
           >
             <i class="fa-solid fa-list-check w-5"></i>
             <span>Tasks</span>
-            <div v-if="hotLeadsCount > 0" class="ml-auto w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold">
+            <div v-if="hotLeadsCount > 0" class="ml-auto w-5 h-5 rounded-full bg-brand-red text-white text-xs flex items-center justify-center font-bold">
               {{ hotLeadsCount }}
             </div>
           </router-link>

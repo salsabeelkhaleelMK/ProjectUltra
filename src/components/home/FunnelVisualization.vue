@@ -62,7 +62,7 @@
               cy="50"
               r="45"
               fill="none"
-              stroke="#e5e7eb"
+              stroke="#E5E7EB"
               stroke-width="8"
             />
             <!-- Progress circle -->

@@ -69,8 +69,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-appointments" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -80,7 +80,7 @@
                   />
                   <path
                     :d="generateSmoothPath(bdcMetrics.appointmentsReservedTrend)"
-                    stroke="#3b82f6"
+                    stroke="#0056B3"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -172,8 +172,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-revenue" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -183,7 +183,7 @@
                   />
                   <path
                     :d="generateSmoothPath(getTrendData('revenue'))"
-                    stroke="#3b82f6"
+                    stroke="#0056B3"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -204,7 +204,7 @@
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
             <div
-              class="h-2 rounded-full bg-blue-600 transition-all"
+              class="h-2 rounded-full bg-brand-blue transition-all"
               :style="{ width: `${Math.min(getRevenueProgress('month'), 100)}%` }"
             ></div>
           </div>
@@ -214,7 +214,7 @@
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
             <div
-              class="h-2 rounded-full bg-blue-600 transition-all"
+              class="h-2 rounded-full bg-brand-blue transition-all"
               :style="{ width: `${Math.min(getRevenueProgress('quarter'), 100)}%` }"
             ></div>
           </div>
@@ -232,8 +232,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-pipeline" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -243,7 +243,7 @@
                   />
                   <path
                     :d="generateSmoothPath(salespersonMetrics.pipelineValueTrend)"
-                    stroke="#3b82f6"
+                    stroke="#0056B3"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -332,8 +332,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-dormant" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:#F80032;stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:#F80032;stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -343,7 +343,7 @@
                   />
                   <path
                     :d="generateSmoothPath(salespersonMetrics.dormantOpportunitiesTrend)"
-                    stroke="#ef4444"
+                    stroke="#F80032"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -604,12 +604,12 @@ const getStageColorClass = (color) => {
 
 const getStageChartColor = (color) => {
   const colorMap = {
-    'red': '#ef4444',
+    'red': '#F80032', // brand-red
     'orange': '#f97316',
-    'blue': '#3b82f6',
-    'gray': '#6b7280'
+    'blue': '#0056B3', // brand-blue
+    'gray': '#6B7280' // brand-slate
   }
-  return colorMap[color] || '#6b7280'
+  return colorMap[color] || '#6B7280'
 }
 
 const getTrendData = (metric) => {

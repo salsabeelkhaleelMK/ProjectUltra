@@ -2,7 +2,8 @@
   <div class="hidden md:flex w-16 bg-[#1a1a1a] flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0">
     <!-- Logo/Brand -->
     <div 
-      class="w-10 h-10 bg-[#F90032] rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
+      class="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
+      style="background-color: #F80032;"
       @click="router.push('/home')"
     >
       <span class="font-bold text-lg">PU</span>
@@ -36,7 +37,7 @@
       title="Tasks"
     >
       <i class="fa-solid fa-list-check"></i>
-      <div v-if="hotLeadsCount > 0" class="absolute -right-1 top-0 w-2 h-2 bg-red-500 rounded-full"></div>
+      <div v-if="hotLeadsCount > 0" class="absolute -right-1 top-0 w-2 h-2 bg-brand-red rounded-full"></div>
     </router-link>
     
     <router-link 
@@ -91,9 +92,9 @@
               to="/vehicles"
               @click="showListsMenu = false"
               class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
-              :class="{ 'bg-blue-50 text-blue-700': isActive('/vehicles') }"
+              :class="{ 'bg-red-50 text-brand-red': isActive('/vehicles') }"
             >
-              <i class="fa-solid fa-car w-5 text-gray-400" :class="{ 'text-blue-600': isActive('/vehicles') }"></i> Vehicles
+              <i class="fa-solid fa-car w-5 text-gray-400" :class="{ 'text-brand-red': isActive('/vehicles') }"></i> Vehicles
             </router-link>
           </div>
         </transition>

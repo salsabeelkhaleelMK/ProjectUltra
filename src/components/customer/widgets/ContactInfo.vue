@@ -21,7 +21,7 @@
             <slot name="tags"></slot>
             <button
               @click.stop="handleAddTag"
-              class="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline flex items-center gap-1"
+              class="text-xs text-brand-red hover:text-brand-red-dark font-medium hover:underline flex items-center gap-1"
             >
               <i class="fa-solid fa-plus text-xs"></i>
               <span>add tag</span>
@@ -35,7 +35,7 @@
         <div class="relative">
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
-            class="w-9 h-9 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg shrink-0 transition-colors"
+            class="w-9 h-9 flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-lg shrink-0 transition-colors"
             aria-label="Quick actions"
           >
             <i class="fa-solid fa-plus text-base"></i>
@@ -181,13 +181,8 @@ const avatarSurname = computed(() => {
 })
 
 const avatarColor = computed(() => {
-  const c = (props.avatarColorClass || '').toLowerCase()
-  if (c.includes('purple')) return 'purple'
-  if (c.includes('blue')) return 'blue'
-  if (c.includes('green')) return 'green'
-  if (c.includes('red')) return 'red'
-  if (c.includes('pink')) return 'pink'
-  return 'yellow'
+  // Always use primary color (red) for avatar
+  return 'red'
 })
 
 const quickActionItems = computed(() => {

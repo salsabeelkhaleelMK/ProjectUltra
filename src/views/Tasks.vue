@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col lg:flex-row overflow-hidden" style="background-color: #f5f5f5;">
+  <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-brand-gray">
     <!-- Unified Mobile Header - Shows when task is selected (both views) -->
     <MobileDetailHeader
       :show="!!currentTask"

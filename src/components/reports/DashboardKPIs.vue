@@ -165,10 +165,10 @@ const getEndPoint = (data) => {
 
 const getLineColor = (kpi) => {
   if (kpi.changeType === 'increase' && kpi.id === 1) return '#10b981' // green-600
-  if (kpi.changeType === 'increase' && kpi.id === 2) return '#3b82f6' // blue-600
-  if (kpi.changeType === 'decrease') return '#ef4444' // red-600
+  if (kpi.changeType === 'increase' && kpi.id === 2) return '#0056B3' // brand-blue
+  if (kpi.changeType === 'decrease') return '#F80032' // brand-red
   if (kpi.changeType === 'increase' && kpi.id === 4) return '#f97316' // orange-500
-  return '#6b7280' // gray-500
+  return '#6B7280' // brand-slate
 }
 </script>
 

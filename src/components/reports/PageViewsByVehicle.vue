@@ -68,8 +68,8 @@
           <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
             <defs>
               <linearGradient :id="`gradient-v-${vehicle.id}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#ef4444'};stop-opacity:0.2`" />
-                <stop offset="100%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#ef4444'};stop-opacity:0`" />
+                <stop offset="0%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#F80032'};stop-opacity:0.2`" />
+                <stop offset="100%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#F80032'};stop-opacity:0`" />
               </linearGradient>
             </defs>
             
@@ -83,7 +83,7 @@
             <!-- Smooth Line -->
             <path
               :d="generateSmoothPath(vehicle.trend)"
-              :stroke="vehicle.changeType === 'increase' ? '#10b981' : '#ef4444'"
+              :stroke="vehicle.changeType === 'increase' ? '#10b981' : '#F80032'"
               stroke-width="2.5"
               fill="none"
               stroke-linecap="round"

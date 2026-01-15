@@ -19,8 +19,8 @@
           v-for="team in assignableTeams"
           :key="`team-${team.id}`"
           @click="handleSelect({ type: 'team', id: team.id, name: team.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-primary-300 transition-colors text-left"
-          :class="{ 'bg-primary-50 border-primary-400': selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id }"
+          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-red-300 transition-colors text-left"
+          :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id }"
         >
           <div 
             class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm bg-green-100 text-green-700"
@@ -31,7 +31,7 @@
             <p class="font-medium text-gray-900">{{ team.name }}</p>
             <p class="text-xs text-gray-500">Team</p>
           </div>
-          <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-primary-600"></i>
+          <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-brand-red"></i>
         </button>
       </div>
       
@@ -42,8 +42,8 @@
           v-for="user in assignableUsers"
           :key="`user-${user.id}`"
           @click="handleSelect({ type: 'user', id: user.id, name: user.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-primary-300 transition-colors text-left"
-          :class="{ 'bg-primary-50 border-primary-400': selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id }"
+          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-red-300 transition-colors text-left"
+          :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id }"
         >
           <div 
             class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm"
@@ -55,7 +55,7 @@
             <p class="font-medium text-gray-900">{{ user.name }}</p>
             <p class="text-xs text-gray-500 capitalize">{{ user.role }} • {{ user.email }}</p>
           </div>
-          <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-primary-600"></i>
+          <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-brand-red"></i>
         </button>
       </div>
     </div>

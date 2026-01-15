@@ -140,12 +140,12 @@ const getGradientId = (name) => {
 
 const getSourceColor = (color) => {
   const colors = {
-    red: '#ef4444',
+    red: '#F80032', // brand-red
     orange: '#f97316',
-    blue: '#3b82f6',
-    gray: '#6b7280'
+    blue: '#0056B3', // brand-blue
+    gray: '#6B7280' // brand-slate
   }
-  return colors[color] || '#6b7280'
+  return colors[color] || '#6B7280'
 }
 
 const getSourceAvgTime = (sourceName) => {
