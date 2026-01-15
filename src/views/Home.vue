@@ -12,11 +12,11 @@
           
           <!-- Quick Actions Widget -->
           <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-bolt text-white text-sm"></i>
-                  <h2 class="heading-sub text-white">Quick Actions</h2>
+                  <i class="fa-solid fa-bolt text-body text-sm"></i>
+                  <h2 class="heading-sub text-heading">Quick Actions</h2>
                   <Badge
                     v-if="totalNotificationsCount > 0"
                     :text="String(totalNotificationsCount)"
@@ -76,11 +76,11 @@
         <div class="space-y-4 md:space-y-6">
           <!-- Tasks Due Today Widget -->
           <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-tasks text-white text-sm"></i>
-                  <h2 class="heading-sub text-white">Tasks Due Today</h2>
+                  <i class="fa-solid fa-tasks text-body text-sm"></i>
+                  <h2 class="heading-sub text-heading">Tasks Due Today</h2>
                   <Badge
                     v-if="tasksDueToday.length > 0"
                     :text="String(tasksDueToday.length)"
@@ -105,11 +105,11 @@
           
           <!-- Appointments Today Widget -->
           <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-calendar text-white text-sm"></i>
-                  <h2 class="heading-sub text-white">Appointments Today</h2>
+                  <i class="fa-solid fa-calendar text-body text-sm"></i>
+                  <h2 class="heading-sub text-heading">Appointments Today</h2>
                   <Badge
                     v-if="appointmentsToday.length > 0"
                     :text="String(appointmentsToday.length)"
