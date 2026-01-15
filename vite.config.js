@@ -14,5 +14,8 @@ export default defineConfig({
   // Configure optimizeDeps to handle the CSS file
   optimizeDeps: {
     include: ['@motork/component-library']
+  },
+  server: {
+    port: 5000
   }
 })

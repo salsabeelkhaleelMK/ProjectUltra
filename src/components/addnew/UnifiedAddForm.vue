@@ -60,7 +60,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="font-semibold text-gray-800 truncate">{{ contact.name }}</div>
-                  <div class="text-sm text-gray-500 truncate">{{ contact.email }}</div>
+                  <div class="text-meta truncate">{{ contact.email }}</div>
                   <div v-if="contact.company" class="text-xs text-gray-400 truncate">{{ contact.company }}</div>
                 </div>
                 <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
@@ -88,7 +88,7 @@
                 </div>
                 <div>
                   <div class="font-bold text-gray-800">{{ selectedContact.name }}</div>
-                  <div class="text-sm text-gray-600">{{ selectedContact.email }}</div>
+                  <div class="text-content text-gray-600">{{ selectedContact.email }}</div>
                   <div v-if="selectedContact.company" class="text-xs text-gray-500">{{ selectedContact.company }}</div>
                 </div>
               </div>
@@ -175,7 +175,7 @@
     <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">
         Vehicle Details 
-        <span class="text-sm text-gray-500 font-normal">(Optional)</span>
+        <span class="text-meta font-normal">(Optional)</span>
       </h3>
       
       <!-- Basic Information -->
@@ -341,7 +341,7 @@
     <!-- Task Creation Checkboxes -->
     <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">Create Task (Optional)</h3>
-      <p class="text-sm text-gray-600 mb-4">
+      <p class="text-meta mb-4">
         Convert this contact to a lead or opportunity. 
         <span class="font-semibold">Requires vehicle details to be filled.</span>
       </p>

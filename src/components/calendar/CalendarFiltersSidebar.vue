@@ -3,7 +3,7 @@
     <!-- Quick Filters Card - Always Visible -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-3">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="label-upper text-xs">Quick Filters</h3>
+        <h3 class="label-upper">Quick Filters</h3>
         <button 
           v-if="hasActiveFilters"
           @click="$emit('clear-all')"
@@ -15,7 +15,7 @@
       
       <div class="space-y-2">
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900">Only mine</span>
+          <span class="text-content text-gray-700 font-medium group-hover:text-gray-900">Only mine</span>
           <Toggle
             name="onlyMine"
             :modelValue="modelValue.onlyMine"

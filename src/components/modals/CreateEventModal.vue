@@ -107,7 +107,7 @@
             label="Create Event"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
+            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             @click="handleCreate"
           />
         </DialogFooter>

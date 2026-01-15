@@ -11,6 +11,7 @@
           :third-field-value="task.customer.address"
           :avatar-color-class="getAvatarColorClass"
           :task-type="type"
+          :customer-id="task.customer?.id || task.customerId || task.id"
           email-label="Email"
           phone-label="Phone"
           third-field-label="Address"

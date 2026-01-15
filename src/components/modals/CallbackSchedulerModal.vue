@@ -8,7 +8,7 @@
         </DialogHeader>
 
         <div class="space-y-5">
-      <p class="text-sm text-gray-600">
+      <p class="text-meta">
         Schedule a callback with {{ entityName }} to follow up at a convenient time.
       </p>
 
@@ -118,7 +118,7 @@
             label="Schedule Callback"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
+            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             :disabled="!isValid"
             @click="handleConfirm"
           >

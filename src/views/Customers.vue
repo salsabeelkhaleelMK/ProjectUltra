@@ -44,7 +44,7 @@
           <div class="flex items-center justify-center py-12">
             <div class="text-center">
               <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
-              <p class="text-sm text-gray-500">Loading...</p>
+              <p class="text-meta">Loading...</p>
             </div>
           </div>
         </template>

@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="flex-1">
-          <p class="text-sm text-gray-600">
+          <p class="text-meta">
             Requalifying this opportunity will reset its stage and remove negotiation history.
           </p>
         </div>

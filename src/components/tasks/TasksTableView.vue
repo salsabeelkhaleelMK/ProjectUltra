@@ -13,7 +13,7 @@
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
               <i class="fa-solid fa-eye-slash text-gray-400 group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
@@ -60,7 +60,7 @@
           <template #toolbar>
             <div class="flex justify-end">
               <button 
-                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
               >
                 <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
                 <span class="hidden sm:inline">Switch back to old design</span>
@@ -228,8 +228,8 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-sm font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, task.customer.name),
-          h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, task.customer.email)
+          h('div', { class: 'text-content font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.email)
         ])
       ])
     }
@@ -244,11 +244,11 @@ const columns = computed(() => [
       const task = row.original
       const vehicleInfo = getVehicleInfo(task)
       if (vehicleInfo === 'No vehicle specified') {
-        return h('span', { class: 'text-sm text-gray-400' }, 'N/A')
+        return h('span', { class: 'text-meta' }, 'N/A')
       }
       return h('div', { class: 'flex items-center gap-2' }, [
         h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-        h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, vehicleInfo)
+        h('span', { class: 'text-content font-medium text-gray-900 truncate max-w-[120px]' }, vehicleInfo)
       ])
     }
   },
@@ -275,7 +275,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       const requestType = getRequestType(task)
-      return h('span', { class: 'text-sm text-gray-600' }, requestType)
+      return h('span', { class: 'text-meta' }, requestType)
     }
   },
   {
@@ -304,7 +304,7 @@ const columns = computed(() => [
         h('div', {
           class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
         }, owner.initials),
-        h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px]' }, owner.name)
+        h('span', { class: 'text-meta truncate max-w-[80px]' }, owner.name)
       ])
     }
   },
@@ -334,7 +334,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       if (task.type !== 'lead') {
-        return h('span', { class: 'text-sm text-gray-400' }, '—')
+        return h('span', { class: 'text-meta' }, '—')
       }
       
       // Calculate urgency if not already calculated

@@ -9,22 +9,22 @@
       </div>
       
       <!-- Heading -->
-      <h1 class="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
+      <h1 class="page-header-title mb-4">Access Denied</h1>
       
       <!-- Message -->
-      <p class="text-gray-600 mb-2">
+      <p class="text-content mb-2">
         You don't have permission to access this page.
       </p>
-      <p class="text-sm text-gray-500 mb-8">
+      <p class="text-meta mb-8">
         This page is only accessible to managers.
       </p>
       
       <!-- Action Button -->
       <button
         @click="goToTasks"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors inline-flex items-center gap-2"
+        class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
-        <i class="fa-solid fa-arrow-left"></i>
+        <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-brand-red"></i>
         Return to Tasks
       </button>
     </div>

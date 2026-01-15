@@ -57,6 +57,7 @@
             return vehicle ? `${vehicle.brand} ${vehicle.model}` : 'No vehicle specified'
           }"
           :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
+          :get-menu-items="getTaskMenuItems"
           :show-mobile-close="false"
           @select="selectTask"
           @menu-click="toggleCardMenu"
@@ -131,36 +132,6 @@
             </template>
           </template>
           
-          <template #menu="{ item: task }">
-            <!-- Reopen Lead (only for closed leads) -->
-            <button 
-              v-if="task.type === 'lead' && task.isDisqualified === true"
-              @click.stop="reopenLead(task)"
-              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-rotate-left text-blue-500"></i> Reopen Lead
-            </button>
-            <button 
-              @click.stop="reassignTask(task)"
-              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-share text-gray-400"></i> Reassign
-            </button>
-            <button 
-              v-if="task.priority !== 'Hot'"
-              @click.stop="markAsHot(task)"
-              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-fire text-orange-500"></i> Mark as hot
-            </button>
-            <button 
-              v-else
-              @click.stop="unmarkAsHot(task)"
-              class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-            >
-              <i class="fa-regular fa-snowflake text-gray-400"></i> Unmark as hot
-            </button>
-          </template>
         </EntityListSidebar>
       </div>
       
@@ -181,8 +152,8 @@
             <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center">
               <i class="fa-solid fa-tasks text-2xl text-gray-400"></i>
             </div>
-            <h3 class="text-base font-semibold text-gray-900 mb-2">No task selected</h3>
-            <p class="text-sm text-gray-500">Select a task from the list to view its details and manage activities</p>
+            <h3 class="text-content-bold mb-2">No task selected</h3>
+            <p class="text-meta">Select a task from the list to view its details and manage activities</p>
           </div>
         </div>
       </div>
@@ -619,6 +590,44 @@ const reopenLead = async (task) => {
   } catch (err) {
     console.error('Failed to reopen lead:', err)
   }
+}
+
+// Generate menu items for task cards
+const getTaskMenuItems = (task) => {
+  const items = []
+  
+  // Reopen Lead (only for closed leads)
+  if (task.type === 'lead' && task.isDisqualified === true) {
+    items.push({
+      key: 'reopen',
+      label: 'Reopen Lead',
+      onClick: () => reopenLead(task)
+    })
+  }
+  
+  // Reassign
+  items.push({
+    key: 'reassign',
+    label: 'Reassign',
+    onClick: () => reassignTask(task)
+  })
+  
+  // Mark as hot / Unmark as hot
+  if (task.priority !== 'Hot') {
+    items.push({
+      key: 'mark-hot',
+      label: 'Mark as hot',
+      onClick: () => markAsHot(task)
+    })
+  } else {
+    items.push({
+      key: 'unmark-hot',
+      label: 'Unmark as hot',
+      onClick: () => unmarkAsHot(task)
+    })
+  }
+  
+  return items
 }
 
 </script>

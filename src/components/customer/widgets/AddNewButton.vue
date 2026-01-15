@@ -10,17 +10,17 @@
         @click.stop="handleButtonClick"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-xs"></i>
-        <span v-if="showButtonText" class="ml-1.5">{{ buttonText }}</span>
+        <i class="fa-solid fa-plus text-xs text-gray-600"></i>
+        <span v-if="showButtonText" class="ml-1.5 text-gray-600">{{ buttonText }}</span>
       </button>
       
       <!-- Dropdown Menu (only show if there are multiple actions or it's communication tab) -->
       <div 
         v-if="showMenu && shouldShowDropdown"
-        class="absolute top-full right-0 md:left-1/2 md:-translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-10 overflow-hidden flex flex-col p-1"
+        class="absolute top-full right-0 md:left-1/2 md:-translate-x-1/2 mt-2 z-50"
         v-click-outside="() => showMenu = false"
       >
-        <DropdownMenu :items="dropdownItems" className="w-full" />
+        <DropdownMenu :items="dropdownItems" className="w-48" />
       </div>
     </div>
     <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
@@ -79,18 +79,23 @@ const filteredActions = computed(() => {
   return props.actions.filter(action => allowedActions.includes(action))
 })
 
-// Check if we should show button text (single action, not communication tab)
+// Check if we should show button text (single action, or communication tab)
 const showButtonText = computed(() => {
-  // Don't show text for communication tab (has multiple options)
+  // Always show text for communication tab
   if (props.activeTab === 'communication') {
-    return false
+    return true
   }
   // Show text if there's only one filtered action
   return filteredActions.value.length === 1
 })
 
-// Get button text based on the single action
+// Get button text based on the single action or tab
 const buttonText = computed(() => {
+  // For communication tab, always show "add communication"
+  if (props.activeTab === 'communication') {
+    return 'add communication'
+  }
+  
   if (!showButtonText.value || filteredActions.value.length !== 1) {
     return ''
   }
@@ -137,14 +142,14 @@ const dropdownItems = computed(() => {
 
 const buttonClass = computed(() => {
   if (props.inline) {
-    // Overview usage: blue button with rounded corners, icon only
-    return 'bg-blue-600 hover:bg-blue-700 text-white font-medium w-9 h-9 rounded-lg shadow-sm transition-all flex items-center justify-center z-20 relative'
+    // Overview usage: primary brand-red button with rounded corners, icon only
+    return 'bg-white hover:bg-gray-50 text-gray-600 font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border-gray-200'
   }
-  // Default usage (other tabs): original gray rounded pill with separators
+  // Default usage (other tabs): white background with grey text
   // If showing text, adjust padding
-  const baseClass = 'bg-gray-50 hover:bg-white border border-gray-200 text-gray-700 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative'
+  const baseClass = 'bg-white hover:bg-gray-50 text-gray-600 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border-gray-200'
   if (showButtonText.value) {
-    return `${baseClass} px-4 h-9`
+    return `${baseClass} px-4 py-2 h-9`
   }
   return `${baseClass} w-9 h-9`
 })
@@ -168,10 +173,10 @@ const handleAction = (action) => {
 
 const handleButtonClick = () => {
   // If there's only one action and it's not communication tab, directly trigger it
-  if (showButtonText.value && filteredActions.value.length === 1) {
+  if (showButtonText.value && filteredActions.value.length === 1 && props.activeTab !== 'communication') {
     handleAction(filteredActions.value[0])
   } else {
-    // Otherwise, show dropdown
+    // Otherwise, show dropdown (including communication tab which always has multiple options)
     showMenu.value = !showMenu.value
   }
 }

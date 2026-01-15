@@ -47,13 +47,13 @@
     <!-- Phone Number Row -->
     <div class="flex items-center gap-2 mb-3">
       <span class="text-sm text-gray-700 font-medium">{{ lead.customer.phone }}</span>
-      <button 
+      <Button
+        label="Copy"
+        variant="ghost"
+        size="small"
         @click="copyNumber"
-        class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
         title="Copy phone number"
-      >
-        <i class="fa-regular fa-copy text-xs"></i>
-      </button>
+      />
     </div>
     
     <!-- Call Interface Component -->
@@ -81,35 +81,29 @@
         <div class="grid grid-cols-3 gap-2">
           <button 
             @click="selectOutcome('no-answer')"
-            class="flex flex-col items-center justify-center gap-1.5 p-2 rounded-lg border transition-all"
-            :class="selectedOutcome === 'no-answer' 
-              ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' 
-              : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'"
+            class="bg-white border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-gray-700 transition-all"
+            :class="selectedOutcome === 'no-answer' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'"
           >
-            <i class="fa-solid fa-phone-slash text-base"></i>
-            <span class="font-medium text-xs">No answer</span>
+            <i class="fa-solid fa-phone-slash text-sm"></i>
+            <span>No answer</span>
           </button>
           
           <button 
             @click="selectOutcome('not-valid')"
-            class="flex flex-col items-center justify-center gap-1.5 p-2 rounded-lg border transition-all"
-            :class="selectedOutcome === 'not-valid' 
-              ? 'bg-red-50 border-red-500 text-red-700 shadow-sm' 
-              : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'"
+            class="bg-white border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-gray-700 transition-all"
+            :class="selectedOutcome === 'not-valid' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'"
           >
-            <i class="fa-solid fa-thumbs-down text-base"></i>
-            <span class="font-medium text-xs">Not valid</span>
+            <i class="fa-solid fa-ban text-sm"></i>
+            <span>Not valid</span>
           </button>
           
           <button 
             @click="selectOutcome('interested')"
-            class="flex flex-col items-center justify-center gap-1.5 p-2 rounded-lg border transition-all"
-            :class="selectedOutcome === 'interested' 
-              ? 'bg-green-50 border-green-500 text-green-700 shadow-sm' 
-              : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'"
+            class="bg-white border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-gray-700 transition-all"
+            :class="selectedOutcome === 'interested' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'"
           >
-            <i class="fa-solid fa-check text-base"></i>
-            <span class="font-medium text-xs">Interested</span>
+            <i class="fa-solid fa-check-circle text-sm"></i>
+            <span>Interested</span>
           </button>
         </div>
       </div>
@@ -121,13 +115,27 @@
           <button 
             v-for="channel in followupChannels"
             :key="channel.value"
-            @click="followupChannel = channel.value"
-            class="px-3 py-2 rounded-lg text-xs font-medium transition-all border-2"
-            :class="followupChannel === channel.value
-              ? 'bg-blue-50 border-blue-500 text-blue-700'
-              : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'"
+            @click="() => { followupChannel.value = channel.value }"
+            class="bg-white border-2 rounded-lg h-10 flex items-center justify-center gap-2 text-sm font-medium transition-all"
+            :class="followupChannel.value === channel.value ? 'border-primary-700 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-primary-50/50'"
           >
-            {{ channel.label }}
+            <i 
+              v-if="channel.value === 'whatsapp'" 
+              class="fa-brands fa-whatsapp text-xs"
+            ></i>
+            <i 
+              v-else-if="channel.value === 'sms'" 
+              class="fa-solid fa-message text-xs"
+            ></i>
+            <i 
+              v-else-if="channel.value === 'email'" 
+              class="fa-solid fa-envelope text-xs"
+            ></i>
+            <i 
+              v-else-if="channel.value === 'dont-send'" 
+              class="fa-solid fa-xmark text-xs"
+            ></i>
+            <span>{{ channel.label }}</span>
           </button>
         </div>
 
@@ -153,28 +161,16 @@
           <div class="grid grid-cols-3 gap-2">
             <button 
               @click="rescheduleTime = 'tomorrow-9am'"
-              class="px-3 py-2 rounded-lg text-xs font-medium transition-all border-2"
-              :class="rescheduleTime === 'tomorrow-9am'
-                ? 'bg-blue-50 border-blue-500 text-blue-700'
-                : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'"
             >
               Tomorrow 9:00 AM
             </button>
             <button 
               @click="rescheduleTime = 'monday'"
-              class="px-3 py-2 rounded-lg text-xs font-medium transition-all border-2"
-              :class="rescheduleTime === 'monday'
-                ? 'bg-blue-50 border-blue-500 text-blue-700'
-                : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'"
             >
               Monday
             </button>
             <button 
               @click="rescheduleTime = 'custom'"
-              class="px-3 py-2 rounded-lg text-xs font-medium transition-all border-2"
-              :class="rescheduleTime === 'custom'
-                ? 'bg-blue-50 border-blue-500 text-blue-700'
-                : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'"
             >
               Select time
             </button>
@@ -201,18 +197,19 @@
         </div>
         
         <div class="flex justify-end gap-2 pt-3 border-t border-gray-200">
-          <button 
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
             @click="cancelOutcome"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Cancel
-          </button>
-          <button 
+          />
+          <Button
+            label="Send and reschedule"
+            variant="primary"
+            size="small"
             @click="handleNoAnswerConfirm"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-          >
-            Send and reschedule <i class="fa-solid fa-check"></i>
-          </button>
+            class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+          />
         </div>
       </div>
 
@@ -261,19 +258,20 @@
         </div>
         
         <div class="flex justify-end gap-2 pt-3 border-t border-gray-200">
-          <button 
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
             @click="cancelOutcome"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Cancel
-          </button>
-          <button 
-            @click="handleNotValidConfirm"
+          />
+          <Button
+            label="Confirm Disqualification"
+            variant="primary"
+            size="small"
             :disabled="!disqualifyCategory || !disqualifyReason"
-            class="bg-red-600 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Confirm Disqualification
-          </button>
+            @click="handleNotValidConfirm"
+            class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
+          />
         </div>
       </div>
 
@@ -328,27 +326,27 @@
           
           <!-- Purchase Method, Trade-in, and Note Buttons -->
           <div class="flex gap-2">
-            <button 
+            <Button
+              label="Add purchase method"
+              variant="primary"
+              size="small"
               @click="emit('open-purchase-method')"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <i class="fa-solid fa-plus text-xs"></i>
-              Add purchase method
-            </button>
-            <button 
+              class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            />
+            <Button
+              label="Add trade-in"
+              variant="primary"
+              size="small"
               @click="emit('open-trade-in')"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <i class="fa-solid fa-plus text-xs"></i>
-              Add trade-in
-            </button>
-            <button 
+              class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            />
+            <Button
+              label="Add note"
+              variant="primary"
+              size="small"
               @click="showNoteModal = true"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <i class="fa-solid fa-plus text-xs"></i>
-              Add note
-            </button>
+              class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            />
       </div>
     </div>
 
@@ -357,7 +355,7 @@
           <div class="flex items-start justify-between mb-3">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-calendar-check text-blue-600"></i>
-              <h5 class="text-sm font-semibold text-gray-900">Existing Appointment</h5>
+              <h5 class="heading-sub">Existing Appointment</h5>
             </div>
             <span class="text-xs font-semibold text-blue-600 uppercase">Scheduled</span>
           </div>
@@ -379,13 +377,12 @@
               <span class="ml-2 font-medium text-gray-900">{{ lead.scheduledAppointment.assignee }}</span>
             </div>
           </div>
-          <button 
+          <Button
+            label="Reschedule Appointment"
+            variant="outline"
+            size="small"
             @click="showScheduleAppointmentModal = true"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
-          >
-            <i class="fa-solid fa-calendar-days text-xs"></i>
-            Reschedule Appointment
-          </button>
+          />
         </div>
 
         <!-- Next Step Selection (only show if no existing appointment) -->
@@ -403,7 +400,7 @@
                 class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
               />
               <div class="flex-1">
-                <div class="text-sm font-semibold text-gray-900">Qualify without appointment</div>
+                <div class="heading-sub">Qualify without appointment</div>
                 <div class="text-xs text-gray-500 mt-0.5">Proceed directly to opportunity stage</div>
               </div>
             </label>
@@ -421,18 +418,19 @@
                 class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
               />
               <div class="flex-1">
-                <div class="text-sm font-semibold text-gray-900">Schedule Appointment</div>
+                <div class="heading-sub">Schedule Appointment</div>
                 <div class="text-xs text-gray-500 mt-0.5">
                   {{ appointmentScheduled ? 'Appointment scheduled' : 'Book a meeting or test drive' }}
                 </div>
               </div>
-              <button 
+              <Button
                 v-if="appointmentScheduled"
+                label="Reschedule"
+                variant="primary"
+                size="small"
                 @click.stop.prevent="showScheduleAppointmentModal = true"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition-colors shadow-sm"
-              >
-                Reschedule
-              </button>
+                class="text-xs !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+              />
             </label>
           </div>
         </div>
@@ -475,28 +473,27 @@
         
         <!-- Action Buttons -->
         <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-          <button 
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
             @click="cancelOutcome"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            Cancel
-          </button>
+          />
           
           <div class="flex gap-2">
-            <button 
+            <Button
+              label="Disqualify"
+              variant="outline"
+              size="small"
               @click="handleDisqualifyFromInterested"
-              class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
-            >
-              <i class="fa-solid fa-ban text-xs"></i>
-              Disqualify
-            </button>
-            <button 
+            />
+            <Button
+              label="Qualify"
+              variant="primary"
+              size="small"
               @click="handleQualify"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors shadow-sm flex items-center gap-2"
-            >
-              <i class="fa-solid fa-check text-xs"></i>
-              Qualify
-            </button>
+              class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600"
+            />
           </div>
         </div>
       </div>
@@ -525,9 +522,9 @@
           label="Save Note"
           variant="primary"
           size="small"
-          class="rounded-sm"
           :disabled="!noteWidgetRef?.canSubmit()"
           @click="noteWidgetRef?.submit"
+          class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
         />
       </template>
     </ModalShell>

@@ -7,14 +7,14 @@
           <DialogTitle>Reassign</DialogTitle>
         </DialogHeader>
 
-        <p class="text-sm text-gray-600 mb-4">
+        <p class="text-meta mb-4">
           Select a user or team to reassign:
         </p>
         
         <div class="space-y-2 max-h-96 overflow-y-auto mb-4">
       <!-- Teams Section -->
       <div v-if="assignableTeams.length" class="mb-3">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">Teams</p>
+        <p class="label-upper mb-2 px-1">Teams</p>
         <button
           v-for="team in assignableTeams"
           :key="`team-${team.id}`"
@@ -29,7 +29,7 @@
           </div>
           <div class="flex-1">
             <p class="font-medium text-gray-900">{{ team.name }}</p>
-            <p class="text-xs text-gray-500">Team</p>
+            <p class="text-meta">Team</p>
           </div>
           <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-brand-red"></i>
         </button>
@@ -53,7 +53,7 @@
           </div>
           <div class="flex-1">
             <p class="font-medium text-gray-900">{{ user.name }}</p>
-            <p class="text-xs text-gray-500 capitalize">{{ user.role }} • {{ user.email }}</p>
+            <p class="text-meta capitalize">{{ user.role }} • {{ user.email }}</p>
           </div>
           <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-brand-red"></i>
         </button>
@@ -72,7 +72,7 @@
             label="Reassign"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
+            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             :disabled="!selectedAssignee"
             @click="handleConfirm"
           />

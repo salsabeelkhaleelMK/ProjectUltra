@@ -3,7 +3,7 @@
     <div class="page-header-main">
       <div class="page-header-content">
         <div>
-          <h1 class="page-header-title">{{ title }}</h1>
+          <h2 class="page-header-title">{{ title }}</h2>
         </div>
         <div class="page-header-actions">
           <slot name="actions"></slot>

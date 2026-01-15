@@ -91,7 +91,7 @@
             <router-link 
               to="/vehicles"
               @click="showListsMenu = false"
-              class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+              class="block px-4 py-3 text-content text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
               :class="{ 'bg-red-50 text-brand-red': isActive('/vehicles') }"
             >
               <i class="fa-solid fa-car w-5 text-gray-400" :class="{ 'text-brand-red': isActive('/vehicles') }"></i> Vehicles
@@ -154,7 +154,7 @@ const toggleListsMenu = () => {
 }
 
 .nav-label {
-  @apply text-[10px] uppercase tracking-[0.15em] text-gray-400 text-center w-full;
+  @apply text-xs uppercase tracking-[0.15em] text-gray-400 text-center w-full;
 }
 
 /* Dropdown animations */

@@ -59,7 +59,7 @@
             label="Edit"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto order-2 sm:order-3"
+            class="rounded-sm w-full sm:w-auto order-2 sm:order-3 !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             @click="$emit('edit')"
           >
             <template #icon-left>

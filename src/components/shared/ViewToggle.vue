@@ -1,16 +1,17 @@
 <template>
-  <!-- Pill Shape View Toggle -->
-  <div class="flex items-center bg-gray-100 rounded-full p-1">
+  <!-- Compact Icon-Only View Toggle -->
+  <div class="flex items-center gap-1 bg-gray-100 rounded-full p-1">
     <button
       v-for="option in options"
       :key="option.value"
       @click="$emit('update:view', option.value)"
       :class="[
-        'w-8 h-8 flex items-center justify-center rounded-full transition-colors',
+        'w-8 h-8 flex items-center justify-center rounded-full transition-all',
         view === option.value 
-          ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' 
+          ? 'bg-white text-brand-red shadow-sm' 
           : 'text-gray-500 hover:text-gray-800'
       ]"
+      :title="option.label"
     >
       <i :class="option.icon" class="text-xs"></i>
     </button>

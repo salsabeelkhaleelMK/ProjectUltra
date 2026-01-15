@@ -8,10 +8,10 @@
     </div>
     <div class="flex-1">
       <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs font-bold text-gray-900">{{ customerInitials }}</span>
-        <span class="text-xs text-gray-400">{{ item.action || 'added' }}</span>
-        <span class="text-xs text-gray-400">• {{ formatTime(item.timestamp) }}</span>
-        <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-xs px-1 py-0.5 rounded border border-blue-100">Auto-detected</span>
+        <span class="text-meta-bold text-gray-900">{{ customerInitials }}</span>
+        <span class="text-meta">{{ item.action || 'added' }}</span>
+        <span class="text-meta">• {{ formatTime(item.timestamp) }}</span>
+        <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-meta px-1 py-0.5 rounded border border-blue-100">Auto-detected</span>
         <div class="ml-auto relative">
           <button 
             @click.stop="showMenu = !showMenu"
@@ -31,8 +31,8 @@
           </div>
         </div>
       </div>
-      <div v-if="item.content" class="text-sm text-gray-700">{{ item.content }}</div>
-      <div v-if="item.fileName" class="text-sm text-gray-700 flex items-center gap-2">
+      <div v-if="item.content" class="text-content text-gray-700">{{ item.content }}</div>
+      <div v-if="item.fileName" class="text-content text-gray-700 flex items-center gap-2">
         <i class="fa-solid fa-paperclip text-gray-400"></i>
         <span>{{ item.fileName }}</span>
       </div>
@@ -42,9 +42,9 @@
         </div>
         <div v-else class="bg-gray-50 border border-gray-200 rounded-lg p-3">
           <div v-if="item.type === 'tradein'">
-            <h4 class="text-sm font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }}</h4>
-            <p v-if="item.data.version" class="text-xs text-gray-600 mt-0.5">{{ item.data.version }}</p>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500 mt-2">
+              <h4 class="text-content font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }}</h4>
+              <p v-if="item.data.version" class="text-meta mt-0.5">{{ item.data.version }}</p>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-meta mt-2">
               <div v-if="item.data.year">
                 <i class="fa-regular fa-calendar mr-1"></i>{{ item.data.year }}
               </div>
@@ -63,8 +63,8 @@
             </div>
           </div>
           <div v-else-if="item.type === 'financing'">
-            <h4 class="text-sm font-bold text-gray-900 mb-2">{{ item.data.product }}</h4>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+              <h4 class="text-content font-bold text-gray-900 mb-2">{{ item.data.product }}</h4>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-meta">
               <div v-if="item.data.provider">
                 <span class="text-gray-500">Provider:</span>
                 <span class="text-gray-700 font-medium ml-1">{{ item.data.provider }}</span>
@@ -96,17 +96,17 @@
               <img :src="item.data.image" alt="Car" class="w-full h-full object-cover">
             </div>
             <div class="flex-1">
-              <h4 class="text-sm font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
-              <p class="text-xs text-gray-500">€ {{ formatCurrency(item.data.price) }}</p>
+              <h4 class="text-content font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
+              <p class="text-meta">€ {{ formatCurrency(item.data.price) }}</p>
             </div>
             <span v-if="item.data.isMainOffer" class="bg-purple-600 text-white text-xs font-bold px-1 py-0.5 rounded">Main Offer</span>
           </div>
           <div v-else-if="item.type === 'purchase'" class="flex items-center gap-3">
             <div class="flex-1">
-              <h4 class="text-sm font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
-              <p class="text-xs text-gray-500">€ {{ formatCurrency(item.data.price) }}</p>
-              <p v-if="item.data.purchaseDate" class="text-xs text-gray-400 mt-1">Purchased: {{ formatDate(item.data.purchaseDate) }}</p>
-              <p v-if="item.data.notes" class="text-xs text-gray-600 mt-1">{{ item.data.notes }}</p>
+              <h4 class="text-content font-bold text-gray-900">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
+              <p class="text-meta">€ {{ formatCurrency(item.data.price) }}</p>
+              <p v-if="item.data.purchaseDate" class="text-meta mt-1">Purchased: {{ formatDate(item.data.purchaseDate) }}</p>
+              <p v-if="item.data.notes" class="text-meta mt-1">{{ item.data.notes }}</p>
             </div>
           </div>
         </div>

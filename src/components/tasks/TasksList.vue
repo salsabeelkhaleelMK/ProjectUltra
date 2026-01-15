@@ -64,6 +64,7 @@
         :open-menu-id="openMenuId"
         :getName="getName"
         :getVehicleInfo="getVehicleInfo"
+        :menu-items="getMenuItems ? getMenuItems(item) : null"
         @select="$emit('select', $event)"
         @menu-click="$emit('menu-click', $event)"
         @menu-close="$emit('menu-close')"
@@ -82,9 +83,6 @@
         </template>
         <template #dates="{ item }">
           <slot name="dates" :item="item"></slot>
-        </template>
-        <template #menu="{ item }">
-          <slot name="menu" :item="item"></slot>
         </template>
       </TaskCard>
     </div>
@@ -161,6 +159,10 @@ const props = defineProps({
   viewMode: {
     type: String,
     default: 'card'
+  },
+  getMenuItems: {
+    type: Function,
+    default: null
   }
 })
 

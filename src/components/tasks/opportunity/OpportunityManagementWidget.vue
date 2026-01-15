@@ -17,18 +17,24 @@
           </div>
         </div>
         <div class="flex gap-3">
-          <button
+          <Button
+            variant="primary"
+            size="small"
             @click="handleReopen"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
+            class="flex items-center gap-2 bg-green-600 hover:bg-green-700"
           >
-            Reopen <i class="fa-solid fa-rotate-left"></i>
-          </button>
-          <button
+            <span>Reopen</span>
+            <i class="fa-solid fa-rotate-left"></i>
+          </Button>
+          <Button
+            variant="outline"
+            size="small"
             @click="showRequalifyModal = true"
-            class="bg-white hover:bg-yellow-50 text-yellow-700 border border-yellow-300 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+            class="flex items-center gap-2 bg-white hover:bg-yellow-50 text-yellow-700 border-yellow-300"
           >
-            Requalify as Lead <i class="fa-solid fa-arrow-left"></i>
-          </button>
+            <span>Requalify as Lead</span>
+            <i class="fa-solid fa-arrow-left"></i>
+          </Button>
         </div>
       </div>
     </template>
@@ -155,6 +161,7 @@
 <script setup>
 import { ref, computed, onMounted, toRef } from 'vue'
 import { useRouter } from 'vue-router'
+import { Button } from '@motork/component-library'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { fetchVehicles } from '@/api/vehicles'
 import { getStageColor } from '@/utils/stageMapper'

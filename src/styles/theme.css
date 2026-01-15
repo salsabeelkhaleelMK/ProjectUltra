@@ -6,6 +6,7 @@
   --brand-red: #F80032;
   --brand-red-dark: #D0002A;
   --brand-dark: #282828;
+  --brand-dark-darker: #1a1a1a;
   --brand-gray: #F5F5F7;
   --brand-slate: #6B7280;
   --brand-blue: #0056B3;
@@ -43,13 +44,19 @@
   --font-heading: 'Montserrat', sans-serif;
   --font-body: 'Open Sans', sans-serif;
 
-  /* Typography Sizes */
-  --text-h1: 3rem; /* 48px base, can extend to 3.75rem (60px) */
-  --text-h2: 2rem; /* 32px base, can extend to 2.25rem (36px) */
-  --text-h3: 1.25rem; /* 20px base, can extend to 1.5rem (24px) */
-  --text-body: 1rem; /* 16px */
-  --text-button: 0.875rem; /* 14px base, can extend to 1rem (16px) */
-  --text-nav: 0.875rem; /* 14px */
+  /* Typography Sizes - 1.25 ratio scale for optimal hierarchy */
+  /* Reduced by one level - all sizes shifted down */
+  --text-h1: 1.75rem; /* 28px - Hero/Page titles (reduced from 32px) */
+  --text-h2: 1.5rem; /* 24px - Section titles (was 32px) */
+  --text-h3: 1.25rem; /* 20px - Widget headings (heading-main) (was 24px) */
+  --text-h4: 1rem; /* 16px - Subheadings (heading-sub) (was 20px) */
+  --text-body: 0.875rem; /* 14px - Body text (was 16px) */
+  --text-small: 0.75rem; /* 12px - Small text, buttons, nav (was 14px) */
+  --text-xs: 0.625rem; /* 10px - Labels, metadata (was 12px) - NOTE: Below recommended 12px minimum */
+  
+  /* Legacy aliases for backward compatibility */
+  --text-button: var(--text-small); /* 12px (was 14px) */
+  --text-nav: var(--text-small); /* 12px (was 14px) */
 
   /* Spacing */
   --spacing-xs: 0.25rem; /* 1 */

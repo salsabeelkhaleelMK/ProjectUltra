@@ -2,7 +2,7 @@
   <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6 animate-fade-in relative">
     <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
     <div class="flex justify-between items-center mb-4">
-      <h5 class="text-sm font-bold text-gray-900">{{ item ? 'Edit Attachment' : 'Add Attachment' }}</h5>
+      <h5 class="heading-sub">{{ item ? 'Edit Attachment' : 'Add Attachment' }}</h5>
       <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div>
@@ -14,25 +14,42 @@
           ref="fileInput"
           class="hidden"
         />
-        <button 
+        <Button
+          variant="outline"
+          size="small"
           @click="$refs.fileInput.click()"
-          class="bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md px-4 py-2 text-sm text-slate-700 transition-colors"
+          class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-paperclip mr-2"></i>Choose File
-        </button>
+          <i class="fa-solid fa-paperclip"></i>
+          <span>Choose File</span>
+        </Button>
         <span v-if="selectedFileName" class="text-sm text-slate-600">{{ selectedFileName }}</span>
         <span v-else class="text-sm text-gray-400">No file selected</span>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
-      <button @click="$emit('cancel')" class="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-      <button @click="handleSave" :disabled="!selectedFile" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
+      <Button
+        variant="outline"
+        size="small"
+        @click="$emit('cancel')"
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        size="small"
+        :disabled="!selectedFile"
+        @click="handleSave"
+      >
+        Save
+      </Button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { Button } from '@motork/component-library'
 
 const props = defineProps({
   item: {

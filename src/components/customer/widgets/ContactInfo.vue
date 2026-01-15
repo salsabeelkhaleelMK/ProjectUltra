@@ -4,8 +4,24 @@
     <div class="flex items-center justify-between gap-3 md:gap-4">
       <div class="flex items-center gap-3 md:gap-4 flex-1">
         <!-- Customer Avatar -->
+        <button
+          v-if="customerId"
+          @click.stop="handleAvatarClick"
+          class="cursor-pointer hover:opacity-80 transition-opacity shrink-0"
+          aria-label="Open customer profile"
+        >
+          <UserAvatar
+            class="w-14 h-14 rounded"
+            style="background-color: #1a1a1a; color: white;"
+            :name="avatarName"
+            :surname="avatarSurname"
+            :color="avatarColor"
+          />
+        </button>
         <UserAvatar
+          v-else
           class="w-14 h-14 rounded"
+          style="background-color: #1a1a1a; color: white;"
           :name="avatarName"
           :surname="avatarSurname"
           :color="avatarColor"
@@ -35,19 +51,19 @@
         <div class="relative">
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
-            class="w-9 h-9 flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-lg shrink-0 transition-colors"
+            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
             aria-label="Quick actions"
           >
-            <i class="fa-solid fa-plus text-base"></i>
+            <i class="fa-solid fa-plus text-base text-gray-600"></i>
           </button>
           
           <!-- Quick Action Dropdown Menu -->
           <div 
             v-if="showQuickActionMenu"
-            class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-100/50 z-50 overflow-hidden flex flex-col p-1"
+            class="absolute top-full right-0 mt-2 z-50"
             v-click-outside="() => showQuickActionMenu = false"
           >
-            <DropdownMenu :items="quickActionItems" className="w-full" />
+            <DropdownMenu :items="quickActionItems" className="w-48" />
           </div>
         </div>
         
@@ -73,7 +89,7 @@
             <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
               <i class="fa-regular fa-envelope text-gray-500 text-xs"></i>
             </div>
-            <span class="text-xs text-gray-900 font-medium">{{ email }}</span>
+            <span class="text-meta text-gray-900 font-medium">{{ email }}</span>
             <button 
               @click.stop="copyToClipboard(email, 'email')"
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
@@ -88,7 +104,7 @@
             <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
               <i class="fa-solid fa-phone text-gray-500 text-xs"></i>
             </div>
-            <span class="text-xs text-gray-900 font-medium">{{ phone }}</span>
+            <span class="text-meta text-gray-900 font-medium">{{ phone }}</span>
             <button 
               @click.stop="copyToClipboard(phone, 'phone')"
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
@@ -104,7 +120,7 @@
               <i class="fa-solid fa-map-marker-alt text-gray-500 text-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
               <i class="fa-regular fa-calendar text-gray-500 text-xs" v-else></i>
             </div>
-            <span class="text-xs text-gray-900 font-medium">{{ thirdFieldValue }}</span>
+            <span class="text-meta text-gray-900 font-medium">{{ thirdFieldValue }}</span>
           </div>
         </div>
       </div>
@@ -115,6 +131,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { DropdownMenu, UserAvatar } from '@motork/component-library'
 import { useToastStore } from '@/stores/toast'
 
@@ -158,6 +175,10 @@ const props = defineProps({
   taskType: {
     type: String,
     default: 'lead' // 'lead' | 'opportunity' | 'contact'
+  },
+  customerId: {
+    type: [Number, String],
+    default: null
   }
 })
 
@@ -166,6 +187,7 @@ const emit = defineEmits(['action', 'add-tag'])
 const showContactInfo = ref(false)
 const showQuickActionMenu = ref(false)
 const toastStore = useToastStore()
+const router = useRouter()
 
 const avatarName = computed(() => {
   const full = props.name || ''
@@ -221,5 +243,11 @@ const copyToClipboard = async (text, field) => {
 
 const handleAddTag = () => {
   emit('add-tag')
+}
+
+const handleAvatarClick = () => {
+  if (props.customerId) {
+    router.push(`/customer/${props.customerId}`)
+  }
 }
 </script>

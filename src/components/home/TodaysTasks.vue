@@ -25,7 +25,7 @@
     <template v-else>
       <div v-if="tasks.length === 0" class="text-center py-8 text-gray-500">
         <i class="fa-solid fa-tasks text-4xl mb-2 text-gray-300"></i>
-        <p class="text-sm">No tasks due today</p>
+        <p class="text-content">No tasks due today</p>
       </div>
       
       <div
@@ -66,11 +66,11 @@
             </span>
           </div>
           
-          <h4 class="font-semibold text-gray-900 text-sm mb-1">
+          <h4 class="heading-sub mb-1">
             {{ task.customer?.name || 'Unknown Customer' }}
           </h4>
           
-          <p class="text-xs text-gray-600 mb-2">
+          <p class="text-meta mb-2">
             {{ task.taskType }}
             <span v-if="task.requestedCar || task.vehicle">
               - {{ task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : `${task.vehicle.brand} ${task.vehicle.model}` }}

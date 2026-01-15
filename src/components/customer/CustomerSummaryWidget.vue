@@ -9,7 +9,7 @@
         <p v-if="summary" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
           {{ summary }}
         </p>
-        <p v-else class="text-sm text-gray-500 italic">
+        <p v-else class="text-meta italic">
           No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.
         </p>
       </div>

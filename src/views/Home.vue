@@ -86,8 +86,8 @@
               <template v-else>
                 <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
                   <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
-                  <p class="text-sm">All caught up!</p>
-                  <p class="text-xs text-gray-400 mt-1">No quick actions needed</p>
+                  <p class="text-content">All caught up!</p>
+                  <p class="text-meta mt-1">No quick actions needed</p>
                 </div>
                 <ActionableQuestionCard
                   v-for="question in notifications.slice(0, 5)"

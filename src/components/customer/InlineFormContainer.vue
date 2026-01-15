@@ -2,19 +2,21 @@
   <div class="bg-white border border-gray-200 rounded-lg p-4 animate-fade-in">
     <div v-if="title" class="flex justify-between items-center mb-4">
       <h5 class="font-semibold text-gray-900 text-sm">{{ title }}</h5>
-      <button 
+      <Button
         v-if="showClose"
-        @click="$emit('close')" 
-        class="text-gray-400 hover:text-gray-600 transition-colors"
-      >
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+        label="Close"
+        variant="outline"
+        size="small"
+        @click="$emit('close')"
+      />
     </div>
     <slot></slot>
   </div>
 </template>
 
 <script setup>
+import { Button } from '@motork/component-library'
+
 defineProps({
   title: {
     type: String,

@@ -118,7 +118,7 @@
         class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-[80] lg:hidden overflow-y-auto shadow-xl"
       >
         <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10">
-          <h3 class="text-lg font-bold text-gray-900">Filters</h3>
+          <h3 class="heading-sub">Filters</h3>
           <button 
             @click="showFilterDrawer = false"
             class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"

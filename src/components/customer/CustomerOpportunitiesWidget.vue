@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-gray-900 text-sm">Opportunity #{{ opp.id }}</span>
+              <span class="font-semibold text-gray-900 text-content">Opportunity #{{ opp.id }}</span>
               <span 
                 class="text-xs px-2 py-0.5 rounded-full font-medium"
                 :class="getStageBadgeClass(opp.stage)"
@@ -30,7 +30,7 @@
                 {{ opp.displayStage || opp.stage }}
               </span>
             </div>
-            <div class="flex items-center gap-3 text-xs text-gray-500">
+            <div class="flex items-center gap-3 text-meta">
               <span v-if="opp.assignee">{{ opp.assignee }}</span>
               <span v-if="opp.value">€ {{ formatCurrency(opp.value) }}</span>
               <span v-if="opp.vehicle">{{ opp.vehicle.brand }} {{ opp.vehicle.model }}</span>
@@ -53,7 +53,7 @@
               >
                 {{ task.type }}
               </span>
-              <span class="text-xs text-gray-700 font-medium">{{ task.description }}</span>
+              <span class="text-meta text-gray-700 font-medium">{{ task.description }}</span>
             </div>
             <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>

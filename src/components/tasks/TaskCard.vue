@@ -17,10 +17,10 @@
     <!-- Card Menu Dropdown -->
     <div 
       v-if="openMenuId === item.id && showMenu"
-      class="absolute right-3 top-8 w-40 bg-white border border-gray-200 rounded-sm shadow-xl z-50 overflow-hidden animate-fade-in"
+      class="absolute right-3 top-8 z-50"
       v-click-outside="() => $emit('menu-close')"
     >
-      <slot name="menu" :item="item"></slot>
+      <DropdownMenu v-if="menuItems && menuItems.length > 0" :items="menuItems" className="w-40" />
     </div>
 
     <!-- Top Section: Badges, Name, Location/Source -->
@@ -51,16 +51,16 @@
       </div>
 
       <!-- Name -->
-      <h3 class="font-bold text-gray-900 text-base line-clamp-2 pt-1">{{ getName(item) }}</h3>
+      <h3 class="font-bold text-gray-900 text-content-bold line-clamp-2 pt-1">{{ getName(item) }}</h3>
 
       <!-- Location and Source -->
-      <div class="flex gap-3 text-xs text-gray-500 mt-1">
+      <div class="flex gap-3 text-xs mt-1">
         <span class="flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot"></i>
+          <i class="fa-solid fa-location-dot text-xs"></i>
           <slot name="location" :item="item"></slot>
         </span>
         <span class="flex items-center gap-1.5">
-          <i class="fa-solid fa-globe"></i>
+          <i class="fa-solid fa-globe text-xs"></i>
           <slot name="source" :item="item">
             {{ item.source || item.customer?.source || 'Unknown' }}
           </slot>
@@ -70,7 +70,7 @@
 
     <!-- Bottom Section: Vehicle and Status -->
     <div class="pt-1 bg-gray-100 mt-2 mb-2">
-      <div class="flex justify-between text-xs px-3 py-1.5">
+      <div class="flex justify-between text-meta px-3 py-1.5">
         <span class="font-medium text-gray-900">{{ getVehicleInfo(item) }}</span>
         <span class="font-medium text-gray-900">
           <slot name="vehicle-status" :item="item"></slot>
@@ -80,11 +80,12 @@
 
     <!-- Optional Footer: Owner + Due Date (hidden by default, can be shown via slot) -->
     <div v-if="$slots.owner || $slots.dates" class="flex items-center justify-between pt-1 border-t border-gray-100">
-      <div class="text-xs text-gray-400 flex items-center gap-2">
+      <div class="text-xs flex items-center gap-2">
         <slot name="owner" :item="item">
           <template v-if="item.assignee">
             <div 
-              class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0"
+              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-[8px] shrink-0"
+              style="width: 18px; height: 18px;"
             >
               {{ getAssigneeInitials(item.assignee) }}
             </div>
@@ -93,7 +94,7 @@
           <span v-else>Unassigned</span>
         </slot>
       </div>
-      <div class="text-xs text-gray-400 font-medium">
+      <div class="text-xs font-medium">
         <slot name="dates" :item="item"></slot>
       </div>
     </div>
@@ -102,6 +103,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { DropdownMenu } from '@motork/component-library'
 import { getStageColor } from '@/utils/stageMapper'
 
 const props = defineProps({
@@ -136,6 +138,10 @@ const props = defineProps({
   getVehicleInfo: {
     type: Function,
     required: true
+  },
+  menuItems: {
+    type: Array,
+    default: null
   }
 })
 

@@ -453,7 +453,7 @@ const columns = computed(() => {
         cell: ({ row }) => {
           const vehicle = row.original
           const type = getVehicleType(vehicle)
-          return h('span', { class: 'text-sm text-gray-600' }, type)
+          return h('span', { class: 'text-meta' }, type)
         }
       },
       {
@@ -464,7 +464,7 @@ const columns = computed(() => {
         },
         cell: ({ row }) => {
           // Engine info not in mock data, show N/A
-          return h('span', { class: 'text-sm text-gray-600' }, 'N/A')
+          return h('span', { class: 'text-meta' }, 'N/A')
         }
       },
       {
@@ -474,7 +474,7 @@ const columns = computed(() => {
           title: 'Fuel type'
         },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, row.original.fuelType || 'N/A')
+          return h('span', { class: 'text-meta' }, row.original.fuelType || 'N/A')
         }
       },
       {
@@ -484,7 +484,7 @@ const columns = computed(() => {
           title: 'Gear type'
         },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, row.original.gearType || 'N/A')
+          return h('span', { class: 'text-meta' }, row.original.gearType || 'N/A')
         }
       },
       {
@@ -495,7 +495,7 @@ const columns = computed(() => {
         },
         cell: ({ row }) => {
           const vehicle = row.original
-          return h('span', { class: 'text-sm text-gray-600' }, formatRegistration(vehicle.registration) || 'N/A')
+          return h('span', { class: 'text-meta' }, formatRegistration(vehicle.registration) || 'N/A')
         }
       },
       {
@@ -505,7 +505,7 @@ const columns = computed(() => {
           title: 'Mileage'
         },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, `${formatNumber(row.original.kilometers)} km`)
+          return h('span', { class: 'text-meta' }, `${formatNumber(row.original.kilometers)} km`)
         }
       },
       {
@@ -527,7 +527,7 @@ const columns = computed(() => {
           title: 'Dealership'
         },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, row.original.dealership || 'N/A')
+          return h('span', { class: 'text-meta' }, row.original.dealership || 'N/A')
         }
       },
       {
@@ -578,7 +578,7 @@ const columns = computed(() => {
           // Plates not in mock data, derive from VIN or show N/A
           const vehicle = row.original
           const plates = vehicle.plates || (vehicle.vin ? vehicle.vin.slice(-6) : null) || 'N/A'
-          return h('span', { class: 'text-sm text-gray-600' }, plates)
+          return h('span', { class: 'text-meta' }, plates)
         }
       },
       {
@@ -588,7 +588,7 @@ const columns = computed(() => {
           title: 'Mileage'
         },
         cell: ({ row }) => {
-          return h('span', { class: 'text-sm text-gray-600' }, `${formatNumber(row.original.kilometers)} km`)
+          return h('span', { class: 'text-meta' }, `${formatNumber(row.original.kilometers)} km`)
         }
       },
       {
@@ -599,7 +599,7 @@ const columns = computed(() => {
         },
         cell: ({ row }) => {
           const vehicle = row.original
-          return h('span', { class: 'text-sm text-gray-600' }, formatRegistration(vehicle.registration) || 'N/A')
+          return h('span', { class: 'text-meta' }, formatRegistration(vehicle.registration) || 'N/A')
         }
       },
       {
@@ -612,7 +612,7 @@ const columns = computed(() => {
           // Owner not in mock data, show N/A or derive from requestedBy
           const vehicle = row.original
           const owner = vehicle.owner || (vehicle.requestedBy && vehicle.requestedBy.length > 0 ? vehicle.requestedBy[0] : null) || 'N/A'
-          return h('span', { class: 'text-sm text-gray-600' }, owner)
+          return h('span', { class: 'text-meta' }, owner)
         }
       },
       {
@@ -623,7 +623,7 @@ const columns = computed(() => {
         },
         cell: ({ row }) => {
           // Ownership type not in mock data
-          return h('span', { class: 'text-sm text-gray-600' }, 'N/A')
+          return h('span', { class: 'text-meta' }, 'N/A')
         }
       },
       {
@@ -635,7 +635,7 @@ const columns = computed(() => {
         cell: ({ row }) => {
           // Owned since not in mock data, could derive from registration
           const vehicle = row.original
-          return h('span', { class: 'text-sm text-gray-600' }, formatRegistration(vehicle.registration) || 'N/A')
+          return h('span', { class: 'text-meta' }, formatRegistration(vehicle.registration) || 'N/A')
         }
       },
       {
@@ -646,7 +646,7 @@ const columns = computed(() => {
         },
         cell: ({ row }) => {
           // Warranty info not in mock data
-          return h('span', { class: 'text-sm text-gray-600' }, 'N/A')
+          return h('span', { class: 'text-meta' }, 'N/A')
         }
       }
     ]

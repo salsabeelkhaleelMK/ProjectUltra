@@ -22,7 +22,7 @@
     <template v-else>
       <div v-if="appointments.length === 0" class="text-center py-8 text-gray-500">
         <i class="fa-solid fa-calendar-check text-4xl mb-2 text-gray-300"></i>
-        <p class="text-sm">No appointments scheduled for today</p>
+        <p class="text-content">No appointments scheduled for today</p>
       </div>
       
       <div
@@ -48,11 +48,11 @@
             </span>
           </div>
           
-          <h4 class="font-semibold text-gray-900 text-sm mb-1">
+          <h4 class="heading-sub mb-1">
             {{ appointment.customer || appointment.title }}
           </h4>
           
-          <p class="text-xs text-gray-600 mb-2">
+          <p class="text-meta mb-2">
             {{ appointment.type }}
             <span v-if="appointment.vehicle"> - {{ appointment.vehicle }}</span>
           </p>

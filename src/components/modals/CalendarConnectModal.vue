@@ -17,7 +17,7 @@
         <i v-if="connectingTo === 'google'" class="fa-brands fa-google text-2xl text-red-500"></i>
         <i v-else class="fa-brands fa-microsoft text-2xl text-blue-500"></i>
       </div>
-      <p class="text-sm text-gray-600 mb-2">
+      <p class="text-meta mb-2">
         Connecting to {{ connectingTo === 'google' ? 'Google Calendar' : 'Microsoft Outlook' }}...
       </p>
       <p class="text-xs text-gray-400">Please complete authentication in the popup window</p>

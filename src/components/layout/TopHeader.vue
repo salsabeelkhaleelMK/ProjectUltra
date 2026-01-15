@@ -55,8 +55,8 @@
             color="blue"
           />
           <div class="text-left hidden md:block">
-            <div class="text-sm font-semibold text-gray-900">{{ userStore.currentUser.name }}</div>
-            <div class="text-xs text-gray-500 capitalize">{{ userStore.currentUser.role }}</div>
+            <div class="text-content font-semibold text-gray-900">{{ userStore.currentUser.name }}</div>
+            <div class="text-meta capitalize">{{ userStore.currentUser.role }}</div>
           </div>
           <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
         </button>
@@ -67,27 +67,27 @@
           class="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
         >
           <div class="p-3 border-b border-gray-100 bg-gray-50">
-            <div class="text-sm font-semibold text-gray-900">{{ userStore.currentUser.name }}</div>
-            <div class="text-xs text-gray-500">{{ userStore.currentUser.email }}</div>
+            <div class="text-content font-semibold text-gray-900">{{ userStore.currentUser.name }}</div>
+            <div class="text-meta">{{ userStore.currentUser.email }}</div>
           </div>
           <div class="p-2">
             <button 
               @click="switchRole('manager')"
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-brand-red rounded-lg transition-colors flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-content text-gray-700 hover:bg-red-50 hover:text-brand-red rounded-lg transition-colors flex items-center gap-2"
               :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'manager' }"
             >
               <i class="fa-solid fa-user-shield w-4"></i> Switch to Manager
             </button>
             <button 
               @click="switchRole('salesman')"
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-content text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
               :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'salesman' }"
             >
               <i class="fa-solid fa-user-tie w-4"></i> Switch to Salesman
             </button>
             <button 
               @click="switchRole('operator')"
-              class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-content text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
               :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'operator' }"
             >
               <i class="fa-solid fa-headset w-4"></i> Switch to Operator

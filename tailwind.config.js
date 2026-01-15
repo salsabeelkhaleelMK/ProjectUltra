@@ -13,6 +13,7 @@ export default {
           red: 'var(--brand-red)',
           redDark: 'var(--brand-red-dark)',
           dark: 'var(--brand-dark)',
+          darkDarker: 'var(--brand-dark-darker)',
           gray: 'var(--brand-gray)',
           slate: 'var(--brand-slate)',
           blue: 'var(--brand-blue)',
@@ -43,12 +44,14 @@ export default {
         sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        'h1-hero': ['3rem', { lineHeight: '1.2', fontWeight: '700' }],
-        'h2-section': ['2rem', { lineHeight: '1.3', fontWeight: '700' }],
-        'h3-card': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
-        'body-text': ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
-        'button-text': ['0.875rem', { lineHeight: '1.5', fontWeight: '700', letterSpacing: '0.0625rem' }],
-        'nav-text': ['0.875rem', { lineHeight: '1.5', fontWeight: '500' }],
+        'h1-hero': ['var(--text-h1)', { lineHeight: '1.2', fontWeight: '700' }], /* 28px (reduced from 32px) */
+        'h2-section': ['var(--text-h2)', { lineHeight: '1.3', fontWeight: '700' }], /* 24px (was 32px) */
+        'h3-card': ['var(--text-h3)', { lineHeight: '1.4', fontWeight: '600' }], /* 20px (was 24px) */
+        'h4-sub': ['var(--text-h4)', { lineHeight: '1.4', fontWeight: '600' }], /* 16px (was 20px) */
+        'body-text': ['var(--text-body)', { lineHeight: '1.6', fontWeight: '400' }], /* 14px (was 16px) */
+        'button-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '700', letterSpacing: '0.0625rem' }], /* 12px (was 14px) */
+        'nav-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '500' }], /* 12px (was 14px) */
+        'text-xs': ['var(--text-xs)', { lineHeight: '1.5' }], /* 10px - Below recommended 12px minimum (was 12px) */
       },
       letterSpacing: {
         'button': '0.0625rem', // 1px for buttons/CTAs

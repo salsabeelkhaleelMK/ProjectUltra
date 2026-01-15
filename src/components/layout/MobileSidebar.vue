@@ -126,7 +126,7 @@
             <router-link 
               to="/vehicles"
               @click="$emit('close')"
-              class="mobile-sidebar-link text-sm"
+              class="mobile-sidebar-link text-content"
               :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') }"
             >
               <i class="fa-solid fa-car w-5 text-gray-500"></i>

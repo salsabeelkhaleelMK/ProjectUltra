@@ -13,10 +13,10 @@
       </span>
       
       <!-- Time -->
-      <span class="text-xs text-gray-500">{{ getTimeAgo() }}</span>
+      <span class="text-meta">{{ getTimeAgo() }}</span>
       
       <!-- Owner -->
-      <span class="text-xs text-gray-500">• Owner: {{ getOwnerDisplay() }}</span>
+      <span class="text-meta">• Owner: {{ getOwnerDisplay() }}</span>
       
       <!-- Dismiss Button -->
       <div class="ml-auto flex items-center gap-2">
@@ -34,7 +34,7 @@
           v-else
           class="bg-white border border-gray-200 rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
         >
-          <span class="text-xs text-gray-600 whitespace-nowrap">Dismiss?</span>
+          <span class="text-meta whitespace-nowrap">Dismiss?</span>
           <button
             @click="handleDismiss"
             class="px-2 py-0.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors"
@@ -53,7 +53,7 @@
     
     <!-- Question Text with highlighted customer name -->
     <div class="mb-2" @click="handleQuestionClick">
-      <p class="text-gray-900 text-sm mb-1" v-html="getHighlightedQuestion()"></p>
+      <p class="text-gray-900 text-content mb-1" v-html="getHighlightedQuestion()"></p>
     </div>
     
     <!-- Action Buttons -->
@@ -61,13 +61,13 @@
       <template v-if="question.type === 'appointment-followup'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
         >
           No
         </button>
@@ -76,19 +76,19 @@
       <template v-else-if="question.type === 'ns-followup'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>
@@ -97,7 +97,7 @@
       <template v-else-if="question.type === 'offer-followup'">
         <button
           @click="handleViewTask"
-          class="px-3 py-1.5 text-xs font-medium text-brand-red bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-brand-red bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
         >
           View Opportunity
         </button>
@@ -106,19 +106,19 @@
       <template v-else-if="question.type === 'stuck-opportunity'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>
@@ -127,19 +127,19 @@
       <template v-else-if="question.type === 'lead-qualification-urgency'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+          class="px-3 py-1.5 text-meta font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
         >
           Reassign
         </button>

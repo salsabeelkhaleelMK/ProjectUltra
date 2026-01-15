@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-gray-900 text-sm">Lead #{{ lead.id }}</span>
+              <span class="font-semibold text-gray-900 text-content">Lead #{{ lead.id }}</span>
               <span 
                 class="text-xs px-2 py-0.5 rounded-full font-medium"
                 :class="getStageBadgeClass(lead.stage)"
@@ -30,7 +30,7 @@
                 {{ lead.stage }}
               </span>
             </div>
-            <div class="flex items-center gap-3 text-xs text-gray-500">
+            <div class="flex items-center gap-3 text-meta">
               <span v-if="lead.assignee">{{ lead.assignee }}</span>
               <span v-if="lead.requestedCar">{{ lead.requestedCar.brand }} {{ lead.requestedCar.model }}</span>
             </div>
@@ -52,7 +52,7 @@
               >
                 {{ task.type }}
               </span>
-              <span class="text-xs text-gray-700 font-medium">{{ task.description }}</span>
+              <span class="text-meta text-gray-700 font-medium">{{ task.description }}</span>
             </div>
             <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>

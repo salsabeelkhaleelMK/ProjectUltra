@@ -3,22 +3,19 @@
     <!-- Call Action Buttons Row (Only show if not in outcome selection or call active) -->
     <div v-if="!showOutcomeSelection && !isCallActive && !callEnded" class="flex gap-2 items-center mb-4">
       <!-- Primary: Call Button -->
-      <button 
-        @click="$emit('start-call')"
+      <button
         :disabled="isCallActive"
-        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-blue-200"
+        @click="$emit('start-call')"
+        class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
-        <i class="fa-solid fa-phone"></i>
+        <i class="fa-solid fa-phone text-xs"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
-        <span v-if="contactAttempts > 0" class="bg-blue-500 px-2 py-0.5 rounded text-xs font-bold">
-          {{ contactAttempts + 1 }}/{{ maxContactAttempts }}
-        </span>
       </button>
       
       <!-- Secondary: Log Manual Call -->
-      <button 
-        @click="$emit('log-manual-call')"
+      <button
         :disabled="isCallActive"
+        @click="$emit('log-manual-call')"
         class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-clipboard-check text-xs"></i>
@@ -79,13 +76,13 @@
         
         <!-- End Call Button -->
         <div class="mt-4 flex justify-end">
-          <button 
+          <Button
+            label="End Call"
+            variant="primary"
+            size="small"
             @click="$emit('end-call')"
-            class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
-          >
-            <i class="fa-solid fa-phone-slash"></i>
-            End Call
-          </button>
+            class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
+          />
         </div>
       </div>
       
@@ -97,20 +94,19 @@
             <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
           </div>
           <div class="flex gap-2">
-            <button 
+            <Button
+              label="Extract information"
+              variant="primary"
+              size="small"
               @click="$emit('extract-information')"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-              Extract information
-            </button>
-            <button 
+              class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            />
+            <Button
+              label="Log outcome"
+              variant="outline"
+              size="small"
               @click="$emit('log-manual-call')"
-              class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
-            >
-              <i class="fa-solid fa-clipboard-check text-xs"></i>
-              Log outcome
-            </button>
+            />
           </div>
         </div>
       </div>
@@ -119,6 +115,8 @@
 </template>
 
 <script setup>
+import { Button } from '@motork/component-library'
+
 defineProps({
   isCallActive: {
     type: Boolean,
@@ -158,6 +156,6 @@ defineProps({
   }
 })
 
-defineEmits(['start-call', 'end-call', 'log-manual-call', 'extract-information', 'update:call-notes'])
+defineEmits(['start-call', 'end-call', 'log-manual-call', 'extract-information', 'update:call-notes', 'copy-number'])
 </script>
 

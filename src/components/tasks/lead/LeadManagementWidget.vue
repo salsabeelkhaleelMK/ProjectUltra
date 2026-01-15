@@ -54,12 +54,15 @@
             </p>
           </div>
         </div>
-        <button
+        <Button
+          variant="primary"
+          size="small"
           @click="handleReopen"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm"
+          class="flex items-center gap-2"
         >
-          Reopen Lead <i class="fa-solid fa-rotate-left"></i>
-        </button>
+          <span>Reopen Lead</span>
+          <i class="fa-solid fa-rotate-left"></i>
+        </Button>
       </div>
     </template>
   </TaskManagementWidget>
@@ -67,6 +70,7 @@
 
 <script setup>
 import { toRef } from 'vue'
+import { Button } from '@motork/component-library'
 import { useLeadsStore } from '@/stores/leads'
 import { useLeadActions } from '@/composables/useLeadActions'
 import { useLeadManagementHandlers } from '@/composables/useLeadManagementHandlers'
