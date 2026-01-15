@@ -22,7 +22,7 @@
           v-for="tab in stageTabs"
           :key="tab.key"
           @click="setTab(tab.key)"
-          class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-[160px] border-t-4"
+          class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-40 border-t-4"
           :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
         >
           <span class="heading-tab whitespace-nowrap">{{ tab.label }}</span>

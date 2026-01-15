@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-50/50 border border-gray-100 rounded-lg p-4 relative transition-all duration-300">
+  <div class="bg-gray-50/50 border border-gray-100 rounded-lg p-6 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
         <h4 class="font-bold text-gray-900 text-content">{{ dynamicTitle }}</h4>
@@ -49,8 +49,7 @@
       <span class="text-content text-gray-700 font-medium">{{ lead.customer.phone }}</span>
       <button
         @click="copyNumber"
-        class="flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-        style="width: 21.6px; height: 21.6px;"
+        class="flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors w-[21.6px] h-[21.6px]"
         title="Copy phone number"
       >
         <i class="fa-regular fa-copy text-xs"></i>
@@ -111,7 +110,7 @@
       </div>
 
       <!-- No Answer Follow-up (Inline) -->
-      <div v-if="selectedOutcome === 'no-answer'" class="space-y-4 bg-white border border-gray-200 rounded-lg p-4">
+      <div v-if="selectedOutcome === 'no-answer'" class="space-y-4 bg-white border border-gray-200 rounded-lg p-6">
         <h5 class="font-semibold text-gray-900 text-content">Send follow-up message</h5>
         <div class="grid grid-cols-4 gap-2">
           <button 
@@ -222,7 +221,7 @@
       </div>
 
       <!-- Not Valid (Inline) -->
-      <div v-if="selectedOutcome === 'not-valid'" class="space-y-4 bg-white border border-gray-200 rounded-lg p-4">
+      <div v-if="selectedOutcome === 'not-valid'" class="space-y-4 bg-white border border-gray-200 rounded-lg p-6">
         <div>
           <label class="block text-meta-bold mb-2">Category</label>
           <div class="flex gap-4">
@@ -286,7 +285,7 @@
       <!-- Interested (Inline) -->
       <div v-if="selectedOutcome === 'interested'" class="space-y-4">
         <!-- Assignment Section (full width) -->
-        <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h5 class="font-semibold text-gray-900 text-content mb-3">Assign to salesman</h5>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -329,7 +328,7 @@
         </div>
         
         <!-- Customer Preferences Section (full width, below assignment) -->
-        <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
           <h5 class="font-semibold text-gray-900 text-content mb-3">Customer preferences</h5>
           
           <!-- Purchase Method, Trade-in, and Note Buttons -->
@@ -359,7 +358,7 @@
     </div>
 
         <!-- Existing Appointment (if lead already has one) -->
-        <div v-if="hasExistingAppointment && !appointmentScheduled" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div v-if="hasExistingAppointment && !appointmentScheduled" class="bg-blue-50 border border-blue-200 rounded-lg p-6">
           <div class="flex items-start justify-between mb-3">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-calendar-check text-blue-600"></i>
@@ -394,7 +393,7 @@
         </div>
 
         <!-- Next Step Selection (only show if no existing appointment) -->
-        <div v-if="!hasExistingAppointment" class="bg-white border border-gray-200 rounded-lg p-4">
+        <div v-if="!hasExistingAppointment" class="bg-white border border-gray-200 rounded-lg p-6">
           <h5 class="text-xs font-semibold text-gray-600 mb-3">Choose Next Step</h5>
           <div class="space-y-2">
             <!-- Qualify without appointment -->

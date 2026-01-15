@@ -5,6 +5,7 @@
       <h3 class="font-bold text-gray-800 text-sm">Cars</h3>
     </div>
     <div class="relative">
+      <!-- scrollbar-width: thin is Firefox-specific and has no Tailwind equivalent -->
       <div class="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide scroll-smooth snap-x snap-mandatory" style="scrollbar-width: thin;">
         <div
           v-for="(car, index) in cars"
@@ -29,7 +30,7 @@
             >
             <i v-else class="fa-solid fa-car text-4xl text-gray-400"></i>
           </div>
-          <div class="p-4">
+          <div class="p-6">
             <h4 class="font-bold text-gray-800 text-sm mb-1">{{ car.brand }} {{ car.model }} ({{ car.year }})</h4>
             <p v-if="car.price" class="text-xs text-gray-500 mb-2">€ {{ formatCurrency(car.price) }}</p>
             <div 

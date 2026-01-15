@@ -1,9 +1,9 @@
 <template>
-  <div class="hidden md:flex w-16 bg-[#1a1a1a] flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0">
+  <div class="hidden md:flex w-16 flex-col items-center py-5 gap-6 text-gray-400 shrink-0 z-20 h-screen fixed left-0 top-0 border-r border-gray-200" style="background-color: var(--brand-dark-darker);">
     <!-- Logo/Brand -->
     <div 
       class="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
-      style="background-color: #F80032;"
+      style="background-color: var(--brand-red);"
       @click="router.push('/home')"
     >
       <span class="font-bold text-lg">PU</span>
@@ -85,13 +85,13 @@
         <transition name="dropdown">
           <div 
             v-if="showListsMenu"
-            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-[100]"
+            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-50"
             @click.stop
           >
             <router-link 
               to="/vehicles"
               @click="showListsMenu = false"
-              class="block px-4 py-3 text-content text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+              class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
               :class="{ 'bg-red-50 text-brand-red': isActive('/vehicles') }"
             >
               <i class="fa-solid fa-car w-5 text-gray-400" :class="{ 'text-brand-red': isActive('/vehicles') }"></i> Vehicles
@@ -142,11 +142,16 @@ const toggleListsMenu = () => {
 @reference "tailwindcss";
 .nav-icon {
   @apply w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all relative;
-  @apply hover:text-white hover:bg-gray-700;
+}
+
+.nav-icon:hover {
+  @apply text-white;
+  background-color: var(--brand-dark-darker);
 }
 
 .nav-icon-active {
-  @apply text-white bg-gray-700;
+  @apply text-white;
+  background-color: var(--brand-red);
 }
 
 .nav-divider {
@@ -154,7 +159,7 @@ const toggleListsMenu = () => {
 }
 
 .nav-label {
-  @apply text-xs uppercase tracking-[0.15em] text-gray-400 text-center w-full;
+  @apply text-xs uppercase tracking-wider text-gray-400 text-center w-full;
 }
 
 /* Dropdown animations */

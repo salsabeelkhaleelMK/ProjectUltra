@@ -5,7 +5,7 @@
       v-if="loading"
       v-for="n in 4"
       :key="`skeleton-${n}`"
-      class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4"
+      class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 md:p-8"
     >
       <div class="flex items-start justify-between mb-2">
         <div class="flex-1">
@@ -164,11 +164,11 @@ const getEndPoint = (data) => {
 }
 
 const getLineColor = (kpi) => {
-  if (kpi.changeType === 'increase' && kpi.id === 1) return '#10b981' // green-600
-  if (kpi.changeType === 'increase' && kpi.id === 2) return '#0056B3' // brand-blue
-  if (kpi.changeType === 'decrease') return '#F80032' // brand-red
-  if (kpi.changeType === 'increase' && kpi.id === 4) return '#f97316' // orange-500
-  return '#6B7280' // brand-slate
+  if (kpi.changeType === 'increase' && kpi.id === 1) return 'var(--color-success)'
+  if (kpi.changeType === 'increase' && kpi.id === 2) return 'var(--brand-blue)'
+  if (kpi.changeType === 'decrease') return 'var(--brand-red)'
+  if (kpi.changeType === 'increase' && kpi.id === 4) return '#f97316' // orange-500 (no theme token available)
+  return 'var(--brand-slate)'
 }
 </script>
 

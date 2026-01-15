@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div class="p-4 md:p-5 border-b border-gray-200">
+      <div class="p-4 md:p-5 border-b border-gray-100">
         <div class="h-6 bg-gray-200 rounded w-40 animate-pulse"></div>
       </div>
       <div class="p-4 md:p-5">
@@ -21,8 +21,8 @@
     
     <!-- Actual Content -->
     <template v-else>
-      <div class="p-4 md:p-5 border-b border-gray-200">
-        <h2 class="heading-main">Team Performance</h2>
+      <div class="p-4 md:p-5 border-b border-gray-100">
+        <h2 class="heading-sub">Team Performance</h2>
       </div>
       
       <div class="table-wrapper w-full">

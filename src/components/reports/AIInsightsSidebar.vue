@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+  <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
     <!-- Dark Header -->
     <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -10,7 +10,7 @@
     
     <!-- White Content Area -->
     <div class="bg-white flex-1 overflow-y-auto">
-      <div class="p-4 space-y-2">
+      <div class="p-6 space-y-2">
         <!-- Suggested Questions -->
         <button
           v-for="(question, index) in suggestedQuestions"
@@ -35,10 +35,10 @@
     </div>
 
     <!-- Input Area -->
-    <div class="p-4 bg-white border-t border-gray-200">
+    <div class="p-6 bg-white border-t border-gray-100">
       <div class="flex gap-2 items-center">
         <!-- Icon/Avatar -->
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shrink-0">
+        <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center shrink-0">
           <i class="fa-solid fa-sparkles text-white text-xs"></i>
         </div>
         

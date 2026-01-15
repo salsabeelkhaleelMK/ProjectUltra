@@ -425,7 +425,7 @@ const columns = computed(() => {
               class: 'w-16 h-16 object-cover rounded-md'
             })
           }
-          return h('div', { class: 'w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-md flex items-center justify-center shrink-0' }, [
+          return h('div', { class: 'w-16 h-16 bg-white border border-gray-200 rounded-md flex items-center justify-center shrink-0' }, [
             h('i', { class: 'fa-solid fa-car text-2xl text-gray-400' })
           ])
         }

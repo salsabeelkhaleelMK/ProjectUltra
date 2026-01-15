@@ -7,7 +7,7 @@
   --brand-red-dark: #D0002A;
   --brand-dark: #282828;
   --brand-dark-darker: #1a1a1a;
-  --brand-gray: #F5F5F7;
+  --brand-gray: #F7F5F6;
   --brand-slate: #6B7280;
   --brand-blue: #0056B3;
   --brand-blue-light: #E6F0FA;
@@ -19,11 +19,26 @@
   --color-bg-secondary: var(--brand-white);
   --color-bg-tertiary: #f8fafc;
   
-  --color-border: #e5e7eb;
+  --color-border: #E5E7EB; /* Gray-200 for borders */
+  --color-border-input: #D1D5DB; /* Gray-300 for form inputs */
   --color-border-light: #f3f4f6;
   
-  --color-text-primary: var(--brand-dark);
-  --color-text-secondary: #374151;
+  /* Text Colors */
+  --color-text-sub: #6B7280; /* Gray-500 for sub-text/labels */
+  
+  /* Semantic Text Colors - Light Mode */
+  --color-text-heading: #282828; /* Deep Black for headings */
+  --color-text-body: #374151; /* Slate 700 for body - never pure black */
+  --color-text-eyebrow: #F80032; /* Brand Red */
+  
+  /* Semantic Background Colors - Light Mode */
+  --color-bg-surface: #FFFFFF; /* White */
+  --color-bg-surface-secondary: #F7F5F6; /* Off-White/Light Gray */
+  --color-bg-surface-tertiary: #f8fafc; /* Very light gray */
+  
+  /* Legacy semantic mappings (for backward compatibility) */
+  --color-text-primary: var(--color-text-heading);
+  --color-text-secondary: var(--color-text-body);
   --color-text-tertiary: var(--brand-slate);
   --color-text-muted: #9ca3af;
   
@@ -41,22 +56,27 @@
   --color-warning-light: #fed7aa;
 
   /* Typography */
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Open Sans', sans-serif;
+  --font-heading: 'Inter', 'DM Sans', 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', 'DM Sans', 'Plus Jakarta Sans', sans-serif;
 
-  /* Typography Sizes - 1.25 ratio scale for optimal hierarchy */
-  /* Reduced by one level - all sizes shifted down */
-  --text-h1: 1.75rem; /* 28px - Hero/Page titles (reduced from 32px) */
-  --text-h2: 1.5rem; /* 24px - Section titles (was 32px) */
-  --text-h3: 1.25rem; /* 20px - Widget headings (heading-main) (was 24px) */
-  --text-h4: 1rem; /* 16px - Subheadings (heading-sub) (was 20px) */
-  --text-body: 0.875rem; /* 14px - Body text (was 16px) */
-  --text-small: 0.75rem; /* 12px - Small text, buttons, nav (was 14px) */
-  --text-xs: 0.625rem; /* 10px - Labels, metadata (was 12px) - NOTE: Below recommended 12px minimum */
+  /* Typography Sizes - Per Design System Spec */
+  /* Base Font Size */
+  --text-base: 1rem; /* 16px - Base font size */
+  
+  /* Typography Hierarchy - Per Design System Spec */
+  --text-h1: 4rem; /* 64px - Desktop size per spec */
+  --text-h2: 2.5rem; /* 40px - Desktop size per spec */
+  --text-h3: 1.5rem; /* 24px - Card Title per spec */
+  --text-subtitle: clamp(1.125rem, 1.25rem, 1.25rem); /* 18px mobile / 20px desktop */
+  --text-body: 1rem; /* 16px - Base font size, same on all devices */
+  --text-small: 0.875rem; /* 14px - Same on all devices */
+  --text-button: 0.9375rem; /* 15px - Fixed per spec */
+  --text-eyebrow: 0.75rem; /* 12px - Eyebrow headers */
   
   /* Legacy aliases for backward compatibility */
-  --text-button: var(--text-small); /* 12px (was 14px) */
-  --text-nav: var(--text-small); /* 12px (was 14px) */
+  --text-h4: 1rem; /* 16px - Subheadings */
+  --text-xs: 0.625rem; /* 10px - Labels, metadata - NOTE: Below recommended 12px minimum */
+  --text-nav: var(--text-small); /* 12px */
 
   /* Spacing */
   --spacing-xs: 0.25rem; /* 1 */
@@ -71,6 +91,8 @@
   --radius-lg: 0.75rem; /* rounded-xl */
   --radius-2xl: 1rem; /* rounded-2xl */
   --radius-full: 9999px; /* rounded-full */
+  --radius-card: 12px; /* or 16px - use var(--radius-card) in components */
+  --radius-btn: 8px; /* use var(--radius-btn) or rounded-btn in components */
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -78,4 +100,40 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Brand Colors (same in both modes) */
+  --brand-red: #F80032;
+  --brand-red-dark: #D0002A;
+  
+  /* Dark Mode Background Colors */
+  --brand-dark: #282828; /* Used for dark surfaces */
+  --brand-dark-darker: #1a1a1a; /* Darker surfaces */
+  --brand-gray: #1a1a1a; /* Dark background (was light gray) */
+  --brand-white: #282828; /* Dark surface (was white) */
+  
+  /* Semantic Text Colors - Dark Mode */
+  --color-text-heading: #FFFFFF; /* White for headings on dark */
+  --color-text-body: #E5E7EB; /* Light gray for body text (Slate 200) */
+  --color-text-eyebrow: #F80032; /* Brand Red (same in both modes) */
+  --color-text-primary: #FFFFFF; /* White */
+  --color-text-secondary: #E5E7EB; /* Light gray */
+  --color-text-tertiary: #9CA3AF; /* Medium gray */
+  --color-text-muted: #6B7280; /* Muted gray */
+  --color-text-sub: #9CA3AF; /* Lighter sub-text for dark mode */
+  
+  /* Semantic Background Colors - Dark Mode */
+  --color-bg-surface: #282828; /* Dark surface */
+  --color-bg-surface-secondary: #1a1a1a; /* Darker surface */
+  --color-bg-surface-tertiary: #111111; /* Darkest surface */
+  --color-bg-primary: #1a1a1a; /* Dark background */
+  --color-bg-secondary: #282828; /* Dark surface */
+  --color-bg-tertiary: #111111; /* Darkest */
+  
+  /* Borders - Dark Mode */
+  --color-border: #374151; /* Darker borders */
+  --color-border-input: #4B5563; /* Darker input borders */
+  --color-border-light: #1f2937; /* Subtle borders */
 }

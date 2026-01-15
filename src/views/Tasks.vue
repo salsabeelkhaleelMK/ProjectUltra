@@ -20,6 +20,7 @@
           :selected-id="currentTask?.compositeId"
           :type-filter="typeFilter"
           :view-mode="viewMode"
+          :initial-search-query="cardSearchQuery"
           :selected-class="(task) => task.type === 'lead' ? 'bg-white border-2 border-blue-500 shadow-md' : 'bg-white border-2 border-purple-500 shadow-md'"
           :unselected-class="getUnselectedClass"
           :open-menu-id="openCardMenu"
@@ -258,6 +259,9 @@ const {
 // View mode state with localStorage persistence (default to table)
 const viewMode = ref(localStorage.getItem('tasksViewMode') || 'table')
 
+// Card view search query (for when switching from table view)
+const cardSearchQuery = ref('')
+
 // Get highlight ID from query string
 const highlightId = computed(() => {
   return route.query.highlight || null
@@ -269,7 +273,7 @@ watch(viewMode, (newMode) => {
 })
 
 // Handle view mode changes with navigation logic
-const handleViewChange = (newViewMode) => {
+const handleViewChange = (newViewMode, searchQuery = '') => {
   const previousMode = viewMode.value
   
   // Capture current task before navigation (since route change will clear it)
@@ -277,8 +281,15 @@ const handleViewChange = (newViewMode) => {
   
   viewMode.value = newViewMode
   
+  // If switching to card view, set the search query if provided
+  if (newViewMode === 'card' && searchQuery) {
+    cardSearchQuery.value = searchQuery
+  }
+  
   // If switching to table view while a task is selected, navigate to /tasks with highlight query
   if (newViewMode === 'table' && taskToHighlight) {
+    // Clear card search query when switching to table view
+    cardSearchQuery.value = ''
     router.push({ 
       path: '/tasks', 
       query: { highlight: taskToHighlight.compositeId } 

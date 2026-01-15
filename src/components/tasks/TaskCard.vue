@@ -2,7 +2,7 @@
   <div 
     ref="cardRef"
     @click="$emit('select', itemId)"
-    class="bg-white rounded-lg p-3 h-44 flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
+    class="bg-white rounded-lg p-3 min-h-[12.1rem] flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
     :class="cardClass"
   >
     <!-- Menu Button -->
@@ -84,8 +84,7 @@
         <slot name="owner" :item="item">
           <template v-if="item.assignee">
             <div 
-              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-[8px] shrink-0"
-              style="width: 18px; height: 18px;"
+              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0 w-3.5 h-3.5"
             >
               {{ getAssigneeInitials(item.assignee) }}
             </div>

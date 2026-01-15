@@ -205,12 +205,189 @@ When migrating to real API:
     - `import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogOverlay, DialogPortal, DialogTitle, DialogDescription } from '@motork/component-library/future/primitives'`
   - **Do not introduce custom modal wrapper components** (e.g., a `ModalShell`-style wrapper). Keep modal markup in the modal component itself, using the primitives.
 
-### Styling (Tailwind CSS)
+### Styling (Tailwind CSS) - CRITICAL RULES
 
-- **NO arbitrary values** (`w-[350px]`, `text-[14px]`)
-- **USE semantic classes only** (from `tailwind.config.js`)
-- **USE semantic tokens**: `text-primary`, `bg-surface`, `border-border`
-- **Mobile-first**: `class="flex flex-col md:flex-row"` (not `max-md:`)
+#### NO Arbitrary Values
+- **NEVER use arbitrary values** like `w-[350px]`, `text-[14px]`, `max-w-[120px]`, `z-[80]`, `bg-[#1a1a1a]`
+- **USE standard Tailwind utilities** or semantic classes from `tailwind.config.js`
+- **Exceptions**: Only use arbitrary values when:
+  - Standard Tailwind doesn't have the value (e.g., `max-w-[85vw]` for viewport-based widths)
+  - The value is calculated dynamically and needs to be exact (e.g., `w-[18px]` for icon sizes)
+  - Always prefer rem units over px for arbitrary values: `left-[2.4375rem]` instead of `left-[39px]`
+
+**✅ CORRECT:**
+```vue
+<div class="min-w-40 max-w-7.5rem z-50 bg-brand-darkDarker">
+```
+
+**❌ WRONG:**
+```vue
+<div class="min-w-[160px] max-w-[120px] z-[80] bg-[#1a1a1a]">
+```
+
+#### NO Hardcoded Colors
+- **NEVER use hardcoded hex colors** like `#F80032`, `#1a1a1a`, `#0056B3`, `#10b981`, `#6B7280`
+- **ALWAYS use theme tokens** from `tailwind.config.js` or CSS variables from `src/styles/theme.css`
+- **For Tailwind classes**: Use `bg-brand-red`, `text-brand-dark`, `border-brand-slate`
+- **For inline styles/SVG**: Use `var(--brand-red)`, `var(--brand-blue)`, `var(--color-success)`
+
+**Available Theme Tokens:**
+- Brand colors: `bg-brand-red`, `bg-brand-redDark`, `bg-brand-dark`, `bg-brand-darkDarker`, `bg-brand-gray`, `bg-brand-slate`, `bg-brand-blue`, `bg-brand-blueLight`, `bg-brand-white`, `bg-brand-textBody`, `bg-brand-black` (alias for dark)
+- Semantic text colors: `text-heading`, `text-body`, `text-eyebrow`, `text-primary`, `text-secondary`, `text-sub`
+- Semantic background colors: `bg-surface`, `bg-surfaceSecondary`, `bg-surfaceTertiary`
+- Border colors: `border-E5E7EB` (Gray-200), `border-D1D5DB` (Gray-300 for inputs), `border` (uses var(--color-border))
+- CSS variables: `var(--brand-red)`, `var(--brand-blue)`, `var(--color-text-heading)`, `var(--color-text-body)`, `var(--color-border)`, etc.
+- **NO Hardcoded Values Rule**: Hex values exist ONLY in `theme.css` as CSS variable definitions. All components MUST use CSS variables or Tailwind tokens, never hardcoded hex values.
+
+**✅ CORRECT:**
+```vue
+<div class="bg-brand-red text-white">
+<svg>
+  <stop offset="0%" style="stop-color:var(--brand-blue);stop-opacity:0.2" />
+</svg>
+```
+
+**❌ WRONG:**
+```vue
+<div class="bg-[#F80032]" style="background-color: #1a1a1a;">
+<svg>
+  <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
+</svg>
+```
+
+#### NO Inline Styles (Except Dynamic Values)
+- **NEVER use inline `style` attributes** for static values like `style="background-color: #F80032;"`, `style="width: 18px; height: 18px;"`, `style="line-height: 1.3;"`
+- **ALWAYS convert to Tailwind classes**: `bg-brand-red`, `w-[18px] h-[18px]`, `leading-tight`
+- **Exceptions**: Only use inline styles for:
+  - **Dynamic calculated values**: `:style="{ width: \`${percentage}%\` }"` (progress bars, chart heights)
+  - **CSS properties with no Tailwind equivalent**: `style="scrollbar-width: thin;"` (Firefox-specific, add comment explaining)
+  - **Complex dynamic styles**: `clipPath`, dynamic transforms, etc.
+
+**✅ CORRECT:**
+```vue
+<!-- Static values as Tailwind classes -->
+<div class="bg-brand-red w-[18px] h-[18px] leading-tight z-[9999]">
+
+<!-- Dynamic values as inline styles (acceptable) -->
+<div :style="{ width: \`${progress}%\` }" class="h-2 bg-brand-blue">
+```
+
+**❌ WRONG:**
+```vue
+<div style="background-color: #F80032; width: 18px; height: 18px; line-height: 1.3;">
+```
+
+#### Use Semantic Classes
+- **USE semantic classes** from `tailwind.config.js` and `src/style.css`
+- **Typography**: Use `text-h1-hero`, `text-h2-section`, `text-h3-card`, `text-body-text`, `text-button-text`, `text-eyebrow`, `.eyebrow-header`
+- **Spacing**: Use standard Tailwind spacing scale (`p-6`, `p-8` for cards, `gap-3`, `mt-2`) or theme tokens (`var(--spacing-md)`)
+- **Colors**: Use brand tokens (`bg-brand-red`, `text-brand-dark`, `text-heading`, `text-body`) or semantic classes
+- **Border Radius**: Use `rounded-btn` (8px), `rounded-card` (12px or 16px), or standard Tailwind classes
+
+**✅ CORRECT:**
+```vue
+<h1 class="text-h1-hero text-heading">Hero Title</h1>
+<h2 class="text-h2-section text-heading">Section Title</h2>
+<h3 class="text-h3-card text-heading mb-4">Card Title</h3>
+<p class="text-body-text text-body">Body text</p>
+<div class="bg-white border border-E5E7EB rounded-card p-6 shadow-sm">
+```
+
+**❌ WRONG:**
+```vue
+<h2 class="text-[40px] font-bold text-[#282828]">Title</h2>
+<p class="text-[16px] text-[#374151]">Body text</p>
+<div class="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[12px] p-[24px]">
+```
+
+#### Mobile-First Responsive Design
+- **ALWAYS use mobile-first breakpoints**: `flex flex-col md:flex-row` (not `max-md:flex-col`)
+- **Standard breakpoints**: `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px)
+- **Test on mobile viewports** - ensure layouts don't break
+
+**✅ CORRECT:**
+```vue
+<div class="flex flex-col md:flex-row gap-3">
+```
+
+**❌ WRONG:**
+```vue
+<div class="flex-row max-md:flex-col">
+```
+
+#### Z-Index Guidelines
+- **Use standard Tailwind z-index values**: `z-0`, `z-10`, `z-20`, `z-30`, `z-40`, `z-50`
+- **Only use arbitrary z-index** (`z-[9999]`) for dropdowns/modals that need to be above everything
+- **Document high z-index values** with comments explaining why
+
+#### SVG and Chart Colors
+- **ALWAYS use CSS variables** for SVG gradients and chart colors
+- **Replace hardcoded hex in SVG**: `style="stop-color:var(--brand-blue);"` instead of `style="stop-color:#0056B3;"`
+- **Update color mapping functions** to return CSS variables: `return 'var(--brand-red)'` instead of `return '#F80032'`
+
+**✅ CORRECT:**
+```javascript
+const getColor = (type) => {
+  const colors = {
+    red: 'var(--brand-red)',
+    blue: 'var(--brand-blue)',
+    success: 'var(--color-success)'
+  }
+  return colors[type] || 'var(--brand-slate)'
+}
+```
+
+**❌ WRONG:**
+```javascript
+const getColor = (type) => {
+  const colors = {
+    red: '#F80032',
+    blue: '#0056B3',
+    success: '#10b981'
+  }
+  return colors[type] || '#6B7280'
+}
+```
+
+### Component Architecture (MotorK Design System)
+
+#### Buttons
+- **Primary Button**: `bg-brand-red`, `text-white`, `rounded-btn` (8px), hover: `brightness-90` + `-translate-y-px`
+- **Secondary Button**: `bg-white`, `border border-D1D5DB`, `text-brand-dark`, `rounded-btn` (8px)
+
+#### Cards & Containers
+- **Background**: `bg-white` (#FFFFFF)
+- **Border**: `border border-E5E7EB` (1px solid #E5E7EB)
+- **Border Radius**: `rounded-card` (12px) or `rounded-xl` (16px)
+- **Padding**: `p-6` or `p-8` (generous spacing is critical)
+- **Shadow**: `shadow-sm` or `shadow-none` (rely on border for definition)
+- **Card Title (H3)**: `text-h3-card` (24px), SemiBold 600, `text-heading`, `mb-4` or `mb-6`
+
+#### Borders & Depth Strategy
+- **Flat Design**: Use `1px solid #E5E7EB` borders for separation
+- **Shadows**: ONLY for floating elements (dropdowns, modals)
+- **No heavy drop shadows** on cards - use borders instead
+
+#### Forms & Inputs
+- **Default**: `bg-white`, `border border-D1D5DB`, `text-heading`
+- **Focus**: `focus:border-brand-red` + `focus:ring-3 focus:ring-brand-red/15`
+- **Labels**: Medium weight (500), `text-body` color
+
+#### Iconography
+- **Library**: Lucide React or Heroicons Outline
+- **Stroke width**: `1.5px` or `2px`
+- **Default color**: `text-gray-500` (#6B7280)
+- **Active/Selected**: `text-brand-red` (#F80032)
+
+#### Data Visualization (KPIs)
+- **Value**: ExtraBold Inter, `text-heading` or `text-brand-red`
+- **Label**: Small, Uppercase, Medium weight, `text-sub` (#6B7280)
+
+#### Layout Structure
+- **Sidebar**: `bg-brand-dark` (#282828), white text, active link: `border-l-2 border-brand-red` or `text-brand-red`
+- **Top Bar**: `bg-white` (#FFFFFF), `border-b border-E5E7EB`
+- **Content Area**: `bg-brand-gray` (#F7F5F6) background
+- **Grid**: Use CSS Grid for dashboard layouts (Bento style)
 
 ### TypeScript / JSDoc
 

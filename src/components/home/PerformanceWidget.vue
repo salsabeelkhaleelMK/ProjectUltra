@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-    <div class="p-4 md:p-5 border-b border-gray-200 bg-gray-50/50">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+    <div class="p-4 md:p-5">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-chart-line text-gray-400 text-sm"></i>
           <h2 class="heading-sub">Performance</h2>
@@ -16,9 +16,6 @@
           <option value="year">Year</option>
         </select>
       </div>
-    </div>
-
-    <div class="p-4 md:p-5">
       <!-- Loading State -->
       <div v-if="loading" class="space-y-4">
         <div v-for="n in 4" :key="`skeleton-${n}`" class="h-16 bg-gray-100 rounded animate-pulse"></div>
@@ -27,7 +24,7 @@
       <!-- BDC Operator View -->
       <div v-else-if="userRole === 'operator'" class="space-y-4">
         <!-- SLA Compliance -->
-        <div class="bg-white rounded-lg p-3 border border-gray-200">
+        <div class="bg-white rounded-lg p-3 border border-gray-100">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-gray-700">SLA Compliance</span>
             <span class="text-xs font-bold" :class="slaCompliancePercentage >= 90 ? 'text-green-600' : 'text-yellow-600'">
@@ -40,7 +37,7 @@
         </div>
 
         <!-- Tasks Per Day -->
-        <div class="bg-white rounded-lg p-3 border border-gray-200">
+        <div class="bg-white rounded-lg p-3 border border-gray-100">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-gray-700">Tasks Per Day</span>
             <span class="text-xs font-bold" :class="getTasksPerDayStatusClass()">
@@ -59,7 +56,7 @@
 
         <!-- Appointments Reserved -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Appointments Reserved</div>
@@ -69,8 +66,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-appointments" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--brand-blue);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--brand-blue);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -80,7 +77,7 @@
                   />
                   <path
                     :d="generateSmoothPath(bdcMetrics.appointmentsReservedTrend)"
-                    stroke="#0056B3"
+                    stroke="var(--brand-blue)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -91,7 +88,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Lead-to-Opportunity Rate</div>
@@ -101,8 +98,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-lead-opp" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -112,7 +109,7 @@
                   />
                   <path
                     :d="generateSmoothPath(bdcMetrics.leadToOpportunityConversionTrend)"
-                    stroke="#10b981"
+                    stroke="var(--color-success)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -130,7 +127,7 @@
       <div v-else-if="userRole === 'salesman'" class="space-y-4">
         <!-- Contracts & Revenue -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Contracts Closed</div>
@@ -140,8 +137,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-contracts" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -151,7 +148,7 @@
                   />
                   <path
                     :d="generateSmoothPath(getTrendData('contractsClosed'))"
-                    stroke="#10b981"
+                    stroke="var(--color-success)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -162,7 +159,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Revenue</div>
@@ -172,8 +169,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-revenue" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--brand-blue);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--brand-blue);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -183,7 +180,7 @@
                   />
                   <path
                     :d="generateSmoothPath(getTrendData('revenue'))"
-                    stroke="#0056B3"
+                    stroke="var(--brand-blue)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -222,7 +219,7 @@
 
         <!-- Pipeline & Win Rate -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Pipeline Value</div>
@@ -232,8 +229,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-pipeline" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#0056B3;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#0056B3;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--brand-blue);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--brand-blue);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -243,7 +240,7 @@
                   />
                   <path
                     :d="generateSmoothPath(salespersonMetrics.pipelineValueTrend)"
-                    stroke="#0056B3"
+                    stroke="var(--brand-blue)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -254,7 +251,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Win Rate</div>
@@ -264,8 +261,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-winrate" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -275,7 +272,7 @@
                   />
                   <path
                     :d="generateSmoothPath(salespersonMetrics.winRateTrend)"
-                    stroke="#10b981"
+                    stroke="var(--color-success)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -290,7 +287,7 @@
 
         <!-- New & Dormant Opportunities -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">New Opportunities</div>
@@ -300,8 +297,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-new-opp" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -311,7 +308,7 @@
                   />
                   <path
                     :d="generateSmoothPath(getTrendData('newOpportunities'))"
-                    stroke="#10b981"
+                    stroke="var(--color-success)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -322,7 +319,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-200">
+          <div class="bg-white rounded-lg p-3 border border-gray-100">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Dormant Opportunities</div>
@@ -332,8 +329,8 @@
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="gradient-dormant" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#F80032;stop-opacity:0.2" />
-                      <stop offset="100%" style="stop-color:#F80032;stop-opacity:0" />
+                      <stop offset="0%" style="stop-color:var(--brand-red);stop-opacity:0.2" />
+                      <stop offset="100%" style="stop-color:var(--brand-red);stop-opacity:0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -343,7 +340,7 @@
                   />
                   <path
                     :d="generateSmoothPath(salespersonMetrics.dormantOpportunitiesTrend)"
-                    stroke="#F80032"
+                    stroke="var(--brand-red)"
                     stroke-width="2.5"
                     fill="none"
                     stroke-linecap="round"
@@ -362,7 +359,7 @@
         <!-- Funnel Visualization & Conversion Rate -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <!-- Conversion Rate Card -->
-          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 flex flex-col items-center justify-center">
+          <div class="bg-white border border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center">
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 mb-3">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <!-- Background circle -->
@@ -371,7 +368,7 @@
                   cy="50"
                   r="42"
                   fill="none"
-                  stroke="#d1fae5"
+                  stroke="var(--color-success-light)"
                   stroke-width="8"
                 />
                 <!-- Progress circle -->
@@ -402,8 +399,8 @@
           </div>
 
           <!-- Bar Chart -->
-          <div class="lg:col-span-2 bg-white rounded-lg p-4 md:p-5">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Sales Funnel</h3>
+          <div class="lg:col-span-2 bg-white rounded-lg p-6 md:p-8">
+            <h3 class="text-base font-bold text-gray-900 mb-4">Sales Funnel</h3>
             <div class="space-y-3">
               <div
                 v-for="(stage, index) in managerMetrics?.stages || []"

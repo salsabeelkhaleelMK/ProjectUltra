@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, computed, h, watch, nextTick } from 'vue'
+import { ref, computed, h } from 'vue'
 import ViewToggle from '@/components/shared/ViewToggle.vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
@@ -228,7 +228,7 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-content font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-content font-semibold text-gray-900 truncate max-w-[7.5rem] md:max-w-none' }, task.customer.name),
           h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.email)
         ])
       ])
@@ -248,7 +248,7 @@ const columns = computed(() => [
       }
       return h('div', { class: 'flex items-center gap-2' }, [
         h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-        h('span', { class: 'text-content font-medium text-gray-900 truncate max-w-[120px]' }, vehicleInfo)
+        h('span', { class: 'text-content font-medium text-gray-900 truncate max-w-[7.5rem]' }, vehicleInfo)
       ])
     }
   },
@@ -304,7 +304,7 @@ const columns = computed(() => [
         h('div', {
           class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
         }, owner.initials),
-        h('span', { class: 'text-meta truncate max-w-[80px]' }, owner.name)
+        h('span', { class: 'text-meta truncate max-w-20' }, owner.name)
       ])
     }
   },
@@ -377,6 +377,14 @@ const columns = computed(() => [
 ])
 
 const handleRowClick = (record) => {
+  // Set search filter to task ID to highlight the clicked record
+  globalFilter.value = String(record.id)
+  
+  // Switch to card view when clicking on a table row, and pass the task ID as search query
+  if (props.viewMode === 'table') {
+    emit('view-change', 'card', String(record.id))
+  }
+  
   emit('select', record.compositeId)
 }
 
@@ -395,40 +403,6 @@ const tableMeta = computed(() => ({
   }
 }))
 
-// Scroll highlighted row into view when table loads or highlightId changes
-watch(() => [props.highlightId, props.tasks], async ([newHighlightId]) => {
-  if (newHighlightId && props.tasks.length > 0) {
-    await nextTick()
-    // Wait for DataTable to render, then find and scroll to the highlighted row
-    setTimeout(() => {
-      try {
-        const tableWrapper = document.querySelector('.table-wrapper')
-        if (!tableWrapper) return
-        
-        // Find the task in the data
-        const highlightedTask = props.tasks.find(t => t.compositeId === newHighlightId)
-        if (!highlightedTask) return
-        
-        // Try to find the row by searching for customer name or other unique identifier
-        // DataTable likely renders rows with the customer name, so we can search for that
-        const customerName = highlightedTask.customer?.name
-        if (customerName) {
-          // Find all table rows
-          const rows = tableWrapper.querySelectorAll('tbody tr, [role="row"]')
-          for (const row of rows) {
-            // Check if row exists and is still in the DOM before accessing properties
-            if (row && row.parentNode && row.textContent?.includes(customerName)) {
-              row.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-              break
-            }
-          }
-        }
-      } catch (error) {
-        // Silently handle DOM access errors (element might have been removed)
-      }
-    }, 500)
-  }
-}, { immediate: true })
 </script>
 
 

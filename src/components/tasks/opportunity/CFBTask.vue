@@ -5,22 +5,18 @@
     :color-scheme="{ background: 'bg-green-50/50', border: 'border-green-100' }"
   >
     <template #actions>
-      <Button
-        variant="primary"
-        size="small"
+      <button
         @click="handlePrepareDelivery"
-        class="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+        class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         Prepare for Delivery
-      </Button>
-      <Button
-        variant="outline"
-        size="small"
+      </button>
+      <button
         @click="handlePreDeliveryChecklist"
-        class="flex items-center gap-2"
+        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors hover:bg-gray-50"
       >
         Pre-Delivery Checklist
-      </Button>
+      </button>
     </template>
     
     <template #survey>
@@ -36,7 +32,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Button } from '@motork/component-library'
 import BaseTaskWidget from '@/components/tasks/shared/BaseTaskWidget.vue'
 import SurveyWidget from '@/components/customer/SurveyWidget.vue'
 

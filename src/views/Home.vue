@@ -10,45 +10,13 @@
           <!-- Performance Widget -->
           <PerformanceWidget />
           
-          <!-- Tasks Due Today Widget -->
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-tasks text-gray-400 text-sm"></i>
-                  <h2 class="heading-sub">Tasks Due Today</h2>
-                  <Badge
-                    v-if="tasksDueToday.length > 0"
-                    :text="String(tasksDueToday.length)"
-                    size="small"
-                    theme="red"
-                  />
-                </div>
-                <Button
-                  label="View all tasks →"
-                  variant="ghost"
-                  size="small"
-                  @click="$router.push('/tasks')"
-                  class="text-xs"
-                />
-              </div>
-            </div>
-            
-            <div class="p-4">
-              <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
-            </div>
-          </div>
-        </div>
-        
-        <!-- Right Column - Sidebar (1/3 width) -->
-        <div class="space-y-4 md:space-y-6">
           <!-- Quick Actions Widget -->
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-bolt text-gray-400 text-sm"></i>
-                  <h2 class="heading-sub">Quick Actions</h2>
+                  <i class="fa-solid fa-bolt text-white text-sm"></i>
+                  <h2 class="heading-sub text-white">Quick Actions</h2>
                   <Badge
                     v-if="totalNotificationsCount > 0"
                     :text="String(totalNotificationsCount)"
@@ -67,10 +35,10 @@
               </div>
             </div>
             
-            <div class="p-4 space-y-3">
+            <div class="p-4 md:p-5 space-y-3">
               <!-- Loading Skeleton -->
               <template v-if="loadingNotifications">
-                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-100 rounded-lg p-4">
                   <div class="space-y-2">
                     <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
                     <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
@@ -102,14 +70,46 @@
               </template>
             </div>
           </div>
-          
-          <!-- Appointments Today Widget -->
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 border-b border-gray-200 bg-gray-50/50">
+        </div>
+        
+        <!-- Right Column - Sidebar (1/3 width) -->
+        <div class="space-y-4 md:space-y-6">
+          <!-- Tasks Due Today Widget -->
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-calendar text-gray-400 text-sm"></i>
-                  <h2 class="heading-sub">Appointments Today</h2>
+                  <i class="fa-solid fa-tasks text-white text-sm"></i>
+                  <h2 class="heading-sub text-white">Tasks Due Today</h2>
+                  <Badge
+                    v-if="tasksDueToday.length > 0"
+                    :text="String(tasksDueToday.length)"
+                    size="small"
+                    theme="red"
+                  />
+                </div>
+                <Button
+                  label="View all tasks →"
+                  variant="ghost"
+                  size="small"
+                  @click="$router.push('/tasks')"
+                  class="text-xs"
+                />
+              </div>
+            </div>
+            
+            <div class="p-4 md:p-5">
+              <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
+            </div>
+          </div>
+          
+          <!-- Appointments Today Widget -->
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border-gray-100 bg-brand-darkDarker">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-calendar text-white text-sm"></i>
+                  <h2 class="heading-sub text-white">Appointments Today</h2>
                   <Badge
                     v-if="appointmentsToday.length > 0"
                     :text="String(appointmentsToday.length)"
@@ -127,7 +127,7 @@
               </div>
             </div>
             
-            <div class="p-4">
+            <div class="p-4 md:p-5">
               <TodaysAppointments :appointments="appointmentsToday" :loading="loadingAppointments" />
             </div>
           </div>

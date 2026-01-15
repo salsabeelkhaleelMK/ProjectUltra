@@ -3,7 +3,7 @@
   <transition name="fade">
     <div 
       v-if="isOpen"
-      class="fixed inset-0 bg-black/50 z-[70] md:hidden"
+      class="fixed inset-0 bg-black/50 z-40 md:hidden"
       @click="$emit('close')"
     ></div>
   </transition>
@@ -12,19 +12,19 @@
   <transition name="slide">
     <div 
       v-if="isOpen"
-      class="fixed top-0 left-0 bottom-0 w-64 bg-[#1a1a1a] z-[80] md:hidden overflow-y-auto safe-area-top safe-area-bottom"
+      class="mobile-sidebar-drawer fixed top-0 left-0 bottom-0 w-64 z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom"
     >
       <!-- Header -->
-      <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+      <div class="p-4 border-b border-white/20 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-lg" style="background-color: #F80032;">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-lg" style="background-color: var(--brand-dark-darker);">
             <span class="font-bold text-lg">PU</span>
           </div>
           <span class="text-white font-bold">Project Ultra</span>
         </div>
         <button 
           @click="$emit('close')"
-          class="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0"
+          class="w-11 h-11 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-colors shrink-0 rounded-lg"
           aria-label="Close menu"
         >
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -38,8 +38,8 @@
           <router-link
             to="/add-new"
             @click="$emit('close')"
-            class="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-            :class="{ 'text-white bg-gray-700': isActive('/add-new') }"
+            class="w-full flex items-center gap-3 px-4 py-3 text-white/90 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+            :class="{ 'text-white bg-white/20': isActive('/add-new') }"
           >
             <i class="fa-solid fa-plus"></i>
             <span class="font-medium">Add New</span>
@@ -69,7 +69,7 @@
           >
             <i class="fa-solid fa-list-check w-5"></i>
             <span>Tasks</span>
-            <div v-if="hotLeadsCount > 0" class="ml-auto w-5 h-5 rounded-full bg-brand-red text-white text-xs flex items-center justify-center font-bold">
+            <div v-if="hotLeadsCount > 0" class="ml-auto w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style="background-color: var(--brand-dark-darker);">
               {{ hotLeadsCount }}
             </div>
           </router-link>
@@ -106,7 +106,7 @@
         </div>
         
         <!-- Divider -->
-        <div class="h-px bg-gray-700 mx-4 my-4"></div>
+        <div class="h-px bg-white/20 mx-4 my-4"></div>
         
         <!-- Secondary Navigation -->
         <div class="px-4 space-y-1">
@@ -129,7 +129,7 @@
               class="mobile-sidebar-link text-content"
               :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') }"
             >
-              <i class="fa-solid fa-car w-5 text-gray-500"></i>
+              <i class="fa-solid fa-car w-5 text-white/70"></i>
               <span>Vehicles</span>
             </router-link>
           </div>
@@ -195,12 +195,21 @@ const handleAddItem = (type) => {
 
 <style scoped>
 @reference "tailwindcss";
+.mobile-sidebar-drawer {
+  background-color: var(--brand-red) !important;
+}
+
 .mobile-sidebar-link {
-  @apply flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors;
+  @apply flex items-center gap-3 px-4 py-3 text-white/90 hover:text-white rounded-lg transition-colors;
+}
+
+.mobile-sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .mobile-sidebar-link-active {
-  @apply text-white bg-gray-700;
+  @apply text-white;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .safe-area-top {

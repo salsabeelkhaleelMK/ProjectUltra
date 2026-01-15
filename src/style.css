@@ -1,9 +1,19 @@
 @import "tailwindcss";
 @import "@motork/component-library/theme";
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @source "../node_modules/@motork/component-library";
 
 @layer components {
+  /* Eyebrow Header Utility Class */
+  .eyebrow-header {
+    font-size: var(--text-eyebrow);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--brand-red); /* #F80032 */
+    line-height: 1.4;
+  }
+
   /* Page Container */
   .page-container {
     @apply h-full overflow-y-auto overflow-x-hidden bg-white;
@@ -14,10 +24,10 @@
     @apply bg-gray-50;
   }
   
-  /* Page Header - Extends Motork Design System */
-  /* Uses Motork design tokens: --brand-gray, --brand-dark, spacing tokens */
+  /* Page Header - Per Design System Spec */
+  /* Top Bar: White (#FFFFFF) with bottom border (#E5E7EB) */
   .page-header {
-    background-color: var(--brand-gray); /* Motork design token */
+    background-color: var(--color-bg-surface); /* White #FFFFFF */
     @apply border-b border-gray-200 px-4 md:px-8;
     position: relative; /* Ensure proper positioning */
     z-index: 1; /* Ensure it's above content but below modals */
@@ -141,6 +151,7 @@
   /* Force primary button styling to use brand colors */
   /* Target buttons with bg-brand-red class (Tailwind !important classes) */
   [class*="!bg-brand-red"],
+  button[class*="bg-brand-red"][class*="text-white"],
   [class*="bg-brand-red"]:has([class*="!text-white"]) {
     background-color: var(--brand-red) !important;
     color: white !important;
@@ -148,9 +159,15 @@
   }
   
   [class*="!bg-brand-red"]:hover:not(:disabled),
+  button[class*="bg-brand-red"][class*="text-white"]:hover:not(:disabled),
   [class*="bg-brand-red"]:has([class*="!text-white"]):hover:not(:disabled) {
     background-color: var(--brand-red-dark) !important;
     border-color: var(--brand-red-dark) !important;
+  }
+  
+  /* Force bg-brand-dark to use brand dark color */
+  [class*="bg-brand-dark"] {
+    background-color: var(--brand-dark) !important;
   }
   
   /* Ensure text is white when !text-white class is present */
@@ -217,14 +234,14 @@
   }
   
   /* Semantic Font Hierarchy - MotorK Typography System */
-  /* Page Title - Largest heading (used in PageHeader) - H1 style */
+  /* Page Title - H3 style (Card Title) per Design System Spec */
+  /* H3 (Card Title): 24px, SemiBold 600, 0em tracking, #282828 */
   .page-header-title {
-    @apply font-mono;
-    font-size: var(--text-h1); /* 28px - Page header size */
-    line-height: 1.2;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--brand-dark);
+    font-size: var(--text-h3); /* 24px - Card Title per spec */
+    line-height: 1.3;
+    font-weight: 600; /* SemiBold */
+    letter-spacing: 0em;
+    color: var(--color-text-heading); /* #282828 */
     margin: 0;
     padding: 0;
     word-break: break-word;

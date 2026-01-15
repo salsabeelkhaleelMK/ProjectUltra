@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
     <!-- Loading Skeleton -->
     <template v-if="loading">
       <div class="flex items-center justify-between mb-4">
@@ -16,7 +16,7 @@
             <div class="h-3 bg-gray-200 rounded w-2 animate-pulse"></div>
           </div>
         </div>
-        <div class="flex items-center justify-center gap-6 pt-4 border-t border-gray-200">
+        <div class="flex items-center justify-center gap-6 pt-4 border-t border-gray-100">
           <div class="flex items-center gap-2">
             <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
             <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
@@ -32,7 +32,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-main">Page Views: Organic vs. Paid</h2>
+        <h2 class="heading-sub">Page Views: Organic vs. Paid</h2>
         <select class="input text-sm w-auto">
           <option>This month</option>
           <option>Last month</option>
@@ -46,7 +46,7 @@
         <div
           v-for="(day, index) in data"
           :key="index"
-          class="flex flex-col items-center gap-1 min-w-[20px]"
+          class="flex flex-col items-center gap-1 min-w-5"
         >
           <div class="w-full flex items-end justify-center h-full gap-0.5">
             <!-- Organic bar -->

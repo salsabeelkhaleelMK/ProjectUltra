@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 md:p-8">
     <!-- Loading Skeleton -->
     <template v-if="loading">
       <div class="flex items-center justify-between mb-4">
@@ -31,7 +31,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-main">Page Views by Vehicle</h2>
+        <h2 class="heading-sub">Page Views by Vehicle</h2>
         <select class="input !py-1.5 !px-3 text-sm w-auto">
           <option>This month</option>
           <option>Last month</option>
@@ -68,8 +68,8 @@
           <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
             <defs>
               <linearGradient :id="`gradient-v-${vehicle.id}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#F80032'};stop-opacity:0.2`" />
-                <stop offset="100%" :style="`stop-color:${vehicle.changeType === 'increase' ? '#10b981' : '#F80032'};stop-opacity:0`" />
+                <stop offset="0%" :style="`stop-color:${vehicle.changeType === 'increase' ? 'var(--color-success)' : 'var(--brand-red)'};stop-opacity:0.2`" />
+                <stop offset="100%" :style="`stop-color:${vehicle.changeType === 'increase' ? 'var(--color-success)' : 'var(--brand-red)'};stop-opacity:0`" />
               </linearGradient>
             </defs>
             
@@ -83,7 +83,7 @@
             <!-- Smooth Line -->
             <path
               :d="generateSmoothPath(vehicle.trend)"
-              :stroke="vehicle.changeType === 'increase' ? '#10b981' : '#F80032'"
+              :stroke="vehicle.changeType === 'increase' ? 'var(--color-success)' : 'var(--brand-red)'"
               stroke-width="2.5"
               fill="none"
               stroke-linecap="round"

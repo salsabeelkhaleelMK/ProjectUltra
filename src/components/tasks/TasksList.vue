@@ -55,7 +55,6 @@
       <TaskCard
         v-for="item in filteredItems" 
         :key="item.compositeId || `${item.type || 'task'}-${item.id}`"
-        :ref="el => { if (isSelected(item) && el) selectedItemRef = el.$el || el }"
         :item="item"
         :selected="isSelected(item)"
         :selected-class="selectedClass"
@@ -90,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import ViewToggle from '@/components/shared/ViewToggle.vue'
 import TaskFilters from './TaskFilters.vue'
 import TaskCard from './TaskCard.vue'
@@ -119,6 +118,10 @@ const props = defineProps({
   searchPlaceholder: {
     type: String,
     default: 'Search...'
+  },
+  initialSearchQuery: {
+    type: String,
+    default: ''
   },
   showMenu: {
     type: Boolean,
@@ -168,8 +171,14 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'close', 'view-change'])
 
-const searchQuery = ref('')
+const searchQuery = ref(props.initialSearchQuery || '')
 const currentSort = ref('none')
+
+// Watch for changes to initialSearchQuery prop
+watch(() => props.initialSearchQuery, (newValue) => {
+  // Update search query when prop changes (handles empty strings too)
+  searchQuery.value = newValue || ''
+})
 
 const filteredItems = computed(() => {
   let items = props.items
@@ -185,7 +194,8 @@ const filteredItems = computed(() => {
     items = items.filter(item => {
       const name = props.getName(item).toLowerCase()
       const vehicle = props.getVehicleInfo(item).toLowerCase()
-      return name.includes(query) || vehicle.includes(query)
+      const itemId = String(item.id || '').toLowerCase()
+      return name.includes(query) || vehicle.includes(query) || itemId.includes(query)
     })
   }
   
@@ -204,48 +214,6 @@ const selectSort = (sortOption) => {
 
 // Refs for scroll functionality
 const scrollContainer = ref(null)
-const selectedItemRef = ref(null)
-
-// Scroll to selected item when selectedId changes
-watch(() => props.selectedId, async (newId) => {
-  if (newId && selectedItemRef.value) {
-    await nextTick()
-    try {
-      const element = selectedItemRef.value.$el || selectedItemRef.value
-      // Check if element still exists and is in the DOM
-      if (element && element.parentNode) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest'
-        })
-      }
-    } catch (error) {
-      // Silently handle DOM access errors
-    }
-  }
-}, { immediate: true })
-
-// Also scroll when filteredItems change (initial load)
-watch(filteredItems, async () => {
-  if (props.selectedId && selectedItemRef.value) {
-    await nextTick()
-    // Small delay to ensure the DOM is fully rendered
-    setTimeout(() => {
-      try {
-        const element = selectedItemRef.value.$el || selectedItemRef.value
-        // Check if element still exists and is in the DOM
-        if (element && element.parentNode) {
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-          })
-        }
-      } catch (error) {
-        // Silently handle DOM access errors
-      }
-    }, 100)
-  }
-}, { immediate: true })
 </script>
 
 <style scoped>

@@ -3,34 +3,20 @@
     <!-- Row 1: Header with customer info, actions, and expander arrow -->
     <div class="flex items-center justify-between gap-3 md:gap-4">
       <div class="flex items-center gap-3 md:gap-4 flex-1">
-        <!-- Customer Avatar -->
+        <!-- Customer Icon -->
         <button
-          v-if="customerId"
           @click.stop="handleAvatarClick"
-          class="cursor-pointer hover:opacity-80 transition-opacity shrink-0"
-          aria-label="Open customer profile"
+          class="w-14 h-14 rounded bg-brand-darkDarker text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0"
+          :class="{ 'cursor-pointer': customerId }"
+          :aria-label="customerId ? 'Open customer profile' : 'Customer'"
         >
-          <UserAvatar
-            class="w-14 h-14 rounded"
-            style="background-color: #1a1a1a; color: white;"
-            :name="avatarName"
-            :surname="avatarSurname"
-            :color="avatarColor"
-          />
+          <i class="fa-solid fa-user text-xl"></i>
         </button>
-        <UserAvatar
-          v-else
-          class="w-14 h-14 rounded"
-          style="background-color: #1a1a1a; color: white;"
-          :name="avatarName"
-          :surname="avatarSurname"
-          :color="avatarColor"
-        />
         
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <h1 class="text-xl font-bold uppercase text-brand-dark truncate" style="line-height: 1.3;">{{ name }}</h1>
+            <h1 class="text-xl font-bold uppercase text-brand-dark truncate leading-tight">{{ name }}</h1>
             <slot name="name-action"></slot>
           </div>
           <div class="flex flex-wrap items-center gap-2 mt-1">
@@ -132,7 +118,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { DropdownMenu, UserAvatar } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library'
 import { useToastStore } from '@/stores/toast'
 
 const props = defineProps({
@@ -189,23 +175,6 @@ const showQuickActionMenu = ref(false)
 const toastStore = useToastStore()
 const router = useRouter()
 
-const avatarName = computed(() => {
-  const full = props.name || ''
-  const parts = full.trim().split(/\s+/).filter(Boolean)
-  return parts[0] || full || 'Customer'
-})
-
-const avatarSurname = computed(() => {
-  const full = props.name || ''
-  const parts = full.trim().split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return parts[parts.length - 1]
-  return 'Customer'
-})
-
-const avatarColor = computed(() => {
-  // Always use primary color (red) for avatar
-  return 'red'
-})
 
 const quickActionItems = computed(() => {
   const base = [

@@ -133,3 +133,4 @@ export function validateLeadTransition(lead, fromStage, toStage) {
   return { allowed: true }
 }
 
+

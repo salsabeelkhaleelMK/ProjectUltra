@@ -2,7 +2,7 @@
   <div class="space-y-3">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-white border border-gray-200 rounded-lg p-4">
+      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-white border border-gray-100 rounded-lg p-4">
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0 space-y-2">
             <div class="flex items-center gap-2">
@@ -29,7 +29,7 @@
         v-for="appointment in appointments"
         :key="appointment.id"
         @click="handleClick(appointment)"
-        class="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+        class="bg-white border border-gray-100 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
       >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">

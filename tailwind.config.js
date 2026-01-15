@@ -20,6 +20,25 @@ export default {
           blueLight: 'var(--brand-blue-light)',
           white: 'var(--brand-white)',
           textBody: 'var(--brand-text-body)',
+          black: 'var(--brand-dark)', // Alias for design system
+        },
+        text: {
+          heading: 'var(--color-text-heading)',
+          body: 'var(--color-text-body)',
+          eyebrow: 'var(--color-text-eyebrow)',
+          primary: 'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
+          sub: 'var(--color-text-sub)',
+        },
+        bg: {
+          surface: 'var(--color-bg-surface)',
+          surfaceSecondary: 'var(--color-bg-surface-secondary)',
+          surfaceTertiary: 'var(--color-bg-surface-tertiary)',
+        },
+        border: {
+          DEFAULT: 'var(--color-border)',
+          input: 'var(--color-border-input)',
+          light: 'var(--color-border-light)',
         },
         // Replace primary color scale with brand red
         primary: {
@@ -36,25 +55,88 @@ export default {
         },
         gray: {
           50: '#f5f5f5',
+          200: '#E5E7EB', // For borders (Gray-200)
+          300: '#D1D5DB', // For form inputs (Gray-300)
         },
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'sans-serif'],
         body: ['var(--font-body)', 'sans-serif'],
-        sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'DM Sans', 'Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        'h1-hero': ['var(--text-h1)', { lineHeight: '1.2', fontWeight: '700' }], /* 28px (reduced from 32px) */
-        'h2-section': ['var(--text-h2)', { lineHeight: '1.3', fontWeight: '700' }], /* 24px (was 32px) */
-        'h3-card': ['var(--text-h3)', { lineHeight: '1.4', fontWeight: '600' }], /* 20px (was 24px) */
-        'h4-sub': ['var(--text-h4)', { lineHeight: '1.4', fontWeight: '600' }], /* 16px (was 20px) */
-        'body-text': ['var(--text-body)', { lineHeight: '1.6', fontWeight: '400' }], /* 14px (was 16px) */
-        'button-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '700', letterSpacing: '0.0625rem' }], /* 12px (was 14px) */
-        'nav-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '500' }], /* 12px (was 14px) */
-        'text-xs': ['var(--text-xs)', { lineHeight: '1.5' }], /* 10px - Below recommended 12px minimum (was 12px) */
+        'h1-hero': [
+          'var(--text-h1)', // 64px - Desktop size per spec
+          { 
+            lineHeight: '1.1', 
+            fontWeight: '800', // ExtraBold
+            letterSpacing: '-0.02em' // Tight tracking
+          }
+        ],
+        'h2-section': [
+          'var(--text-h2)', // 40px - Desktop size per spec
+          { 
+            lineHeight: '1.2', 
+            fontWeight: '700', // Bold
+            letterSpacing: '-0.01em'
+          }
+        ],
+        'h3-card': [
+          'var(--text-h3)', // 24px - Card Title per spec
+          { 
+            lineHeight: '1.3', 
+            fontWeight: '600', // SemiBold
+            letterSpacing: '0em' // Normal
+          }
+        ],
+        'subtitle': [
+          'var(--text-subtitle)', // 18px mobile / 20px desktop
+          { 
+            lineHeight: '1.5', 
+            fontWeight: '500', // Medium
+            letterSpacing: '0em'
+          }
+        ],
+        'body-text': [
+          'var(--text-body)', // 16px - Base font size, same on all devices
+          { 
+            lineHeight: '1.6', 
+            fontWeight: '400', // Regular
+            letterSpacing: '0em'
+          }
+        ],
+        'small-label': [
+          'var(--text-small)', // 14px - Same on all devices
+          { 
+            lineHeight: '1.4', 
+            fontWeight: '500', // Medium
+            letterSpacing: '0.01em' // Wide
+          }
+        ],
+        'button-text': [
+          'var(--text-button)', // 15px - Fixed per spec
+          { 
+            lineHeight: '1', 
+            fontWeight: '500', // Medium (per spec, not SemiBold)
+            letterSpacing: '0em'
+          }
+        ],
+        'eyebrow': [
+          'var(--text-eyebrow)', // 12px
+          { 
+            lineHeight: '1.4', 
+            fontWeight: '700', // Bold
+            letterSpacing: '0.05em', // Wide tracking
+            textTransform: 'uppercase'
+          }
+        ],
+        // Legacy aliases for backward compatibility
+        'h4-sub': ['var(--text-h4)', { lineHeight: '1.4', fontWeight: '600' }],
+        'nav-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '500' }],
+        'text-xs': ['var(--text-xs)', { lineHeight: '1.5' }],
       },
       letterSpacing: {
-        'button': '0.0625rem', // 1px for buttons/CTAs
+        'button': '0.0625rem', // 1px for buttons/CTAs (legacy)
       },
       boxShadow: {
         'subtle': 'var(--shadow-subtle)',
@@ -62,6 +144,8 @@ export default {
       },
       borderRadius: {
         '2xl': '1rem',
+        'card': 'var(--radius-card)', // 12px or 16px
+        'btn': 'var(--radius-btn)', // 8px
       },
     },
   },

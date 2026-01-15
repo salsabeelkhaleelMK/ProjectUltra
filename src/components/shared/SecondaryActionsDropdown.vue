@@ -23,8 +23,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute top-full right-0 mt-2 min-w-full z-50"
-        style="z-index: 9999;"
+        class="absolute top-full right-0 mt-2 min-w-full z-[9999]"
       >
         <DropdownMenu :items="menuItems" className="min-w-full" />
       </div>

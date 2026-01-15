@@ -6,7 +6,7 @@
         <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
         <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
       </div>
-      <div class="mb-4 pb-4 border-b border-gray-200">
+      <div class="mb-4 pb-4 border-b border-gray-100">
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <div v-for="n in 4" :key="`stage-${n}`" class="flex items-center gap-2">
             <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
@@ -24,7 +24,7 @@
           <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-200">
+      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-100">
         <div v-for="n in 4" :key="`time-${n}`" class="flex items-center gap-2">
           <div class="h-4 bg-gray-200 rounded w-4 animate-pulse"></div>
           <div class="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
@@ -36,7 +36,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-main">Sales Pipeline</h2>
+        <h2 class="heading-sub">Sales Pipeline</h2>
         <select class="input !py-1.5 !px-3 text-sm w-auto">
           <option>This month</option>
           <option>Last month</option>
@@ -140,12 +140,12 @@ const getGradientId = (name) => {
 
 const getSourceColor = (color) => {
   const colors = {
-    red: '#F80032', // brand-red
+    red: 'var(--brand-red)',
     orange: '#f97316',
-    blue: '#0056B3', // brand-blue
-    gray: '#6B7280' // brand-slate
+    blue: 'var(--brand-blue)',
+    gray: 'var(--brand-slate)'
   }
-  return colors[color] || '#6B7280'
+  return colors[color] || 'var(--brand-slate)'
 }
 
 const getSourceAvgTime = (sourceName) => {
