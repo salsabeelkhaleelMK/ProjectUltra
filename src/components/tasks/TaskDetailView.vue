@@ -6,14 +6,7 @@
       :management-widget="managementWidget"
       :store-adapter="storeAdapter"
       :add-new-config="addNewConfig"
-    >
-      <template #pinned-extra="{ task }">
-        <VehicleWidget
-          v-if="vehicleWidgetData"
-          v-bind="vehicleWidgetData"
-        />
-      </template>
-    </EntityDetailLayout>
+    />
   </div>
   
   <!-- Empty State (right side on desktop, hidden on mobile) -->
@@ -32,7 +25,6 @@
 
 <script setup>
 import EntityDetailLayout from '@/components/shared/layout/EntityDetailLayout.vue'
-import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 
 defineProps({
   task: {
@@ -50,10 +42,6 @@ defineProps({
   addNewConfig: {
     type: Object,
     required: true
-  },
-  vehicleWidgetData: {
-    type: Object,
-    default: null
   }
 })
 </script>

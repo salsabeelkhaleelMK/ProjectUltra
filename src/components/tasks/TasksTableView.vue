@@ -154,7 +154,7 @@ const getVehicleInfo = (task) => {
   if (task.type === 'lead') {
     return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
   }
-  // For opportunities: prefer vehicle over requestedCar (matching vehicleWidgetData logic)
+  // For opportunities: prefer vehicle over requestedCar
   const vehicle = task.vehicle || task.requestedCar
   return vehicle ? `${vehicle.brand} ${vehicle.model}` : 'No vehicle specified'
 }

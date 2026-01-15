@@ -58,22 +58,21 @@
           </div>
           <!-- Overview tab content -->
           <div v-if="activeTab === 'overview'">
-            <!-- Stage & Owner Bar (hide for contacts) -->
-            <div v-if="type !== 'contact'" class="mb-6">
-              <StageOwnerBar
+            <!-- Request Component (Stage/Owner/Source + Request Details) - hide for contacts -->
+            <div v-if="type !== 'contact'">
+              <Request
                 :stage="task.displayStage || task.stage"
                 :owner="task.assignee"
                 :source="task.source || ''"
                 :delivery-substatus="task.deliverySubstatus"
                 :activities="task.activities || []"
                 :entity-type="type"
+                :request-type="task.requestType || task.requestedCar?.requestType || ''"
+                :request-message="task.requestedCar?.requestMessage || ''"
+                :requested-car="task.requestedCar"
+                :task="task"
                 @reassign="handleReassign"
               />
-            </div>
-
-            <!-- Type-specific extra pinned widgets (e.g. Requested Vehicle) - Moved to top -->
-            <div class="space-y-6 mb-6">
-              <slot name="pinned-extra" :task="task" />
             </div>
 
             <!-- Manage Next Steps widget -->
@@ -239,7 +238,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ContactInfo from '@/components/customer/widgets/ContactInfo.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
-import StageOwnerBar from '@/components/customer/widgets/StageOwnerBar.vue'
+import Request from '@/components/shared/Request.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
 import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummarySidebar.vue'
@@ -301,7 +300,7 @@ const openCustomerPage = () => {
   })
 }
 
-// Handle reassign from StageOwnerBar
+// Handle reassign from Request component
 function handleAppointmentCreated(eventData) {
   showCreateAppointmentModal.value = false
   // Emit event to parent or handle appointment creation

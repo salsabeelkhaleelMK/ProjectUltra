@@ -2,7 +2,7 @@
   <div 
     ref="cardRef"
     @click="$emit('select', itemId)"
-    class="bg-white rounded-lg p-3 min-h-[12.1rem] flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
+    class="bg-white rounded-lg p-2.5 min-h-32 flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
     :class="cardClass"
   >
     <!-- Menu Button -->
@@ -26,7 +26,7 @@
     <!-- Top Section: Badges, Name, Location/Source -->
     <div>
       <!-- Badges -->
-      <div class="flex gap-2 mb-1">
+      <div class="flex gap-2 mb-0.5">
         <span 
           class="px-2 py-0.5 rounded text-xs font-medium border"
           :class="item.type === 'lead' 
@@ -51,10 +51,10 @@
       </div>
 
       <!-- Name -->
-      <h3 class="font-bold text-gray-900 text-content-bold line-clamp-2 pt-1">{{ getName(item) }}</h3>
+      <h3 class="font-bold text-gray-900 text-content-bold line-clamp-2 pt-0.5">{{ getName(item) }}</h3>
 
       <!-- Location and Source -->
-      <div class="flex gap-3 text-xs mt-1">
+      <div class="flex gap-3 text-xs mt-0.5 mb-1">
         <span class="flex items-center gap-1.5">
           <i class="fa-solid fa-location-dot text-xs"></i>
           <slot name="location" :item="item"></slot>
@@ -66,16 +66,9 @@
           </slot>
         </span>
       </div>
-    </div>
 
-    <!-- Bottom Section: Vehicle and Status -->
-    <div class="pt-1 bg-gray-100 mt-2 mb-2">
-      <div class="flex justify-between text-meta px-3 py-1.5">
-        <span class="font-medium text-gray-900">{{ getVehicleInfo(item) }}</span>
-        <span class="font-medium text-gray-900">
-          <slot name="vehicle-status" :item="item"></slot>
-        </span>
-      </div>
+      <!-- Vehicle Details -->
+      <p v-if="getVehicleInfo" class="text-xs text-gray-600 pb-3">{{ getVehicleInfo(item) }}</p>
     </div>
 
     <!-- Optional Footer: Owner + Due Date (hidden by default, can be shown via slot) -->
@@ -84,7 +77,7 @@
         <slot name="owner" :item="item">
           <template v-if="item.assignee">
             <div 
-              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0 w-3.5 h-3.5"
+              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-[6px] shrink-0 w-3 h-3"
             >
               {{ getAssigneeInitials(item.assignee) }}
             </div>
@@ -136,7 +129,7 @@ const props = defineProps({
   },
   getVehicleInfo: {
     type: Function,
-    required: true
+    default: null
   },
   menuItems: {
     type: Array,

@@ -74,9 +74,6 @@
         <template #source="{ item }">
           <slot name="source" :item="item"></slot>
         </template>
-        <template #vehicle-status="{ item }">
-          <slot name="vehicle-status" :item="item"></slot>
-        </template>
         <template #owner="{ item }">
           <slot name="owner" :item="item"></slot>
         </template>
@@ -141,7 +138,7 @@ const props = defineProps({
   },
   getVehicleInfo: {
     type: Function,
-    required: true
+    default: null
   },
   avatarClass: {
     type: Function,
@@ -193,9 +190,9 @@ const filteredItems = computed(() => {
     const query = searchQuery.value.toLowerCase()
     items = items.filter(item => {
       const name = props.getName(item).toLowerCase()
-      const vehicle = props.getVehicleInfo(item).toLowerCase()
+      const vehicle = props.getVehicleInfo ? props.getVehicleInfo(item).toLowerCase() : ''
       const itemId = String(item.id || '').toLowerCase()
-      return name.includes(query) || vehicle.includes(query) || itemId.includes(query)
+      return name.includes(query) || (vehicle && vehicle.includes(query)) || itemId.includes(query)
     })
   }
   

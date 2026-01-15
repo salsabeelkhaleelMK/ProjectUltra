@@ -51,11 +51,28 @@
           }"
           :getVehicleInfo="(task) => {
             if (task.type === 'lead') {
-              return task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : 'No vehicle specified'
+              if (!task.requestedCar) return 'No vehicle specified'
+              const car = task.requestedCar
+              const parts = [`${car.brand} ${car.model}`]
+              if (car.kilometers !== undefined && car.kilometers !== null) {
+                parts.push(`${car.kilometers} km`)
+              }
+              if (car.status) {
+                parts.push(car.status)
+              }
+              return parts.join(' • ')
             }
-            // For opportunities: prefer vehicle over requestedCar (matching vehicleWidgetData logic)
+            // For opportunities: prefer vehicle over requestedCar
             const vehicle = task.vehicle || task.requestedCar
-            return vehicle ? `${vehicle.brand} ${vehicle.model}` : 'No vehicle specified'
+            if (!vehicle) return 'No vehicle specified'
+            const parts = [`${vehicle.brand} ${vehicle.model}`]
+            if (vehicle.kilometers !== undefined && vehicle.kilometers !== null) {
+              parts.push(`${vehicle.kilometers} km`)
+            }
+            if (vehicle.status) {
+              parts.push(vehicle.status)
+            }
+            return parts.join(' • ')
           }"
           :avatarClass="(task) => task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'"
           :get-menu-items="getTaskMenuItems"
@@ -103,15 +120,11 @@
             {{ task.source || task.customer?.source || 'Unknown' }}
           </template>
           
-          <template #vehicle-status="{ item: task }">
-            {{ getVehicleStatusDisplay(task) }}
-          </template>
-          
           <template #owner="{ item: task }">
             <template v-if="task.assignee">
               <div class="flex items-center gap-2">
                 <div 
-                  class="w-5 h-5 rounded-full bg-black text-white font-medium flex items-center justify-center text-xs shrink-0"
+                  class="w-3 h-3 rounded-full bg-black text-white font-medium flex items-center justify-center text-[6px] shrink-0"
                 >
                   {{ getAssigneeInitials(task.assignee) }}
                 </div>
@@ -143,7 +156,6 @@
         :management-widget="managementWidget"
         :store-adapter="storeAdapter"
         :add-new-config="addNewConfig"
-        :vehicle-widget-data="vehicleWidgetData"
       />
       
       <!-- Empty State for Card View (right side on desktop, hidden on mobile) -->
@@ -196,7 +208,6 @@
         :management-widget="managementWidget"
         :store-adapter="storeAdapter"
         :add-new-config="addNewConfig"
-        :vehicle-widget-data="vehicleWidgetData"
       />
     </div>
     
@@ -232,7 +243,6 @@ import { getTransitionHandler } from '@/composables/useLeadStateMachine'
 import { LEAD_STAGES } from '@/utils/stageMapper'
 import { getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
-import VehicleWidget from '@/components/shared/vehicles/VehicleWidget.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -379,58 +389,6 @@ const currentActivities = computed(() => {
     return leadsStore.currentLeadActivities
   } else {
     return opportunitiesStore.currentOpportunityActivities
-  }
-})
-
-// Computed helper to get vehicle data for VehicleWidget
-const vehicleWidgetData = computed(() => {
-  if (!currentTask.value) return null
-  
-  let vehicle = null
-  
-  // For leads: only use requestedCar if it exists and has brand/model
-  if (currentTask.value.type === 'lead') {
-    const requestedCar = currentTask.value.requestedCar
-    if (requestedCar && requestedCar.brand && requestedCar.model) {
-      vehicle = requestedCar
-    }
-  }
-  // For opportunities: prefer vehicle over requestedCar
-  else if (currentTask.value.type === 'opportunity') {
-    vehicle = currentTask.value.vehicle || currentTask.value.requestedCar
-  }
-  
-  // Additional validation check
-  if (!vehicle || !vehicle.brand || !vehicle.model) return null
-  
-  // Map vehicle and task data to VehicleWidget props
-  return {
-    show: true,
-    label: 'Requested Car',
-    brand: vehicle.brand,
-    model: vehicle.model,
-    year: vehicle.year,
-    image: vehicle.image || '',
-    price: vehicle.price || null,
-    requestMessage: vehicle.requestMessage || '',
-    requestType: currentTask.value.requestType || vehicle.requestType || '',
-    source: currentTask.value.source || vehicle.source || '',
-    dealership: vehicle.dealership || '',
-    registration: vehicle.registration || '',
-    kilometers: vehicle.kilometers !== undefined ? vehicle.kilometers : null,
-    fuelType: vehicle.fuelType || '',
-    gearType: vehicle.gearType || '',
-    vin: vehicle.vin || '',
-    stockDays: vehicle.stockDays !== undefined ? vehicle.stockDays : null,
-    showOpenAd: true,
-    showTechnicalSpecs: true,
-    channel: 'Email', // Default, could be enhanced if task has channel field
-    adCampaign: currentTask.value.sourceDetails || vehicle.adCampaign || '',
-    expectedPurchaseDate: vehicle.expectedPurchaseDate || '',
-    fiscalEntity: currentTask.value.fiscalEntity || '',
-    sourceDetails: currentTask.value.sourceDetails || '',
-    adMedium: vehicle.adMedium || '',
-    adSource: vehicle.adSource || ''
   }
 })
 
