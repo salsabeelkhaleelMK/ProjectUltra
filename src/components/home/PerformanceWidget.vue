@@ -359,87 +359,10 @@
 
       <!-- Manager View -->
       <div v-else-if="userRole === 'manager'" class="space-y-4">
-        <!-- Key Metrics Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div
-            v-for="(stage, index) in (managerMetrics?.stages || []).slice(0, 4)"
-            :key="stage.name"
-            class="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <div
-                class="w-2 h-2 rounded-full"
-                :class="getStageColorClass(stage.color)"
-              ></div>
-              <span class="text-xs text-gray-500">{{ stage.percentage }}%</span>
-            </div>
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex-1">
-                <div class="text-base font-bold text-gray-900 mb-1">
-                  {{ formatNumber(stage.count) }}
-                </div>
-                <div class="text-xs text-gray-600 leading-tight">{{ stage.name }}</div>
-              </div>
-              <div class="h-12 w-16 flex-shrink-0" v-if="stage.trend">
-                <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient :id="`gradient-stage-${index}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" :style="`stop-color:${getStageChartColor(stage.color)};stop-opacity:0.2`" />
-                      <stop offset="100%" :style="`stop-color:${getStageChartColor(stage.color)};stop-opacity:0`" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    :d="generateAreaPath(stage.trend)"
-                    :fill="`url(#gradient-stage-${index})`"
-                    class="transition-all duration-700"
-                  />
-                  <path
-                    :d="generateSmoothPath(stage.trend)"
-                    :stroke="getStageChartColor(stage.color)"
-                    stroke-width="2.5"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="transition-all duration-700"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Funnel Visualization & Conversion Rate -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <!-- Bar Chart -->
-          <div class="lg:col-span-2 bg-white rounded-lg p-4 md:p-5 border border-gray-200">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Sales Funnel</h3>
-            <div class="space-y-3">
-              <div
-                v-for="(stage, index) in managerMetrics?.stages || []"
-                :key="stage.name"
-                class="relative"
-              >
-                <div class="flex items-center gap-3 mb-1">
-                  <span class="text-xs font-medium text-gray-700 w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
-                  <div class="flex-1 relative">
-                    <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                      <div
-                        class="h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2"
-                        :class="getStageColorClass(stage.color)"
-                        :style="{ width: `${stage.percentage}%`, minWidth: '2px' }"
-                      >
-                        <span class="text-xs font-bold text-gray-900">{{ formatNumber(stage.count) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span class="text-xs font-bold text-gray-900 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Conversion Rate Card -->
-          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200 flex flex-col items-center justify-center">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 flex flex-col items-center justify-center">
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 mb-3">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <!-- Background circle -->
@@ -477,52 +400,31 @@
               {{ getConversionDescription(managerMetrics?.conversionRate || 0) }}
             </div>
           </div>
-        </div>
 
-        <!-- Additional Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div
-            v-for="(stage, idx) in (managerMetrics?.stages || []).slice(4)"
-            :key="stage.name"
-            class="bg-white rounded-lg p-4 border border-gray-200"
-          >
-            <div class="flex items-center justify-between mb-2">
+          <!-- Bar Chart -->
+          <div class="lg:col-span-2 bg-white rounded-lg p-4 md:p-5">
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Sales Funnel</h3>
+            <div class="space-y-3">
               <div
-                class="w-2 h-2 rounded-full"
-                :class="getStageColorClass(stage.color)"
-              ></div>
-              <span class="text-xs text-gray-500">{{ stage.percentage }}%</span>
-            </div>
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex-1">
-                <div class="text-base font-bold text-gray-900 mb-1">
-                  {{ formatNumber(stage.count) }}
+                v-for="(stage, index) in managerMetrics?.stages || []"
+                :key="stage.name"
+                class="relative"
+              >
+                <div class="flex items-center gap-3 mb-1">
+                  <span class="text-xs font-medium text-gray-700 w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
+                  <div class="flex-1 relative">
+                    <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
+                      <div
+                        class="h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2"
+                        :class="getStageColorClass(stage.color)"
+                        :style="{ width: `${stage.percentage}%`, minWidth: '2px' }"
+                      >
+                        <span class="text-xs font-bold text-gray-900">{{ formatNumber(stage.count) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="text-xs font-bold text-gray-900 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
                 </div>
-                <div class="text-xs text-gray-600 leading-tight">{{ stage.name }}</div>
-              </div>
-              <div class="h-12 w-16 flex-shrink-0" v-if="stage.trend">
-                <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient :id="`gradient-stage-${idx + 4}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" :style="`stop-color:${getStageChartColor(stage.color)};stop-opacity:0.2`" />
-                      <stop offset="100%" :style="`stop-color:${getStageChartColor(stage.color)};stop-opacity:0`" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    :d="generateAreaPath(stage.trend)"
-                    :fill="`url(#gradient-stage-${idx + 4})`"
-                    class="transition-all duration-700"
-                  />
-                  <path
-                    :d="generateSmoothPath(stage.trend)"
-                    :stroke="getStageChartColor(stage.color)"
-                    stroke-width="2.5"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="transition-all duration-700"
-                  />
-                </svg>
               </div>
             </div>
           </div>
@@ -602,16 +504,6 @@ const getStageColorClass = (color) => {
   return colorMap[color] || 'bg-gray-300'
 }
 
-const getStageChartColor = (color) => {
-  const colorMap = {
-    'red': '#F80032', // brand-red
-    'orange': '#f97316',
-    'blue': '#0056B3', // brand-blue
-    'gray': '#6B7280' // brand-slate
-  }
-  return colorMap[color] || '#6B7280'
-}
-
 const getTrendData = (metric) => {
   if (!salespersonMetrics.value) return null
   if (metric === 'contractsClosed') {
@@ -671,18 +563,6 @@ const generateAreaPath = (data) => {
   const lastPointX = width - padding
   
   return `${smoothLine} L ${lastPointX},${height} L ${firstPointX},${height} Z`
-}
-
-const getEndPoint = (data) => {
-  if (!data || data.length === 0) return { x: 0, y: 0 }
-  const maxValue = Math.max(...data)
-  const minValue = Math.min(...data)
-  const range = maxValue - minValue || 1
-  const padding = 4
-  return {
-    x: 100 - padding,
-    y: 40 - padding - ((data[data.length - 1] - minValue) / range) * (40 - padding * 2)
-  }
 }
 
 const getConversionDescription = (rate) => {

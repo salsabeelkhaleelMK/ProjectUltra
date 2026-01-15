@@ -30,7 +30,7 @@
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <h1 class="heading-main truncate">{{ name }}</h1>
+            <h1 class="text-xl font-bold uppercase text-brand-dark truncate" style="line-height: 1.3;">{{ name }}</h1>
             <slot name="name-action"></slot>
           </div>
           <div class="flex flex-wrap items-center gap-2 mt-1">
