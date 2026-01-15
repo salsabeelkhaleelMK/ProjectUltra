@@ -5,7 +5,7 @@
       :key="tab.key"
       @click="$emit('update:modelValue', tab.key)"
       class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-      :class="modelValue === tab.key ? 'border-brand-red text-brand-darkDarker bg-primary-100' : 'border-transparent hover:text-gray-700 hover:border-slate-200'"
+      :class="modelValue === tab.key ? 'border-brand-red text-brand-darkDarker' : 'border-transparent hover:text-gray-700 hover:border-slate-200'"
     >
       <!-- Icon (always visible) -->
       <i 
@@ -13,16 +13,7 @@
       ></i>
       
       <!-- Label (hidden on mobile, visible on desktop) -->
-      <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
-      
-      <!-- Count badge -->
-      <span 
-        v-if="tab.count !== undefined"
-        class="inline-flex items-center justify-center px-1.5 md:px-2 py-0.5 rounded-full text-xs font-semibold"
-        :class="modelValue === tab.key ? 'bg-red-50 text-brand-darkDarker' : 'bg-gray-100 text-gray-500'"
-      >
-        {{ tab.count }}
-      </span>
+      <span class="hidden md:inline whitespace-nowrap" :class="modelValue === tab.key ? 'text-brand-darkDarker' : ''">{{ tab.label }}</span>
     </div>
   </div>
 </template>

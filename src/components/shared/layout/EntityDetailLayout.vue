@@ -75,6 +75,9 @@
               />
             </div>
 
+            <!-- Pinned Extra Slot - for customer-specific widgets (CustomerSummaryWidget, VehiclesCarousel, etc.) -->
+            <slot name="pinned-extra" :task="task" />
+
             <!-- Manage Next Steps widget -->
             <div v-if="managementWidget" class="mb-6">
               <component
@@ -438,25 +441,11 @@ const handleOverviewModalSave = async (data) => {
 }
 
 const tabs = computed(() => {
-  const allItems = [...props.storeAdapter.currentActivities.value, ...inlineContent.value]
-  
-  // Count items by their actual tab mapping
-  const overviewCount = allItems.filter(item => {
-    const tabKey = getTabForItemType(item.type)
-    return tabKey === 'overview'
-  }).length
-  
-  const communicationCount = allItems.filter(item =>
-    ['call', 'email', 'sms', 'whatsapp', 'communication'].includes(item.type)
-  ).length
-  const noteCount = allItems.filter(item => item.type === 'note').length
-  const attachmentCount = allItems.filter(item => item.type === 'attachment').length
-
   return [
-    { key: 'overview', label: 'Overview', count: overviewCount },
-    { key: 'note', label: 'Notes', count: noteCount },
-    { key: 'communication', label: 'Communication', count: communicationCount },
-    { key: 'attachment', label: 'Attachments', count: attachmentCount }
+    { key: 'overview', label: 'Overview' },
+    { key: 'note', label: 'Notes' },
+    { key: 'communication', label: 'Communication' },
+    { key: 'attachment', label: 'Attachments' }
   ]
 })
 
