@@ -1,0 +1,136 @@
+<template>
+  <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden h-full">
+    <div class="p-6">
+      <!-- Card Header with Avatar and Name -->
+      <div class="flex items-center mb-4">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <button
+            @click.stop="handleAvatarClick"
+            class="w-12 h-12 rounded bg-brand-darkDarker text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0"
+            :class="{ 'cursor-pointer': customerId }"
+            :aria-label="customerId ? 'Open customer profile' : 'Customer'"
+          >
+            <i class="fa-solid fa-user text-lg"></i>
+          </button>
+          
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-bold uppercase text-brand-dark truncate">{{ task.customer?.name || 'Unknown' }}</h3>
+              <button
+                @click="openCustomerPage"
+                class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+                title="Open in new page"
+                aria-label="Open customer page"
+              >
+                <i class="fa-solid fa-external-link text-xs"></i>
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+              <span 
+                v-for="tag in task.tags" 
+                :key="tag"
+                class="px-2 py-0.5 text-xs bg-blue-50 border border-blue-100 text-blue-700 font-semibold rounded"
+              >
+                {{ tag }}
+              </span>
+              <button
+                @click.stop="$emit('add-tag')"
+                class="text-xs text-brand-red hover:text-brand-red-dark font-medium hover:underline flex items-center gap-1"
+              >
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>add tag</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Details -->
+      <div class="space-y-3 pt-4 border-t border">
+        <!-- Email -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+            <i class="fa-regular fa-envelope text-sub text-sm"></i>
+          </div>
+          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.email || '' }}</span>
+          <button 
+            @click.stop="copyToClipboard(task.customer?.email || '', 'email')"
+            class="w-7 h-7 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
+            title="Copy email"
+          >
+            <i class="fa-regular fa-copy text-xs"></i>
+          </button>
+        </div>
+        
+        <!-- Phone -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-phone text-sub text-sm"></i>
+          </div>
+          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.phone || '' }}</span>
+          <button 
+            @click.stop="copyToClipboard(task.customer?.phone || '', 'phone')"
+            class="w-7 h-7 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
+            title="Copy phone"
+          >
+            <i class="fa-regular fa-copy text-xs"></i>
+          </button>
+        </div>
+        
+        <!-- Address -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-map-marker-alt text-sub text-sm"></i>
+          </div>
+          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.address || '' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+import { useToastStore } from '@/stores/toast'
+
+const props = defineProps({
+  task: {
+    type: Object,
+    required: true
+  },
+  taskType: {
+    type: String,
+    default: 'lead' // 'lead' | 'opportunity' | 'contact'
+  },
+  customerId: {
+    type: [Number, String],
+    default: null
+  }
+})
+
+const emit = defineEmits(['action', 'add-tag'])
+
+const toastStore = useToastStore()
+const router = useRouter()
+
+const copyToClipboard = async (text, field) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    toastStore.pushToast('success', `${field === 'email' ? 'Email' : 'Phone'} copied!`)
+  } catch (err) {
+    toastStore.pushToast('error', 'Failed to copy')
+  }
+}
+
+const handleAvatarClick = () => {
+  if (props.customerId) {
+    router.push(`/customer/${props.customerId}`)
+  }
+}
+
+const openCustomerPage = () => {
+  if (props.customerId) {
+    router.push(`/customer/${props.customerId}`)
+  }
+}
+</script>

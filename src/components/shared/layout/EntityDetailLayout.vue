@@ -2,7 +2,41 @@
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
     <header class="bg-surface border-b border shrink-0">
-      <div class="px-4 md:px-8 py-3 md:py-4">
+      <!-- View Switcher (before ContactInfo) -->
+      <div class="px-4 md:px-8 py-2 border-b border flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-sub font-medium">View:</span>
+          <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
+            <button
+              @click="viewMode = 'default'"
+              :class="[
+                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                viewMode === 'default' 
+                  ? 'bg-surface text-heading shadow-sm' 
+                  : 'text-sub hover:text-body'
+              ]"
+            >
+              <i class="fa-solid fa-align-left text-xs"></i>
+              <span>Default</span>
+            </button>
+            <button
+              @click="viewMode = 'grid'"
+              :class="[
+                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                viewMode === 'grid' 
+                  ? 'bg-surface text-heading shadow-sm' 
+                  : 'text-sub hover:text-body'
+              ]"
+            >
+              <i class="fa-solid fa-grip text-xs"></i>
+              <span>Grid</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Info Header (only shown in default view) -->
+      <div v-if="viewMode === 'default'" class="px-4 md:px-8 py-3 md:py-4">
         <ContactInfo
           :initials="task.customer.initials"
           :name="task.customer.name"
@@ -42,8 +76,8 @@
       </div>
     </header>
 
-    <!-- Two-column layout: Tabs+Content | Activity Timeline -->
-    <div class="flex-1 flex flex-row overflow-hidden">
+    <!-- DEFAULT VIEW: Two-column layout with Tabs+Content | Activity Timeline -->
+    <div v-if="viewMode === 'default'" class="flex-1 flex flex-row overflow-hidden">
       <!-- Left: Tabs and Content -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <!-- Content area with feed -->
@@ -176,6 +210,295 @@
       />
     </div>
 
+    <!-- GRID VIEW: Tabbed layout -->
+    <div v-else-if="viewMode === 'grid'" class="flex-1 flex flex-col overflow-hidden">
+      <!-- Content area with tabs -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+        <!-- Main Tabs -->
+        <Tabs 
+          v-model="gridMainTab"
+          :tabs="gridMainTabs"
+          class="mb-6"
+        />
+        
+        <!-- Tab 1: Request -->
+        <div v-if="gridMainTab === 'request'" class="space-y-6">
+          <!-- Request Card + Contact Info Card -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Request Card -->
+            <RequestCard
+              v-if="type !== 'contact'"
+              :task="task"
+              :entity-type="type"
+              :activities="task.activities || []"
+              @reassign="handleReassign"
+            />
+
+            <!-- Contact Info Card -->
+            <ContactInfoCard
+              :task="task"
+              :task-type="type"
+              :customer-id="task.customer?.id || task.customerId || task.id"
+              @action="handleContactInfoAction"
+              @add-tag="showAddTagModal = true"
+            />
+          </div>
+
+          <!-- Activity Summary (full width) -->
+          <ActivitySummarySidebar
+            :title="'Activity summary'"
+            :activities="allActivities"
+            :collapsed="false"
+            :show-collapse="false"
+            :show="true"
+            class="!w-full border border rounded-xl shadow-sm"
+          />
+        </div>
+
+        <!-- Tab 2: Manage -->
+        <div v-if="gridMainTab === 'manage'" class="space-y-6">
+          <!-- Management Widget -->
+          <div v-if="managementWidget">
+            <component
+              :is="managementWidget"
+              :lead="type === 'lead' ? task : undefined"
+              :opportunity="type === 'opportunity' ? task : undefined"
+              :contact="type === 'contact' ? task : undefined"
+              :activities="allActivities"
+              @car-added="$emit('car-added', $event)"
+              @convert-to-lead="$emit('convert-to-lead')"
+              @convert-to-opportunity="$emit('convert-to-opportunity')"
+              @vehicle-selected="handleVehicleSelected"
+              @create-offer="handleCreateOffer"
+            />
+          </div>
+
+          <!-- Communicate -->
+          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-comments text-sub text-sm"></i>
+                <h3 class="font-bold text-heading text-base">Communicate</h3>
+              </div>
+              
+              <!-- Choice Buttons Grid -->
+              <div class="grid grid-cols-4 gap-2 mb-4">
+                <!-- Outbound Call -->
+                <button 
+                  @click="selectCommunicationMethod('call')"
+                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
+                  :class="selectedCommunicationMethod === 'call' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
+                >
+                  <i class="fa-solid fa-phone text-base"></i>
+                  <span class="text-xs">Call</span>
+                </button>
+                
+                <!-- WhatsApp -->
+                <button 
+                  @click="selectCommunicationMethod('whatsapp')"
+                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
+                  :class="selectedCommunicationMethod === 'whatsapp' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
+                >
+                  <i class="fa-brands fa-whatsapp text-base"></i>
+                  <span class="text-xs">WhatsApp</span>
+                </button>
+                
+                <!-- SMS -->
+                <button 
+                  @click="selectCommunicationMethod('sms')"
+                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
+                  :class="selectedCommunicationMethod === 'sms' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
+                >
+                  <i class="fa-solid fa-message text-base"></i>
+                  <span class="text-xs">SMS</span>
+                </button>
+                
+                <!-- Email -->
+                <button 
+                  @click="selectCommunicationMethod('email')"
+                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
+                  :class="selectedCommunicationMethod === 'email' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
+                >
+                  <i class="fa-solid fa-envelope text-base"></i>
+                  <span class="text-xs">Email</span>
+                </button>
+              </div>
+              
+              <!-- Input Area for Selected Method -->
+              <div v-if="selectedCommunicationMethod" class="space-y-3">
+                <!-- Template Selection (for WhatsApp, SMS, Email) -->
+                <div v-if="['whatsapp', 'sms', 'email'].includes(selectedCommunicationMethod)" class="space-y-2">
+                  <label class="block text-xs font-medium text-body">Select Template</label>
+                  <select 
+                    v-model="selectedTemplate"
+                    class="w-full bg-surface border border rounded-lg px-3 py-2 text-sm text-body focus:outline-none focus:border-brand-red"
+                  >
+                    <option value="">Select a template...</option>
+                    <option value="followup-1">Follow-up 1</option>
+                    <option value="followup-2">Follow-up 2</option>
+                    <option value="custom">Custom message</option>
+                  </select>
+                  <button
+                    @click="handleCommunicationAction"
+                    class="px-4 py-2 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors"
+                  >
+                    Send {{ selectedCommunicationMethod === 'whatsapp' ? 'WhatsApp' : selectedCommunicationMethod === 'sms' ? 'SMS' : 'Email' }}
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Communications List -->
+              <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
+                <div class="space-y-2 max-h-[200px] overflow-y-auto">
+                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs font-semibold text-heading">{{ comm.type }}</span>
+                      <span class="text-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                    </div>
+                    <p class="text-sm text-body">{{ comm.content }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Data -->
+        <div v-if="gridMainTab === 'data'" class="space-y-6">
+          <!-- Attachments Card -->
+          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-paperclip text-sub text-sm"></i>
+                <h3 class="font-bold text-heading text-base">Attachments</h3>
+              </div>
+              <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-sm">
+                  <i class="fa-solid fa-paperclip text-2xl mb-2"></i>
+                  <p>No attachments yet</p>
+                </div>
+                <div v-for="attachment in gridAttachments" :key="attachment.id" class="p-3 bg-surfaceSecondary border border rounded-lg flex items-center gap-3">
+                  <i class="fa-solid fa-file text-sub text-lg"></i>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-heading truncate">{{ attachment.filename }}</div>
+                    <div class="text-xs text-sub">{{ formatGridDate(attachment.timestamp) }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trade-in and Purchase Cards (2-column grid) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Trade-in Card -->
+            <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-right-arrow-left text-sub text-sm"></i>
+                    <h3 class="font-bold text-heading text-base">Trade-in</h3>
+                  </div>
+                  <button
+                    @click="openTradeInModal"
+                    class="px-3 py-1.5 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Add New</span>
+                  </button>
+                </div>
+                
+                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                  <div v-if="gridTradeIns.length === 0" class="text-center py-6 text-sub text-sm">
+                    <i class="fa-solid fa-arrow-right-arrow-left text-2xl mb-2"></i>
+                    <p>No trade-ins yet</p>
+                  </div>
+                  <div v-for="tradein in gridTradeIns" :key="tradein.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                    <div class="flex items-center justify-between mb-1">
+                      <div class="text-xs text-sub">{{ formatGridDate(tradein.timestamp) }}</div>
+                    </div>
+                    <div v-if="tradein.data && tradein.data.brand" class="text-sm font-medium text-heading">
+                      {{ tradein.data.brand }} {{ tradein.data.model }}
+                      <span v-if="tradein.data.version"> {{ tradein.data.version }}</span>
+                    </div>
+                    <div v-if="tradein.data && (tradein.data.kilometers || tradein.data.price)" class="grid grid-cols-2 gap-2 mt-2 text-xs text-body">
+                      <div v-if="tradein.data.kilometers">
+                        <span class="text-sub">KM:</span> {{ formatGridNumber(tradein.data.kilometers) }}
+                      </div>
+                      <div v-if="tradein.data.price">
+                        <span class="text-sub">Price:</span> € {{ formatGridCurrency(tradein.data.price) }}
+                      </div>
+                    </div>
+                    <div v-if="tradein.content" class="text-xs text-body mt-2">{{ tradein.content }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Purchase Card -->
+            <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-shopping-cart text-sub text-sm"></i>
+                    <h3 class="font-bold text-heading text-base">Purchase</h3>
+                  </div>
+                  <button
+                    @click="openPurchaseModal"
+                    class="px-3 py-1.5 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Add New</span>
+                  </button>
+                </div>
+                
+                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                  <div v-if="gridPurchases.length === 0" class="text-center py-6 text-sub text-sm">
+                    <i class="fa-solid fa-shopping-cart text-2xl mb-2"></i>
+                    <p>No purchases yet</p>
+                  </div>
+                  <div v-for="purchase in gridPurchases" :key="purchase.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                    <div class="flex items-center justify-between mb-1">
+                      <div class="text-xs text-sub">{{ formatGridDate(purchase.timestamp) }}</div>
+                    </div>
+                    <div v-if="purchase.data && purchase.data.brand" class="text-sm font-medium text-heading">
+                      {{ purchase.data.brand }} {{ purchase.data.model }}
+                      <span v-if="purchase.data.year">({{ purchase.data.year }})</span>
+                    </div>
+                    <div v-if="purchase.data && purchase.data.price" class="text-sm text-body mt-1">
+                      € {{ formatGridCurrency(purchase.data.price) }}
+                    </div>
+                    <div v-if="purchase.content" class="text-xs text-body mt-2">{{ purchase.content }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Notes -->
+        <div v-if="gridMainTab === 'notes'" class="space-y-6">
+          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-note-sticky text-sub text-sm"></i>
+                <h3 class="font-bold text-heading text-base">Notes</h3>
+              </div>
+              <div class="space-y-2 max-h-[600px] overflow-y-auto">
+                <div v-if="gridNotes.length === 0" class="text-center py-8 text-sub text-sm">
+                  <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
+                  <p>No notes yet</p>
+                </div>
+                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                  <div class="text-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
+                  <p class="text-sm text-body">{{ note.content }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Financing Modal -->
     <FinancingModal
       :show="overviewModalType === 'financing' && showOverviewModal"
@@ -242,6 +565,8 @@ import { useRoute, useRouter } from 'vue-router'
 import ContactInfo from '@/components/customer/widgets/ContactInfo.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
 import Request from '@/components/shared/Request.vue'
+import RequestCard from '@/components/tasks/RequestCard.vue'
+import ContactInfoCard from '@/components/tasks/ContactInfoCard.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
 import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummarySidebar.vue'
@@ -274,6 +599,135 @@ const route = useRoute()
 const router = useRouter()
 
 const taskId = computed(() => props.task.id)
+
+// View mode state with localStorage persistence
+const viewMode = ref(localStorage.getItem('taskDetailViewMode') || 'default')
+
+// Watch for changes and persist
+watch(viewMode, (newMode) => {
+  localStorage.setItem('taskDetailViewMode', newMode)
+})
+
+// Grid view main tabs state
+const gridMainTab = ref('request')
+const gridMainTabs = [
+  { key: 'request', label: 'Request' },
+  { key: 'manage', label: 'Manage' },
+  { key: 'data', label: 'Data' },
+  { key: 'notes', label: 'Notes' }
+]
+
+// Grid view communication state
+const selectedCommunicationMethod = ref(null)
+const communicationNotes = ref('')
+const selectedTemplate = ref('')
+
+// Filter activities by type for grid view
+const gridNotes = computed(() => {
+  if (!props.task.activities) return []
+  return props.task.activities.filter(a => a.type === 'note')
+})
+
+const gridCommunications = computed(() => {
+  if (!props.task.activities) return []
+  return props.task.activities.filter(a => 
+    ['email', 'call', 'sms', 'whatsapp'].includes(a.type)
+  )
+})
+
+const gridAttachments = computed(() => {
+  if (!props.task.activities) return []
+  return props.task.activities.filter(a => a.type === 'attachment')
+})
+
+const gridPurchases = computed(() => {
+  if (!props.task.activities) return []
+  return props.task.activities.filter(a => a.type === 'purchase')
+})
+
+const gridTradeIns = computed(() => {
+  if (!props.task.activities) return []
+  return props.task.activities.filter(a => a.type === 'tradein')
+})
+
+const openPurchaseModal = () => {
+  overviewModalType.value = 'purchase'
+  showOverviewModal.value = true
+}
+
+const openTradeInModal = () => {
+  overviewModalType.value = 'tradein'
+  showOverviewModal.value = true
+}
+
+const formatGridDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+  
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  if (diffDays < 7) return `${diffDays}d ago`
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+const formatGridCurrency = (value) => {
+  if (!value) return '0'
+  return new Intl.NumberFormat('en-US').format(value)
+}
+
+const formatGridNumber = (value) => {
+  if (!value) return '0'
+  return new Intl.NumberFormat('en-US').format(value)
+}
+
+const selectCommunicationMethod = (method) => {
+  selectedCommunicationMethod.value = selectedCommunicationMethod.value === method ? null : method
+  communicationNotes.value = ''
+  selectedTemplate.value = ''
+}
+
+const handleCommunicationAction = async () => {
+  if (!selectedCommunicationMethod.value) return
+  
+  let actionType = selectedCommunicationMethod.value
+  
+  // Handle call logging (no notes input)
+  if (actionType === 'call') {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'call',
+      content: 'Call logged',
+      timestamp: new Date().toISOString()
+    })
+    selectedCommunicationMethod.value = null
+    return
+  }
+  
+  // Handle WhatsApp, SMS, Email with template
+  if (['whatsapp', 'sms', 'email'].includes(actionType)) {
+    if (!selectedTemplate.value) {
+      // Could show error toast here
+      return
+    }
+    
+    // Map method to activity type
+    const activityType = actionType === 'whatsapp' ? 'whatsapp' : actionType === 'sms' ? 'sms' : 'email'
+    
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: activityType,
+      content: `Template: ${selectedTemplate.value}`,
+      timestamp: new Date().toISOString()
+    })
+    selectedCommunicationMethod.value = null
+    selectedTemplate.value = ''
+  }
+}
 
 // Avatar color class based on type
 const getAvatarColorClass = computed(() => {

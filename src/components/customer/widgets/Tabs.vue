@@ -37,7 +37,11 @@ const iconMap = {
   overview: 'fa-solid fa-house',
   note: 'fa-solid fa-note-sticky',
   communication: 'fa-solid fa-comments',
-  attachment: 'fa-solid fa-paperclip'
+  attachment: 'fa-solid fa-paperclip',
+  request: 'fa-solid fa-thumbtack',
+  manage: 'fa-solid fa-gear',
+  data: 'fa-solid fa-database',
+  notes: 'fa-solid fa-note-sticky'
 }
 
 const getIconClass = (tabKey) => {
