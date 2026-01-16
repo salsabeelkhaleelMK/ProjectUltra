@@ -23,16 +23,38 @@ A Vue 3-based CRM application for automotive dealerships with unified task manag
 
 ## Quick Start
 
-### Starting the App
-```bash
-npm install  # Automatically authenticates with AWS CodeArtifact
-npm run dev
-# Visit: http://localhost:5173/
-```
+### First Time Setup
+
+1. **Configure AWS CLI** (if not already configured):
+   ```bash
+   aws configure
+   # Enter your AWS Access Key ID, Secret Access Key, and region (eu-west-1)
+   ```
+
+2. **Run setup script** (automatically authenticates with CodeArtifact):
+   ```bash
+   npm run setup
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+   
+   **Note**: If you have AWS CLI configured, authentication will run automatically before `npm install` via the `preinstall` hook.
+
+4. **Start the app**:
+   ```bash
+   npm run dev
+   # Visit: http://localhost:5173/
+   ```
 
 ### Manual CodeArtifact Authentication
+
 If you need to authenticate manually:
 ```bash
+npm run setup
+# or
 npm run auth:codeartifact
 ```
 

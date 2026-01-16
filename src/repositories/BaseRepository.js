@@ -9,7 +9,16 @@
  */
 export class BaseRepository {
   constructor(dataSource) {
-    this.dataSource = dataSource
+    // Only set dataSource if it's provided and the property is writable
+    // Subclasses may define dataSource as a getter-only property
+    if (dataSource !== undefined) {
+      try {
+        this.dataSource = dataSource
+      } catch (error) {
+        // Property is read-only (getter-only), which is fine for subclasses
+        // that define their own dataSource getter
+      }
+    }
   }
 
   /**

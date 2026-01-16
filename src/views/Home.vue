@@ -11,8 +11,8 @@
           <PerformanceWidget />
           
           <!-- Quick Actions Widget -->
-          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
+          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border bg-surface">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-bolt text-body text-sm"></i>
@@ -38,13 +38,13 @@
             <div class="p-4 md:p-5 space-y-3">
               <!-- Loading Skeleton -->
               <template v-if="loadingNotifications">
-                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-gray-50 border border-gray-100 rounded-lg p-4">
+                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surfaceSecondary border border rounded-lg p-4">
                   <div class="space-y-2">
-                    <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                    <div class="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    <div class="h-4 bg-surfaceTertiary rounded w-3/4 animate-pulse"></div>
+                    <div class="h-3 bg-surfaceTertiary rounded w-1/2 animate-pulse"></div>
                     <div class="flex gap-2 mt-3">
-                      <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
-                      <div class="h-8 bg-gray-200 rounded flex-1 animate-pulse"></div>
+                      <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
+                      <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -52,8 +52,8 @@
               
               <!-- Actual Content -->
               <template v-else>
-                <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
-                  <i class="fa-solid fa-check-circle text-4xl mb-2 text-gray-300"></i>
+                <div v-if="notifications.length === 0" class="text-center py-8 text-sub">
+                  <i class="fa-solid fa-check-circle text-4xl mb-2 text-sub opacity-50"></i>
                   <p class="text-content">All caught up!</p>
                   <p class="text-meta mt-1">No quick actions needed</p>
                 </div>
@@ -75,8 +75,8 @@
         <!-- Right Column - Sidebar (1/3 width) -->
         <div class="space-y-4 md:space-y-6">
           <!-- Tasks Due Today Widget -->
-          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
+          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border bg-surface">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-tasks text-body text-sm"></i>
@@ -104,8 +104,8 @@
           </div>
           
           <!-- Appointments Today Widget -->
-          <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border-gray-100 bg-white">
+          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-4 md:p-5 border-b border bg-surface">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-calendar text-body text-sm"></i>

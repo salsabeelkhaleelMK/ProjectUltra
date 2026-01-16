@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full bg-white">
+  <div class="w-full bg-surface">
     <!-- Row 1: Header with customer info, actions, and expander arrow -->
     <div class="flex items-center justify-between gap-3 md:gap-4">
       <div class="flex items-center gap-3 md:gap-4 flex-1">
@@ -37,10 +37,10 @@
         <div class="relative">
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
-            class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
+            class="w-9 h-9 flex items-center justify-center bg-surface border border rounded-lg hover:bg-surfaceSecondary shrink-0"
             aria-label="Quick actions"
           >
-            <i class="fa-solid fa-plus text-base text-gray-600"></i>
+            <i class="fa-solid fa-plus text-base text-body"></i>
           </button>
           
           <!-- Quick Action Dropdown Menu -->
@@ -55,7 +55,7 @@
         
         <button 
           @click="showContactInfo = !showContactInfo" 
-          class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shrink-0"
+          class="w-9 h-9 flex items-center justify-center bg-surface border border rounded-lg hover:bg-surfaceSecondary shrink-0"
         >
           <i class="fa-solid fa-chevron-up text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
         </button>
@@ -72,13 +72,13 @@
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <!-- Email -->
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-regular fa-envelope text-gray-500 text-xs"></i>
+            <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+              <i class="fa-regular fa-envelope text-sub text-xs"></i>
             </div>
-            <span class="text-meta text-gray-900 font-medium">{{ email }}</span>
+            <span class="text-meta text-heading font-medium">{{ email }}</span>
             <button 
               @click.stop="copyToClipboard(email, 'email')"
-              class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+              class="w-5 h-5 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
               title="Copy email"
             >
               <i class="fa-regular fa-copy text-xs"></i>
@@ -87,13 +87,13 @@
           
           <!-- Phone -->
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-phone text-gray-500 text-xs"></i>
+            <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-phone text-sub text-xs"></i>
             </div>
-            <span class="text-meta text-gray-900 font-medium">{{ phone }}</span>
+            <span class="text-meta text-heading font-medium">{{ phone }}</span>
             <button 
               @click.stop="copyToClipboard(phone, 'phone')"
-              class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+              class="w-5 h-5 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
               title="Copy phone"
             >
               <i class="fa-regular fa-copy text-xs"></i>
@@ -102,11 +102,11 @@
           
           <!-- Third Field (Address/Date) -->
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-map-marker-alt text-gray-500 text-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
-              <i class="fa-regular fa-calendar text-gray-500 text-xs" v-else></i>
+            <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-map-marker-alt text-sub text-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
+              <i class="fa-regular fa-calendar text-sub text-xs" v-else></i>
             </div>
-            <span class="text-meta text-gray-900 font-medium">{{ thirdFieldValue }}</span>
+            <span class="text-meta text-heading font-medium">{{ thirdFieldValue }}</span>
           </div>
         </div>
       </div>

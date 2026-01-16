@@ -39,7 +39,7 @@
       </div>
     </div>
     <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
-      <button @click="$emit('cancel')" class="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+      <button @click="$emit('cancel')" class="text-xs font-medium text-sub hover:text-body px-3 py-2 rounded-lg hover:bg-surfaceSecondary transition-colors">Cancel</button>
       <button @click="handleSave" :disabled="!tradeInData.brand" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
     </div>
   </div>

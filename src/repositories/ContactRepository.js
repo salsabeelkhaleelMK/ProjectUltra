@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository.js'
-import { mockCustomers } from '@/api/mockData'
+import { getMockData } from '@/api/mockData/localeLoader.js'
 
 /**
  * Contact Repository
@@ -17,8 +17,14 @@ import { mockCustomers } from '@/api/mockData'
  */
 export class ContactRepository extends BaseRepository {
   constructor() {
-    super(mockCustomers)
-    this.dataSource = mockCustomers
+    super([]) // Initialize with empty array, data loaded dynamically
+  }
+  
+  /**
+   * Get current data source (locale-aware)
+   */
+  get dataSource() {
+    return getMockData().mockCustomers
   }
 
   /**

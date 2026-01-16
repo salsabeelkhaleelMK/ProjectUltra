@@ -1,5 +1,17 @@
 # ProjectUltra - Architecture Rules & Patterns
 
+## ⚠️ CRITICAL STYLING RULES - READ FIRST ⚠️
+
+**BEFORE writing ANY Tailwind classes, you MUST:**
+1. ✅ Check `tailwind.config.js` for available semantic classes
+2. ✅ Use semantic tokens (`text-h1-hero`, `bg-brand-red`, `text-heading`) instead of arbitrary values
+3. ✅ NEVER use arbitrary values like `w-[350px]`, `text-[14px]`, `max-w-[120px]`
+4. ✅ NEVER use hardcoded hex colors like `#F80032`, `#1a1a1a`
+5. ✅ NEVER use inline styles for static values
+6. ✅ See "Styling (Tailwind CSS) - CRITICAL RULES" section below for full details
+
+**Violations will be rejected. Always prefer semantic classes over arbitrary values.**
+
 ## Data Layer Architecture (CRITICAL)
 
 ### Repository → Service → API Wrapper → Store Pattern
@@ -205,39 +217,71 @@ When migrating to real API:
     - `import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogOverlay, DialogPortal, DialogTitle, DialogDescription } from '@motork/component-library/future/primitives'`
   - **Do not introduce custom modal wrapper components** (e.g., a `ModalShell`-style wrapper). Keep modal markup in the modal component itself, using the primitives.
 
-### Styling (Tailwind CSS) - CRITICAL RULES
+### Styling (Tailwind CSS) - CRITICAL RULES - MANDATORY ENFORCEMENT
 
-#### NO Arbitrary Values
-- **NEVER use arbitrary values** like `w-[350px]`, `text-[14px]`, `max-w-[120px]`, `z-[80]`, `bg-[#1a1a1a]`
-- **USE standard Tailwind utilities** or semantic classes from `tailwind.config.js`
-- **Exceptions**: Only use arbitrary values when:
-  - Standard Tailwind doesn't have the value (e.g., `max-w-[85vw]` for viewport-based widths)
-  - The value is calculated dynamically and needs to be exact (e.g., `w-[18px]` for icon sizes)
-  - Always prefer rem units over px for arbitrary values: `left-[2.4375rem]` instead of `left-[39px]`
+**⚠️ THIS SECTION IS MANDATORY - ALL CODE MUST FOLLOW THESE RULES ⚠️**
+
+**Before writing ANY Tailwind classes, check this section. Violations will be rejected.**
+
+**Pre-Code Checklist (MUST verify before writing classes):**
+- [ ] Checked `tailwind.config.js` for semantic classes
+- [ ] Checked `src/styles/theme.css` for CSS variables
+- [ ] No arbitrary values (`[350px]`, `[14px]`, etc.) unless explicitly justified
+- [ ] No hardcoded hex colors (`#F80032`, `#1a1a1a`, etc.)
+- [ ] No inline styles for static values
+- [ ] Using semantic typography classes (`text-h1-hero`, `text-body-text`, etc.)
+- [ ] Using semantic color tokens (`bg-brand-red`, `text-heading`, etc.)
+
+#### NO Arbitrary Values - STRICTLY FORBIDDEN
+
+- **MUST NOT use arbitrary values** like `w-[350px]`, `text-[14px]`, `max-w-[120px]`, `z-[80]`, `bg-[#1a1a1a]`, `text-[6px]`
+- **MUST use standard Tailwind utilities** or semantic classes from `tailwind.config.js`
+- **MUST check `tailwind.config.js`** for available semantic classes before using arbitrary values
+
+**Exceptions (REQUIRE EXPLICIT JUSTIFICATION):**
+- **ONLY** when standard Tailwind AND semantic tokens don't have the value AND it's truly necessary
+- **ONLY** for viewport-based widths: `max-w-[85vw]` (no standard Tailwind equivalent)
+- **ONLY** for icon sizes when exact pixel matching is required: `w-[18px] h-[18px]` (but prefer `w-4 h-4` or `w-5 h-5`)
+- **MUST** prefer rem units over px for arbitrary values: `left-[2.4375rem]` instead of `left-[39px]`
+- **MUST** add a comment explaining why arbitrary value is necessary
+
+**Common Violations Found in Codebase (DO NOT REPEAT):**
+- ❌ `text-[6px]` → Use `text-xs` or add to `tailwind.config.js` if truly needed
+- ❌ `max-w-[120px]` → Use `max-w-30` or `max-w-7.5rem` or standard Tailwind class
+- ❌ `max-w-[150px]` → Use `max-w-36` or `max-w-9.5rem`
+- ❌ `max-w-[80px]` → Use `max-w-20` or `max-w-5rem`
+- ❌ `min-w-[20px]` → Use `min-w-5` or `min-w-1.25rem`
 
 **✅ CORRECT:**
 ```vue
 <div class="min-w-40 max-w-7.5rem z-50 bg-brand-darkDarker">
+<!-- For very small text, use text-xs or add custom class to tailwind.config.js -->
+<div class="text-xs">Small text</div>
 ```
 
 **❌ WRONG:**
 ```vue
 <div class="min-w-[160px] max-w-[120px] z-[80] bg-[#1a1a1a]">
+<div class="text-[6px]">Tiny text</div>
 ```
 
-#### NO Hardcoded Colors
-- **NEVER use hardcoded hex colors** like `#F80032`, `#1a1a1a`, `#0056B3`, `#10b981`, `#6B7280`
-- **ALWAYS use theme tokens** from `tailwind.config.js` or CSS variables from `src/styles/theme.css`
+#### NO Hardcoded Colors - STRICTLY FORBIDDEN
+
+- **MUST NOT use hardcoded hex colors** like `#F80032`, `#1a1a1a`, `#0056B3`, `#10b981`, `#6B7280`, `#282828`, `#E5E7EB`, `#D1D5DB`, `#FFFFFF`
+- **MUST use theme tokens** from `tailwind.config.js` or CSS variables from `src/styles/theme.css`
+- **MUST check available tokens** before using any color
 - **For Tailwind classes**: Use `bg-brand-red`, `text-brand-dark`, `border-brand-slate`
 - **For inline styles/SVG**: Use `var(--brand-red)`, `var(--brand-blue)`, `var(--color-success)`
 
-**Available Theme Tokens:**
-- Brand colors: `bg-brand-red`, `bg-brand-redDark`, `bg-brand-dark`, `bg-brand-darkDarker`, `bg-brand-gray`, `bg-brand-slate`, `bg-brand-blue`, `bg-brand-blueLight`, `bg-brand-white`, `bg-brand-textBody`, `bg-brand-black` (alias for dark)
-- Semantic text colors: `text-heading`, `text-body`, `text-eyebrow`, `text-primary`, `text-secondary`, `text-sub`
-- Semantic background colors: `bg-surface`, `bg-surfaceSecondary`, `bg-surfaceTertiary`
-- Border colors: `border-E5E7EB` (Gray-200), `border-D1D5DB` (Gray-300 for inputs), `border` (uses var(--color-border))
-- CSS variables: `var(--brand-red)`, `var(--brand-blue)`, `var(--color-text-heading)`, `var(--color-text-body)`, `var(--color-border)`, etc.
-- **NO Hardcoded Values Rule**: Hex values exist ONLY in `theme.css` as CSS variable definitions. All components MUST use CSS variables or Tailwind tokens, never hardcoded hex values.
+**Available Theme Tokens (CHECK THESE FIRST):**
+- **Brand colors**: `bg-brand-red`, `bg-brand-redDark`, `bg-brand-dark`, `bg-brand-darkDarker`, `bg-brand-gray`, `bg-brand-slate`, `bg-brand-blue`, `bg-brand-blueLight`, `bg-brand-white`, `bg-brand-textBody`, `bg-brand-black` (alias for dark)
+- **Semantic text colors**: `text-heading`, `text-body`, `text-eyebrow`, `text-primary`, `text-secondary`, `text-sub`
+- **Semantic background colors**: `bg-surface`, `bg-surfaceSecondary`, `bg-surfaceTertiary`
+- **Border colors**: `border-E5E7EB` (Gray-200), `border-D1D5DB` (Gray-300 for inputs), `border` (uses var(--color-border))
+- **CSS variables**: `var(--brand-red)`, `var(--brand-blue)`, `var(--color-text-heading)`, `var(--color-text-body)`, `var(--color-border)`, etc.
+- **Standard Tailwind grays**: `text-gray-500`, `text-gray-600`, `text-gray-900` (only when semantic tokens don't fit)
+
+**CRITICAL RULE**: Hex values exist ONLY in `theme.css` as CSS variable definitions. All components MUST use CSS variables or Tailwind tokens, NEVER hardcoded hex values.
 
 **✅ CORRECT:**
 ```vue
@@ -255,18 +299,25 @@ When migrating to real API:
 </svg>
 ```
 
-#### NO Inline Styles (Except Dynamic Values)
-- **NEVER use inline `style` attributes** for static values like `style="background-color: #F80032;"`, `style="width: 18px; height: 18px;"`, `style="line-height: 1.3;"`
-- **ALWAYS convert to Tailwind classes**: `bg-brand-red`, `w-[18px] h-[18px]`, `leading-tight`
-- **Exceptions**: Only use inline styles for:
-  - **Dynamic calculated values**: `:style="{ width: \`${percentage}%\` }"` (progress bars, chart heights)
-  - **CSS properties with no Tailwind equivalent**: `style="scrollbar-width: thin;"` (Firefox-specific, add comment explaining)
-  - **Complex dynamic styles**: `clipPath`, dynamic transforms, etc.
+#### NO Inline Styles (Except Dynamic Values) - STRICTLY FORBIDDEN
+
+- **MUST NOT use inline `style` attributes** for static values like `style="background-color: #F80032;"`, `style="width: 18px; height: 18px;"`, `style="line-height: 1.3;"`
+- **MUST convert to Tailwind classes**: `bg-brand-red`, `w-4 h-4` (or `w-[18px] h-[18px]` if exact size needed), `leading-tight`
+- **MUST check Tailwind utilities** before using inline styles
+
+**Exceptions (REQUIRE EXPLICIT JUSTIFICATION):**
+- **ONLY** for dynamic calculated values: `:style="{ width: \`${percentage}%\` }"` (progress bars, chart heights)
+- **ONLY** for CSS properties with no Tailwind equivalent: `style="scrollbar-width: thin;"` (Firefox-specific, MUST add comment explaining)
+- **ONLY** for complex dynamic styles: `clipPath`, dynamic transforms, etc.
+- **MUST** add comment explaining why inline style is necessary
 
 **✅ CORRECT:**
 ```vue
 <!-- Static values as Tailwind classes -->
-<div class="bg-brand-red w-[18px] h-[18px] leading-tight z-[9999]">
+<div class="bg-brand-red w-4 h-4 leading-tight z-50">
+<!-- OR if exact 18px needed: -->
+<div class="bg-brand-red w-[18px] h-[18px] leading-tight z-50">
+<!-- Add comment: Exact 18px required for icon alignment -->
 
 <!-- Dynamic values as inline styles (acceptable) -->
 <div :style="{ width: \`${progress}%\` }" class="h-2 bg-brand-blue">
@@ -275,14 +326,17 @@ When migrating to real API:
 **❌ WRONG:**
 ```vue
 <div style="background-color: #F80032; width: 18px; height: 18px; line-height: 1.3;">
+<div class="bg-[#F80032] w-[18px] h-[18px]">
 ```
 
-#### Use Semantic Classes
-- **USE semantic classes** from `tailwind.config.js` and `src/style.css`
-- **Typography**: Use `text-h1-hero`, `text-h2-section`, `text-h3-card`, `text-body-text`, `text-button-text`, `text-eyebrow`, `.eyebrow-header`
-- **Spacing**: Use standard Tailwind spacing scale (`p-6`, `p-8` for cards, `gap-3`, `mt-2`) or theme tokens (`var(--spacing-md)`)
-- **Colors**: Use brand tokens (`bg-brand-red`, `text-brand-dark`, `text-heading`, `text-body`) or semantic classes
-- **Border Radius**: Use `rounded-btn` (8px), `rounded-card` (12px or 16px), or standard Tailwind classes
+#### Use Semantic Classes - MANDATORY
+
+- **MUST use semantic classes** from `tailwind.config.js` and `src/style.css`
+- **MUST check available semantic classes** before creating custom styles
+- **Typography**: MUST use `text-h1-hero`, `text-h2-section`, `text-h3-card`, `text-body-text`, `text-button-text`, `text-eyebrow`, `.eyebrow-header` (NOT `text-[40px]`, `text-[16px]`, etc.)
+- **Spacing**: MUST use standard Tailwind spacing scale (`p-6`, `p-8` for cards, `gap-3`, `mt-2`) or theme tokens (`var(--spacing-md)`)
+- **Colors**: MUST use brand tokens (`bg-brand-red`, `text-brand-dark`, `text-heading`, `text-body`) or semantic classes
+- **Border Radius**: MUST use `rounded-btn` (8px), `rounded-card` (12px or 16px), or standard Tailwind classes (NOT `rounded-[12px]`)
 
 **✅ CORRECT:**
 ```vue
@@ -300,6 +354,12 @@ When migrating to real API:
 <div class="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[12px] p-[24px]">
 ```
 
+**When Refactoring Existing Code:**
+- **MUST** replace all arbitrary values with semantic classes
+- **MUST** replace all hardcoded hex colors with theme tokens
+- **MUST** check `tailwind.config.js` to see if missing classes should be added there instead
+- **Example**: If you find `text-[6px]`, check if `text-xs` works, or add a custom class to `tailwind.config.js` if truly needed
+
 #### Mobile-First Responsive Design
 - **ALWAYS use mobile-first breakpoints**: `flex flex-col md:flex-row` (not `max-md:flex-col`)
 - **Standard breakpoints**: `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px)
@@ -315,15 +375,19 @@ When migrating to real API:
 <div class="flex-row max-md:flex-col">
 ```
 
-#### Z-Index Guidelines
-- **Use standard Tailwind z-index values**: `z-0`, `z-10`, `z-20`, `z-30`, `z-40`, `z-50`
-- **Only use arbitrary z-index** (`z-[9999]`) for dropdowns/modals that need to be above everything
-- **Document high z-index values** with comments explaining why
+#### Z-Index Guidelines - MANDATORY
 
-#### SVG and Chart Colors
-- **ALWAYS use CSS variables** for SVG gradients and chart colors
-- **Replace hardcoded hex in SVG**: `style="stop-color:var(--brand-blue);"` instead of `style="stop-color:#0056B3;"`
-- **Update color mapping functions** to return CSS variables: `return 'var(--brand-red)'` instead of `return '#F80032'`
+- **MUST use standard Tailwind z-index values**: `z-0`, `z-10`, `z-20`, `z-30`, `z-40`, `z-50`
+- **MUST NOT use arbitrary z-index** (`z-[80]`, `z-[999]`) unless absolutely necessary
+- **ONLY use arbitrary z-index** (`z-[9999]`) for dropdowns/modals that need to be above everything
+- **MUST document high z-index values** with comments explaining why
+
+#### SVG and Chart Colors - MANDATORY
+
+- **MUST use CSS variables** for SVG gradients and chart colors
+- **MUST replace hardcoded hex in SVG**: `style="stop-color:var(--brand-blue);"` instead of `style="stop-color:#0056B3;"`
+- **MUST update color mapping functions** to return CSS variables: `return 'var(--brand-red)'` instead of `return '#F80032'`
+- **MUST NOT use hex colors** in JavaScript/TypeScript color functions
 
 **✅ CORRECT:**
 ```javascript

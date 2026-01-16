@@ -5,7 +5,7 @@
       <DialogContent class="w-full sm:max-w-md p-0">
         <!-- Custom header with event type styling -->
         <div
-          class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white"
+          class="px-6 py-5 border-b border flex items-center justify-between bg-surface"
           :class="getEventTypeHeaderClass(event?.type)"
         >
           <div class="flex-1 min-w-0 pr-4">
@@ -37,7 +37,7 @@
           <CalendarEventDetails v-if="event" :event="event" />
         </div>
 
-        <DialogFooter class="px-6 py-4 bg-gray-50 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border-gray-100">
+        <DialogFooter class="px-6 py-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <button
             v-if="event?.id"
             @click="$emit('delete', event.id)"

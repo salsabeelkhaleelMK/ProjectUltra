@@ -28,7 +28,7 @@
           <i class="fa-solid fa-times-circle"></i>
           What will be lost
         </h4>
-        <ul class="space-y-2 text-sm text-gray-700">
+        <ul class="space-y-2 text-sm text-body">
           <li class="flex items-start gap-2">
             <i class="fa-solid fa-minus text-red-500 text-xs mt-1"></i>
             <span>Opportunity stage and expected close date</span>
@@ -54,7 +54,7 @@
           <i class="fa-solid fa-check-circle"></i>
           What will be kept
         </h4>
-        <ul class="space-y-2 text-sm text-gray-700">
+        <ul class="space-y-2 text-sm text-body">
           <li class="flex items-start gap-2">
             <i class="fa-solid fa-check text-green-500 text-xs mt-1"></i>
             <span>Customer information and contact details</span>

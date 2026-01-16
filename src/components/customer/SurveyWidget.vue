@@ -1,10 +1,10 @@
 <template>
-  <div class="mt-1.5 border-t border-gray-200 pt-1.5">
+  <div class="mt-1.5 border-t border pt-1.5">
     <!-- Collapsed State - Minimal Space -->
     <button
       v-if="!isExpanded"
       @click="isExpanded = true"
-      class="w-full flex items-center justify-between text-xs text-gray-500 hover:text-gray-700 py-0.5 transition-colors"
+      class="w-full flex items-center justify-between text-xs text-sub hover:text-body py-0.5 transition-colors"
     >
       <span class="font-medium">Survey / Feedback</span>
       <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -13,7 +13,7 @@
     <!-- Expanded State -->
     <div v-else>
       <div class="flex items-center justify-between mb-1.5">
-        <h5 class="text-xs font-semibold text-gray-700">Survey / Feedback</h5>
+        <h5 class="text-xs font-semibold text-body">Survey / Feedback</h5>
         <button
           @click="isExpanded = false"
           class="text-xs text-gray-400 hover:text-gray-600 font-medium py-0.5"
@@ -27,7 +27,7 @@
         <div
           v-for="(question, index) in questions"
           :key="index"
-          class="bg-gray-50 rounded-md p-1.5"
+          class="bg-surfaceSecondary rounded-md p-1.5"
         >
           <label class="block label-upper mb-1">{{ question.label }}</label>
           
@@ -87,13 +87,13 @@
           </button>
           <button
             @click="handleRefuse"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Customer Refused
           </button>
           <button
             @click="handleNotResponding"
-            class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Not Responding
           </button>

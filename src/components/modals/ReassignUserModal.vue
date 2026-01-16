@@ -19,7 +19,7 @@
           v-for="team in assignableTeams"
           :key="`team-${team.id}`"
           @click="handleSelect({ type: 'team', id: team.id, name: team.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-red-300 transition-colors text-left"
+          class="w-full flex items-center gap-3 p-3 rounded-lg border border hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
           :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id }"
         >
           <div 
@@ -28,7 +28,7 @@
             <i class="fa-solid fa-users text-sm"></i>
           </div>
           <div class="flex-1">
-            <p class="font-medium text-gray-900">{{ team.name }}</p>
+            <p class="font-medium text-heading">{{ team.name }}</p>
             <p class="text-meta">Team</p>
           </div>
           <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-brand-red"></i>
@@ -37,12 +37,12 @@
       
       <!-- Users Section -->
       <div>
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">Users</p>
+        <p class="text-xs font-semibold text-sub uppercase tracking-wide mb-2 px-1">Users</p>
         <button
           v-for="user in assignableUsers"
           :key="`user-${user.id}`"
           @click="handleSelect({ type: 'user', id: user.id, name: user.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-red-300 transition-colors text-left"
+          class="w-full flex items-center gap-3 p-3 rounded-lg border border hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
           :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id }"
         >
           <div 
@@ -52,7 +52,7 @@
             {{ user.initials }}
           </div>
           <div class="flex-1">
-            <p class="font-medium text-gray-900">{{ user.name }}</p>
+            <p class="font-medium text-heading">{{ user.name }}</p>
             <p class="text-meta capitalize">{{ user.role }} • {{ user.email }}</p>
           </div>
           <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-brand-red"></i>
@@ -117,7 +117,7 @@ const getRoleAvatarClass = (role) => {
     'salesman': 'bg-purple-100 text-purple-700',
     'operator': 'bg-orange-100 text-orange-700'
   }
-  return classes[role] || 'bg-gray-100 text-gray-700'
+  return classes[role] || 'bg-surfaceSecondary text-body'
 }
 
 const handleOpenChange = (isOpen) => {

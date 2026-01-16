@@ -3,7 +3,7 @@
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
       <DialogContent class="w-full sm:max-w-2xl p-0">
-        <DialogHeader class="p-6 pb-4 border-b border-gray-100">
+        <DialogHeader class="p-6 pb-4 border-b border">
           <DialogTitle>Create Offer</DialogTitle>
           <DialogDescription>Create a purchase offer for the customer</DialogDescription>
         </DialogHeader>
@@ -23,7 +23,7 @@
           />
         </div>
 
-        <DialogFooter class="p-6 pt-4 bg-gray-50 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border-gray-100">
+        <DialogFooter class="p-6 pt-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <Button
             label="Cancel"
             variant="outline"

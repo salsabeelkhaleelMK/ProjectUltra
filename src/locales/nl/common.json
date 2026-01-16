@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Home",
+    "tasks": "Taken",
+    "customers": "Klanten",
+    "calendar": "Kalender",
+    "reports": "Rapporten",
+    "settings": "Instellingen",
+    "vehicles": "Voertuigen",
+    "addNew": "Nieuw Toevoegen",
+    "addNewCustomer": "Nieuwe Klant Toevoegen"
+  },
+  "buttons": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "add": "Toevoegen",
+    "close": "Sluiten",
+    "confirm": "Bevestigen",
+    "submit": "Verzenden",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "clear": "Wissen",
+    "apply": "Toepassen",
+    "reset": "Resetten",
+    "create": "Aanmaken",
+    "update": "Bijwerken",
+    "remove": "Verwijderen",
+    "view": "Bekijken",
+    "open": "Openen",
+    "dismiss": "Negeren"
+  },
+  "actions": {
+    "call": "Bellen",
+    "email": "E-mail",
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "schedule": "Inplannen",
+    "postpone": "Uitstellen",
+    "reschedule": "Herinplannen",
+    "markAsHot": "Markeren als Hot",
+    "removeHot": "Hot Verwijderen",
+    "createOpportunity": "Kans Aanmaken",
+    "createLead": "Lead Aanmaken",
+    "switchRole": "Rol Wisselen",
+    "logout": "Uitloggen",
+    "lightMode": "Lichte Modus",
+    "darkMode": "Donkere Modus"
+  },
+  "status": {
+    "hot": "Hot",
+    "open": "Open",
+    "closed": "Gesloten",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "pending": "In Afwachting",
+    "completed": "Voltooid",
+    "cancelled": "Geannuleerd",
+    "confirmed": "Bevestigd",
+    "scheduled": "Gepland"
+  },
+  "roles": {
+    "manager": "Manager",
+    "salesman": "Verkoper",
+    "operator": "Operator"
+  },
+  "search": {
+    "placeholder": "zoek alles",
+    "noResults": "Geen resultaten gevonden",
+    "searching": "Zoeken..."
+  },
+  "time": {
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "tomorrow": "Morgen",
+    "thisWeek": "Deze Week",
+    "lastWeek": "Vorige Week",
+    "thisMonth": "Deze Maand",
+    "lastMonth": "Vorige Maand",
+    "ago": "geleden",
+    "in": "in",
+    "hours": "uren",
+    "days": "dagen",
+    "weeks": "weken",
+    "months": "maanden"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "noData": "Geen gegevens beschikbaar",
+    "select": "Selecteren",
+    "all": "Alle",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "optional": "Optioneel",
+    "required": "Verplicht"
+  }
+}
+
+

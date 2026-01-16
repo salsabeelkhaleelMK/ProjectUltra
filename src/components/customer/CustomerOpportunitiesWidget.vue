@@ -16,13 +16,13 @@
       <div
         v-for="opp in opportunities"
         :key="opp.id"
-        class="flex flex-col p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg cursor-pointer transition-colors"
+        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border rounded-lg cursor-pointer transition-colors"
         @click="handleOpportunityClick(opp)"
       >
         <div class="flex items-center justify-between mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-gray-900 text-content">Opportunity #{{ opp.id }}</span>
+              <span class="font-semibold text-heading text-content">Opportunity #{{ opp.id }}</span>
               <span 
                 class="text-xs px-2 py-0.5 rounded-full font-medium"
                 :class="getStageBadgeClass(opp.stage)"
@@ -40,11 +40,11 @@
         </div>
 
         <!-- Nested Tasks for Opportunity -->
-        <div v-if="getOpportunityTasks(opp).length > 0" class="mt-2 space-y-2 border-t border-gray-200 pt-2">
+        <div v-if="getOpportunityTasks(opp).length > 0" class="mt-2 space-y-2 border-t border pt-2">
           <div 
             v-for="task in getOpportunityTasks(opp)" 
             :key="task.id"
-            class="flex items-center justify-between p-2 bg-white border border-gray-100 rounded-md shadow-sm"
+            class="flex items-center justify-between p-2 bg-surface border border rounded-md shadow-sm"
           >
             <div class="flex items-center gap-2">
               <span 
@@ -53,7 +53,7 @@
               >
                 {{ task.type }}
               </span>
-              <span class="text-meta text-gray-700 font-medium">{{ task.description }}</span>
+              <span class="text-meta text-body font-medium">{{ task.description }}</span>
             </div>
             <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>
@@ -148,7 +148,7 @@ const getTaskTypeBadgeClass = (type) => {
     'DFB': 'bg-teal-100 text-teal-700 border border-teal-200',
     'NS': 'bg-pink-100 text-pink-700 border border-pink-200'
   }
-  return classes[type] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return classes[type] || 'bg-surfaceSecondary text-body border border'
 }
 
 const formatCurrency = (value) => {
@@ -162,7 +162,7 @@ const getStageBadgeClass = (stage) => {
     'Closed Won': 'bg-green-100 text-green-700 border border-green-200',
     'Closed Lost': 'bg-red-100 text-red-700 border border-red-200'
   }
-  return classes[stage] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return classes[stage] || 'bg-surfaceSecondary text-body border border'
 }
 
 const handleOpportunityClick = (opp) => {

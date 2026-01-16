@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "customers": "Customers",
+    "calendar": "Calendar",
+    "reports": "Reports",
+    "settings": "Settings",
+    "vehicles": "Vehicles",
+    "addNew": "Add New",
+    "addNewCustomer": "Add New Customer"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply",
+    "reset": "Reset",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove",
+    "view": "View",
+    "open": "Open",
+    "dismiss": "Dismiss"
+  },
+  "actions": {
+    "call": "Call",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "schedule": "Schedule",
+    "postpone": "Postpone",
+    "reschedule": "Reschedule",
+    "markAsHot": "Mark as Hot",
+    "removeHot": "Remove Hot",
+    "createOpportunity": "Create Opportunity",
+    "createLead": "Create Lead",
+    "switchRole": "Switch Role",
+    "logout": "Logout",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "status": {
+    "hot": "Hot",
+    "open": "Open",
+    "closed": "Closed",
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "confirmed": "Confirmed",
+    "scheduled": "Scheduled"
+  },
+  "roles": {
+    "manager": "Manager",
+    "salesman": "Salesman",
+    "operator": "Operator"
+  },
+  "search": {
+    "placeholder": "search everything",
+    "noResults": "No results found",
+    "searching": "Searching..."
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "ago": "ago",
+    "in": "in",
+    "hours": "hours",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "noData": "No data available",
+    "select": "Select",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "Optional",
+    "required": "Required"
+  }
+}
+
+

@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository.js'
-import { mockActivities } from '@/api/mockData'
+import { getMockData } from '@/api/mockData/localeLoader.js'
 
 /**
  * Activity Repository
@@ -19,8 +19,14 @@ import { mockActivities } from '@/api/mockData'
  */
 export class ActivityRepository extends BaseRepository {
   constructor() {
-    super(mockActivities)
-    this.dataSource = mockActivities
+    super([]) // Initialize with empty array, data loaded dynamically
+  }
+  
+  /**
+   * Get current data source (locale-aware)
+   */
+  get dataSource() {
+    return getMockData().mockActivities
   }
 
   /**

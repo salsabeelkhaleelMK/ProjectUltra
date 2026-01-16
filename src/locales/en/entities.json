@@ -1,0 +1,70 @@
+{
+  "lead": {
+    "title": "Lead",
+    "plural": "Leads",
+    "new": "New Lead",
+    "details": "Lead Details"
+  },
+  "opportunity": {
+    "title": "Opportunity",
+    "plural": "Opportunities",
+    "new": "New Opportunity",
+    "details": "Opportunity Details"
+  },
+  "contact": {
+    "title": "Contact",
+    "plural": "Contacts",
+    "new": "New Contact",
+    "details": "Contact Details"
+  },
+  "customer": {
+    "title": "Customer",
+    "plural": "Customers",
+    "new": "New Customer",
+    "details": "Customer Details"
+  },
+  "vehicle": {
+    "title": "Vehicle",
+    "plural": "Vehicles",
+    "new": "New Vehicle",
+    "details": "Vehicle Details"
+  },
+  "activity": {
+    "title": "Activity",
+    "plural": "Activities",
+    "new": "New Activity",
+    "details": "Activity Details"
+  },
+  "appointment": {
+    "title": "Appointment",
+    "plural": "Appointments",
+    "new": "New Appointment",
+    "details": "Appointment Details"
+  },
+  "offer": {
+    "title": "Offer",
+    "plural": "Offers",
+    "new": "New Offer",
+    "details": "Offer Details"
+  },
+  "note": {
+    "title": "Note",
+    "plural": "Notes",
+    "new": "New Note",
+    "details": "Note Details"
+  },
+  "attachment": {
+    "title": "Attachment",
+    "plural": "Attachments",
+    "new": "New Attachment",
+    "details": "Attachment Details"
+  },
+  "communication": {
+    "title": "Communication",
+    "plural": "Communications",
+    "new": "New Communication",
+    "details": "Communication Details"
+  }
+}
+
+

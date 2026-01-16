@@ -20,7 +20,7 @@
               value="Not Valid"
               class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300"
             >
-            <span class="text-base text-gray-700">Not Valid</span>
+            <span class="text-base text-body">Not Valid</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input 
@@ -29,7 +29,7 @@
               value="Not Interested"
               class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300"
             >
-            <span class="text-base text-gray-700">Not Interested</span>
+            <span class="text-base text-body">Not Interested</span>
           </label>
         </div>
       </div>
@@ -39,7 +39,7 @@
         <label class="block label-upper mb-3">Failure Reason</label>
         <select 
           v-model="failureReason"
-          class="w-full bg-white border-2 border-red-500 rounded-lg px-4 py-3 text-base text-gray-700 focus:outline-none focus:border-red-600 transition-colors"
+          class="w-full bg-surface border-2 border-red-500 rounded-lg px-4 py-3 text-base text-body focus:outline-none focus:border-red-600 transition-colors"
         >
           <option value="">Select a reason...</option>
           <option value="Data cleanup">Data cleanup</option>

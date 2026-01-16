@@ -1,0 +1,32 @@
+{
+  "success": {
+    "created": "{item} created successfully",
+    "updated": "{item} updated successfully",
+    "deleted": "{item} deleted successfully",
+    "saved": "Changes saved successfully"
+  },
+  "error": {
+    "generic": "An error occurred",
+    "notFound": "{item} not found",
+    "loadFailed": "Failed to load {item}",
+    "saveFailed": "Failed to save changes",
+    "deleteFailed": "Failed to delete {item}",
+    "networkError": "Network error. Please check your connection."
+  },
+  "confirm": {
+    "delete": "Are you sure you want to delete this {item}?",
+    "cancel": "Are you sure you want to cancel?",
+    "discard": "Are you sure you want to discard changes?",
+    "closeAsLost": "Are you sure you want to close this opportunity as lost?",
+    "disqualify": "Are you sure you want to disqualify this lead?"
+  },
+  "info": {
+    "noResults": "No results found",
+    "noData": "No data available",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "processing": "Processing..."
+  }
+}
+
+

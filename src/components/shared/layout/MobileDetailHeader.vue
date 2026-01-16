@@ -1,10 +1,10 @@
 <template>
-  <div v-if="show" class="lg:hidden border-b border-gray-200 shrink-0 bg-brand-gray">
+  <div v-if="show" class="lg:hidden border-b border shrink-0 bg-brand-gray">
     <div class="px-4 py-3 flex items-center justify-between gap-3">
       <!-- Back Button -->
       <button
         @click="handleBack"
-        class="w-11 h-11 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+        class="w-11 h-11 flex items-center justify-center text-body hover:text-heading hover:bg-surfaceSecondary rounded-lg transition-colors shrink-0"
         :aria-label="backLabel"
       >
         <i class="fa-solid fa-arrow-left text-lg"></i>

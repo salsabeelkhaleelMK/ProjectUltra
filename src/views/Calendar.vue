@@ -7,9 +7,9 @@
         <div class="lg:hidden flex items-center gap-2">
           <button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
           >
-            <i class="fa-solid fa-filter text-gray-400 group-hover:text-brand-red"></i>
+            <i class="fa-solid fa-filter text-sub group-hover:text-brand-red"></i>
             <span class="hidden sm:inline">Filters</span>
           </button>
           <span 
@@ -24,10 +24,10 @@
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             :class="{ 'bg-red-50 border-red-200 text-brand-red': connectedCalendars.length > 0 }"
           >
-            <i class="fa-solid fa-link text-gray-400 group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
+            <i class="fa-solid fa-link text-sub group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
             <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
           </button>
           <span 
@@ -43,7 +43,7 @@
           @click="showCreateEventModal = true"
           class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
-            <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
+            <i class="fa-solid fa-plus text-sub group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">New Event</span>
         </button>
       </template>
@@ -81,7 +81,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Calendar Area (3/4) -->
         <div class="lg:col-span-3 overflow-y-auto">
-          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-2 md:p-3 lg:p-4">
+          <div class="bg-surface rounded-xl border border shadow-sm p-2 md:p-3 lg:p-4">
             <FullCalendar :options="calendarOptions" />
           </div>
         </div>
@@ -115,13 +115,13 @@
     <transition name="slide-right">
       <div 
         v-if="showFilterDrawer"
-        class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 lg:hidden overflow-y-auto shadow-xl"
+        class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-surface z-50 lg:hidden overflow-y-auto shadow-xl"
       >
-        <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10">
+        <div class="sticky top-0 bg-surface border-b border p-4 flex items-center justify-between z-10">
           <h3 class="heading-sub">Filters</h3>
           <button 
             @click="showFilterDrawer = false"
-            class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            class="w-8 h-8 flex items-center justify-center text-sub hover:text-body hover:bg-surfaceSecondary rounded transition-colors"
             aria-label="Close filters"
           >
             <i class="fa-solid fa-xmark text-lg"></i>

@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-white border-r border-gray-200 flex flex-col shrink-0 w-full lg:w-80 h-full"
+    class="bg-surface border-r border flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
     <!-- Header: Title + View Toggle -->
     <header class="page-header shrink-0">
@@ -30,12 +30,12 @@
     <!-- Search Bar -->
     <div class="px-5 py-3">
       <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-sm"></i>
         <input 
           v-model="searchQuery"
           type="text" 
           :placeholder="searchPlaceholder" 
-          class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm"
+          class="w-full bg-surfaceSecondary border border rounded-lg pl-9 pr-3 py-2 text-sm"
         >
       </div>
     </div>
@@ -51,7 +51,7 @@
       />
     </div>
     
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide bg-gray-50/50">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide">
       <TaskCard
         v-for="item in filteredItems" 
         :key="item.compositeId || `${item.type || 'task'}-${item.id}`"
@@ -106,11 +106,11 @@ const props = defineProps({
   },
   selectedClass: {
     type: [String, Function],
-    default: 'bg-white border-2 border-blue-500 shadow-md'
+    default: 'bg-surface border-2 border-blue-500 shadow-md'
   },
   unselectedClass: {
     type: [String, Function],
-    default: 'bg-white border border-gray-200 hover:border-blue-300'
+    default: 'bg-surface border border hover:border-blue-300'
   },
   searchPlaceholder: {
     type: String,
@@ -226,4 +226,3 @@ const scrollContainer = ref(null)
   transform: translateY(-5px);
 }
 </style>
-

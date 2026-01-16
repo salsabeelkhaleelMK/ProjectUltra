@@ -1,0 +1,58 @@
+{
+  "opportunity": {
+    "qualified": "Qualified",
+    "awaitingAppointment": "Awaiting Appointment",
+    "toBeCalledBack": "To be Called Back",
+    "inNegotiation": "In Negotiation",
+    "needsFollowUp": "Needs Follow-up",
+    "contractPending": "Contract Pending",
+    "closedWon": "Closed Won",
+    "closedLost": "Closed Lost",
+    "abandoned": "Abandoned"
+  },
+  "lead": {
+    "new": "New",
+    "toBeCalledBack": "To be called back",
+    "valid": "Valid",
+    "closedInvalid": "Closed - Invalid",
+    "closedNotInterested": "Closed - Not Interested",
+    "closedDuplicate": "Closed - Duplicate",
+    "openLead": "Open Lead",
+    "validated": "Validated"
+  },
+  "delivery": {
+    "awaitingDelivery": "Awaiting Delivery",
+    "delivered": "Delivered"
+  },
+  "priority": {
+    "hot": "Hot",
+    "normal": "Normal",
+    "low": "Low"
+  },
+  "requestType": {
+    "quotation": "Quotation",
+    "testDrive": "Test Drive",
+    "information": "Information"
+  },
+  "carStatus": {
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "ordered": "Ordered"
+  },
+  "vehicleStatus": {
+    "new": "New",
+    "used": "Used"
+  },
+  "fuelType": {
+    "petrol": "Petrol",
+    "diesel": "Diesel",
+    "electric": "Electric",
+    "hybrid": "Hybrid"
+  },
+  "gearType": {
+    "manual": "Manual",
+    "automatic": "Automatic"
+  }
+}
+
+

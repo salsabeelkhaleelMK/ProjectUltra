@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-brand-gray">
+  <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-surface">
     <!-- Unified Mobile Header - Shows when task is selected (both views) -->
     <MobileDetailHeader
       :show="!!currentTask"
@@ -21,7 +21,7 @@
           :type-filter="typeFilter"
           :view-mode="viewMode"
           :initial-search-query="cardSearchQuery"
-          :selected-class="(task) => task.type === 'lead' ? 'bg-white border-2 border-blue-500 shadow-md' : 'bg-white border-2 border-purple-500 shadow-md'"
+          :selected-class="(task) => task.type === 'lead' ? 'bg-surface border-2 border-blue-500 shadow-md' : 'bg-surface border-2 border-purple-500 shadow-md'"
           :unselected-class="getUnselectedClass"
           :open-menu-id="openCardMenu"
           :getName="(task) => {
@@ -159,11 +159,11 @@
       />
       
       <!-- Empty State for Card View (right side on desktop, hidden on mobile) -->
-      <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border-gray-200">
+      <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border">
         <div class="flex-1 flex items-center justify-center p-8">
           <div class="text-center max-w-sm">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <i class="fa-solid fa-tasks text-2xl text-gray-400"></i>
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surfaceSecondary flex items-center justify-center">
+              <i class="fa-solid fa-tasks text-2xl text-sub"></i>
             </div>
             <h3 class="text-content-bold mb-2">No task selected</h3>
             <p class="text-meta">Select a task from the list to view its details and manage activities</p>

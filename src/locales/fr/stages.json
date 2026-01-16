@@ -1,0 +1,58 @@
+{
+  "opportunity": {
+    "qualified": "Qualifié",
+    "awaitingAppointment": "En Attente de Rendez-vous",
+    "toBeCalledBack": "À Rappeler",
+    "inNegotiation": "En Négociation",
+    "needsFollowUp": "Nécessite un Suivi",
+    "contractPending": "Contrat en Attente",
+    "closedWon": "Fermé Gagné",
+    "closedLost": "Fermé Perdu",
+    "abandoned": "Abandonné"
+  },
+  "lead": {
+    "new": "Nouveau",
+    "toBeCalledBack": "À rappeler",
+    "valid": "Valide",
+    "closedInvalid": "Fermé - Non Valide",
+    "closedNotInterested": "Fermé - Non Intéressé",
+    "closedDuplicate": "Fermé - Duplicata",
+    "openLead": "Lead Ouvert",
+    "validated": "Validé"
+  },
+  "delivery": {
+    "awaitingDelivery": "En Attente de Livraison",
+    "delivered": "Livré"
+  },
+  "priority": {
+    "hot": "Hot",
+    "normal": "Normal",
+    "low": "Faible"
+  },
+  "requestType": {
+    "quotation": "Devis",
+    "testDrive": "Essai",
+    "information": "Information"
+  },
+  "carStatus": {
+    "inStock": "En Stock",
+    "outOfStock": "Rupture de Stock",
+    "ordered": "Commandé"
+  },
+  "vehicleStatus": {
+    "new": "Neuf",
+    "used": "Occasion"
+  },
+  "fuelType": {
+    "petrol": "Essence",
+    "diesel": "Diesel",
+    "electric": "Électrique",
+    "hybrid": "Hybride"
+  },
+  "gearType": {
+    "manual": "Manuelle",
+    "automatic": "Automatique"
+  }
+}
+
+

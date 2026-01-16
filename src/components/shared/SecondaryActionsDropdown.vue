@@ -2,7 +2,7 @@
   <div class="relative" v-click-outside="closeDropdown">
     <button 
       @click="toggleDropdown"
-      class="w-auto bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
+      class="w-auto bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
     >
       <span>More actions</span>

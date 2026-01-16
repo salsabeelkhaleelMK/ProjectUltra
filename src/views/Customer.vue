@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col overflow-hidden bg-white">
+  <div class="h-full flex flex-col overflow-hidden bg-surface">
     <!-- Loading State -->
     <div v-if="loading || !task || (task && task.id !== taskId)" class="flex-1 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

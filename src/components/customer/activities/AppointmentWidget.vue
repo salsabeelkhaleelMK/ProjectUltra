@@ -5,7 +5,7 @@
         <i class="fa-solid fa-calendar text-sm"></i>
       </div>
       <div class="flex-1 min-w-0">
-        <h4 class="font-bold text-sm text-gray-900 mb-2">{{ appointmentData.type }}</h4>
+        <h4 class="font-bold text-sm text-heading mb-2">{{ appointmentData.type }}</h4>
         <div class="space-y-1.5 text-xs text-gray-600">
           <div class="flex items-center gap-2">
             <i class="fa-regular fa-calendar text-gray-400"></i>
@@ -66,7 +66,7 @@ const getStatusClass = (status) => {
     'pending': 'bg-yellow-100 text-yellow-700 border border-yellow-200',
     'cancelled': 'bg-red-100 text-red-700 border border-red-200'
   }
-  return classes[status?.toLowerCase()] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return classes[status?.toLowerCase()] || 'bg-surfaceSecondary text-body border border'
 }
 </script>
 

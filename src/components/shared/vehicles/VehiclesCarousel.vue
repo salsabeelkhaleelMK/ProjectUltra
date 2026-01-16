@@ -1,8 +1,8 @@
 <template>
   <div v-if="cars.length > 0" class="mb-8">
     <div class="flex items-center gap-2 mb-4">
-      <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
-      <h3 class="font-bold text-gray-800 text-sm">Cars</h3>
+      <i class="fa-solid fa-thumbtack text-sub text-xs"></i>
+      <h3 class="font-bold text-heading text-sm">Cars</h3>
     </div>
     <div class="relative">
       <!-- scrollbar-width: thin is Firefox-specific and has no Tailwind equivalent -->
@@ -10,7 +10,7 @@
         <div
           v-for="(car, index) in cars"
           :key="car.id"
-          class="flex-none w-64 snap-start bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
+          class="flex-none w-64 snap-start bg-surface border border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
           @click="handleCarClick(car)"
         >
           <!-- Type Badge -->
@@ -21,18 +21,18 @@
             {{ getTypeLabel(car.type) }}
           </div>
           
-          <div class="w-full h-36 bg-gray-200 flex items-center justify-center overflow-hidden">
+          <div class="w-full h-36 bg-surfaceTertiary flex items-center justify-center overflow-hidden">
             <img 
               v-if="car.image" 
               :src="car.image" 
               alt="Car" 
               class="w-full h-full object-cover"
             >
-            <i v-else class="fa-solid fa-car text-4xl text-gray-400"></i>
+            <i v-else class="fa-solid fa-car text-4xl text-sub"></i>
           </div>
           <div class="p-6">
-            <h4 class="font-bold text-gray-800 text-sm mb-1">{{ car.brand }} {{ car.model }} ({{ car.year }})</h4>
-            <p v-if="car.price" class="text-xs text-gray-500 mb-2">€ {{ formatCurrency(car.price) }}</p>
+            <h4 class="font-bold text-heading text-sm mb-1">{{ car.brand }} {{ car.model }} ({{ car.year }})</h4>
+            <p v-if="car.price" class="text-xs text-sub mb-2">€ {{ formatCurrency(car.price) }}</p>
             <div 
               v-if="car.stockDays !== null && car.stockDays !== undefined"
               class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-xs font-semibold rounded-md mb-2"

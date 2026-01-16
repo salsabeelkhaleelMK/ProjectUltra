@@ -1,15 +1,15 @@
 <template>
   <div 
     class="animate-fade-in relative"
-    :class="{ 'bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6': !hideHeader }"
+    :class="{ 'bg-surface border border rounded-xl p-5 shadow-sm mb-6': !hideHeader }"
   >
-    <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
+    <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border rotate-45"></div>
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
       <h5 class="heading-sub">{{ item ? 'Edit Note' : 'Add Note' }}</h5>
-      <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      <button @click="$emit('cancel')" class="text-sub hover:text-body"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div>
-      <label class="block text-xs font-medium text-gray-700 mb-1">Note</label>
+      <label class="block text-xs font-medium text-body mb-1">Note</label>
       <textarea 
         v-model="noteText"
         rows="4" 
@@ -17,7 +17,7 @@
         placeholder="Enter your note..."
       ></textarea>
     </div>
-    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
+    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border pt-4">
       <Button
         variant="outline"
         size="small"

@@ -16,19 +16,21 @@
 
   /* Page Container */
   .page-container {
-    @apply h-full overflow-y-auto overflow-x-hidden bg-white;
+    @apply h-full overflow-y-auto overflow-x-hidden;
+    background-color: var(--color-bg-surface);
   }
   
   /* Home page - revert to original gray background */
   .home-page.page-container {
-    @apply bg-gray-50;
+    background-color: var(--color-bg-surface-secondary);
   }
   
   /* Page Header - Per Design System Spec */
   /* Top Bar: White (#FFFFFF) with bottom border (#E5E7EB) */
   .page-header {
     background-color: var(--color-bg-surface); /* White #FFFFFF */
-    @apply border-b border-gray-200 px-4 md:px-8;
+    border-bottom: 1px solid var(--color-border);
+    @apply px-4 md:px-8;
     position: relative; /* Ensure proper positioning */
     z-index: 1; /* Ensure it's above content but below modals */
     width: 100%; /* Full width */
@@ -139,11 +141,15 @@
   
   /* Card */
   .card {
-    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+    @apply rounded-xl shadow-sm;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
   }
   
   .card-hover {
-    @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow;
+    @apply rounded-xl shadow-sm hover:shadow-md transition-shadow;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
   }
   
   /* Button classes removed - using @motork/component-library Button component */
@@ -178,14 +184,20 @@
   
   /* Form Inputs - Global Styles matching OfferWidget.vue */
   .input {
-    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none transition-all;
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
     &:focus {
       border-color: var(--brand-red);
     }
   }
   
   .input-with-icon {
-    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none transition-all pl-10;
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all pl-10;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
     &:focus {
       border-color: var(--brand-red);
     }
@@ -193,7 +205,10 @@
   
   /* Select dropdowns */
   select.input {
-    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none transition-all;
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
     &:focus {
       border-color: var(--brand-red);
     }
@@ -201,7 +216,10 @@
   
   /* Textareas */
   textarea.input {
-    @apply w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-slate-700 focus:outline-none transition-all resize-none;
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all resize-none;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
     &:focus {
       border-color: var(--brand-red);
     }
@@ -277,7 +295,8 @@
   /* Uppercase Label - For metadata and labels */
   .label-upper {
     font-size: var(--text-xs); /* 10px - Below recommended 12px minimum (was 12px) */
-    @apply font-bold uppercase tracking-wider text-gray-400;
+    @apply font-bold uppercase tracking-wider;
+    color: var(--color-text-sub);
   }
   
   .badge-ui {
@@ -286,15 +305,23 @@
   }
 
   .metadata-bar {
-    @apply flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden;
+    @apply flex items-center rounded-lg shadow-sm overflow-hidden;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
   }
   
   .metadata-divider {
-    @apply w-px h-4 bg-gray-200 mx-0;
+    @apply w-px h-4 mx-0;
+    background-color: var(--color-border);
   }
   
   .btn-action-circle {
-    @apply w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors;
+    @apply w-7 h-7 flex items-center justify-center rounded-full transition-colors;
+    background-color: var(--color-bg-surface-secondary);
+    color: var(--color-text-sub);
+    &:hover {
+      background-color: var(--color-bg-surface-tertiary);
+    }
   }
   
   /* Content Text Classes - Body text style */
@@ -391,15 +418,19 @@
   
   /* Empty State */
   .empty-state {
-    @apply text-center py-12 bg-white rounded-xl border border-gray-200;
+    @apply text-center py-12 rounded-xl;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
   }
   
   .empty-state-icon {
-    @apply text-6xl text-gray-300 mb-4;
+    @apply text-6xl mb-4;
+    color: var(--color-text-sub);
+    opacity: 0.5;
   }
   
   .empty-state-text {
-    @apply text-gray-500;
+    color: var(--color-text-sub);
   }
   
   /* Table Wrapper - Minimal styling for DataTable containers */

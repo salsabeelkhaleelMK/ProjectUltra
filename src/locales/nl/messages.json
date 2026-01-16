@@ -1,0 +1,32 @@
+{
+  "success": {
+    "created": "{item} succesvol aangemaakt",
+    "updated": "{item} succesvol bijgewerkt",
+    "deleted": "{item} succesvol verwijderd",
+    "saved": "Wijzigingen succesvol opgeslagen"
+  },
+  "error": {
+    "generic": "Er is een fout opgetreden",
+    "notFound": "{item} niet gevonden",
+    "loadFailed": "Laden van {item} mislukt",
+    "saveFailed": "Opslaan van wijzigingen mislukt",
+    "deleteFailed": "Verwijderen van {item} mislukt",
+    "networkError": "Netwerkfout. Controleer uw verbinding."
+  },
+  "confirm": {
+    "delete": "Weet u zeker dat u dit {item} wilt verwijderen?",
+    "cancel": "Weet u zeker dat u wilt annuleren?",
+    "discard": "Weet u zeker dat u de wijzigingen wilt negeren?",
+    "closeAsLost": "Weet u zeker dat u deze kans als verloren wilt sluiten?",
+    "disqualify": "Weet u zeker dat u deze lead wilt diskwalificeren?"
+  },
+  "info": {
+    "noResults": "Geen resultaten gevonden",
+    "noData": "Geen gegevens beschikbaar",
+    "loading": "Laden...",
+    "saving": "Opslaan...",
+    "processing": "Verwerken..."
+  }
+}
+
+

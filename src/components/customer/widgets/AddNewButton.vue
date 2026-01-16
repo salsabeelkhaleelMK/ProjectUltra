@@ -4,14 +4,14 @@
     class="relative flex items-center"
     :class="inline ? 'justify-end mb-0 py-0' : 'py-1 mb-4'"
   >
-    <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
+    <div v-if="!inline" class="flex-grow border-t border"></div>
     <div class="relative" :class="inline ? 'mx-0' : 'mx-4'">
       <button 
         @click.stop="handleButtonClick"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-xs text-gray-600"></i>
-        <span v-if="showButtonText" class="ml-1.5 text-gray-600">{{ buttonText }}</span>
+        <i class="fa-solid fa-plus text-xs text-body"></i>
+        <span v-if="showButtonText" class="ml-1.5 text-body">{{ buttonText }}</span>
       </button>
       
       <!-- Dropdown Menu (only show if there are multiple actions or it's communication tab) -->
@@ -23,7 +23,7 @@
         <DropdownMenu :items="dropdownItems" className="w-48" />
       </div>
     </div>
-    <div v-if="!inline" class="flex-grow border-t border-gray-200"></div>
+    <div v-if="!inline" class="flex-grow border-t border"></div>
   </div>
 </template>
 
@@ -143,11 +143,11 @@ const dropdownItems = computed(() => {
 const buttonClass = computed(() => {
   if (props.inline) {
     // Overview usage: primary brand-red button with rounded corners, icon only
-    return 'bg-white hover:bg-gray-50 text-gray-600 font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border-gray-200'
+    return 'bg-surface hover:bg-surfaceSecondary text-body font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border'
   }
   // Default usage (other tabs): white background with grey text
   // If showing text, adjust padding
-  const baseClass = 'bg-white hover:bg-gray-50 text-gray-600 font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border-gray-200'
+  const baseClass = 'bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border'
   if (showButtonText.value) {
     return `${baseClass} px-4 py-2 h-9`
   }

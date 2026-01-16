@@ -10,7 +10,7 @@
         <div class="space-y-6">
       <!-- Section 1: Recommended Vehicles (includes requested if available) -->
       <div v-if="allRecommendedVehicles.length">
-        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-heading mb-3 flex items-center gap-2">
           <i class="fa-solid fa-sparkles text-purple-600"></i>
           Recommended Vehicles
         </h3>
@@ -29,7 +29,7 @@
       
       <!-- Section 2: Browse Stock -->
       <div>
-        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-heading mb-3 flex items-center gap-2">
           <i class="fa-solid fa-warehouse text-green-600"></i>
           Browse Stock
         </h3>
@@ -37,12 +37,12 @@
         <!-- Search Input -->
         <div class="mb-4">
           <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-sm"></i>
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Search by brand, model, year..."
-              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+              class="w-full bg-surface border border rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
         </div>
@@ -59,21 +59,21 @@
             @select="handleSelectVehicle(vehicle, 'stock')"
           />
         </div>
-        <div v-else class="text-center py-8 text-gray-500">
+        <div v-else class="text-center py-8 text-sub">
           <i class="fa-solid fa-search text-4xl text-gray-300 mb-3"></i>
           <p class="text-sm font-medium">No vehicles found matching your search</p>
-          <p class="text-xs mt-1 text-gray-400">Try different keywords or clear the search</p>
+          <p class="text-xs mt-1 text-sub">Try different keywords or clear the search</p>
         </div>
       </div>
       
       <!-- Section 3: Configure Custom -->
       <div>
-        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <h3 class="text-sm font-bold text-heading mb-3 flex items-center gap-2">
           <i class="fa-solid fa-wrench text-orange-600"></i>
           Configure Custom Vehicle
         </h3>
-        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <p class="text-xs text-gray-600 mb-3">
+        <div class="border border rounded-lg p-4 bg-surfaceSecondary">
+          <p class="text-xs text-body mb-3">
             Build a custom configuration with specific options and features
           </p>
           <button
@@ -88,7 +88,7 @@
           <div v-if="showConfigureForm" class="mt-4 space-y-3">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Brand</label>
+                <label class="block text-xs font-medium text-body mb-1">Brand</label>
                 <input
                   v-model="customVehicle.brand"
                   type="text"
@@ -97,7 +97,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Model</label>
+                <label class="block text-xs font-medium text-body mb-1">Model</label>
                 <input
                   v-model="customVehicle.model"
                   type="text"
@@ -106,7 +106,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Year</label>
+                <label class="block text-xs font-medium text-body mb-1">Year</label>
                 <input
                   v-model="customVehicle.year"
                   type="number"
@@ -115,7 +115,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">Price (€)</label>
+                <label class="block text-xs font-medium text-body mb-1">Price (€)</label>
                 <input
                   v-model="customVehicle.price"
                   type="number"

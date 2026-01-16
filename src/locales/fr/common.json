@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Accueil",
+    "tasks": "Tâches",
+    "customers": "Clients",
+    "calendar": "Calendrier",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "vehicles": "Véhicules",
+    "addNew": "Ajouter Nouveau",
+    "addNewCustomer": "Ajouter Nouveau Client"
+  },
+  "buttons": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "clear": "Effacer",
+    "apply": "Appliquer",
+    "reset": "Réinitialiser",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "remove": "Retirer",
+    "view": "Voir",
+    "open": "Ouvrir",
+    "dismiss": "Ignorer"
+  },
+  "actions": {
+    "call": "Appeler",
+    "email": "E-mail",
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "schedule": "Planifier",
+    "postpone": "Reporter",
+    "reschedule": "Replanifier",
+    "markAsHot": "Marquer comme Hot",
+    "removeHot": "Retirer Hot",
+    "createOpportunity": "Créer Opportunité",
+    "createLead": "Créer Lead",
+    "switchRole": "Changer de Rôle",
+    "logout": "Déconnexion",
+    "lightMode": "Mode Clair",
+    "darkMode": "Mode Sombre"
+  },
+  "status": {
+    "hot": "Hot",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "pending": "En Attente",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "confirmed": "Confirmé",
+    "scheduled": "Planifié"
+  },
+  "roles": {
+    "manager": "Manager",
+    "salesman": "Vendeur",
+    "operator": "Opérateur"
+  },
+  "search": {
+    "placeholder": "rechercher tout",
+    "noResults": "Aucun résultat trouvé",
+    "searching": "Recherche en cours..."
+  },
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "tomorrow": "Demain",
+    "thisWeek": "Cette Semaine",
+    "lastWeek": "Semaine Dernière",
+    "thisMonth": "Ce Mois",
+    "lastMonth": "Mois Dernier",
+    "ago": "il y a",
+    "in": "dans",
+    "hours": "heures",
+    "days": "jours",
+    "weeks": "semaines",
+    "months": "mois"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "noData": "Aucune donnée disponible",
+    "select": "Sélectionner",
+    "all": "Tous",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non",
+    "optional": "Optionnel",
+    "required": "Requis"
+  }
+}
+
+

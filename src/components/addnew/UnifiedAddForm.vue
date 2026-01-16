@@ -1,7 +1,7 @@
 <template>
   <form v-click-outside="() => (showResults = false)" @submit.prevent="handleSubmit" class="max-w-4xl mx-auto">
     <!-- Contact Section -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+    <div class="bg-surface border border rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">Contact Information</h3>
       
       <!-- Toggle and Search (hidden if hideContactSelection is true) -->
@@ -15,7 +15,7 @@
               value="new"
               class="w-4 h-4 text-blue-600"
             />
-            <span class="text-sm font-medium text-gray-700">New Contact</span>
+            <span class="text-sm font-medium text-body">New Contact</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input 
@@ -24,7 +24,7 @@
               value="existing"
               class="w-4 h-4 text-blue-600"
             />
-            <span class="text-sm font-medium text-gray-700">Existing Contact</span>
+            <span class="text-sm font-medium text-body">Existing Contact</span>
           </label>
         </div>
         
@@ -47,13 +47,13 @@
             <!-- Autocomplete Dropdown -->
             <div 
               v-if="showResults && filteredContacts.length > 0"
-              class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-y-auto"
+              class="absolute z-50 w-full mt-2 bg-surface border border rounded-lg shadow-lg max-h-80 overflow-y-auto"
             >
               <div 
                 v-for="contact in filteredContacts" 
                 :key="contact.id"
                 @click="selectContact(contact)"
-                class="flex items-center gap-3 p-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                class="flex items-center gap-3 p-4 hover:bg-surfaceSecondary cursor-pointer transition-colors border-b border last:border-b-0"
               >
                 <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
                   {{ contact.initials }}
@@ -70,7 +70,7 @@
             <!-- No Results -->
             <div 
               v-if="showResults && searchQuery && filteredContacts.length === 0"
-              class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4"
+              class="absolute z-50 w-full mt-2 bg-surface border border rounded-lg shadow-lg p-4"
             >
               <div class="text-center text-gray-500">
                 <i class="fa-solid fa-search text-2xl mb-2"></i>
@@ -157,7 +157,7 @@
       </div>
 
       <!-- Read-only Selected Contact Display (shown if selection is hidden) -->
-      <div v-else-if="selectedContact" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div v-else-if="selectedContact" class="bg-surfaceSecondary border border rounded-lg p-4">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
             {{ selectedContact.initials }}
@@ -172,7 +172,7 @@
     </div>
     
     <!-- Vehicle Details Section (Optional) -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+    <div class="bg-surface border border rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">
         Vehicle Details 
         <span class="text-meta font-normal">(Optional)</span>
@@ -339,7 +339,7 @@
     </div>
     
     <!-- Task Creation Checkboxes -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+    <div class="bg-surfaceSecondary border border rounded-lg p-6 mb-6">
       <h3 class="font-bold text-gray-800 mb-4">Create Task (Optional)</h3>
       <p class="text-meta mb-4">
         Convert this contact to a lead or opportunity. 
@@ -348,7 +348,7 @@
       
       <div v-if="!forceType" class="space-y-3">
         <div 
-          class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg transition-all"
+          class="flex items-center gap-3 p-3 bg-surface border border rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-blue-50 hover:border-blue-300' : 'cursor-not-allowed opacity-60'"
         >
           <Checkbox
@@ -368,7 +368,7 @@
         </div>
         
         <div 
-          class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg transition-all"
+          class="flex items-center gap-3 p-3 bg-surface border border rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-purple-50 hover:border-purple-300' : 'cursor-not-allowed opacity-60'"
         >
           <Checkbox

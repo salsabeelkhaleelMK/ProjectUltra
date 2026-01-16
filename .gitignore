@@ -12,7 +12,7 @@ lerna-debug.log*
 .env.local
 
 # npmrc tokens (but keep the template .npmrc)
-# .npmrc
+.npmrc
 
 node_modules
 # dist  # Commented out - commit pre-built files to avoid build minutes

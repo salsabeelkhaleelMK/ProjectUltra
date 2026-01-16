@@ -50,7 +50,10 @@ const DEFAULT_SETTINGS = {
   dormantOpportunityAfterAppointmentDays: 7,
   dormantOpportunityAfterAppointmentHours: 0,
   dormantOpportunityAfterOfferDays: 7,
-  dormantOpportunityAfterOfferHours: 0
+  dormantOpportunityAfterOfferHours: 0,
+  
+  // UI Theme
+  darkMode: false
 }
 
 // Load settings from localStorage

@@ -9,7 +9,7 @@
 
         <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label class="block text-sm font-medium text-body mb-2">
           Tag Name
         </label>
         <input
@@ -24,7 +24,7 @@
       
       <!-- Existing tags -->
       <div v-if="existingTags.length > 0">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label class="block text-sm font-medium text-body mb-2">
           Existing Tags
         </label>
         <div class="flex flex-wrap gap-2">

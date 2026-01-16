@@ -1,0 +1,58 @@
+{
+  "opportunity": {
+    "qualified": "Gekwalificeerd",
+    "awaitingAppointment": "Wachtend op Afspraak",
+    "toBeCalledBack": "Terugbellen",
+    "inNegotiation": "In Onderhandeling",
+    "needsFollowUp": "Nazorg Vereist",
+    "contractPending": "Contract In Afwachting",
+    "closedWon": "Gesloten Gewonnen",
+    "closedLost": "Gesloten Verloren",
+    "abandoned": "Verlaten"
+  },
+  "lead": {
+    "new": "Nieuw",
+    "toBeCalledBack": "terugbellen",
+    "valid": "Geldig",
+    "closedInvalid": "Gesloten - Ongeldig",
+    "closedNotInterested": "Gesloten - Niet Geïnteresseerd",
+    "closedDuplicate": "Gesloten - Duplicaat",
+    "openLead": "Open Lead",
+    "validated": "Geverifieerd"
+  },
+  "delivery": {
+    "awaitingDelivery": "Wachtend op Levering",
+    "delivered": "Geleverd"
+  },
+  "priority": {
+    "hot": "Hot",
+    "normal": "Normaal",
+    "low": "Laag"
+  },
+  "requestType": {
+    "quotation": "Offerte",
+    "testDrive": "Proefrit",
+    "information": "Informatie"
+  },
+  "carStatus": {
+    "inStock": "Op Voorraad",
+    "outOfStock": "Niet Op Voorraad",
+    "ordered": "Besteld"
+  },
+  "vehicleStatus": {
+    "new": "Nieuw",
+    "used": "Gebruikt"
+  },
+  "fuelType": {
+    "petrol": "Benzine",
+    "diesel": "Diesel",
+    "electric": "Elektrisch",
+    "hybrid": "Hybride"
+  },
+  "gearType": {
+    "manual": "Handmatig",
+    "automatic": "Automatisch"
+  }
+}
+
+

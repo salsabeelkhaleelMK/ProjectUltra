@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+  <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
     <!-- Dark Header -->
     <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -9,14 +9,14 @@
     </div>
     
     <!-- White Content Area -->
-    <div class="bg-white flex-1 overflow-y-auto">
+    <div class="bg-surface flex-1 overflow-y-auto">
       <div class="p-6 space-y-2">
         <!-- Suggested Questions -->
         <button
           v-for="(question, index) in suggestedQuestions"
           :key="index"
           @click="askQuestion(question)"
-          class="w-full text-left px-4 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors text-sm text-gray-700"
+          class="w-full text-left px-4 py-3 bg-surface hover:bg-surfaceSecondary border border rounded-lg transition-colors text-sm text-body"
         >
           {{ question }}
         </button>
@@ -26,7 +26,7 @@
       <div class="px-4 pb-4">
         <button
           @click="showMoreIdeas = !showMoreIdeas"
-          class="w-full text-left text-sm text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
+          class="w-full text-left text-sm text-body hover:text-heading flex items-center gap-2 transition-colors"
         >
           <span>Show more ideas</span>
           <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': showMoreIdeas }"></i>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Input Area -->
-    <div class="p-6 bg-white border-t border-gray-100">
+    <div class="p-6 bg-surface border-t border">
       <div class="flex gap-2 items-center">
         <!-- Icon/Avatar -->
         <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center shrink-0">

@@ -1,0 +1,70 @@
+{
+  "lead": {
+    "title": "Lead",
+    "plural": "Leads",
+    "new": "Neuer Lead",
+    "details": "Lead-Details"
+  },
+  "opportunity": {
+    "title": "Chance",
+    "plural": "Chancen",
+    "new": "Neue Chance",
+    "details": "Chance-Details"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "plural": "Kontakte",
+    "new": "Neuer Kontakt",
+    "details": "Kontakt-Details"
+  },
+  "customer": {
+    "title": "Kunde",
+    "plural": "Kunden",
+    "new": "Neuer Kunde",
+    "details": "Kunden-Details"
+  },
+  "vehicle": {
+    "title": "Fahrzeug",
+    "plural": "Fahrzeuge",
+    "new": "Neues Fahrzeug",
+    "details": "Fahrzeug-Details"
+  },
+  "activity": {
+    "title": "Aktivität",
+    "plural": "Aktivitäten",
+    "new": "Neue Aktivität",
+    "details": "Aktivitäts-Details"
+  },
+  "appointment": {
+    "title": "Termin",
+    "plural": "Termine",
+    "new": "Neuer Termin",
+    "details": "Termin-Details"
+  },
+  "offer": {
+    "title": "Angebot",
+    "plural": "Angebote",
+    "new": "Neues Angebot",
+    "details": "Angebots-Details"
+  },
+  "note": {
+    "title": "Notiz",
+    "plural": "Notizen",
+    "new": "Neue Notiz",
+    "details": "Notiz-Details"
+  },
+  "attachment": {
+    "title": "Anhang",
+    "plural": "Anhänge",
+    "new": "Neuer Anhang",
+    "details": "Anhangs-Details"
+  },
+  "communication": {
+    "title": "Kommunikation",
+    "plural": "Kommunikationen",
+    "new": "Neue Kommunikation",
+    "details": "Kommunikations-Details"
+  }
+}
+
+

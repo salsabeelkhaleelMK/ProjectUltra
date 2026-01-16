@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-white border border-gray-100 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+    class="bg-surface border border rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all"
     :class="dismissing ? 'opacity-50' : ''"
   >
     <div class="flex items-center gap-2 mb-2">
@@ -23,7 +23,7 @@
         <button
           v-if="!showDismissConfirm"
           @click="showDismissConfirm = true"
-          class="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          class="w-7 h-7 flex items-center justify-center rounded text-sub hover:text-body hover:bg-surfaceSecondary transition-colors"
           title="Dismiss"
         >
           <i class="fa-solid fa-xmark text-sm"></i>
@@ -32,7 +32,7 @@
         <!-- Dismiss Confirmation -->
         <div
           v-else
-          class="bg-white border border-gray-100 rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
+          class="bg-surface border border rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
         >
           <span class="text-meta whitespace-nowrap">Dismiss?</span>
           <button
@@ -43,7 +43,7 @@
           </button>
           <button
             @click="showDismissConfirm = false"
-            class="px-2 py-0.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors"
+            class="px-2 py-0.5 text-xs font-medium text-body hover:text-heading transition-colors"
           >
             No
           </button>
@@ -53,7 +53,7 @@
     
     <!-- Question Text with highlighted customer name -->
     <div class="mb-2" @click="handleQuestionClick">
-      <p class="text-gray-900 text-small mb-1" v-html="getHighlightedQuestion()"></p>
+      <p class="text-heading text-small mb-1" v-html="getHighlightedQuestion()"></p>
     </div>
     
     <!-- Action Buttons -->
@@ -67,7 +67,7 @@
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           No
         </button>
@@ -82,13 +82,13 @@
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>
@@ -112,13 +112,13 @@
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>
@@ -133,13 +133,13 @@
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-small font-medium bg-white text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-small font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>

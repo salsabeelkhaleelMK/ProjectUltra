@@ -1,0 +1,70 @@
+{
+  "lead": {
+    "title": "Lead",
+    "plural": "Leads",
+    "new": "Nieuwe Lead",
+    "details": "Lead Details"
+  },
+  "opportunity": {
+    "title": "Kans",
+    "plural": "Kansen",
+    "new": "Nieuwe Kans",
+    "details": "Kans Details"
+  },
+  "contact": {
+    "title": "Contact",
+    "plural": "Contacten",
+    "new": "Nieuw Contact",
+    "details": "Contact Details"
+  },
+  "customer": {
+    "title": "Klant",
+    "plural": "Klanten",
+    "new": "Nieuwe Klant",
+    "details": "Klant Details"
+  },
+  "vehicle": {
+    "title": "Voertuig",
+    "plural": "Voertuigen",
+    "new": "Nieuw Voertuig",
+    "details": "Voertuig Details"
+  },
+  "activity": {
+    "title": "Activiteit",
+    "plural": "Activiteiten",
+    "new": "Nieuwe Activiteit",
+    "details": "Activiteit Details"
+  },
+  "appointment": {
+    "title": "Afspraak",
+    "plural": "Afspraken",
+    "new": "Nieuwe Afspraak",
+    "details": "Afspraak Details"
+  },
+  "offer": {
+    "title": "Aanbieding",
+    "plural": "Aanbiedingen",
+    "new": "Nieuwe Aanbieding",
+    "details": "Aanbieding Details"
+  },
+  "note": {
+    "title": "Notitie",
+    "plural": "Notities",
+    "new": "Nieuwe Notitie",
+    "details": "Notitie Details"
+  },
+  "attachment": {
+    "title": "Bijlage",
+    "plural": "Bijlagen",
+    "new": "Nieuwe Bijlage",
+    "details": "Bijlage Details"
+  },
+  "communication": {
+    "title": "Communicatie",
+    "plural": "Communicaties",
+    "new": "Nieuwe Communicatie",
+    "details": "Communicatie Details"
+  }
+}
+
+

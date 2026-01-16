@@ -62,11 +62,11 @@ const getStatusClass = (status) => {
   const statusMap = {
     'Valid': 'bg-green-100 text-green-700',
     'Not valid': 'bg-red-100 text-red-700',
-    'Qualified': 'bg-gray-100 text-gray-700',
+    'Qualified': 'bg-surfaceSecondary text-body',
     'Not interested': 'bg-red-100 text-red-700',
     'Open': 'bg-blue-100 text-blue-700'
   }
-  return statusMap[status] || 'bg-gray-100 text-gray-700'
+  return statusMap[status] || 'bg-surfaceSecondary text-body'
 }
 
 const rows = computed(() => {
@@ -88,7 +88,7 @@ const rows = computed(() => {
     deadlineStatus: getDeadlineStatus(lead.nextActionDue),
     car: `${lead.requestedCar?.brand || ''} ${lead.requestedCar?.model || ''}`.trim() || 'N/A',
     carStatus: lead.requestedCar?.stockDays !== undefined && lead.requestedCar?.stockDays !== null ? 'In Stock' : 'Out of Stock',
-    carStatusClass: lead.requestedCar?.stockDays !== undefined && lead.requestedCar?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
+    carStatusClass: lead.requestedCar?.stockDays !== undefined && lead.requestedCar?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-surfaceSecondary text-body',
     requestType: lead.requestedCar?.requestType || 'Quotation',
     source: lead.source || 'Marketing',
     assignee: lead.assignee,

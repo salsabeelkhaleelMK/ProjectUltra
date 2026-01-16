@@ -1,14 +1,14 @@
 <template>
   <div class="w-full mb-6">
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
       <!-- Header section with Title and Stage, Owner integrated -->
-      <div class="px-4 md:px-6 py-3 border-b border-gray-200">
+      <div class="px-4 md:px-6 py-3 border-b border">
         <div class="flex flex-row items-center justify-between gap-2 md:gap-4">
           <!-- Left: Request title with chips (when request data exists) -->
           <div v-if="showRequestSection" class="flex items-center gap-2 shrink-0 flex-wrap">
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-thumbtack text-gray-400 text-xs"></i>
-              <h3 class="font-bold text-gray-800 text-sm">Request</h3>
+              <i class="fa-solid fa-thumbtack text-sub text-xs"></i>
+              <h3 class="font-bold text-heading text-sm">Request</h3>
             </div>
             <div class="flex items-center gap-1.5">
               <span 
@@ -43,7 +43,7 @@
 
           <!-- Right: Owner -->
           <div class="flex items-center gap-2">
-            <span class="hidden md:inline text-xs text-gray-500 font-medium">Owner</span>
+            <span class="hidden md:inline text-xs text-sub font-medium">Owner</span>
             <button 
               @click="$emit('reassign')"
               class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
@@ -60,12 +60,12 @@
         <div v-if="hasCar" class="space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="w-20 h-14 bg-gray-200 rounded-lg overflow-hidden shrink-0 border border-gray-100">
+              <div class="w-20 h-14 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0 border border">
                 <img v-if="carImage" :src="carImage" alt="Car" class="w-full h-full object-cover">
-                <i v-else class="fa-solid fa-car text-3xl text-gray-400 w-full h-full flex items-center justify-center"></i>
+                <i v-else class="fa-solid fa-car text-3xl text-sub w-full h-full flex items-center justify-center"></i>
               </div>
               <div>
-                <div class="font-bold text-gray-900 text-base md:text-lg mb-2">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
+                <div class="font-bold text-heading text-base md:text-lg mb-2">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
                 <div class="flex items-center gap-2 flex-wrap">
                   <div 
                     v-if="stockDays !== undefined && stockDays !== null"
@@ -80,24 +80,24 @@
                     <div class="w-1.5 h-1.5 bg-orange-500 rounded-full"></div> Out of stock
                   </div>
                   <!-- Source next to stock availability -->
-                  <div v-if="source" class="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 border border-gray-200 text-gray-700 text-xs font-semibold rounded-md">
-                    <span class="text-xs text-gray-500 font-medium">Source:</span>
-                    <span class="text-xs font-bold text-gray-900">{{ source }}</span>
+                  <div v-if="source" class="inline-flex items-center gap-1.5 px-2 py-1 bg-surfaceSecondary border border text-body text-xs font-semibold rounded-md">
+                    <span class="text-xs text-sub font-medium">Source:</span>
+                    <span class="text-xs font-bold text-heading">{{ source }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div v-if="carPrice" class="text-right">
-              <div class="text-xs text-gray-500 font-medium mb-1">Price</div>
-              <div class="font-bold text-gray-900 text-lg">€ {{ formatCurrency(carPrice) }}</div>
+              <div class="text-xs text-sub font-medium mb-1">Price</div>
+              <div class="font-bold text-heading text-lg">€ {{ formatCurrency(carPrice) }}</div>
             </div>
           </div>
 
           <!-- Request message (when car exists) -->
           <div v-if="requestMessage" class="pt-2">
-            <div class="text-xs text-gray-500 font-medium mb-2">Request Message</div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <p class="text-sm text-gray-700 leading-relaxed">{{ requestMessage }}</p>
+            <div class="text-xs text-sub font-medium mb-2">Request Message</div>
+            <div class="bg-surfaceSecondary border border rounded-lg p-3">
+              <p class="text-sm text-body leading-relaxed">{{ requestMessage }}</p>
             </div>
           </div>
         </div>
@@ -105,21 +105,21 @@
         <!-- Request-only display (no car but request data exists) -->
         <div v-else class="space-y-3">
           <div v-if="requestType" class="flex items-center gap-2">
-            <span class="text-xs text-gray-500 font-medium">Request Type:</span>
-            <span class="text-sm font-semibold text-gray-900">{{ requestType }}</span>
+            <span class="text-xs text-sub font-medium">Request Type:</span>
+            <span class="text-sm font-semibold text-heading">{{ requestType }}</span>
           </div>
-          <div v-if="requestMessage" class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-            <div class="text-xs text-gray-500 font-medium mb-2">Request Message</div>
-            <p class="text-sm text-gray-700 leading-relaxed">{{ requestMessage }}</p>
+          <div v-if="requestMessage" class="bg-surfaceSecondary border border rounded-lg p-3">
+            <div class="text-xs text-sub font-medium mb-2">Request Message</div>
+            <p class="text-sm text-body leading-relaxed">{{ requestMessage }}</p>
           </div>
         </div>
       </div>
       
       <!-- Separator and toggle button (only show if there are expandable details) -->
-      <div v-if="hasExpandableDetails" class="border-t border-gray-200">
+      <div v-if="hasExpandableDetails" class="border-t border">
         <button
           @click="isExpanded = !isExpanded"
-          class="w-full p-3 flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+          class="w-full p-3 flex items-center justify-center gap-2 text-sm text-body hover:text-heading hover:bg-surfaceSecondary transition-colors"
         >
           <span class="font-medium">{{ isExpanded ? 'Hide' : 'View' }} Details</span>
           <i 
@@ -130,92 +130,92 @@
       </div>
       
       <!-- Expandable details -->
-      <div v-if="isExpanded && hasExpandableDetails" class="border-t border-gray-100 p-6 bg-gray-50/30 text-sm animate-fade-in">
+      <div v-if="isExpanded && hasExpandableDetails" class="border-t border p-6 bg-surfaceSecondary/30 text-sm animate-fade-in">
         <!-- REQUEST DETAILS -->
         <div class="mb-6">
-          <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">REQUEST DETAILS</h4>
+          <h4 class="text-xs font-bold uppercase text-sub tracking-wider mb-4">REQUEST DETAILS</h4>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6">
             <div v-if="requestType">
-              <div class="text-xs text-gray-500 mb-1">Request type</div>
-              <div class="font-medium text-gray-700">{{ requestType }}</div>
+              <div class="text-xs text-sub mb-1">Request type</div>
+              <div class="font-medium text-body">{{ requestType }}</div>
             </div>
             <div v-if="source">
-              <div class="text-xs text-gray-500 mb-1">Source</div>
-              <div class="font-medium text-gray-700">{{ source }}</div>
+              <div class="text-xs text-sub mb-1">Source</div>
+              <div class="font-medium text-body">{{ source }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">Source details</div>
-              <div class="font-medium" :class="sourceDetails ? 'text-gray-700' : 'text-gray-400'">{{ sourceDetails || '--' }}</div>
+              <div class="text-xs text-sub mb-1">Source details</div>
+              <div class="font-medium" :class="sourceDetails ? 'text-body' : 'text-sub'">{{ sourceDetails || '--' }}</div>
             </div>
             <div v-if="dealership">
-              <div class="text-xs text-gray-500 mb-1">Dealership</div>
-              <div class="font-medium text-gray-700">{{ dealership }}</div>
+              <div class="text-xs text-sub mb-1">Dealership</div>
+              <div class="font-medium text-body">{{ dealership }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">Channel</div>
-              <div class="font-medium text-gray-700">{{ channel || 'Email' }}</div>
+              <div class="text-xs text-sub mb-1">Channel</div>
+              <div class="font-medium text-body">{{ channel || 'Email' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">AdCampaign</div>
-              <div class="font-medium" :class="adCampaign ? 'text-gray-700' : 'text-gray-400'">{{ adCampaign || '--' }}</div>
+              <div class="text-xs text-sub mb-1">AdCampaign</div>
+              <div class="font-medium" :class="adCampaign ? 'text-body' : 'text-sub'">{{ adCampaign || '--' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">AdMedium</div>
-              <div class="font-medium" :class="adMedium ? 'text-gray-700' : 'text-gray-400'">{{ adMedium || '--' }}</div>
+              <div class="text-xs text-sub mb-1">AdMedium</div>
+              <div class="font-medium" :class="adMedium ? 'text-body' : 'text-sub'">{{ adMedium || '--' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">AdSource</div>
-              <div class="font-medium" :class="adSource ? 'text-gray-700' : 'text-gray-400'">{{ adSource || '--' }}</div>
+              <div class="text-xs text-sub mb-1">AdSource</div>
+              <div class="font-medium" :class="adSource ? 'text-body' : 'text-sub'">{{ adSource || '--' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">Expected purchase date</div>
-              <div class="font-medium" :class="expectedPurchaseDate ? 'text-gray-700' : 'text-gray-400'">{{ expectedPurchaseDate || '--' }}</div>
+              <div class="text-xs text-sub mb-1">Expected purchase date</div>
+              <div class="font-medium" :class="expectedPurchaseDate ? 'text-body' : 'text-sub'">{{ expectedPurchaseDate || '--' }}</div>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">Fiscal entity</div>
-              <div class="font-medium" :class="fiscalEntity ? 'text-gray-700' : 'text-gray-400'">{{ fiscalEntity || '--' }}</div>
+              <div class="text-xs text-sub mb-1">Fiscal entity</div>
+              <div class="font-medium" :class="fiscalEntity ? 'text-body' : 'text-sub'">{{ fiscalEntity || '--' }}</div>
             </div>
           </div>
         </div>
         
         <!-- VEHICLE DETAILS (only if car exists) -->
         <div v-if="hasCar">
-          <div class="border-t border-gray-200 my-4"></div>
+          <div class="border-t border my-4"></div>
           <div>
             <div class="flex justify-between items-center mb-4">
-              <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider">VEHICLE DETAILS</h4>
+              <h4 class="text-xs font-bold uppercase text-sub tracking-wider">VEHICLE DETAILS</h4>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6">
               <div v-if="registration">
-                <div class="text-xs text-gray-500 mb-1">Registration</div>
-                <div class="font-medium text-gray-700">{{ registration }}</div>
+                <div class="text-xs text-sub mb-1">Registration</div>
+                <div class="font-medium text-body">{{ registration }}</div>
               </div>
               <div v-if="kilometers !== undefined && kilometers !== null">
-                <div class="text-xs text-gray-500 mb-1">Kilometers</div>
-                <div class="font-medium text-gray-700">{{ formatNumber(kilometers) }} Km</div>
+                <div class="text-xs text-sub mb-1">Kilometers</div>
+                <div class="font-medium text-body">{{ formatNumber(kilometers) }} Km</div>
               </div>
               <div v-if="fuelType">
-                <div class="text-xs text-gray-500 mb-1">Fuel type</div>
-                <div class="font-medium text-gray-700">{{ fuelType }}</div>
+                <div class="text-xs text-sub mb-1">Fuel type</div>
+                <div class="font-medium text-body">{{ fuelType }}</div>
               </div>
               <div v-if="gearType">
-                <div class="text-xs text-gray-500 mb-1">Gear type</div>
-                <div class="font-medium text-gray-700">{{ gearType }}</div>
+                <div class="text-xs text-sub mb-1">Gear type</div>
+                <div class="font-medium text-body">{{ gearType }}</div>
               </div>
               <div v-if="vin">
-                <div class="text-xs text-gray-500 mb-1">VIN Number</div>
-                <div class="font-mono text-xs bg-white border border-gray-200 px-2 py-1 rounded inline-block text-gray-600">
+                <div class="text-xs text-sub mb-1">VIN Number</div>
+                <div class="font-mono text-xs bg-surface border border px-2 py-1 rounded inline-block text-body">
                   {{ vin }}
                 </div>
               </div>
               <div v-if="dealership">
-                <div class="text-xs text-gray-500 mb-1">Dealership</div>
-                <div class="font-medium text-gray-700">{{ dealership }}</div>
+                <div class="text-xs text-sub mb-1">Dealership</div>
+                <div class="font-medium text-body">{{ dealership }}</div>
               </div>
             </div>
             <div v-if="showTechnicalSpecs" class="mt-6 flex justify-end">
-              <button class="bg-white border border-gray-200 text-gray-700 hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
-                <i class="fa-solid fa-list-check text-gray-400 group-hover:text-blue-500"></i> View technical specs
+              <button class="bg-surface border border text-body hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
+                <i class="fa-solid fa-list-check text-sub group-hover:text-blue-500"></i> View technical specs
               </button>
             </div>
           </div>

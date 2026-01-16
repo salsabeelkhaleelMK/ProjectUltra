@@ -16,13 +16,13 @@
       <div
         v-for="lead in leads"
         :key="lead.id"
-        class="flex flex-col p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg cursor-pointer transition-colors"
+        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border rounded-lg cursor-pointer transition-colors"
         @click="handleLeadClick(lead)"
       >
         <div class="flex items-center justify-between mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-gray-900 text-content">Lead #{{ lead.id }}</span>
+              <span class="font-semibold text-heading text-content">Lead #{{ lead.id }}</span>
               <span 
                 class="text-xs px-2 py-0.5 rounded-full font-medium"
                 :class="getStageBadgeClass(lead.stage)"
@@ -39,11 +39,11 @@
         </div>
 
         <!-- Nested Tasks for Lead -->
-        <div v-if="getLeadTasks(lead).length > 0" class="mt-2 space-y-2 border-t border-gray-200 pt-2">
+        <div v-if="getLeadTasks(lead).length > 0" class="mt-2 space-y-2 border-t border pt-2">
           <div 
             v-for="task in getLeadTasks(lead)" 
             :key="task.id"
-            class="flex items-center justify-between p-2 bg-white border border-gray-100 rounded-md shadow-sm"
+            class="flex items-center justify-between p-2 bg-surface border border rounded-md shadow-sm"
           >
             <div class="flex items-center gap-2">
               <span 
@@ -52,7 +52,7 @@
               >
                 {{ task.type }}
               </span>
-              <span class="text-meta text-gray-700 font-medium">{{ task.description }}</span>
+              <span class="text-meta text-body font-medium">{{ task.description }}</span>
             </div>
             <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>
@@ -126,7 +126,7 @@ const getTaskTypeBadgeClass = (type) => {
   const classes = {
     'LQ': 'bg-orange-100 text-orange-700 border border-orange-200'
   }
-  return classes[type] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return classes[type] || 'bg-surfaceSecondary text-body border border'
 }
 
 const getStageBadgeClass = (stage) => {
@@ -135,7 +135,7 @@ const getStageBadgeClass = (stage) => {
     'Validated': 'bg-blue-100 text-blue-700 border border-blue-200',
     'Contacted': 'bg-blue-100 text-blue-700 border border-blue-200'
   }
-  return classes[stage] || 'bg-gray-100 text-gray-700 border border-gray-200'
+  return classes[stage] || 'bg-surfaceSecondary text-body border border'
 }
 
 const handleLeadClick = (lead) => {

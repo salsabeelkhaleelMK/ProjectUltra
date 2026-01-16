@@ -1,0 +1,70 @@
+{
+  "lead": {
+    "title": "Lead",
+    "plural": "Lead",
+    "new": "Nuovo Lead",
+    "details": "Dettagli Lead"
+  },
+  "opportunity": {
+    "title": "Opportunità",
+    "plural": "Opportunità",
+    "new": "Nuova Opportunità",
+    "details": "Dettagli Opportunità"
+  },
+  "contact": {
+    "title": "Contatto",
+    "plural": "Contatti",
+    "new": "Nuovo Contatto",
+    "details": "Dettagli Contatto"
+  },
+  "customer": {
+    "title": "Cliente",
+    "plural": "Clienti",
+    "new": "Nuovo Cliente",
+    "details": "Dettagli Cliente"
+  },
+  "vehicle": {
+    "title": "Veicolo",
+    "plural": "Veicoli",
+    "new": "Nuovo Veicolo",
+    "details": "Dettagli Veicolo"
+  },
+  "activity": {
+    "title": "Attività",
+    "plural": "Attività",
+    "new": "Nuova Attività",
+    "details": "Dettagli Attività"
+  },
+  "appointment": {
+    "title": "Appuntamento",
+    "plural": "Appuntamenti",
+    "new": "Nuovo Appuntamento",
+    "details": "Dettagli Appuntamento"
+  },
+  "offer": {
+    "title": "Offerta",
+    "plural": "Offerte",
+    "new": "Nuova Offerta",
+    "details": "Dettagli Offerta"
+  },
+  "note": {
+    "title": "Nota",
+    "plural": "Note",
+    "new": "Nuova Nota",
+    "details": "Dettagli Nota"
+  },
+  "attachment": {
+    "title": "Allegato",
+    "plural": "Allegati",
+    "new": "Nuovo Allegato",
+    "details": "Dettagli Allegato"
+  },
+  "communication": {
+    "title": "Comunicazione",
+    "plural": "Comunicazioni",
+    "new": "Nuova Comunicazione",
+    "details": "Dettagli Comunicazione"
+  }
+}
+
+

@@ -2,7 +2,7 @@
   <BaseTaskWidget
     :title="'Opportunity Abandoned'"
     :description="`This opportunity has been inactive for ${daysInactive} days. Consider reopening it or closing as lost.`"
-    :color-scheme="{ background: 'bg-gray-50/50', border: 'border-gray-100' }"
+    :color-scheme="{ background: 'bg-surfaceSecondary/50', border: 'border' }"
   >
     <template #actions>
       <button
@@ -13,13 +13,13 @@
       </button>
       <button
         @click="handleCloseLost"
-        class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary border border text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-xmark"></i> Close as Lost
       </button>
       <button
         @click="handleRequalify"
-        class="bg-white hover:bg-gray-50 border border-gray-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary border border text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-arrow-left"></i> Requalify as Lead
       </button>

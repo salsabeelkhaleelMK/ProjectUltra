@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Home",
+    "tasks": "Attività",
+    "customers": "Clienti",
+    "calendar": "Calendario",
+    "reports": "Report",
+    "settings": "Impostazioni",
+    "vehicles": "Veicoli",
+    "addNew": "Aggiungi Nuovo",
+    "addNewCustomer": "Aggiungi Nuovo Cliente"
+  },
+  "buttons": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "submit": "Invia",
+    "back": "Indietro",
+    "next": "Successivo",
+    "previous": "Precedente",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "clear": "Pulisci",
+    "apply": "Applica",
+    "reset": "Reimposta",
+    "create": "Crea",
+    "update": "Aggiorna",
+    "remove": "Rimuovi",
+    "view": "Visualizza",
+    "open": "Apri",
+    "dismiss": "Ignora"
+  },
+  "actions": {
+    "call": "Chiama",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "schedule": "Programma",
+    "postpone": "Rimanda",
+    "reschedule": "Riprogramma",
+    "markAsHot": "Segna come Hot",
+    "removeHot": "Rimuovi Hot",
+    "createOpportunity": "Crea Opportunità",
+    "createLead": "Crea Lead",
+    "switchRole": "Cambia Ruolo",
+    "logout": "Esci",
+    "lightMode": "Modalità Chiara",
+    "darkMode": "Modalità Scura"
+  },
+  "status": {
+    "hot": "Hot",
+    "open": "Aperto",
+    "closed": "Chiuso",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "pending": "In Attesa",
+    "completed": "Completato",
+    "cancelled": "Annullato",
+    "confirmed": "Confermato",
+    "scheduled": "Programmato"
+  },
+  "roles": {
+    "manager": "Manager",
+    "salesman": "Venditore",
+    "operator": "Operatore"
+  },
+  "search": {
+    "placeholder": "cerca tutto",
+    "noResults": "Nessun risultato trovato",
+    "searching": "Ricerca in corso..."
+  },
+  "time": {
+    "today": "Oggi",
+    "yesterday": "Ieri",
+    "tomorrow": "Domani",
+    "thisWeek": "Questa Settimana",
+    "lastWeek": "Settimana Scorsa",
+    "thisMonth": "Questo Mese",
+    "lastMonth": "Mese Scorso",
+    "ago": "fa",
+    "in": "tra",
+    "hours": "ore",
+    "days": "giorni",
+    "weeks": "settimane",
+    "months": "mesi"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "noData": "Nessun dato disponibile",
+    "select": "Seleziona",
+    "all": "Tutti",
+    "none": "Nessuno",
+    "yes": "Sì",
+    "no": "No",
+    "optional": "Opzionale",
+    "required": "Obbligatorio"
+  }
+}
+
+

@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+  <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
     <div class="p-4 md:p-5">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-chart-line text-gray-400 text-sm"></i>
+          <i class="fa-solid fa-chart-line text-sub text-sm"></i>
           <h2 class="heading-sub">Performance</h2>
         </div>
         <select
@@ -24,9 +24,9 @@
       <!-- BDC Operator View -->
       <div v-else-if="userRole === 'operator'" class="space-y-4">
         <!-- SLA Compliance -->
-        <div class="bg-white rounded-lg p-3 border border-gray-100">
+        <div class="bg-surface rounded-lg p-3 border border">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-gray-700">SLA Compliance</span>
+            <span class="text-xs font-medium text-body">SLA Compliance</span>
             <span class="text-xs font-bold" :class="slaCompliancePercentage >= 90 ? 'text-green-600' : 'text-yellow-600'">
               {{ slaCompliancePercentage }}%
             </span>
@@ -37,9 +37,9 @@
         </div>
 
         <!-- Tasks Per Day -->
-        <div class="bg-white rounded-lg p-3 border border-gray-100">
+        <div class="bg-surface rounded-lg p-3 border border">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-gray-700">Tasks Per Day</span>
+            <span class="text-xs font-medium text-body">Tasks Per Day</span>
             <span class="text-xs font-bold" :class="getTasksPerDayStatusClass()">
               {{ bdcMetrics?.tasksPerDay?.current || 0 }} / {{ bdcMetrics?.tasksPerDay?.target || 0 }}
             </span>
@@ -56,7 +56,7 @@
 
         <!-- Appointments Reserved -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Appointments Reserved</div>
@@ -88,7 +88,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Lead-to-Opportunity Rate</div>
@@ -127,7 +127,7 @@
       <div v-else-if="userRole === 'salesman'" class="space-y-4">
         <!-- Contracts & Revenue -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Contracts Closed</div>
@@ -159,7 +159,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Revenue</div>
@@ -196,7 +196,7 @@
         <!-- Revenue Targets -->
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs">
-            <span class="text-gray-700">Monthly Target</span>
+            <span class="text-body">Monthly Target</span>
             <span class="font-bold">{{ getRevenueProgress('month') }}%</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
@@ -206,7 +206,7 @@
             ></div>
           </div>
           <div class="flex items-center justify-between text-xs">
-            <span class="text-gray-700">Quarterly Target</span>
+            <span class="text-body">Quarterly Target</span>
             <span class="font-bold">{{ getRevenueProgress('quarter') }}%</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
@@ -219,7 +219,7 @@
 
         <!-- Pipeline & Win Rate -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Pipeline Value</div>
@@ -251,7 +251,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Win Rate</div>
@@ -287,7 +287,7 @@
 
         <!-- New & Dormant Opportunities -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">New Opportunities</div>
@@ -319,7 +319,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 border border-gray-100">
+          <div class="bg-surface rounded-lg p-3 border border">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
                 <div class="text-xs text-gray-500 mb-1">Dormant Opportunities</div>
@@ -359,7 +359,7 @@
         <!-- Funnel Visualization & Conversion Rate -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <!-- Conversion Rate Card -->
-          <div class="bg-white border border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center">
+          <div class="bg-surface border border rounded-lg p-6 flex flex-col items-center justify-center">
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 mb-3">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <!-- Background circle -->
@@ -399,7 +399,7 @@
           </div>
 
           <!-- Bar Chart -->
-          <div class="lg:col-span-2 bg-white rounded-lg p-6 md:p-8">
+          <div class="lg:col-span-2 bg-surface rounded-lg p-6 md:p-8">
             <h3 class="text-base font-bold text-gray-900 mb-4">Sales Funnel</h3>
             <div class="space-y-3">
               <div
@@ -408,7 +408,7 @@
                 class="relative"
               >
                 <div class="flex items-center gap-3 mb-1">
-                  <span class="text-xs font-medium text-gray-700 w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
+                  <span class="text-xs font-medium text-body w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
                   <div class="flex-1 relative">
                     <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
                       <div
@@ -432,7 +432,7 @@
       <div v-else class="text-center py-8 text-gray-500">
         <i class="fa-solid fa-chart-line text-4xl mb-2 text-gray-300"></i>
         <p class="text-sm">Performance metrics not available</p>
-        <p class="text-xs text-gray-400 mt-1">Contact your administrator</p>
+        <p class="text-xs text-sub mt-1">Contact your administrator</p>
       </div>
     </div>
   </div>

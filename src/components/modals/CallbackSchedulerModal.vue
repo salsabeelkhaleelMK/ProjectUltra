@@ -46,7 +46,7 @@
         </label>
         <select 
           v-model="formData.reason"
-          class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          class="w-full px-3 py-2 border border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Select a reason...</option>
           <option value="customer-requested">Customer Requested</option>
@@ -68,7 +68,7 @@
           v-model="formData.notes"
           rows="3"
           placeholder="Add any relevant notes about this callback..."
-          class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          class="w-full px-3 py-2.5 border border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         ></textarea>
       </div>
 
@@ -79,7 +79,7 @@
         </label>
         <select 
           v-model="formData.assigneeId"
-          class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          class="w-full px-3 py-2 border border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option :value="null">Current Owner</option>
           <option 

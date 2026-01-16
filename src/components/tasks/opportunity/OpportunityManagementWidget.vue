@@ -10,7 +10,7 @@
       >
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-gray-900 text-sm">Opportunity Closed</h4>
+            <h4 class="font-bold text-heading text-sm">Opportunity Closed</h4>
             <p class="text-xs text-gray-500 mt-0.5">
               This opportunity has been closed. Reopen it to restart the management process, or requalify as a lead.
             </p>
@@ -51,9 +51,9 @@
     <template #task-widgets>
       <div v-if="activeTaskWidget && activeTaskWidget.component" class="space-y-3">
         <!-- Task Title Header -->
-        <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
+        <div class="flex items-center gap-2 pb-2 border-b border">
           <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-          <h5 class="font-semibold text-gray-900 text-sm">{{ taskWidgetTitle }}</h5>
+          <h5 class="font-semibold text-heading text-sm">{{ taskWidgetTitle }}</h5>
         </div>
         
         <component

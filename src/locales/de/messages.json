@@ -1,0 +1,32 @@
+{
+  "success": {
+    "created": "{item} erfolgreich erstellt",
+    "updated": "{item} erfolgreich aktualisiert",
+    "deleted": "{item} erfolgreich gelöscht",
+    "saved": "Änderungen erfolgreich gespeichert"
+  },
+  "error": {
+    "generic": "Ein Fehler ist aufgetreten",
+    "notFound": "{item} nicht gefunden",
+    "loadFailed": "{item} konnte nicht geladen werden",
+    "saveFailed": "Änderungen konnten nicht gespeichert werden",
+    "deleteFailed": "{item} konnte nicht gelöscht werden",
+    "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung."
+  },
+  "confirm": {
+    "delete": "Möchten Sie dieses {item} wirklich löschen?",
+    "cancel": "Möchten Sie wirklich abbrechen?",
+    "discard": "Möchten Sie die Änderungen wirklich verwerfen?",
+    "closeAsLost": "Möchten Sie diese Chance wirklich als verloren schließen?",
+    "disqualify": "Möchten Sie diesen Lead wirklich disqualifizieren?"
+  },
+  "info": {
+    "noResults": "Keine Ergebnisse gefunden",
+    "noData": "Keine Daten verfügbar",
+    "loading": "Lädt...",
+    "saving": "Speichert...",
+    "processing": "Verarbeitet..."
+  }
+}
+
+

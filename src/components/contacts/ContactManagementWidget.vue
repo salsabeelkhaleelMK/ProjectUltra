@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="contact"
-    class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+    class="bg-surface border border rounded-xl shadow-sm overflow-hidden"
   >
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+    <div class="p-4 border-b border bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-user-circle text-gray-400 text-xs"></i>
         <h3 class="font-bold text-gray-900 text-sm">Manage next steps</h3>
@@ -56,7 +56,7 @@
             @click="handleConvertToLead"
             :disabled="!contact.requestedCar || converting"
             :title="!contact.requestedCar ? 'Add a requested car first' : ''"
-            class="flex-1 bg-white hover:bg-gray-50 border-2 border-blue-600 text-blue-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+            class="flex-1 bg-surface hover:bg-gray-50 border-2 border-blue-600 text-blue-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
           >
             <i class="fa-solid fa-user-plus"></i>
             Convert to Lead
@@ -67,7 +67,7 @@
             @click="handleConvertToOpportunity"
             :disabled="!contact.requestedCar || converting"
             :title="!contact.requestedCar ? 'Add a requested car first' : ''"
-            class="flex-1 bg-white hover:bg-gray-50 border-2 border-purple-600 text-purple-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+            class="flex-1 bg-surface hover:bg-gray-50 border-2 border-purple-600 text-purple-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
           >
             <i class="fa-solid fa-briefcase"></i>
             Convert to Opportunity

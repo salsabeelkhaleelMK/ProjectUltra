@@ -13,9 +13,9 @@
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
-              <i class="fa-solid fa-eye-slash text-gray-400 group-hover:text-brand-red"></i>
+              <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
             </button>
             
@@ -60,9 +60,9 @@
           <template #toolbar>
             <div class="flex justify-end">
               <button 
-                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
               >
-                <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
+                <i class="fa-solid fa-arrow-left text-sub group-hover:text-purple-500"></i>
                 <span class="hidden sm:inline">Switch back to old design</span>
               </button>
             </div>
@@ -182,11 +182,11 @@ const getDateDisplay = (date) => {
 // Helper function to get car status
 const getCarStatus = (task) => {
   const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
-  if (!vehicle) return { status: 'N/A', class: 'bg-gray-100 text-gray-700' }
+  if (!vehicle) return { status: 'N/A', class: 'bg-surfaceSecondary text-body' }
   const isInStock = vehicle.stockDays !== undefined && vehicle.stockDays !== null
   return {
     status: isInStock ? 'In Stock' : 'Out of Stock',
-    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-surfaceSecondary text-body'
   }
 }
 
@@ -228,7 +228,7 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-content font-semibold text-gray-900 truncate max-w-[7.5rem] md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-content font-semibold text-heading truncate max-w-[7.5rem] md:max-w-none' }, task.customer.name),
           h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.email)
         ])
       ])
@@ -247,8 +247,8 @@ const columns = computed(() => [
         return h('span', { class: 'text-meta' }, 'N/A')
       }
       return h('div', { class: 'flex items-center gap-2' }, [
-        h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-        h('span', { class: 'text-content font-medium text-gray-900 truncate max-w-[7.5rem]' }, vehicleInfo)
+        h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
+        h('span', { class: 'text-content font-medium text-heading truncate max-w-[7.5rem]' }, vehicleInfo)
       ])
     }
   },
@@ -287,7 +287,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       return h('span', {
-        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-surfaceSecondary text-body'
       }, task.source || 'N/A')
     }
   },
@@ -302,7 +302,7 @@ const columns = computed(() => [
       const owner = props.getOwnerInfo(task)
       return h('div', { class: 'flex items-center gap-2' }, [
         h('div', {
-          class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
+          class: 'w-6 h-6 rounded-full bg-surfaceSecondary flex items-center justify-center text-xs font-bold text-body shrink-0'
         }, owner.initials),
         h('span', { class: 'text-meta truncate max-w-20' }, owner.name)
       ])
@@ -364,7 +364,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       return h('button', {
-        class: 'text-gray-400 hover:text-gray-600',
+        class: 'text-sub hover:text-body',
         onClick: (e) => {
           e.stopPropagation()
           emit('menu-click', task.id)
@@ -392,7 +392,7 @@ const handleRowClick = (record) => {
 const tableMeta = computed(() => ({
   class: {
     tr: (row) => {
-      const baseClasses = 'cursor-pointer hover:bg-gray-50 transition-colors'
+      const baseClasses = 'cursor-pointer hover:bg-surfaceSecondary transition-colors'
       const task = row.original
       if (isSelected(task)) {
         // Highlight selected/highlighted row with a subtle background and border

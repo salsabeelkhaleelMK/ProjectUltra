@@ -2,28 +2,28 @@
   <div class="space-y-3">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-white border border-gray-100 rounded-lg p-4">
+      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surface border border rounded-lg p-4">
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0 space-y-2">
             <div class="flex items-center gap-2">
-              <div class="h-5 bg-gray-200 rounded w-16 animate-pulse"></div>
-              <div class="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div class="h-5 bg-surfaceTertiary rounded w-16 animate-pulse"></div>
+              <div class="h-5 bg-surfaceTertiary rounded w-20 animate-pulse"></div>
             </div>
-            <div class="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-            <div class="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+            <div class="h-4 bg-surfaceTertiary rounded w-32 animate-pulse"></div>
+            <div class="h-3 bg-surfaceTertiary rounded w-24 animate-pulse"></div>
             <div class="flex items-center gap-2">
-              <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-              <div class="h-3 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div class="h-4 bg-surfaceTertiary rounded w-16 animate-pulse"></div>
+              <div class="h-3 bg-surfaceTertiary rounded w-20 animate-pulse"></div>
             </div>
           </div>
-          <div class="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+          <div class="h-4 w-4 bg-surfaceTertiary rounded animate-pulse"></div>
         </div>
       </div>
     </template>
     
     <!-- Actual Content -->
     <template v-else>
-      <div v-if="tasks.length === 0" class="text-center py-8 text-gray-500">
+      <div v-if="tasks.length === 0" class="text-center py-8 text-sub">
         <i class="fa-solid fa-tasks text-4xl mb-2 text-gray-300"></i>
         <p class="text-content">No tasks due today</p>
       </div>
@@ -32,7 +32,7 @@
         v-for="task in tasks"
         :key="`${task.type}-${task.id}`"
         @click="handleClick(task)"
-        class="bg-white border border-gray-100 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+        class="bg-surface border border rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
       >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
@@ -45,7 +45,7 @@
             </span>
             <span 
               v-else
-              class="text-xs font-medium px-2 py-0.5 rounded bg-gray-50 text-gray-700 border border-gray-200"
+              class="text-xs font-medium px-2 py-0.5 rounded bg-surfaceSecondary text-body border border"
             >
               Normal
             </span>
@@ -77,14 +77,14 @@
             </span>
           </p>
           
-          <div class="flex items-center gap-2 text-xs text-gray-500">
+          <div class="flex items-center gap-2 text-xs text-sub">
             <span 
               class="px-2 py-0.5 rounded border text-xs font-bold uppercase"
               :class="task.type === 'lead' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200'"
             >
               {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
             </span>
-            <span v-if="task.stage || task.displayStage" class="text-gray-500">
+            <span v-if="task.stage || task.displayStage" class="text-sub">
               {{ task.displayStage || task.stage }}
             </span>
           </div>
@@ -92,7 +92,7 @@
         
         <button
           @click.stop="handleClick(task)"
-          class="text-gray-400 hover:text-blue-600 transition-colors"
+          class="text-sub hover:text-blue-600 transition-colors"
         >
           <i class="fa-solid fa-chevron-right"></i>
         </button>
@@ -119,7 +119,7 @@ const props = defineProps({
 const router = useRouter()
 
 const getTimeBadgeClass = (dueDate) => {
-  if (!dueDate) return 'bg-gray-100 text-gray-700 border-gray-200'
+  if (!dueDate) return 'bg-surfaceSecondary text-body border'
   
   const now = new Date()
   const due = new Date(dueDate)

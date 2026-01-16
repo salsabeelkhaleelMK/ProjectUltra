@@ -10,7 +10,7 @@
 
         <div class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1.5">Appointment Type</label>
+        <label class="block text-xs font-medium text-sub mb-1.5">Appointment Type</label>
         <select v-model="appointmentType" class="input">
           <option value="" disabled>Select type...</option>
           <option>Showroom Visit</option>
@@ -22,7 +22,7 @@
       </div>
       
       <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1.5">Assign to</label>
+        <label class="block text-xs font-medium text-sub mb-1.5">Assign to</label>
         <select v-model="selectedAssignee" class="input">
           <optgroup label="Teams">
             <option v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
@@ -35,18 +35,18 @@
             </option>
           </optgroup>
         </select>
-        <p v-if="isTeamSelected" class="text-xs text-gray-500 mt-1">
-          <i class="fa-solid fa-users text-gray-400"></i> Any available team member will be assigned
+        <p v-if="isTeamSelected" class="text-xs text-sub mt-1">
+          <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
         </p>
       </div>
       
       <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1.5">Select Date</label>
+        <label class="block text-xs font-medium text-sub mb-1.5">Select Date</label>
         <input type="date" v-model="appointmentDate" @change="showTimeslots = true" class="input">
       </div>
       
       <div v-if="showTimeslots" class="animate-fade-in">
-        <label class="block text-xs font-medium text-gray-500 mb-2">Available Slots</label>
+        <label class="block text-xs font-medium text-sub mb-2">Available Slots</label>
         <div class="grid grid-cols-4 gap-2">
           <button 
             v-for="slot in ['09:00', '10:30', '11:00', '14:30', '15:00', '16:30']"

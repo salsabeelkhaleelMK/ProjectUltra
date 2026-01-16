@@ -81,8 +81,8 @@
             </option>
           </optgroup>
         </select>
-        <p v-if="isTeamSelected" class="text-xs text-gray-500 mt-1">
-          <i class="fa-solid fa-users text-gray-400"></i> Any available team member will be assigned
+        <p v-if="isTeamSelected" class="text-xs text-sub mt-1">
+          <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
         </p>
       </div>
       

@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
-    <header class="bg-white border-b border-gray-200 shrink-0">
+    <header class="bg-surface border-b border shrink-0">
       <div class="px-4 md:px-8 py-3 md:py-4">
         <ContactInfo
           :initials="task.customer.initials"

@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+  <div class="bg-surface rounded-xl border border shadow-sm p-4 md:p-5">
     <!-- Loading Skeleton -->
     <template v-if="loading">
       <div class="flex items-center justify-between mb-4">
         <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
         <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
       </div>
-      <div class="mb-4 pb-4 border-b border-gray-100">
+      <div class="mb-4 pb-4 border-b border">
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <div v-for="n in 4" :key="`stage-${n}`" class="flex items-center gap-2">
             <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
@@ -24,7 +24,7 @@
           <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-100">
+      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border">
         <div v-for="n in 4" :key="`time-${n}`" class="flex items-center gap-2">
           <div class="h-4 bg-gray-200 rounded w-4 animate-pulse"></div>
           <div class="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
@@ -45,7 +45,7 @@
       </div>
 
     <!-- Stage Stats - Horizontal Flow -->
-    <div class="mb-4 pb-4 border-b border-gray-200">
+    <div class="mb-4 pb-4 border-b border">
       <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div
           v-for="stage in pipeline.stages"
@@ -53,7 +53,7 @@
           class="flex items-center gap-2"
         >
           <span class="text-sm text-gray-600">{{ stage.name }}</span>
-          <span class="text-sm font-bold text-gray-900">{{ stage.percentage }}%</span>
+          <span class="text-sm font-bold text-heading">{{ stage.percentage }}%</span>
           <span class="text-xs text-gray-400">({{ stage.count }})</span>
         </div>
       </div>
@@ -105,14 +105,14 @@
     </div>
 
     <!-- Average Times per Lead Source -->
-    <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-200">
+    <div class="flex flex-wrap items-center gap-6 pt-4 border-t border">
       <div
         v-for="source in pipeline.leadSources"
         :key="source.name"
         class="flex items-center gap-2"
       >
         <i class="fa-regular fa-clock text-xs text-gray-400"></i>
-        <span class="text-sm font-bold text-gray-700">{{ getSourceAvgTime(source.name) }}</span>
+        <span class="text-sm font-bold text-body">{{ getSourceAvgTime(source.name) }}</span>
         <span class="text-xs text-gray-500">on avg.</span>
       </div>
     </div>

@@ -13,7 +13,7 @@
       </button>
       <button
         @click="handlePreDeliveryChecklist"
-        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors hover:bg-gray-50"
+        class="bg-surface border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
       >
         Pre-Delivery Checklist
       </button>

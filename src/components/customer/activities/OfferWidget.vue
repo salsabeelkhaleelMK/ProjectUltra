@@ -1,28 +1,28 @@
 <template>
-  <div class="bg-white rounded-xl p-5 mb-6 animate-fade-in relative">
+  <div class="bg-surface rounded-xl p-5 mb-6 animate-fade-in relative">
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
-      <h5 class="text-sm font-bold text-gray-900">{{ item ? 'Edit Offer' : 'Create Offer' }}</h5>
-      <button @click="$emit('cancel')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      <h5 class="text-sm font-bold text-heading">{{ item ? 'Edit Offer' : 'Create Offer' }}</h5>
+      <button @click="$emit('cancel')" class="text-sub hover:text-body"><i class="fa-solid fa-xmark"></i></button>
     </div>
     
     <!-- Selected Vehicle Display -->
-    <div v-if="selectedVehicle" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <p class="text-xs text-gray-500 mb-2">Creating offer for:</p>
+    <div v-if="selectedVehicle" class="mb-6 p-4 bg-surfaceSecondary rounded-lg border border">
+      <p class="text-xs text-sub mb-2">Creating offer for:</p>
       <div class="flex items-center gap-3">
-        <div class="w-16 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+        <div class="w-16 h-16 bg-surfaceTertiary rounded overflow-hidden flex-shrink-0">
           <img 
             v-if="selectedVehicle.image" 
             :src="selectedVehicle.image" 
             alt="Vehicle" 
             class="w-full h-full object-cover"
           />
-          <i v-else class="fa-solid fa-car text-gray-400 w-full h-full flex items-center justify-center"></i>
+          <i v-else class="fa-solid fa-car text-sub w-full h-full flex items-center justify-center"></i>
         </div>
         <div>
-          <h4 class="font-bold text-sm text-gray-900">
+          <h4 class="font-bold text-sm text-heading">
             {{ selectedVehicle.brand }} {{ selectedVehicle.model }} ({{ selectedVehicle.year }})
           </h4>
-          <p class="text-xs text-gray-500">Base Price: € {{ formatCurrency(selectedVehicle.price) }}</p>
+          <p class="text-xs text-sub">Base Price: € {{ formatCurrency(selectedVehicle.price) }}</p>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
     <div class="space-y-4">
       <!-- Offer Price -->
       <div>
-        <label class="block text-xs font-medium text-gray-700 mb-1">
+        <label class="block text-xs font-medium text-body mb-1">
           Offer Price (€) <span class="text-red-500">*</span>
         </label>
         <input 
@@ -44,7 +44,7 @@
       
       <!-- Financing Type -->
       <div>
-        <label class="block text-xs font-medium text-gray-700 mb-1">
+        <label class="block text-xs font-medium text-body mb-1">
           Payment Method <span class="text-red-500">*</span>
         </label>
         <select 
@@ -61,7 +61,7 @@
       <!-- Financing Details (if finance or lease selected) -->
       <div v-if="offerData.financingType === 'finance' || offerData.financingType === 'lease'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Down Payment (€)</label>
+          <label class="block text-xs font-medium text-body mb-1">Down Payment (€)</label>
           <input 
             type="number" 
             v-model="offerData.downPayment" 
@@ -70,7 +70,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Monthly Payment (€)</label>
+          <label class="block text-xs font-medium text-body mb-1">Monthly Payment (€)</label>
           <input 
             type="number" 
             v-model="offerData.monthlyPayment" 
@@ -79,7 +79,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Term (months)</label>
+          <label class="block text-xs font-medium text-body mb-1">Term (months)</label>
           <input 
             type="number" 
             v-model="offerData.term" 
@@ -88,7 +88,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Interest Rate (%)</label>
+          <label class="block text-xs font-medium text-body mb-1">Interest Rate (%)</label>
           <input 
             type="number" 
             step="0.1" 
@@ -101,7 +101,7 @@
       
       <!-- Expected Delivery Date -->
       <div>
-        <label class="block text-xs font-medium text-gray-700 mb-1">Expected Delivery Date</label>
+        <label class="block text-xs font-medium text-body mb-1">Expected Delivery Date</label>
         <input 
           type="date" 
           v-model="offerData.deliveryDate" 
@@ -111,7 +111,7 @@
       
       <!-- Offer Valid Until -->
       <div>
-        <label class="block text-xs font-medium text-gray-700 mb-1">Offer Valid Until</label>
+        <label class="block text-xs font-medium text-body mb-1">Offer Valid Until</label>
         <input 
           type="date" 
           v-model="offerData.validUntil" 
@@ -121,7 +121,7 @@
       
       <!-- Additional Notes -->
       <div>
-        <label class="block text-xs font-medium text-gray-700 mb-1">Notes / Special Terms</label>
+        <label class="block text-xs font-medium text-body mb-1">Notes / Special Terms</label>
         <textarea 
           v-model="offerData.notes" 
           rows="3"
@@ -135,7 +135,7 @@
     <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
       <button 
         @click="$emit('cancel')" 
-        class="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+        class="text-xs font-medium text-sub hover:text-body px-3 py-2 rounded-lg hover:bg-surfaceSecondary transition-colors"
       >
         Cancel
       </button>

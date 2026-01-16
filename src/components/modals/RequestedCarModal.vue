@@ -50,7 +50,7 @@
       <div>
         <label class="block label-upper mb-2">Price (Optional)</label>
         <div class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sub">€</span>
           <input 
             v-model.number="formData.price"
             type="number" 
@@ -92,15 +92,15 @@
           placeholder="https://example.com/car-image.jpg" 
           class="input"
         />
-        <p class="text-xs text-gray-500 mt-1">Enter a URL to an image of the vehicle</p>
+        <p class="text-xs text-sub mt-1">Enter a URL to an image of the vehicle</p>
       </div>
       
       <!-- Additional Details (Collapsed by default) -->
-      <div class="border-t border-gray-200 pt-4">
+      <div class="border-t border pt-4">
         <button 
           type="button"
           @click="showAdvanced = !showAdvanced"
-          class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+          class="flex items-center gap-2 text-sm font-medium text-body hover:text-heading transition-colors"
         >
           <i class="fa-solid" :class="showAdvanced ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
           Advanced Details (Optional)

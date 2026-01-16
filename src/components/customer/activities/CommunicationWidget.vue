@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-6 animate-fade-in relative">
-    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
+  <div class="bg-surface border border rounded-xl p-4 shadow-sm mb-6 animate-fade-in relative">
+    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border rotate-45"></div>
     <h5 class="heading-sub mb-3">{{ type === 'email' ? 'Send Email' : type === 'whatsapp' ? 'Send WhatsApp' : type === 'sms' ? 'Send SMS' : 'Send Message' }}</h5>
     
     <div class="mb-3">
-      <label class="block text-xs font-medium text-gray-700 mb-1">Template</label>
+      <label class="block text-xs font-medium text-body mb-1">Template</label>
       <select v-model="selectedTemplate" class="input">
         <option value="">Select a template...</option>
         <option>Follow-up</option>

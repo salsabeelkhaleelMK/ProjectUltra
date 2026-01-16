@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white border border-gray-200 p-6 mb-6">
+  <div class="bg-surface border border p-6 mb-6">
     <div class="flex items-start gap-3 mb-4">
       <div class="flex-shrink-0 mt-1">
         <i class="fa-solid fa-lightbulb text-2xl text-amber-500"></i>
       </div>
       <div class="flex-1">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Customer Insights</h3>
-        <p v-if="summary" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+        <h3 class="text-lg font-semibold text-heading mb-2">Customer Insights</h3>
+        <p v-if="summary" class="text-sm text-body leading-relaxed whitespace-pre-line">
           {{ summary }}
         </p>
         <p v-else class="text-meta italic">

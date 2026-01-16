@@ -1,0 +1,70 @@
+{
+  "lead": {
+    "title": "Lead",
+    "plural": "Leads",
+    "new": "Nouveau Lead",
+    "details": "Détails du Lead"
+  },
+  "opportunity": {
+    "title": "Opportunité",
+    "plural": "Opportunités",
+    "new": "Nouvelle Opportunité",
+    "details": "Détails de l'Opportunité"
+  },
+  "contact": {
+    "title": "Contact",
+    "plural": "Contacts",
+    "new": "Nouveau Contact",
+    "details": "Détails du Contact"
+  },
+  "customer": {
+    "title": "Client",
+    "plural": "Clients",
+    "new": "Nouveau Client",
+    "details": "Détails du Client"
+  },
+  "vehicle": {
+    "title": "Véhicule",
+    "plural": "Véhicules",
+    "new": "Nouveau Véhicule",
+    "details": "Détails du Véhicule"
+  },
+  "activity": {
+    "title": "Activité",
+    "plural": "Activités",
+    "new": "Nouvelle Activité",
+    "details": "Détails de l'Activité"
+  },
+  "appointment": {
+    "title": "Rendez-vous",
+    "plural": "Rendez-vous",
+    "new": "Nouveau Rendez-vous",
+    "details": "Détails du Rendez-vous"
+  },
+  "offer": {
+    "title": "Offre",
+    "plural": "Offres",
+    "new": "Nouvelle Offre",
+    "details": "Détails de l'Offre"
+  },
+  "note": {
+    "title": "Note",
+    "plural": "Notes",
+    "new": "Nouvelle Note",
+    "details": "Détails de la Note"
+  },
+  "attachment": {
+    "title": "Pièce jointe",
+    "plural": "Pièces jointes",
+    "new": "Nouvelle Pièce jointe",
+    "details": "Détails de la Pièce jointe"
+  },
+  "communication": {
+    "title": "Communication",
+    "plural": "Communications",
+    "new": "Nouvelle Communication",
+    "details": "Détails de la Communication"
+  }
+}
+
+

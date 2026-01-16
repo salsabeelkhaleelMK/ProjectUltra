@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex overflow-hidden overflow-x-hidden bg-white">
+  <div class="h-screen flex bg-surface">
     <!-- Left Icon Sidebar (Desktop Only) -->
     <IconSidebar />
     
@@ -7,7 +7,7 @@
     <MobileSidebar :is-open="isMobileSidebarOpen" @close="isMobileSidebarOpen = false" />
     
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col md:ml-16 min-w-0">
+    <div class="flex-1 flex flex-col md:ml-16 min-w-0 overflow-hidden">
       <!-- Top Header -->
       <TopHeader @toggle-sidebar="isMobileSidebarOpen = !isMobileSidebarOpen" />
       

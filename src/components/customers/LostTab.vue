@@ -72,7 +72,7 @@ const rows = computed(() => {
         deadlineStatus: getDeadlineStatus(opp.expectedCloseDate),
         car: `${opp.vehicle?.brand || ''} ${opp.vehicle?.model || ''}`.trim() || 'N/A',
         carStatus: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'In Stock' : 'Out of Stock',
-        carStatusClass: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
+        carStatusClass: opp.vehicle?.stockDays !== undefined && opp.vehicle?.stockDays !== null ? 'bg-green-100 text-green-700' : 'bg-surfaceSecondary text-body',
         requestType: opp.requestType || 'Opportunity',
         source: opp.source || 'Marketing',
         assignee: opp.assignee,

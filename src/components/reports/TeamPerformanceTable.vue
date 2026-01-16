@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div class="p-4 md:p-5 border-b border-gray-100">
+      <div class="p-4 md:p-5 border-b border">
         <div class="h-6 bg-gray-200 rounded w-40 animate-pulse"></div>
       </div>
       <div class="p-4 md:p-5">
@@ -21,7 +21,7 @@
     
     <!-- Actual Content -->
     <template v-else>
-      <div class="p-4 md:p-5 border-b border-gray-100">
+      <div class="p-4 md:p-5 border-b border">
         <h2 class="heading-sub">Team Performance</h2>
       </div>
       
@@ -42,7 +42,7 @@
           <template #toolbar>
             <div class="flex justify-end">
               <button 
-                class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-xs font-medium text-body hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
               >
                 <i class="fa-solid fa-arrow-left text-gray-400 group-hover:text-purple-500"></i>
                 <span class="hidden sm:inline">Switch back to old design</span>
@@ -86,7 +86,7 @@ const columns = computed(() => [
     header: 'Name',
     meta: { title: 'Name' },
     cell: ({ row }) => {
-      return h('div', { class: 'text-sm font-bold text-gray-900' }, row.original.name)
+      return h('div', { class: 'text-sm font-bold text-heading' }, row.original.name)
     }
   },
   {

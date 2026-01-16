@@ -6,7 +6,7 @@
         <!-- Add New Button -->
         <button 
           @click="router.push('/add-new')"
-          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+          class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
         >
           <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">Add new</span>
@@ -22,7 +22,7 @@
           v-for="tab in stageTabs"
           :key="tab.key"
           @click="setTab(tab.key)"
-          class="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-40 border-t-4"
+          class="flex items-center justify-between gap-3 px-4 py-3 bg-surface border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-40 border-t-4"
           :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
         >
           <span class="heading-tab whitespace-nowrap">{{ tab.label }}</span>

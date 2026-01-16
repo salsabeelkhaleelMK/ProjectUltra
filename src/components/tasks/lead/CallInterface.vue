@@ -6,7 +6,7 @@
       <button
         :disabled="isCallActive"
         @click="$emit('start-call')"
-        class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-phone text-xs"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
@@ -16,7 +16,7 @@
       <button
         :disabled="isCallActive"
         @click="$emit('log-manual-call')"
-        class="bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border border-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-clipboard-check text-xs"></i>
         Log Call Outcome
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Inline Call Interface (shows when call is active or ended) -->
-    <div v-if="isCallActive || callEnded" class="mb-4 space-y-4 border-t border-gray-200 pt-4">
+    <div v-if="isCallActive || callEnded" class="mb-4 space-y-4 border-t border pt-4">
       
       <!-- Transcription Area (shows when call is active) -->
       <div v-if="isCallActive" class="bg-slate-900 text-white rounded-lg p-4">
@@ -90,7 +90,7 @@
       <div v-if="callEnded && !isCallActive" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-bold text-gray-900 mb-1 text-sm">Call Ended</h4>
+            <h4 class="font-bold text-heading mb-1 text-sm">Call Ended</h4>
             <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
           </div>
           <div class="flex gap-2">

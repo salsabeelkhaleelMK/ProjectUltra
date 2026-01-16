@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Startseite",
+    "tasks": "Aufgaben",
+    "customers": "Kunden",
+    "calendar": "Kalender",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "vehicles": "Fahrzeuge",
+    "addNew": "Neu Hinzufügen",
+    "addNewCustomer": "Neuen Kunden Hinzufügen"
+  },
+  "buttons": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "submit": "Absenden",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "clear": "Löschen",
+    "apply": "Anwenden",
+    "reset": "Zurücksetzen",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "remove": "Entfernen",
+    "view": "Anzeigen",
+    "open": "Öffnen",
+    "dismiss": "Verwerfen"
+  },
+  "actions": {
+    "call": "Anrufen",
+    "email": "E-Mail",
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "schedule": "Planen",
+    "postpone": "Verschieben",
+    "reschedule": "Neu Planen",
+    "markAsHot": "Als Hot Markieren",
+    "removeHot": "Hot Entfernen",
+    "createOpportunity": "Chance Erstellen",
+    "createLead": "Lead Erstellen",
+    "switchRole": "Rolle Wechseln",
+    "logout": "Abmelden",
+    "lightMode": "Hellmodus",
+    "darkMode": "Dunkelmodus"
+  },
+  "status": {
+    "hot": "Hot",
+    "open": "Offen",
+    "closed": "Geschlossen",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "cancelled": "Abgebrochen",
+    "confirmed": "Bestätigt",
+    "scheduled": "Geplant"
+  },
+  "roles": {
+    "manager": "Manager",
+    "salesman": "Verkäufer",
+    "operator": "Operator"
+  },
+  "search": {
+    "placeholder": "alles durchsuchen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "searching": "Suche läuft..."
+  },
+  "time": {
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "tomorrow": "Morgen",
+    "thisWeek": "Diese Woche",
+    "lastWeek": "Letzte Woche",
+    "thisMonth": "Diesen Monat",
+    "lastMonth": "Letzten Monat",
+    "ago": "vor",
+    "in": "in",
+    "hours": "Stunden",
+    "days": "Tage",
+    "weeks": "Wochen",
+    "months": "Monate"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "noData": "Keine Daten verfügbar",
+    "select": "Auswählen",
+    "all": "Alle",
+    "none": "Keine",
+    "yes": "Ja",
+    "no": "Nein",
+    "optional": "Optional",
+    "required": "Erforderlich"
+  }
+}
+
+

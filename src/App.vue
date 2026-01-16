@@ -8,6 +8,10 @@
 <script setup>
 import { Toast } from '@motork/component-library'
 import { useToastStore } from '@/stores/toast'
+import { useTheme } from '@/composables/useTheme'
 
 const toastStore = useToastStore()
+
+// Initialize theme on app load
+useTheme()
 </script>
