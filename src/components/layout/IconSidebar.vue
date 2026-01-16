@@ -4,7 +4,7 @@
     <div 
       class="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-2 cursor-pointer shadow-lg hover:scale-105 transition-transform"
       style="background-color: var(--brand-red);"
-      @click="router.push('/home')"
+      @click="router.push('/tasks')"
     >
       <span class="font-bold text-lg">PU</span>
     </div>
@@ -21,13 +21,13 @@
     </router-link>
 
     <!-- Home -->
-    <router-link
+    <!-- <router-link
       to="/home"
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/home') }"
     >
       <i class="fa-solid fa-house"></i>
-    </router-link>
+    </router-link> -->
     
     <!-- Primary Navigation -->
     <router-link 
@@ -49,14 +49,14 @@
       <i class="fa-solid fa-users"></i>
     </router-link>
     
-    <router-link 
+    <!-- <router-link 
       to="/calendar" 
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/calendar') }"
       title="Calendar"
     >
       <i class="fa-regular fa-calendar"></i>
-    </router-link>
+    </router-link> -->
     
     <router-link 
       v-if="userStore.canAccessReports()"

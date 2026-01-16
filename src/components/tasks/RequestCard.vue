@@ -51,7 +51,7 @@
       <!-- Vehicle Info (if available) -->
       <div v-if="hasCar" class="space-y-3">
         <div class="flex items-center gap-3">
-          <div class="w-16 h-12 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0 border border">
+          <div class="w-16 h-12 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0">
             <img v-if="carImage" :src="carImage" alt="Car" class="w-full h-full object-cover">
             <i v-else class="fa-solid fa-car text-2xl text-sub w-full h-full flex items-center justify-center"></i>
           </div>
@@ -60,13 +60,13 @@
             <div class="flex items-center gap-2 flex-wrap">
               <div 
                 v-if="stockDays !== undefined && stockDays !== null"
-                class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 border border-green-100 text-green-700 text-xs font-semibold rounded"
+                class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs font-semibold rounded"
               >
                 <div class="w-1 h-1 bg-green-500 rounded-full"></div> In stock ({{ stockDays }} days)
               </div>
               <div 
                 v-else
-                class="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 border border-orange-100 text-orange-700 text-xs font-semibold rounded"
+                class="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-700 text-xs font-semibold rounded"
               >
                 <div class="w-1 h-1 bg-orange-500 rounded-full"></div> Out of stock
               </div>
@@ -80,7 +80,7 @@
       </div>
 
       <!-- Request Details (condensed) -->
-      <div class="mt-4 pt-4 border-t border space-y-2">
+      <div class="mt-4 pt-4 space-y-2">
         <div v-if="task.source" class="flex items-center justify-between text-xs">
           <span class="text-sub">Source</span>
           <span class="text-heading font-medium">{{ task.source }}</span>
@@ -91,7 +91,7 @@
         </div>
         <div v-if="requestMessage" class="pt-2">
           <div class="text-xs text-sub mb-1">Message</div>
-          <div class="bg-surfaceSecondary border border rounded-lg p-2">
+          <div class="bg-surfaceSecondary rounded-lg p-2">
             <p class="text-xs text-body leading-relaxed line-clamp-3">{{ requestMessage }}</p>
           </div>
         </div>

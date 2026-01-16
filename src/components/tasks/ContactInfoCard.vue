@@ -18,7 +18,7 @@
               <h3 class="text-lg font-bold uppercase text-brand-dark truncate">{{ task.customer?.name || 'Unknown' }}</h3>
               <button
                 @click="openCustomerPage"
-                class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+                class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
                 title="Open in new page"
                 aria-label="Open customer page"
               >
@@ -29,7 +29,7 @@
               <span 
                 v-for="tag in task.tags" 
                 :key="tag"
-                class="px-2 py-0.5 text-xs bg-blue-50 border border-blue-100 text-blue-700 font-semibold rounded"
+                class="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 font-semibold rounded"
               >
                 {{ tag }}
               </span>
@@ -46,7 +46,7 @@
       </div>
 
       <!-- Contact Details -->
-      <div class="space-y-3 pt-4 border-t border">
+      <div class="space-y-3 pt-4">
         <!-- Email -->
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">

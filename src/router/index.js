@@ -10,13 +10,13 @@ const routes = [
       {
         path: '',
         name: 'home',
-        redirect: '/home'
+        redirect: '/tasks'
       },
-      {
-        path: 'home',
-        name: 'home-dashboard',
-        component: () => import('@/views/Home.vue')
-      },
+      // {
+      //   path: 'home',
+      //   name: 'home-dashboard',
+      //   component: () => import('@/views/Home.vue')
+      // },
       {
         path: 'add-new',
         name: 'add-new',
@@ -43,11 +43,11 @@ const routes = [
         name: 'customers',
         component: () => import('@/views/Customers.vue')
       },
-      {
-        path: 'calendar',
-        name: 'calendar',
-        component: () => import('@/views/Calendar.vue')
-      },
+      // {
+      //   path: 'calendar',
+      //   name: 'calendar',
+      //   component: () => import('@/views/Calendar.vue')
+      // },
       {
         path: 'reports',
         name: 'reports',
