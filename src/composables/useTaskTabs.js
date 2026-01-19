@@ -8,7 +8,7 @@
  */
 const ACTIVITY_TYPE_TO_TAB_MAP = {
   // Note activities
-  note: 'note',
+  note: 'data',
   
   // Communication activities
   communication: 'communication',

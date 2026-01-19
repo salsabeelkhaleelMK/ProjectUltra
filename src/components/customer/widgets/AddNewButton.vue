@@ -57,7 +57,7 @@ const showMenu = ref(false)
 // Map actions to their owning tab (if any)
 // Actions without a mapping are considered \"overview-only\"
 const actionToTab = {
-  note: 'note',
+  note: 'data',
   attachment: 'attachment',
   email: 'communication',
   whatsapp: 'communication',

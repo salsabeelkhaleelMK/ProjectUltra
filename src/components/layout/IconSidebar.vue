@@ -21,13 +21,14 @@
     </router-link>
 
     <!-- Home -->
-    <!-- <router-link
+    <router-link
       to="/home"
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/home') }"
+      title="Home"
     >
       <i class="fa-solid fa-house"></i>
-    </router-link> -->
+    </router-link>
     
     <!-- Primary Navigation -->
     <router-link 
@@ -49,14 +50,14 @@
       <i class="fa-solid fa-users"></i>
     </router-link>
     
-    <!-- <router-link 
+    <router-link 
       to="/calendar" 
       class="nav-icon"
       :class="{ 'nav-icon-active': isActive('/calendar') }"
       title="Calendar"
     >
       <i class="fa-regular fa-calendar"></i>
-    </router-link> -->
+    </router-link>
     
     <router-link 
       v-if="userStore.canAccessReports()"

@@ -11,16 +11,33 @@
           </div>
           
           <!-- View Toggle -->
-          <div class="flex items-center gap-3">
-            <ViewToggle
-              v-if="viewMode"
-              :view="viewMode"
-              :options="[
-                { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
-                { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
+          <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
+            <button
+              @click="$emit('view-change', 'card')"
+              :class="[
+                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                viewMode === 'card' 
+                  ? 'bg-surface text-heading shadow-sm' 
+                  : 'text-sub hover:text-body'
               ]"
-              @update:view="$emit('view-change', $event)"
-            />
+              title="Card View"
+            >
+              <i class="fa-solid fa-columns text-xs"></i>
+              <span>Card</span>
+            </button>
+            <button
+              @click="$emit('view-change', 'table')"
+              :class="[
+                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                viewMode === 'table' 
+                  ? 'bg-surface text-heading shadow-sm' 
+                  : 'text-sub hover:text-body'
+              ]"
+              title="Table View"
+            >
+              <i class="fa-solid fa-table text-xs"></i>
+              <span>Table</span>
+            </button>
           </div>
         </div>
       </div>
@@ -36,7 +53,7 @@
           type="text" 
           :placeholder="searchPlaceholder" 
           class="w-full bg-surfaceSecondary border border rounded-lg pl-9 pr-3 py-2 text-sm"
-        >
+        />
       </div>
     </div>
     
@@ -87,142 +104,62 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import ViewToggle from '@/components/shared/ViewToggle.vue'
-import TaskFilters from './TaskFilters.vue'
-import TaskCard from './TaskCard.vue'
+import TaskCard from '@/components/tasks/TaskCard.vue'
+import TaskFilters from '@/components/tasks/TaskFilters.vue'
 
 const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  items: {
-    type: Array,
-    required: true
-  },
-  selectedId: {
-    type: [Number, String],
-    default: null
-  },
-  selectedClass: {
-    type: [String, Function],
-    default: 'bg-surface border-2 border-blue-500 shadow-md'
-  },
-  unselectedClass: {
-    type: [String, Function],
-    default: 'bg-surface border border hover:border-blue-300'
-  },
-  searchPlaceholder: {
-    type: String,
-    default: 'Search...'
-  },
-  initialSearchQuery: {
-    type: String,
-    default: ''
-  },
-  showMenu: {
-    type: Boolean,
-    default: true
-  },
-  openMenuId: {
-    type: [Number, String],
-    default: null
-  },
-  getName: {
-    type: Function,
-    required: true
-  },
-  getInitials: {
-    type: Function,
-    required: true
-  },
-  getVehicleInfo: {
-    type: Function,
-    default: null
-  },
-  avatarClass: {
-    type: Function,
-    default: () => 'bg-orange-100 text-orange-600'
-  },
-  typeFilter: {
-    type: String,
-    default: 'all'
-  },
-  showTypeFilter: {
-    type: Boolean,
-    default: false
-  },
-  showMobileClose: {
-    type: Boolean,
-    default: false
-  },
-  viewMode: {
-    type: String,
-    default: 'card'
-  },
-  getMenuItems: {
-    type: Function,
-    default: null
-  }
+  title: { type: String, default: 'Tasks' },
+  items: { type: Array, default: () => [] },
+  selectedId: { type: [String, Number], default: null },
+  typeFilter: { type: String, default: 'all' },
+  initialSearchQuery: { type: String, default: '' },
+  selectedClass: { type: [String, Function], default: '' },
+  unselectedClass: { type: [String, Function], default: '' },
+  openMenuId: { type: [String, Number], default: null },
+  getName: { type: Function, default: (item) => item.name || 'Unknown' },
+  getVehicleInfo: { type: Function, default: () => 'No vehicle specified' },
+  getMenuItems: { type: Function, default: null },
+  showMenu: { type: Boolean, default: true },
+  showTypeFilter: { type: Boolean, default: true },
+  searchPlaceholder: { type: String, default: 'Search tasks...' },
+  viewMode: { type: String, default: 'card' }
 })
 
 const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'close', 'view-change'])
 
-const searchQuery = ref(props.initialSearchQuery || '')
-const currentSort = ref('none')
-
-// Watch for changes to initialSearchQuery prop
-watch(() => props.initialSearchQuery, (newValue) => {
-  // Update search query when prop changes (handles empty strings too)
-  searchQuery.value = newValue || ''
-})
-
-const filteredItems = computed(() => {
-  let items = props.items
-  
-  // Apply type filter if provided
-  if (props.typeFilter && props.typeFilter !== 'all') {
-    items = items.filter(item => item.type === props.typeFilter)
-  }
-  
-  // Apply search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    items = items.filter(item => {
-      const name = props.getName(item).toLowerCase()
-      const vehicle = props.getVehicleInfo ? props.getVehicleInfo(item).toLowerCase() : ''
-      const itemId = String(item.id || '').toLowerCase()
-      return name.includes(query) || (vehicle && vehicle.includes(query)) || itemId.includes(query)
-    })
-  }
-  
-  return items
-})
-
-const isSelected = (item) => {
-  const itemId = item.compositeId || `${item.type || 'task'}-${item.id}` || item.id
-  return props.selectedId === itemId
-}
-
-const selectSort = (sortOption) => {
-  currentSort.value = sortOption
-  emit('sort-change', sortOption)
-}
-
-// Refs for scroll functionality
+const searchQuery = ref(props.initialSearchQuery)
 const scrollContainer = ref(null)
+const currentSort = ref('recent-first')
+
+// Watch for initialSearchQuery changes
+watch(() => props.initialSearchQuery, (newVal) => {
+  searchQuery.value = newVal
+})
+
+// Filter items based on search query
+const filteredItems = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return props.items
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim()
+  return props.items.filter(item => {
+    const name = props.getName(item).toLowerCase()
+    const vehicleInfo = props.getVehicleInfo(item).toLowerCase()
+    return name.includes(query) || vehicleInfo.includes(query)
+  })
+})
+
+// Check if item is selected
+const isSelected = (item) => {
+  if (!props.selectedId) return false
+  const itemId = item.compositeId || `${item.type || 'task'}-${item.id}`
+  return itemId === props.selectedId
+}
+
+// Handle sort selection
+const selectSort = (option) => {
+  currentSort.value = option
+  emit('sort-change', option)
+}
 </script>
-
-<style scoped>
-/* Dropdown animations */
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-5px);
-}
-</style>

@@ -2,41 +2,8 @@
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
     <header class="bg-surface border-b border shrink-0">
-      <!-- View Switcher (before ContactInfo) -->
-      <div class="px-4 md:px-8 py-2 border-b border flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-sub font-medium">View:</span>
-          <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
-            <button
-              @click="viewMode = 'default'"
-              :class="[
-                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
-                viewMode === 'default' 
-                  ? 'bg-surface text-heading shadow-sm' 
-                  : 'text-sub hover:text-body'
-              ]"
-            >
-              <i class="fa-solid fa-align-left text-xs"></i>
-              <span>Default</span>
-            </button>
-            <button
-              @click="viewMode = 'grid'"
-              :class="[
-                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
-                viewMode === 'grid' 
-                  ? 'bg-surface text-heading shadow-sm' 
-                  : 'text-sub hover:text-body'
-              ]"
-            >
-              <i class="fa-solid fa-grip text-xs"></i>
-              <span>Grid</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact Info Header (only shown in default view) -->
-      <div v-if="viewMode === 'default'" class="px-4 md:px-8 py-3 md:py-4">
+      <!-- Contact Info Header (only shown for customer view, not tasks) -->
+      <div v-if="!isTasksView" class="px-4 md:px-8 py-3 md:py-4">
         <ContactInfo
           :initials="task.customer.initials"
           :name="task.customer.name"
@@ -76,8 +43,8 @@
       </div>
     </header>
 
-    <!-- DEFAULT VIEW: Two-column layout with Tabs+Content | Activity Timeline -->
-    <div v-if="viewMode === 'default'" class="flex-1 flex flex-row overflow-hidden">
+    <!-- DEFAULT VIEW: Two-column layout with Tabs+Content | Activity Timeline (only for customer view) -->
+    <div v-if="!isTasksView" class="flex-1 flex flex-row overflow-hidden">
       <!-- Left: Tabs and Content -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <!-- Content area with feed -->
@@ -164,7 +131,7 @@
               />
 
               <NoteWidget
-                v-if="showInlineWidget === 'note'"
+                v-if="activeTab === 'data' && showInlineWidget === 'note'"
                 :item="editingItem"
                 :task-type="type"
                 :task-id="task.id"
@@ -210,10 +177,11 @@
       />
     </div>
 
-    <!-- GRID VIEW: Tabbed layout -->
-    <div v-else-if="viewMode === 'grid'" class="flex-1 flex flex-col overflow-hidden">
-      <!-- Content area with tabs -->
-      <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+    <!-- GRID VIEW: Tabbed layout (only for tasks) -->
+    <div v-else-if="isTasksView" class="flex-1 flex flex-row overflow-hidden">
+      <!-- Left: Content area with tabs -->
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
         <!-- Main Tabs -->
         <Tabs 
           v-model="gridMainTab"
@@ -243,16 +211,6 @@
               @add-tag="showAddTagModal = true"
             />
           </div>
-
-          <!-- Activity Summary (full width) -->
-          <ActivitySummarySidebar
-            :title="'Activity summary'"
-            :activities="allActivities"
-            :collapsed="false"
-            :show-collapse="false"
-            :show="true"
-            class="!w-full border border rounded-xl shadow-sm"
-          />
         </div>
 
         <!-- Tab 2: Manage -->
@@ -365,6 +323,26 @@
 
         <!-- Tab 3: Data -->
         <div v-if="gridMainTab === 'data'" class="space-y-6">
+          <!-- Notes Card -->
+          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-note-sticky text-sub text-sm"></i>
+                <h3 class="font-bold text-heading text-base">Notes</h3>
+              </div>
+              <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-sm">
+                  <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
+                  <p>No notes yet</p>
+                </div>
+                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                  <div class="text-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
+                  <p class="text-sm text-body">{{ note.content }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Attachments Card -->
           <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
             <div class="p-6">
@@ -475,28 +453,19 @@
           </div>
         </div>
 
-        <!-- Tab 4: Notes -->
-        <div v-if="gridMainTab === 'notes'" class="space-y-6">
-          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-note-sticky text-sub text-sm"></i>
-                <h3 class="font-bold text-heading text-base">Notes</h3>
-              </div>
-              <div class="space-y-2 max-h-[600px] overflow-y-auto">
-                <div v-if="gridNotes.length === 0" class="text-center py-8 text-sub text-sm">
-                  <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
-                  <p>No notes yet</p>
-                </div>
-                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
-                  <div class="text-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
-                  <p class="text-sm text-body">{{ note.content }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+
+      <!-- Right: Activity Timeline (collapsed by default) -->
+      <ActivitySummarySidebar
+        :title="'Activity summary'"
+        :activities="allActivities"
+        :collapsed="activitySidebarCollapsed"
+        :show-collapse="true"
+        :show="true"
+        class="hidden lg:flex"
+        @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
+      />
     </div>
 
     <!-- Financing Modal -->
@@ -600,12 +569,9 @@ const router = useRouter()
 
 const taskId = computed(() => props.task.id)
 
-// View mode state with localStorage persistence
-const viewMode = ref(localStorage.getItem('taskDetailViewMode') || 'default')
-
-// Watch for changes and persist
-watch(viewMode, (newMode) => {
-  localStorage.setItem('taskDetailViewMode', newMode)
+// Check if we're on the tasks view (not the customer view)
+const isTasksView = computed(() => {
+  return route.path.startsWith('/tasks') && !route.path.startsWith('/customer')
 })
 
 // Grid view main tabs state
@@ -613,8 +579,7 @@ const gridMainTab = ref('request')
 const gridMainTabs = [
   { key: 'request', label: 'Request' },
   { key: 'manage', label: 'Manage' },
-  { key: 'data', label: 'Data' },
-  { key: 'notes', label: 'Notes' }
+  { key: 'data', label: 'Data' }
 ]
 
 // Grid view communication state
@@ -736,11 +701,6 @@ const getAvatarColorClass = computed(() => {
   return 'bg-purple-100 text-purple-600' // opportunity
 })
 
-// Check if we're on the tasks view (not the customer view)
-const isTasksView = computed(() => {
-  return route.path.startsWith('/tasks') && !route.path.startsWith('/customer')
-})
-
 // Activity sidebar collapse state - collapsed by default on tasks page, expanded on customer page
 const activitySidebarCollapsed = ref(route.path.startsWith('/tasks') && !route.path.startsWith('/customer'))
 
@@ -841,7 +801,7 @@ const handleContactInfoAction = (action) => {
   
   // Map actions to tabs
   const actionToTab = {
-    'note': 'note',
+    'note': 'data',
     'attachment': 'attachment',
     'email': 'communication',
     'whatsapp': 'communication',
@@ -897,7 +857,7 @@ const handleOverviewModalSave = async (data) => {
 const tabs = computed(() => {
   return [
     { key: 'overview', label: 'Overview' },
-    { key: 'note', label: 'Notes' },
+    { key: 'data', label: 'Data' },
     { key: 'communication', label: 'Communication' },
     { key: 'attachment', label: 'Attachments' }
   ]

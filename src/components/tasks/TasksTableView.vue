@@ -8,8 +8,38 @@
             <h1 class="page-header-title">Tasks</h1>
           </div>
           
-          <!-- Right Actions: Show Closed + View Toggle -->
+          <!-- Right Actions: View Toggle + Show Closed -->
           <div class="flex items-center gap-3">
+            <!-- View Toggle -->
+            <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
+              <button
+                @click="$emit('view-change', 'card')"
+                :class="[
+                  'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                  viewMode === 'card' 
+                    ? 'bg-surface text-heading shadow-sm' 
+                    : 'text-sub hover:text-body'
+                ]"
+                title="Card View"
+              >
+                <i class="fa-solid fa-columns text-xs"></i>
+                <span>Card</span>
+              </button>
+              <button
+                @click="$emit('view-change', 'table')"
+                :class="[
+                  'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                  viewMode === 'table' 
+                    ? 'bg-surface text-heading shadow-sm' 
+                    : 'text-sub hover:text-body'
+                ]"
+                title="Table View"
+              >
+                <i class="fa-solid fa-table text-xs"></i>
+                <span>Table</span>
+              </button>
+            </div>
+            
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
@@ -18,16 +48,6 @@
               <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
             </button>
-            
-            <!-- View Toggle -->
-            <ViewToggle
-              :view="viewMode"
-              :options="[
-                { value: 'card', icon: 'fa-solid fa-table', label: 'Cards' },
-                { value: 'table', icon: 'fa-solid fa-list', label: 'Table' }
-              ]"
-              @update:view="$emit('view-change', $event)"
-            />
           </div>
         </div>
       </div>
@@ -81,7 +101,6 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
-import ViewToggle from '@/components/shared/ViewToggle.vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
@@ -102,14 +121,10 @@ const props = defineProps({
   getVehicleType: { type: Function, required: true },
   getVehicleTypeBadgeClass: { type: Function, required: true },
   getOwnerInfo: { type: Function, required: true },
-  getStageBadgeClass: { type: Function, required: true },
-  viewMode: {
-    type: String,
-    default: 'table'
-  }
+  getStageBadgeClass: { type: Function, required: true }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close', 'view-change'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close'])
 
 const settingsStore = useSettingsStore()
 const searchQuery = ref('')
@@ -379,11 +394,6 @@ const columns = computed(() => [
 const handleRowClick = (record) => {
   // Set search filter to task ID to highlight the clicked record
   globalFilter.value = String(record.id)
-  
-  // Switch to card view when clicking on a table row, and pass the task ID as search query
-  if (props.viewMode === 'table') {
-    emit('view-change', 'card', String(record.id))
-  }
   
   emit('select', record.compositeId)
 }

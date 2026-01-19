@@ -21,6 +21,7 @@
           :type-filter="typeFilter"
           :view-mode="viewMode"
           :initial-search-query="cardSearchQuery"
+          @view-change="handleViewChange"
           :selected-class="(task) => task.type === 'lead' ? 'bg-surface border-2 border-blue-500 shadow-md' : 'bg-surface border-2 border-purple-500 shadow-md'"
           :unselected-class="getUnselectedClass"
           :open-menu-id="openCardMenu"
@@ -84,7 +85,6 @@
           :show-type-filter="shouldShowTypeFilter"
           @filter-change="typeFilter = $event"
           @sort-change="handleSortChange"
-          @view-change="handleViewChange"
         >
           <template #badges="{ item: task }">
             <!-- Type Badge -->
@@ -447,8 +447,21 @@ const loadTaskById = (id) => {
 const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
-  // When selecting a task in table view, stay in table view and show split view
-  // The split view will show table on left and detail panel on right
+  
+  // Find the task to get customer name for search
+  const task = allTasks.value.find(t => t.compositeId === compositeId)
+  
+  // Switch to card view
+  viewMode.value = 'card'
+  
+  // Set search query to customer name or task ID for filtering/highlighting
+  if (task && task.customer && task.customer.name) {
+    cardSearchQuery.value = task.customer.name
+  } else {
+    cardSearchQuery.value = id
+  }
+  
+  // Navigate to the task
   router.push({ path: `/tasks/${id}`, query: { type } })
 }
 
