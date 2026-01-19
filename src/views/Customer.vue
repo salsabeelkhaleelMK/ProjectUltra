@@ -25,6 +25,15 @@
           :customer-data="customerData"
         />
         
+        <!-- Recent Activities Widget -->
+        <RecentActivitiesWidget
+          :next-appointment="nextAppointment"
+          :activities="customerActivities"
+          :leads="customerLeads"
+          :opportunities="customerOpportunities"
+          :customer-id="taskId"
+        />
+        
         <!-- Customer Cars Carousel - All cars from leads/opportunities -->
         <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
         
@@ -69,9 +78,10 @@ import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportuni
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
+import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { fetchLeadActivities } from '@/api/leads'
-import { fetchOpportunityActivities } from '@/api/opportunities'
+import { fetchOpportunityActivities, fetchAppointmentByCustomerId } from '@/api/opportunities'
 
 const route = useRoute()
 const router = useRouter()
@@ -89,6 +99,7 @@ const customerOpportunities = ref([])
 const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
+const nextAppointment = ref(null)
 
 // Get task ID from route - customer page always shows contact view
 const taskId = computed(() => parseInt(route.params.id))
@@ -181,6 +192,14 @@ const loadCustomerData = async (explicitId = null) => {
       }
     }
     customerActivities.value = allActivities
+    
+    // Fetch next appointment
+    try {
+      nextAppointment.value = await fetchAppointmentByCustomerId(customerId)
+    } catch (err) {
+      console.error('Failed to load next appointment:', err)
+      nextAppointment.value = null
+    }
   } catch (err) {
     console.error('Error loading customer data:', err)
   }
