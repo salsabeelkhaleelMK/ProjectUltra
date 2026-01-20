@@ -526,9 +526,7 @@
 
 .fc .fc-more-link:hover {
   color: var(--brand-red-dark) !important;
-}
-
-/* DataTable Component Wrapper */
+}/* DataTable Component Wrapper */
 /* Removed isolation: isolate - it was preventing component library styles from applying */
 .table-wrapper {
   /* Let component library styles apply naturally */

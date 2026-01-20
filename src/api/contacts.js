@@ -250,9 +250,7 @@ export const fetchTasksByLeadId = async (leadId) => {
   await delay()
   const tasks = mockTasks.filter(task => task.leadId === parseInt(leadId))
   return { data: tasks, total: tasks.length }
-}
-
-// Fetch all tasks associated with an opportunity
+}// Fetch all tasks associated with an opportunity
 export const fetchTasksByOpportunityId = async (opportunityId) => {
   await delay()
   const tasks = mockTasks.filter(task => task.opportunityId === parseInt(opportunityId))
