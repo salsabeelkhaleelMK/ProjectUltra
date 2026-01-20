@@ -355,11 +355,19 @@ export const mockCustomers = [
     phone: '+4901888999000', 
     address: 'Via Garibaldi 20, 50123 Firenze', 
     company: null, 
-    source: 'Google Ads', 
+    source: 'Facebook', 
     tags: [], 
     createdAt: '2024-12-05T10:00:00', 
-    lastContact: '2024-12-15T11:00:00',
-    summary: 'Family buyer seeking spacious vehicle for long trips. Prefers email for initial contact. Interested in SUVs or minivans with good cargo space. Budget: €40,000-€60,000. Values comfort and safety features.'
+    lastContact: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    summary: 'Family buyer who was unreachable after multiple contact attempts. Submitted inquiry for Ford Focus but phone went unanswered on 4 attempts over 2 weeks. Auto-disqualified as unreachable. May have changed contact information or lost interest. Budget: €25,000-€30,000.',
+    preferredVehicleType: 'Sedan',
+    preferredChannel: 'Phone',
+    preferredContactTime: 'Unknown (unreachable)',
+    budgetRange: '€25K-€30K'
   },
   { 
     id: 24, 

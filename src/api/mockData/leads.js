@@ -1755,6 +1755,100 @@ export const mockLeads = [
     disqualifyReason: null,
     scheduledAppointment: null,
     contactAttempts: []
+  },
+  // Lead 33 - Auto-Disqualified after reaching maximum contact attempts (unreachable)
+  {
+    id: 33,
+    customerId: 23,
+    status: 'Disqualified',
+    priority: 'Normal',
+    requestedCar: {
+      brand: 'Ford',
+      model: 'Focus',
+      year: 2023,
+      price: 26000,
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
+      vin: 'FORD123456789',
+      kilometers: 10,
+      status: 'Used',
+      fuelType: 'Petrol',
+      gearType: 'Manual',
+      registration: '06/2023',
+      dealership: 'Hamburg',
+      stockDays: 200,
+      requestMessage: 'Interested in Focus. Could not be reached after multiple attempts.'
+    },
+    carStatus: 'In Stock',
+    requestType: 'Quotation',
+    source: 'Facebook',
+    fiscalEntity: '',
+    sourceDetails: '',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 14)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    nextActionDue: null,
+    tags: [],
+    stage: 'Not Interested',
+    isDisqualified: true,
+    disqualifyReason: 'Maximum contact attempts reached - unreachable',
+    disqualifyCategory: 'Not Interested',
+    autoDisqualified: true, // Flag to indicate this was auto-disqualified by the system
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 12)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'First attempt - no answer. Left voicemail.',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 9)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Second attempt - no answer. Phone rings but no pickup.',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 6)
+          return date.toISOString()
+        })(),
+        outcome: 'voicemail',
+        channel: 'phone',
+        notes: 'Third attempt - left another voicemail with callback number.',
+        transcription: null
+      },
+      {
+        timestamp: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 3)
+          return date.toISOString()
+        })(),
+        outcome: 'no-answer',
+        channel: 'phone',
+        notes: 'Final attempt (4th) - no answer. Maximum attempts reached. Auto-disqualified as unreachable.',
+        transcription: null
+      }
+    ]
   }
 ]
 

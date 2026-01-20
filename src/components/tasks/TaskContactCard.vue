@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-card flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
       <!-- Contact Details -->
       <div class="space-y-2 mb-4">
       <!-- Customer Name -->
