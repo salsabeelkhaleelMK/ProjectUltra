@@ -3,18 +3,32 @@ import { ref } from 'vue'
 import * as usersApi from '@/api/users'
 
 export const useUserStore = defineStore('user', () => {
-  // State
-  const currentUser = ref(null)
-  const isAuthenticated = ref(false)
+  // State - Initialize with mock data to prevent null access errors
+  // This will be replaced when real authentication is implemented
+  const currentUser = ref({
+    id: 1,
+    name: 'Salsabeel Khaleel',
+    email: 'salsabeel@motork.io',
+    role: 'manager',
+    initials: 'SK'
+  })
+  const isAuthenticated = ref(true)
   
-  // Initialize with default user
+  // Load full user data from API
   const initializeUser = async () => {
-    const users = await usersApi.fetchUsers()
-    currentUser.value = users[0] // Default: First user (Salsabeel Khaleel - manager)
-    isAuthenticated.value = true
+    try {
+      const users = await usersApi.fetchUsers()
+      if (users && users.length > 0) {
+        currentUser.value = users[0] // Default: First user (Salsabeel Khaleel - manager)
+        isAuthenticated.value = true
+      }
+    } catch (error) {
+      // Keep default user if API fails
+      console.error('Failed to initialize user:', error)
+    }
   }
   
-  // Auto-initialize on store creation
+  // Auto-initialize on store creation (async, won't block)
   initializeUser()
   
   // Getters
