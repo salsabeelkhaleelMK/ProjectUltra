@@ -82,6 +82,7 @@
                 @car-added="$emit('car-added', $event)"
                 @convert-to-lead="$emit('convert-to-lead')"
                 @convert-to-opportunity="$emit('convert-to-opportunity')"
+                @view-history="handleViewHistory"
                 @vehicle-selected="handleVehicleSelected"
                 @create-offer="handleCreateOffer"
               />
@@ -186,18 +187,19 @@
         <div v-if="gridMainTab === 'manage'" class="space-y-6">
           <!-- Management Widget -->
           <div v-if="managementWidget">
-            <component
-              :is="managementWidget"
-              :lead="type === 'lead' ? task : undefined"
-              :opportunity="type === 'opportunity' ? task : undefined"
-              :contact="type === 'contact' ? task : undefined"
-              :activities="allActivities"
-              @car-added="$emit('car-added', $event)"
-              @convert-to-lead="$emit('convert-to-lead')"
-              @convert-to-opportunity="$emit('convert-to-opportunity')"
-              @vehicle-selected="handleVehicleSelected"
-              @create-offer="handleCreateOffer"
-            />
+          <component
+            :is="managementWidget"
+            :lead="type === 'lead' ? task : undefined"
+            :opportunity="type === 'opportunity' ? task : undefined"
+            :contact="type === 'contact' ? task : undefined"
+            :activities="allActivities"
+            @car-added="$emit('car-added', $event)"
+            @convert-to-lead="$emit('convert-to-lead')"
+            @convert-to-opportunity="$emit('convert-to-opportunity')"
+            @vehicle-selected="handleVehicleSelected"
+            @create-offer="handleCreateOffer"
+            @view-history="handleViewHistory"
+          />
           </div>
 
           <!-- Communicate -->
@@ -751,6 +753,16 @@ const {
 watch(() => props.task.id, () => {
   activeTab.value = 'overview'
 })
+
+// Handle view history - switch to Request tab (for tasks view)
+const handleViewHistory = () => {
+  if (isTasksView.value) {
+    gridMainTab.value = 'request'
+  } else {
+    // For customer view, switch to overview tab (which shows activity summary sidebar)
+    activeTab.value = 'overview'
+  }
+}
 
 // Wrapper to handle modal actions
 const handleAddNewAction = (action) => {
