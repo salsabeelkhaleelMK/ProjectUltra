@@ -1,22 +1,22 @@
 <template>
-  <div class="bg-surface border border-E5E7EB rounded-lg p-6 space-y-4">
-    <div class="flex items-center justify-between mb-2">
+  <div class="bg-surface border border-E5E7EB rounded-card p-6 space-y-4">
+    <button
+      @click="isExpanded = !isExpanded"
+      class="w-full flex items-center justify-between mb-2"
+    >
       <h5 class="font-semibold text-heading text-fluid-sm">Schedule Appointment</h5>
-      <button
-        v-if="canCancel"
-        @click="handleCancel"
-        class="text-fluid-xs text-sub hover:text-body transition-colors"
-      >
-        <i class="fa-solid fa-times"></i>
-      </button>
-    </div>
+      <i 
+        class="fa-solid text-fluid-xs text-sub transition-transform"
+        :class="isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"
+      ></i>
+    </button>
 
-    <div class="space-y-4">
-      <!-- Appointment Type -->
+    <div v-if="isExpanded" class="space-y-4">
+      <!-- Event Type -->
       <div>
-        <label class="block text-fluid-xs font-medium text-sub mb-1.5">Appointment Type</label>
-        <select v-model="appointmentType" class="input text-fluid-sm">
-          <option value="" disabled>Select type...</option>
+        <label class="block text-fluid-xs font-medium text-sub mb-1.5">Event type</label>
+        <select v-model="appointmentType" class="input text-fluid-sm w-full">
+          <option value="" disabled>Select event type</option>
           <option>Showroom Visit</option>
           <option>Test Drive</option>
           <option>Video Call</option>
@@ -25,140 +25,111 @@
         </select>
       </div>
       
-      <!-- Date Selection -->
+      <!-- Duration -->
       <div>
-        <label class="block text-fluid-xs font-medium text-sub mb-1.5">Select Date</label>
-        <input 
-          type="date" 
-          v-model="appointmentDate" 
-          :min="minDate" 
-          class="input text-fluid-sm"
-        >
-      </div>
-      
-      <!-- Assigned To Display -->
-      <div v-if="currentAssignee" class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
-        <div class="flex items-center justify-between mb-2">
-          <label class="text-fluid-xs font-medium text-sub">Assigned to</label>
+        <label class="block text-fluid-xs font-medium text-sub mb-1.5">Duration</label>
+        <div class="flex gap-2">
           <button 
-            @click="showAssigneeChange = !showAssigneeChange"
-            class="text-fluid-xs text-sub hover:text-brand-dark hover:underline font-medium transition-colors"
+            @click="duration = '30min'"
+            class="px-4 py-2 border-2 rounded-btn text-fluid-sm font-medium transition-all"
+            :class="duration === '30min' 
+              ? 'border-green-600 bg-surfaceSecondary text-heading' 
+              : 'border-E5E7EB text-body hover:border-green-600/30'"
           >
-            {{ showAssigneeChange ? 'Cancel' : 'Change' }}
+            30min
+          </button>
+          <button 
+            @click="duration = '60min'"
+            class="px-4 py-2 border-2 rounded-btn text-fluid-sm font-medium transition-all"
+            :class="duration === '60min' 
+              ? 'border-green-600 bg-surfaceSecondary text-heading' 
+              : 'border-E5E7EB text-body hover:border-green-600/30'"
+          >
+            60min
+          </button>
+          <button 
+            @click="duration = 'custom'"
+            class="px-4 py-2 border-2 rounded-btn text-fluid-sm font-medium transition-all"
+            :class="duration === 'custom' 
+              ? 'border-green-600 bg-surfaceSecondary text-heading' 
+              : 'border-E5E7EB text-body hover:border-green-600/30'"
+          >
+            Custom
           </button>
         </div>
-        
-        <div v-if="!showAssigneeChange" class="flex items-center gap-3">
-          <div 
-            class="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-fluid-sm"
-            :class="assigneeDisplay.avatarClass"
-          >
-            <i v-if="assigneeDisplay.isTeam" class="fa-solid fa-users text-fluid-sm"></i>
-            <span v-else>{{ assigneeDisplay.initials }}</span>
-          </div>
-          <div class="flex-1">
-            <p class="font-medium text-fluid-sm text-heading">{{ assigneeDisplay.name }}</p>
-            <p class="text-fluid-xs text-sub capitalize">{{ assigneeDisplay.subtitle }}</p>
-          </div>
-        </div>
-        
-        <!-- Change Assignee Dropdown -->
-        <div v-else class="animate-fade-in">
-          <select v-model="selectedAssignee" class="input text-fluid-sm">
-            <optgroup label="Teams">
-              <option v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
-                {{ team.name }} Team
-              </option>
-            </optgroup>
-            <optgroup label="Users">
-              <option v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
-                {{ user.name }}{{ user.id === userStore.currentUser?.id ? ' (Me)' : '' }}
-              </option>
-            </optgroup>
-          </select>
-        </div>
       </div>
       
-      <!-- Availability Status -->
-      <div v-if="appointmentDate && selectedAssignee">
-        <div v-if="availabilityStatus === 'none'" class="bg-amber-50 border border-amber-200 rounded-lg p-3 animate-fade-in">
-          <div class="flex items-start gap-2">
-            <i class="fa-solid fa-calendar-xmark text-amber-600 mt-0.5"></i>
-            <div class="flex-1">
-              <p class="text-fluid-sm font-medium text-amber-900">No availability on this date</p>
-              <p class="text-fluid-xs text-amber-700 mt-1">
-                Try selecting a different date or 
-                <button @click="showAlternatives = !showAlternatives" class="underline font-medium">
-                  view other {{ assigneeDisplay.isTeam ? 'teams' : 'salespeople' }}
-                </button>
-              </p>
+      <!-- Calendar and Time Slots - Two Column Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column - Calendar -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <button 
+              @click="previousMonth"
+              class="p-1 hover:bg-surfaceSecondary rounded transition-colors"
+            >
+              <i class="fa-solid fa-chevron-left text-fluid-sm text-body"></i>
+            </button>
+            <h6 class="text-fluid-sm font-semibold text-heading">{{ currentMonthYear }}</h6>
+            <button 
+              @click="nextMonth"
+              class="p-1 hover:bg-surfaceSecondary rounded transition-colors"
+            >
+              <i class="fa-solid fa-chevron-right text-fluid-sm text-body"></i>
+            </button>
+          </div>
+          
+          <!-- Calendar Grid -->
+          <div class="grid grid-cols-7 gap-1 mb-2">
+            <div v-for="day in ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']" 
+              :key="day"
+              class="text-center text-fluid-xs font-medium text-sub py-2">
+              {{ day }}
             </div>
           </div>
           
-          <!-- Show Alternatives -->
-          <div v-if="showAlternatives && alternatives.length > 0" class="mt-3 pt-3 border-t border-amber-200">
-            <p class="text-fluid-xs font-medium text-amber-900 mb-2">Available alternatives:</p>
-            <div class="space-y-1">
-              <button
-                v-for="alt in alternatives.slice(0, 3)"
-                :key="alt.assigneeId"
-                @click="selectAlternative(alt)"
-                class="w-full text-left p-2 rounded bg-white hover:bg-amber-50 border border-amber-200 transition-colors"
-              >
-                <p class="text-fluid-sm font-medium text-heading">{{ alt.name }}</p>
-                <p class="text-fluid-xs text-sub">{{ alt.slotCount }} slots available</p>
-              </button>
+          <div class="grid grid-cols-7 gap-1">
+            <div 
+              v-for="(day, index) in calendarDays" 
+              :key="index"
+              @click="selectDate(day)"
+              class="aspect-square flex items-center justify-center text-fluid-sm font-medium rounded-btn cursor-pointer transition-all"
+              :class="isSelectedDate(day) 
+                ? 'bg-green-600 text-white' 
+                : day ? 'text-body hover:bg-surfaceSecondary' : 'text-transparent'"
+            >
+              {{ day }}
             </div>
           </div>
         </div>
-        
-        <div v-else-if="availabilityStatus === 'limited'" class="bg-blue-50 border border-blue-200 rounded-lg p-3 animate-fade-in">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-clock text-blue-600"></i>
-            <p class="text-fluid-sm text-blue-700">
-              <span class="font-medium">Limited availability</span> - Book soon!
-            </p>
+
+        <!-- Right Column - Time Slots -->
+        <div>
+          <h6 class="text-fluid-sm font-semibold text-heading mb-4">{{ selectedDateLabel }}</h6>
+          <div v-if="appointmentDate && availableSlots.length > 0" class="space-y-2">
+            <button 
+              v-for="slot in availableSlots"
+              :key="slot"
+              @click="selectedTimeSlot = slot"
+              class="w-full py-2 px-4 border-2 rounded-btn text-fluid-sm font-medium text-left transition-all"
+              :class="selectedTimeSlot === slot 
+                ? 'border-green-600 bg-surfaceSecondary text-heading' 
+                : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
+            >
+              {{ slot }}
+            </button>
           </div>
-        </div>
-        
-        <div v-else-if="availabilityStatus === 'good'" class="bg-green-50 border border-green-200 rounded-lg p-3 animate-fade-in">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-check-circle text-green-600"></i>
-            <p class="text-fluid-sm text-green-700">
-              <span class="font-medium">Good availability</span> on this date
-            </p>
+          <div v-else-if="appointmentDate && availableSlots.length === 0" class="text-fluid-sm text-sub py-4 text-center">
+            No available time slots for this date
           </div>
-        </div>
-      </div>
-      
-      <!-- Available Time Slots -->
-      <div v-if="availableSlots.length > 0" class="animate-fade-in">
-        <label class="block text-fluid-xs font-medium text-sub mb-2">Available Time Slots</label>
-        <div class="grid grid-cols-4 gap-2">
-          <button 
-            v-for="slot in availableSlots"
-            :key="slot"
-            @click="selectedTimeSlot = slot"
-            class="py-2 border rounded-lg text-fluid-xs font-medium transition-all"
-            :class="selectedTimeSlot === slot 
-              ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' 
-              : 'border-E5E7EB text-body hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
-          >
-            {{ slot }}
-          </button>
+          <div v-else class="text-fluid-sm text-sub py-4 text-center">
+            Select a date to see available time slots
+          </div>
         </div>
       </div>
       
       <!-- Confirm Button -->
       <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
-        <Button
-          v-if="canCancel"
-          label="Cancel"
-          variant="outline"
-          size="small"
-          class="text-fluid-sm"
-          @click="handleCancel"
-        />
         <Button
           label="Confirm Appointment"
           variant="primary"
@@ -205,6 +176,11 @@ const appointmentDate = ref('')
 const selectedTimeSlot = ref('')
 const showAssigneeChange = ref(false)
 const showAlternatives = ref(false)
+const duration = ref('30min')
+const currentMonth = ref(new Date().getMonth())
+const currentYear = ref(new Date().getFullYear())
+const selectedDay = ref(null)
+const isExpanded = ref(false)
 
 // Get assignable users and teams from store
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -215,6 +191,79 @@ const minDate = computed(() => {
   const today = new Date()
   return today.toISOString().split('T')[0]
 })
+
+// Current month/year display
+const currentMonthYear = computed(() => {
+  const date = new Date(currentYear.value, currentMonth.value)
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+})
+
+// Calendar days for current month
+const calendarDays = computed(() => {
+  const firstDay = new Date(currentYear.value, currentMonth.value, 1)
+  const lastDay = new Date(currentYear.value, currentMonth.value + 1, 0)
+  const daysInMonth = lastDay.getDate()
+  const startingDayOfWeek = firstDay.getDay()
+  
+  const days = []
+  // Empty cells for days before month starts
+  for (let i = 0; i < startingDayOfWeek; i++) {
+    days.push(null)
+  }
+  // Days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    days.push(day)
+  }
+  return days
+})
+
+// Selected date label
+const selectedDateLabel = computed(() => {
+  if (!selectedDay.value || !appointmentDate.value) {
+    return 'Select a date'
+  }
+  const date = new Date(appointmentDate.value)
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`
+})
+
+// Check if date is selected
+const isSelectedDate = (day) => {
+  if (!day || !appointmentDate.value) return false
+  const selected = new Date(appointmentDate.value)
+  return selected.getDate() === day && 
+         selected.getMonth() === currentMonth.value && 
+         selected.getFullYear() === currentYear.value
+}
+
+// Select date
+const selectDate = (day) => {
+  if (!day) return
+  const date = new Date(currentYear.value, currentMonth.value, day)
+  appointmentDate.value = date.toISOString().split('T')[0]
+  selectedDay.value = day
+  selectedTimeSlot.value = ''
+}
+
+// Navigate months
+const previousMonth = () => {
+  if (currentMonth.value === 0) {
+    currentMonth.value = 11
+    currentYear.value--
+  } else {
+    currentMonth.value--
+  }
+}
+
+const nextMonth = () => {
+  if (currentMonth.value === 11) {
+    currentMonth.value = 0
+    currentYear.value++
+  } else {
+    currentMonth.value++
+  }
+}
 
 // Current assignee (either selected or preselected)
 const currentAssignee = computed(() => {
@@ -311,6 +360,12 @@ const selectAlternative = (alternative) => {
 watch(appointmentDate, () => {
   selectedTimeSlot.value = ''
   showAlternatives.value = false
+  if (appointmentDate.value) {
+    const date = new Date(appointmentDate.value)
+    selectedDay.value = date.getDate()
+    currentMonth.value = date.getMonth()
+    currentYear.value = date.getFullYear()
+  }
 })
 
 // Watch for assignee changes to reset time slot
@@ -319,9 +374,16 @@ watch(() => currentAssignee.value, () => {
   showAlternatives.value = false
 })
 
-// Initialize assignee
+// Initialize assignee immediately
+if (props.preselectedAssignee) {
+  selectedAssignee.value = `${props.preselectedAssignee.type}-${props.preselectedAssignee.id}`
+} else {
+  selectedAssignee.value = `user-${userStore.currentUser?.id || 1}`
+}
+
+// Watch for preselectedAssignee changes
 watch(() => props.preselectedAssignee, (newVal) => {
-  if (newVal && !selectedAssignee.value) {
+  if (newVal) {
     selectedAssignee.value = `${newVal.type}-${newVal.id}`
   }
 }, { immediate: true })
@@ -359,6 +421,7 @@ const handleConfirm = () => {
     type: appointmentType.value,
     date: appointmentDate.value,
     time: selectedTimeSlot.value,
+    duration: duration.value,
     ...assigneeData
   })
   

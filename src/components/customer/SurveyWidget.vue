@@ -1,50 +1,50 @@
 <template>
-  <div class="mt-1.5 border-t border pt-1.5">
+  <div>
     <!-- Collapsed State - Minimal Space -->
     <button
       v-if="!isExpanded"
       @click="isExpanded = true"
-      class="w-full flex items-center justify-between text-xs text-sub hover:text-body py-0.5 transition-colors"
+      class="w-full flex items-center justify-between text-fluid-sm text-body hover:text-heading py-2 transition-colors"
     >
-      <span class="font-medium">Survey / Feedback</span>
-      <i class="fa-solid fa-chevron-down text-xs"></i>
+      <span class="font-medium">Lead Qualification Survey</span>
+      <i class="fa-solid fa-chevron-down text-fluid-xs text-sub"></i>
     </button>
     
     <!-- Expanded State -->
-    <div v-else>
-      <div class="flex items-center justify-between mb-1.5">
-        <h5 class="text-xs font-semibold text-body">Survey / Feedback</h5>
+    <div v-else class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h5 class="text-fluid-sm font-semibold text-heading">Lead Qualification Survey</h5>
         <button
           @click="isExpanded = false"
-          class="text-xs text-gray-400 hover:text-gray-600 font-medium py-0.5"
+          class="text-fluid-xs text-sub hover:text-body transition-colors"
         >
-          <i class="fa-solid fa-chevron-up text-xs"></i>
+          <i class="fa-solid fa-chevron-up"></i>
         </button>
       </div>
       
-      <div class="space-y-1.5">
+      <div class="space-y-4">
         <!-- Survey Questions -->
         <div
           v-for="(question, index) in questions"
           :key="index"
-          class="bg-surfaceSecondary rounded-md p-1.5"
+          class="space-y-2"
         >
-          <label class="block label-upper mb-1">{{ question.label }}</label>
+          <label class="block text-fluid-sm font-medium text-body">{{ question.label }}</label>
           
           <!-- Text input -->
           <textarea
             v-if="question.type === 'text'"
             v-model="responses[question.key]"
             :placeholder="question.placeholder"
-            rows="2"
-            class="input resize-none text-xs py-1 px-2"
+            rows="3"
+            class="input resize-none text-fluid-sm py-2 px-3 w-full"
           ></textarea>
           
           <!-- Select dropdown -->
           <select
             v-else-if="question.type === 'select'"
             v-model="responses[question.key]"
-            class="input text-xs py-1 px-2"
+            class="input text-fluid-sm py-2 px-3 w-full"
           >
             <option value="">Select an option...</option>
             <option
@@ -59,18 +59,18 @@
           <!-- Radio buttons -->
           <div
             v-else-if="question.type === 'radio'"
-            class="space-y-0.5"
+            class="space-y-2"
           >
             <label
               v-for="option in question.options"
               :key="option"
-              class="flex items-center text-xs"
+              class="flex items-center text-fluid-sm text-body cursor-pointer"
             >
               <input
                 type="radio"
                 v-model="responses[question.key]"
                 :value="option"
-                class="mr-1"
+                class="mr-2 w-4 h-4 text-brand-red focus:ring-brand-red border-gray-300"
               />
               {{ option }}
             </label>
@@ -78,25 +78,26 @@
         </div>
         
         <!-- Action Buttons -->
-        <div class="flex gap-1.5 flex-wrap pt-0.5">
-          <button
+        <div class="flex gap-2 flex-wrap justify-end pt-2">
+          <Button
+            label="Complete Survey"
+            variant="primary"
+            size="small"
             @click="handleComplete"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
-          >
-            Complete Survey
-          </button>
-          <button
+            class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600"
+          />
+          <Button
+            label="Customer Refused"
+            variant="outline"
+            size="small"
             @click="handleRefuse"
-            class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
-          >
-            Customer Refused
-          </button>
-          <button
+          />
+          <Button
+            label="Not Responding"
+            variant="outline"
+            size="small"
             @click="handleNotResponding"
-            class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
-          >
-            Not Responding
-          </button>
+          />
         </div>
       </div>
     </div>
@@ -105,6 +106,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { Button } from '@motork/component-library'
 
 const props = defineProps({
   questions: {

@@ -6,7 +6,7 @@
     <template #closed-state>
       <div 
         v-if="isClosed && !activeTaskWidget"
-        class="bg-green-50/50 border border-green-100 rounded-lg p-4"
+        class="bg-green-50/50 border border-green-100 rounded-card p-4"
       >
         <div class="flex justify-between items-start mb-3">
           <div>

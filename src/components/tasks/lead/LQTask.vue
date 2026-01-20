@@ -83,7 +83,7 @@
           <button 
             @click="selectOutcome('no-answer')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'no-answer' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
+            :class="selectedOutcome === 'no-answer' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-phone-slash text-sm"></i>
             <span>No answer</span>
@@ -92,7 +92,7 @@
           <button 
             @click="selectOutcome('not-valid')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'not-valid' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
+            :class="selectedOutcome === 'not-valid' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-ban text-sm"></i>
             <span>Not valid</span>
@@ -101,7 +101,7 @@
           <button 
             @click="selectOutcome('interested')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'interested' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
+            :class="selectedOutcome === 'interested' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-check-circle text-sm"></i>
             <span>Interested</span>
@@ -131,22 +131,22 @@
           <div class="grid grid-cols-3 gap-2">
             <button 
               @click="rescheduleTime = 'tomorrow-9am'"
-              class="bg-surface border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-body transition-all"
-              :class="rescheduleTime === 'tomorrow-9am' ? 'border-primary-700 bg-primary-50 text-primary-700' : 'border-E5E7EB hover:border-primary-300 hover:bg-primary-50/50'"
+              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+              :class="rescheduleTime === 'tomorrow-9am' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
             >
               Tomorrow 9:00 AM
             </button>
             <button 
-              @click="rescheduleTime = 'monday'"
-              class="bg-surface border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-body transition-all"
-              :class="rescheduleTime === 'monday' ? 'border-primary-700 bg-primary-50 text-primary-700' : 'border-E5E7EB hover:border-primary-300 hover:bg-primary-50/50'"
+              @click="handleAISuggestionClick"
+              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+              :class="rescheduleTime === 'monday' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
             >
-              Monday
+              AI suggestion
             </button>
             <button 
               @click="rescheduleTime = 'custom'"
-              class="bg-surface border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-body transition-all"
-              :class="rescheduleTime === 'custom' ? 'border-primary-700 bg-primary-50 text-primary-700' : 'border-E5E7EB hover:border-primary-300 hover:bg-primary-50/50'"
+              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+              :class="rescheduleTime === 'custom' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
             >
               Select time
             </button>
@@ -169,6 +169,14 @@
                 class="input"
               >
             </div>
+          </div>
+          
+          <!-- AI Suggestion Explanation -->
+          <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-fluid-xs text-body">
+              <span class="font-semibold text-heading">AI Suggestion:</span> 
+              {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}. {{ aiSuggestionData.reason }}
+            </p>
           </div>
         </div>
         
@@ -219,7 +227,7 @@
           <label class="block text-fluid-xs font-medium text-body mb-2">Failure Reason</label>
           <select 
             v-model="disqualifyReason"
-            class="w-full bg-surface border-2 border-red-500 rounded-lg px-3 py-2 text-fluid-sm text-body focus:outline-none focus:border-red-600"
+            class="input"
           >
             <option value="">Select a reason...</option>
             <option value="Data cleanup">Data cleanup</option>
@@ -253,17 +261,17 @@
 
       <!-- Interested (Inline) -->
       <div v-if="selectedOutcome === 'interested'" class="space-y-4">
-        <!-- Customer Preferences Section (full width, first step) -->
+        <!-- Customer Data Section (full width, first step) -->
         <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer preferences</h5>
+          <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer data</h5>
           
-          <!-- Purchase Method, Trade-in, Financing, and Note Buttons -->
+          <!-- Trade-in, Financing, Vehicle, and Note Buttons -->
           <div class="flex gap-2 flex-wrap">
             <Button
-              label="+ Add purchase method"
+              label="+ Add vehicle"
               variant="primary"
               size="small"
-              @click="emit('open-purchase-method')"
+              @click="showVehicleModal = true"
               class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
             />
             <Button
@@ -291,15 +299,10 @@
         </div>
 
         <!-- Survey Section -->
-        <div v-if="showSurvey && !surveyCompleted" class="bg-surface border border-E5E7EB rounded-lg p-6 space-y-3">
-          <div class="flex items-center gap-2 pb-2 border-b border-E5E7EB">
-            <i class="fa-solid fa-clipboard-check text-brand-red text-sm"></i>
-            <h5 class="font-semibold text-heading text-fluid-sm">Lead Qualification Survey</h5>
-            <span class="text-fluid-xs text-sub ml-auto">(Optional but recommended)</span>
-          </div>
+        <div v-if="showSurvey && !surveyCompleted" class="bg-surface border border-E5E7EB rounded-lg p-6">
           <SurveyWidget
             :questions="leadQualificationSurveyQuestions"
-            :initial-expanded="true"
+            :initial-expanded="false"
             @survey-completed="handleSurveyCompleted"
             @survey-refused="handleSurveyRefused"
             @not-responding="handleNotResponding"
@@ -552,6 +555,15 @@
       @close="showFinancingModal = false"
     />
 
+    <!-- Add Vehicle Modal -->
+    <AddVehicleModal
+      :show="showVehicleModal"
+      :lead="lead"
+      :customer-id="lead.customerId"
+      @close="showVehicleModal = false"
+      @saved="handleVehicleSaved"
+    />
+
   </div>
 </template>
 
@@ -573,6 +585,7 @@ import ScheduleAppointmentInline from '@/components/tasks/shared/ScheduleAppoint
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import TradeInModal from '@/components/modals/TradeInModal.vue'
 import FinancingModal from '@/components/modals/FinancingModal.vue'
+import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import SurveyWidget from '@/components/customer/SurveyWidget.vue'
 import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
 import CommunicationSelector from '@/components/shared/communication/CommunicationSelector.vue'
@@ -638,6 +651,7 @@ const showAssignmentModal = ref(false)
 const showInlineAppointmentBooking = ref(false)
 const showTradeInModal = ref(false)
 const showFinancingModal = ref(false)
+const showVehicleModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -756,7 +770,9 @@ const {
   calculateNextCallDate,
   surveyCompleted,
   surveyResponses,
-  showSurvey
+  showSurvey,
+  aiSuggestionData,
+  handleAISuggestionClick
 } = outcomeState
 
 const existingNotes = computed(() => {
@@ -832,6 +848,18 @@ const handleFinancingSave = (financingData) => {
   showFinancingModal.value = false
   preferences.value.financing = true
   emit('note-saved', { type: 'financing', ...financingData })
+}
+
+// Handle vehicle save
+const handleVehicleSaved = async (vehicleData) => {
+  try {
+    showVehicleModal.value = false
+    const { addVehicleToCustomer } = await import('@/api/contacts')
+    await addVehicleToCustomer(props.lead.customerId, vehicleData)
+    emit('note-saved', { type: 'vehicle', ...vehicleData })
+  } catch (err) {
+    console.error('Error saving vehicle:', err)
+  }
 }
 
 // Handle follow-up communication send

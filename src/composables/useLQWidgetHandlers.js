@@ -153,6 +153,18 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     const appointmentDate = nextCallDate.split('T')[0]
     const appointmentTime = new Date(nextCallDate).toTimeString().slice(0, 5)
     
+    // Set lead to "to be called back" status by updating nextActionDue
+    if (leadsStore && lead.value?.id) {
+      try {
+        await leadsStore.updateLead(lead.value.id, {
+          nextActionDue: nextCallDate,
+          status: 'Pending'
+        })
+      } catch (error) {
+        console.error('Failed to update lead status to "to be called back":', error)
+      }
+    }
+    
     emit('postponed', {
       date: appointmentDate,
       time: appointmentTime,

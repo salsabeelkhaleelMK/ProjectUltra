@@ -3,7 +3,7 @@
     <!-- View Mode Toggle Button -->
     <div 
       v-if="task"
-      class="absolute top-3 right-[18px] z-50 flex items-center gap-1 bg-white border border-E5E7EB rounded-md shadow-sm p-0.5"
+      class="absolute top-3 right-[18px] z-50 flex items-center gap-1 bg-white border border-E5E7EB rounded-btn shadow-sm p-0.5"
     >
       <button
         @click="toggleViewMode('compact')"

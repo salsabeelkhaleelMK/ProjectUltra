@@ -1,19 +1,12 @@
 <template>
   <div 
-    class="overflow-hidden p-4"
-    style="
-      border-radius: var(--border-radius-rounded-lg, 10px);
-      background: var(--base-card, #FFF);
-      box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                  0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                  0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-    "
+    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
   >
     <!-- Card Header -->
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-lg">Customer information</h3>
+    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Customer information</h3>
     
     <!-- Contact Details -->
-    <div class="space-y-3">
+    <div class="space-y-2 mb-4">
       <!-- Customer Name -->
       <div class="flex justify-between gap-2 items-center">
         <p class="text-sm text-greys-500 shrink-0">Customer</p>
@@ -80,7 +73,7 @@
     <!-- Negotiations Banner -->
     <div 
       v-if="negotiationsCount > 0" 
-      class="rounded-lg p-3 mt-4 flex items-center gap-2"
+      class="rounded-btn p-3 flex items-center gap-2"
       style="background-color: rgba(59, 130, 246, 0.1);"
     >
       <Info :size="16" class="text-blue-600 shrink-0" />

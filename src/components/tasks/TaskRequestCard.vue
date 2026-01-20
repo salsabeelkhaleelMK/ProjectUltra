@@ -1,20 +1,13 @@
 <template>
   <div 
-    class="overflow-hidden p-4"
-    style="
-      border-radius: var(--border-radius-rounded-lg, 10px);
-      background: var(--base-card, #FFF);
-      box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                  0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                  0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-    "
+    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
   >
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-lg">Requested Car</h3>
+    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Requested Car</h3>
     
     <!-- Vehicle Image -->
     <div 
       v-if="imageUrl" 
-      class="w-full h-40 rounded-lg overflow-hidden mb-4 bg-gray-100"
+      class="w-full h-40 rounded-btn overflow-hidden mb-4 bg-gray-100"
     >
       <img 
         :src="imageUrl" 
@@ -25,7 +18,7 @@
     </div>
     <div 
       v-else
-      class="w-full h-40 rounded-lg overflow-hidden mb-4 bg-gray-100 flex items-center justify-center"
+      class="w-full h-40 rounded-btn overflow-hidden mb-4 bg-gray-100 flex items-center justify-center"
     >
       <Car :size="48" class="text-gray-400" />
     </div>
@@ -63,7 +56,7 @@
     <!-- Request Message -->
     <div 
       v-if="requestMessage" 
-      class="rounded-lg p-3 mb-4"
+      class="rounded-btn p-3 mb-4"
       style="background-color: var(--base-muted, #f5f5f5);"
     >
       <p class="text-xs text-greys-500 mb-1">Request message</p>

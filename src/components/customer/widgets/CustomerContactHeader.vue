@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-3 md:px-8 md:py-3.5 border-b border-black/5 shadow-xs" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="w-full card-container p-3 md:px-8 md:py-3.5">
     <!-- Main Content Row -->
     <div class="flex items-center justify-between gap-4">
       <div class="flex items-center gap-2 flex-1 min-w-0">

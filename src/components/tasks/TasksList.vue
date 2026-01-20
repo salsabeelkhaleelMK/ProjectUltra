@@ -12,7 +12,7 @@
           
           <!-- View Toggle -->
           <div class="page-header-actions">
-            <div class="bg-white border border-black/5 p-0.5 rounded-lg inline-flex gap-0.5">
+            <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
               <button
                 @click="$emit('view-change', 'table')"
                 :class="[
@@ -52,7 +52,7 @@
           v-model="searchQuery"
           type="text" 
           :placeholder="searchPlaceholder" 
-          class="w-full bg-white border border-black/5 rounded-lg pl-9 pr-3 py-2 text-fluid-sm"
+          class="w-full bg-white border border-black/5 rounded-btn pl-9 pr-3 py-2 text-fluid-sm"
         />
       </div>
     </div>

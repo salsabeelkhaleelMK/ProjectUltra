@@ -28,7 +28,7 @@
                 {{ tab.label }}
               </span>
               <span
-                class="px-2 py-0.5 rounded-lg text-sm"
+                class="px-2 py-0.5 rounded-btn text-sm"
                 :class="activeTab === tab.key ? 'bg-blue-50 text-blue-600 font-bold' : 'bg-surfaceSecondary text-greys-600 font-medium'"
               >
                 {{ getTabCount(tab.key) }}
@@ -65,14 +65,14 @@
               :key="message.id"
               :ref="el => setMessageRef(message.id, el)"
               :class="[
-                'bg-greys-100 rounded-lg p-1',
+                'bg-greys-100 rounded-card p-1',
                 isHighlightedMessage(message) && message.type === 'whatsapp' ? 'highlight-whatsapp' : '',
                 isHighlightedMessage(message) && message.type === 'email' ? 'highlight-email' : ''
               ]"
               style="background-color: var(--base-muted, #f5f5f5)"
             >
               <!-- Communication card header -->
-              <div class="px-4 py-2 flex items-center justify-between rounded-t-lg -mx-1 -mt-1">
+              <div class="px-4 py-2 flex items-center justify-between rounded-t-card -mx-1 -mt-1">
                 <div class="flex items-center gap-2">
                   <component 
                     :is="getCommunicationIcon(message.type)" 
@@ -88,14 +88,7 @@
               
               <!-- Communication card content -->
               <div 
-                class="p-4 overflow-hidden"
-                style="
-                  border-radius: var(--border-radius-rounded-lg, 10px);
-                  background: var(--base-card, #FFF);
-                  box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                              0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                              0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-                "
+                class="p-4 overflow-hidden rounded-card bg-white shadow-nsc-card"
               >
                 <p class="text-sm font-medium text-greys-900">{{ message.senderName || message.user }}</p>
                 <p class="text-sm mt-1 text-greys-700">{{ message.content }}</p>
@@ -123,12 +116,12 @@
               :key="note.id"
               :ref="el => setNoteRef(note.id, el)"
               :class="[
-                'bg-[#fef7ee] rounded-lg p-1',
+                'bg-[#fef7ee] rounded-card p-1',
                 isHighlightedNote(note) ? 'highlight-note' : ''
               ]"
             >
               <!-- Note card header -->
-              <div class="px-4 py-2 flex items-center justify-between rounded-t-lg -mx-1 -mt-1">
+              <div class="px-4 py-2 flex items-center justify-between rounded-t-card -mx-1 -mt-1">
                 <div class="flex items-center gap-2">
                   <StickyNote :size="18" class="text-orange-600" />
                   <h3 class="text-base font-medium text-greys-500">Note by {{ note.user }}</h3>
@@ -138,14 +131,7 @@
               
               <!-- Note card content -->
               <div 
-                class="p-4 overflow-hidden"
-                style="
-                  border-radius: var(--border-radius-rounded-lg, 10px);
-                  background: var(--base-card, #FFF);
-                  box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                              0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                              0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-                "
+                class="p-4 overflow-hidden rounded-card bg-white shadow-nsc-card"
               >
                 <p class="text-sm text-greys-900">{{ note.content }}</p>
               </div>
@@ -207,7 +193,7 @@
   <!-- Empty State -->
   <div v-else class="flex-1 flex items-center justify-center bg-surface">
     <div class="text-center max-w-sm p-8">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surfaceSecondary flex items-center justify-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-card bg-surfaceSecondary flex items-center justify-center">
         <i class="fa-solid fa-tasks text-2xl text-sub"></i>
       </div>
       <h3 class="text-fluid-lg font-semibold text-heading mb-2">No task selected</h3>

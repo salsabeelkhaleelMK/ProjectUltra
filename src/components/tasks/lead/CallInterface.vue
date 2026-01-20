@@ -1,12 +1,16 @@
 <template>
   <div>
-    <!-- Call Action Buttons Row (Only show if not in outcome selection or call active) -->
-    <div v-if="!showOutcomeSelection && !isCallActive && !callEnded" class="flex gap-2 items-center mb-4">
+    <!-- Call Action Buttons Row (Always visible, allow switching) -->
+    <div v-if="!showOutcomeSelection" class="flex gap-2 items-center mb-4">
       <!-- Primary: Call Button -->
       <button
-        :disabled="isCallActive"
         @click="$emit('start-call')"
-        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        :class="[
+          'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
+          isCallActive 
+            ? 'bg-brand-red text-white border-brand-red' 
+            : 'bg-surface hover:bg-surfaceSecondary border-E5E7EB text-body'
+        ]"
       >
         <i class="fa-solid fa-phone text-xs"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
@@ -14,9 +18,13 @@
       
       <!-- Secondary: Log Manual Call -->
       <button
-        :disabled="isCallActive"
         @click="$emit('log-manual-call')"
-        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        :class="[
+          'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
+          callEnded && !isCallActive
+            ? 'bg-blue-50 border-blue-200 text-blue-700'
+            : 'bg-surface hover:bg-surfaceSecondary border-E5E7EB text-body'
+        ]"
       >
         <i class="fa-solid fa-clipboard-check text-xs"></i>
         Log Call Outcome
@@ -27,7 +35,7 @@
     <div v-if="isCallActive || callEnded" class="mb-4 space-y-4 border-t border pt-4">
       
       <!-- Transcription Area (shows when call is active) -->
-      <div v-if="isCallActive" class="bg-slate-900 text-white rounded-lg p-4">
+      <div v-if="isCallActive" class="bg-slate-900 text-white rounded-card p-4">
         <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-waveform-lines text-blue-400 animate-pulse"></i>
@@ -69,7 +77,7 @@
             :model-value="callNotes"
             @update:model-value="$emit('update:call-notes', $event)"
             placeholder="Add a quick note about this call..."
-            class="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+            class="w-full p-3 bg-slate-800 border border-slate-700 rounded-btn text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
             rows="3"
           ></textarea>
         </div>
@@ -87,7 +95,7 @@
       </div>
       
       <!-- Call Ended Section -->
-      <div v-if="callEnded && !isCallActive" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div v-if="callEnded && !isCallActive" class="bg-blue-50 border border-blue-200 rounded-card p-4">
         <div class="flex items-center justify-between">
           <div>
             <h4 class="font-bold text-heading mb-1 text-sm">Call Ended</h4>

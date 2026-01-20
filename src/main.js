@@ -8,7 +8,6 @@ import i18n from './locales'
 // Import using direct path since it's not exported in package.json exports field
 import '../node_modules/@motork/component-library/dist/component-library.css'
 import './style.css'
-import './styles/theme.css'
 
 const app = createApp(App)
 

@@ -11,7 +11,7 @@
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
             <!-- View Toggle -->
-            <div class="bg-white border border-black/5 p-0.5 rounded-lg inline-flex gap-0.5">
+            <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
               <button
                 @click="$emit('view-change', 'table')"
                 :class="[

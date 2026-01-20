@@ -37,7 +37,7 @@
       />
       <Button
         label="Send WhatsApp"
-        variant="primary"
+        variant="outline"
         size="small"
         @click="handleSend"
       />

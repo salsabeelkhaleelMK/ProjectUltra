@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="task"
-    class="rounded-card flex flex-col"
+    class="rounded-lg flex flex-col"
     :class="containerClass"
     style="background-color: var(--base-muted, #f5f5f5)"
   >

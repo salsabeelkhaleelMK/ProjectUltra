@@ -1,16 +1,9 @@
 <template>
   <div 
-    class="overflow-hidden p-4"
-    style="
-      border-radius: var(--border-radius-rounded-lg, 10px);
-      background: var(--base-card, #FFF);
-      box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                  0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                  0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-    "
+    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
   >
     <!-- Card Header -->
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-lg">Activity</h3>
+    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Activity</h3>
     
     <!-- Timeline -->
     <div v-if="sortedActivities.length > 0" class="space-y-6">
@@ -36,7 +29,7 @@
         >
           <!-- Icon -->
           <div 
-            class="size-8 rounded-md flex items-center justify-center shrink-0"
+            class="size-8 rounded-btn flex items-center justify-center shrink-0"
             :style="getIconStyle(activity.type)"
           >
             <component 
@@ -57,7 +50,7 @@
             <!-- Activity Content (for notes and messages) -->
             <div 
               v-if="activity.content && shouldShowContent(activity)" 
-              class="mt-2 rounded-lg p-4"
+              class="mt-2 rounded-card p-4"
               :style="getContentBackgroundStyle(activity.type)"
             >
               <p 

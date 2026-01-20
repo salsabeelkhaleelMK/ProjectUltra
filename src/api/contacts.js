@@ -235,7 +235,68 @@ export const fetchCustomerCars = async (customerId) => {
     }
   })
   
+  // 5. Owned vehicles - from customer's vehicles array
+  if (customer?.vehicles && Array.isArray(customer.vehicles)) {
+    customer.vehicles.forEach(vehicle => {
+      if (vehicle.type === 'owned') {
+        cars.push({
+          ...vehicle,
+          id: vehicle.id || `owned-${customer.id}-${Date.now()}`,
+          type: 'owned',
+          customerId: customer.id
+        })
+      }
+    })
+  }
+  
   return { data: cars, total: cars.length }
+}
+
+// Add vehicle to customer
+export const addVehicleToCustomer = async (customerId, vehicleData) => {
+  await delay()
+  const customerIndex = mockCustomers.findIndex(c => c.id === parseInt(customerId))
+  if (customerIndex === -1) throw new Error('Customer not found')
+  
+  const customer = mockCustomers[customerIndex]
+  
+  // Initialize vehicles array if it doesn't exist
+  if (!customer.vehicles) {
+    customer.vehicles = []
+  }
+  
+  // Create vehicle object with ID
+  const vehicle = {
+    ...vehicleData,
+    id: vehicleData.id || Date.now()
+  }
+  
+  // Handle different vehicle types
+  if (vehicleData.type === 'requested') {
+    // For requested type, also update requestedCar field for backward compatibility
+    customer.requestedCar = {
+      brand: vehicleData.brand,
+      model: vehicleData.model,
+      year: vehicleData.year,
+      price: vehicleData.price,
+      requestType: vehicleData.requestType,
+      requestMessage: vehicleData.requestMessage,
+      image: vehicleData.image,
+      dealership: vehicleData.dealership,
+      fuelType: vehicleData.fuelType,
+      gearType: vehicleData.gearType,
+      kilometers: vehicleData.kilometers,
+      id: vehicle.id
+    }
+  }
+  
+  // Add vehicle to vehicles array
+  customer.vehicles.push(vehicle)
+  
+  // Update customer in mockCustomers
+  mockCustomers[customerIndex] = customer
+  
+  return { ...customer }
 }
 
 // Fetch all tasks associated with a customer

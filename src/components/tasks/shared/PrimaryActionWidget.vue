@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="rounded-lg p-4 relative transition-all duration-300 border"
+    class="rounded-card p-4 relative transition-all duration-300 border"
     :class="[colorScheme.background, colorScheme.border]"
   >
     <div class="flex justify-between items-start mb-3">
@@ -13,7 +13,7 @@
       <button
         @click="$emit('action-clicked')"
         :class="action.buttonClass"
-        class="font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         <i :class="action.icon"></i>
         {{ action.label }}

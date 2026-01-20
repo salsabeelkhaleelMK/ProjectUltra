@@ -2,14 +2,7 @@
   <div class="grid grid-cols-3 gap-4">
     <!-- Stage Card -->
     <div 
-      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2"
-      style="
-        border-radius: var(--border-radius-rounded-lg, 10px);
-        background: var(--base-card, #FFF);
-        box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-      "
+      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2 rounded-card bg-white shadow-nsc-card"
     >
       <p class="text-xs text-greys-500 leading-4 shrink-0">Stage</p>
       <p class="text-xs xl:text-sm font-medium text-greys-900 leading-5 truncate min-w-0 text-right flex-1">
@@ -19,14 +12,7 @@
     
     <!-- Source Card -->
     <div 
-      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2"
-      style="
-        border-radius: var(--border-radius-rounded-lg, 10px);
-        background: var(--base-card, #FFF);
-        box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-      "
+      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2 rounded-card bg-white shadow-nsc-card"
     >
       <p class="text-xs text-greys-500 leading-4 shrink-0">Source</p>
       <p class="text-xs xl:text-sm font-medium text-greys-900 leading-5 truncate min-w-0 text-right flex-1">
@@ -36,14 +22,7 @@
     
     <!-- Owner Card -->
     <div 
-      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2"
-      style="
-        border-radius: var(--border-radius-rounded-lg, 10px);
-        background: var(--base-card, #FFF);
-        box-shadow: 0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04), 
-                    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04), 
-                    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-      "
+      class="px-3 py-2 overflow-hidden flex items-center justify-between gap-2 rounded-card bg-white shadow-nsc-card"
     >
       <p class="text-xs text-greys-500 leading-4 shrink-0">Owner</p>
       <div class="flex items-center gap-2 min-w-0 flex-1 justify-end">

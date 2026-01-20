@@ -43,7 +43,7 @@
       <!-- Closed States -->
       <div 
         v-if="leadState.isClosed.value"
-        class="bg-gray-50/50 border border-gray-100 rounded-lg p-4"
+        class="bg-gray-50/50 border border-gray-100 rounded-card p-4"
       >
         <div class="flex justify-between items-start mb-3">
           <div>

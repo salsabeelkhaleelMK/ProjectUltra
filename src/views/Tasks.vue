@@ -165,7 +165,7 @@
       <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border">
         <div class="flex-1 flex items-center justify-center p-8">
           <div class="text-center max-w-sm">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surfaceSecondary flex items-center justify-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-card bg-surfaceSecondary flex items-center justify-center">
               <i class="fa-solid fa-tasks text-2xl text-sub"></i>
             </div>
             <h3 class="text-content-bold mb-2">No task selected</h3>

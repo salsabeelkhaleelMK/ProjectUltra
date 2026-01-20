@@ -74,6 +74,7 @@ const formatCurrency = (value) => {
 
 const getTypeLabel = (type) => {
   const labels = {
+    'owned': 'Owned',
     'requested': 'Requested',
     'offered': 'Offered',
     'drove': 'Drove',
@@ -84,6 +85,7 @@ const getTypeLabel = (type) => {
 
 const getTypeBadgeClass = (type) => {
   const classes = {
+    'owned': 'bg-orange-600',
     'requested': 'bg-blue-600',
     'offered': 'bg-purple-600',
     'drove': 'bg-green-600',

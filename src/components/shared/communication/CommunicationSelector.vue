@@ -4,37 +4,41 @@
     <div class="space-y-2">
       <h5 v-if="title" class="font-semibold text-heading text-fluid-sm mb-2">{{ title }}</h5>
       <div class="grid grid-cols-4 gap-2">
-        <button 
+        <button
           v-if="showEmail"
           @click="selectChannel('email')"
-          :class="chipClass('email')"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'email' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-envelope text-xs"></i>
           <span>Email</span>
         </button>
         
-        <button 
+        <button
           v-if="showSMS"
           @click="selectChannel('sms')"
-          :class="chipClass('sms')"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'sms' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-message text-xs"></i>
           <span>SMS</span>
         </button>
         
-        <button 
+        <button
           v-if="showWhatsApp"
           @click="selectChannel('whatsapp')"
-          :class="chipClass('whatsapp')"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'whatsapp' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
         >
           <i class="fa-brands fa-whatsapp text-xs"></i>
           <span>WhatsApp</span>
         </button>
         
-        <button 
+        <button
           v-if="showDontSend"
           @click="selectChannel('dont-send')"
-          :class="chipClass('dont-send')"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'dont-send' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-xmark text-xs"></i>
           <span>Don't send</span>
@@ -72,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import EmailForm from './EmailForm.vue'
 import SMSForm from './SMSForm.vue'
 import WhatsAppForm from './WhatsAppForm.vue'
@@ -111,15 +115,6 @@ const props = defineProps({
 const emit = defineEmits(['send', 'cancel', 'dont-send'])
 
 const selectedChannel = ref(null)
-
-// Chip styling based on selected state
-const chipClass = computed(() => (channel) => {
-  const baseClasses = 'bg-surface border-2 rounded-lg h-10 flex items-center justify-center gap-2 text-fluid-xs font-medium transition-all'
-  const selected = 'border-brand-dark bg-surfaceSecondary text-brand-dark'
-  const unselected = 'border-E5E7EB text-body hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'
-  
-  return `${baseClasses} ${selectedChannel.value === channel ? selected : unselected}`
-})
 
 const selectChannel = (channel) => {
   if (channel === 'dont-send') {
