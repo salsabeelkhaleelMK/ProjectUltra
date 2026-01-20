@@ -16,6 +16,7 @@
       @car-added="handleContactCarAdded"
       @convert-to-lead="handleConvertToLead"
       @convert-to-opportunity="handleConvertToOpportunity"
+      @tag-updated="handleTagUpdated"
     >
       <template #pinned-extra="{ task }">
         <!-- Customer Summary Widget -->
@@ -326,6 +327,11 @@ const handleAddModalSave = async (data) => {
 onMounted(async () => {
   await loadTask()
 })
+
+// Handle tag updates - reload customer data to reflect changes
+const handleTagUpdated = async () => {
+  await loadCustomerData()
+}
 
 // Watch for route changes to reload task
 watch(() => route.params.id, (newId) => {

@@ -16,7 +16,7 @@
             @click="activeTab = 'general'"
             class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
             :class="activeTab === 'general' 
-              ? 'border-brand-red text-brand-red' 
+              ? 'border-brand-dark text-brand-dark' 
               : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
           >
             General
@@ -26,7 +26,7 @@
             @click="activeTab = 'urgency'"
             class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
             :class="activeTab === 'urgency' 
-              ? 'border-brand-red text-brand-red' 
+              ? 'border-brand-dark text-brand-dark' 
               : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
           >
             Urgency Settings
@@ -36,7 +36,7 @@
             @click="activeTab = 'navigation'"
             class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
             :class="activeTab === 'navigation' 
-              ? 'border-brand-red text-brand-red' 
+              ? 'border-brand-dark text-brand-dark' 
               : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
           >
             Navigation

@@ -1,92 +1,105 @@
 <template>
-  <div class="bg-surface border border-E5E7EB rounded-card p-6 mb-6">
-    <h3 class="text-h3-card text-heading mb-4">Recent Activities</h3>
+  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Recent Activities</h2>
+      </div>
+    </div>
     
-    <div class="space-y-4">
-      <!-- Next Appointment -->
-      <div v-if="nextAppointment" class="flex items-start justify-between gap-4 p-4 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-        <div class="flex items-start gap-3 flex-1 min-w-0">
-          <div class="w-10 h-10 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-calendar-check text-brand-blue text-lg"></i>
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <div class="divide-y divide-gray-100">
+        <!-- Next Appointment -->
+        <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-calendar-check text-brand-blue text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Next Appointment</div>
+              <div class="text-sm text-body truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
+              <div class="text-[10px] text-sub truncate">{{ nextAppointment.title || 'Appointment' }}</div>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-semibold text-heading mb-1">Next Appointment</div>
-            <div class="text-sm text-body">{{ formatAppointmentDate(nextAppointment.start) }}</div>
-            <div class="text-xs text-sub mt-1">{{ nextAppointment.title || 'Appointment' }}</div>
-          </div>
+          <button
+            @click="viewAppointmentDetails"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0"
+            title="View Details"
+          >
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
         </div>
-        <button
-          @click="viewAppointmentDetails"
-          class="px-4 py-2 bg-brand-red text-white rounded-btn hover:brightness-90 transition-all shrink-0 text-sm font-medium"
-        >
-          View Details
-        </button>
-      </div>
-      
-      <!-- Last Communication -->
-      <div v-if="lastCommunication" class="flex items-start justify-between gap-4 p-4 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-        <div class="flex items-start gap-3 flex-1 min-w-0">
-          <div class="w-10 h-10 rounded bg-brand-slate/10 flex items-center justify-center shrink-0">
-            <i :class="getCommunicationIcon(lastCommunication.type)" class="text-brand-slate text-lg"></i>
+        
+        <!-- Last Communication -->
+        <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded bg-brand-slate/10 flex items-center justify-center shrink-0">
+              <i :class="getCommunicationIcon(lastCommunication.type)" class="text-brand-slate text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Last Communication</div>
+              <div class="text-sm text-body truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
+              <div class="text-[10px] text-sub truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-semibold text-heading mb-1">Last Communication</div>
-            <div class="text-sm text-body line-clamp-2">{{ getCommunicationPreview(lastCommunication) }}</div>
-            <div class="text-xs text-sub mt-1">{{ formatDate(lastCommunication.timestamp) }}</div>
-          </div>
+          <button
+            @click="viewCommunicationDetails"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-slate/30 text-sub hover:text-brand-slate transition-all shrink-0"
+            title="View Details"
+          >
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
         </div>
-        <button
-          @click="viewCommunicationDetails"
-          class="px-4 py-2 bg-brand-red text-white rounded-btn hover:brightness-90 transition-all shrink-0 text-sm font-medium"
-        >
-          View Details
-        </button>
-      </div>
-      
-      <!-- Active Lead Next Action -->
-      <div v-if="activeLead" class="flex items-start justify-between gap-4 p-4 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-        <div class="flex items-start gap-3 flex-1 min-w-0">
-          <div class="w-10 h-10 rounded bg-brand-red/10 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-user-clock text-brand-red text-lg"></i>
+        
+        <!-- Active Lead Next Action -->
+        <div v-if="activeLead" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded bg-brand-dark/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-user-clock text-brand-dark text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Lead Request</div>
+              <div class="text-sm text-body truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
+              <div class="text-[10px] text-sub truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-semibold text-heading mb-1">Active Lead Request</div>
-            <div class="text-sm text-body">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
-            <div class="text-xs text-sub mt-1">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
-          </div>
+          <button
+            @click="viewLeadDetails"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-dark/30 text-sub hover:text-brand-dark transition-all shrink-0"
+            title="View Details"
+          >
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
         </div>
-        <button
-          @click="viewLeadDetails"
-          class="px-4 py-2 bg-brand-red text-white rounded-btn hover:brightness-90 transition-all shrink-0 text-sm font-medium"
-        >
-          View Details
-        </button>
-      </div>
-      
-      <!-- Active Opportunity Next Action -->
-      <div v-if="activeOpportunity" class="flex items-start justify-between gap-4 p-4 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-        <div class="flex items-start gap-3 flex-1 min-w-0">
-          <div class="w-10 h-10 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-handshake text-brand-blue text-lg"></i>
+        
+        <!-- Active Opportunity Next Action -->
+        <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-handshake text-brand-blue text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Opportunity</div>
+              <div class="text-sm text-body truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
+              <div class="text-[10px] text-sub truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-semibold text-heading mb-1">Active Opportunity</div>
-            <div class="text-sm text-body">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
-            <div class="text-xs text-sub mt-1">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
-          </div>
+          <button
+            @click="viewOpportunityDetails"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0"
+            title="View Details"
+          >
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
         </div>
-        <button
-          @click="viewOpportunityDetails"
-          class="px-4 py-2 bg-brand-red text-white rounded-btn hover:brightness-90 transition-all shrink-0 text-sm font-medium"
-        >
-          View Details
-        </button>
       </div>
       
       <!-- Empty State -->
-      <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-8 text-sub">
-        <i class="fa-solid fa-inbox text-3xl mb-2 opacity-50"></i>
-        <p class="text-sm">No recent activities available</p>
+      <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-6 text-sub">
+        <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
+        <p class="text-xs">No recent activities available</p>
       </div>
     </div>
   </div>

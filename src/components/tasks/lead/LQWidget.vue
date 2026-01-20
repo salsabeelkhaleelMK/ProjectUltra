@@ -82,7 +82,7 @@
           <button 
             @click="selectOutcome('no-answer')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-body transition-all"
-            :class="selectedOutcome === 'no-answer' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'no-answer' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-phone-slash text-sm"></i>
             <span>No answer</span>
@@ -91,7 +91,7 @@
           <button 
             @click="selectOutcome('not-valid')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-body transition-all"
-            :class="selectedOutcome === 'not-valid' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'not-valid' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-ban text-sm"></i>
             <span>Not valid</span>
@@ -100,7 +100,7 @@
           <button 
             @click="selectOutcome('interested')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-sm font-medium text-body transition-all"
-            :class="selectedOutcome === 'interested' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'interested' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-check-circle text-sm"></i>
             <span>Interested</span>

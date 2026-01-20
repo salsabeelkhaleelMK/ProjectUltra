@@ -8,7 +8,7 @@ export function useTaskInlineWidgets({ store, taskId, getTabForItemType, isOverv
   const showInlineWidget = ref(null)
   const editingItem = ref(null)
   const activeTab = ref('overview') // Default to overview tab
-  const communicationType = ref('email')
+  const communicationType = ref(null)
   const inlineContent = ref([])
 
   // Clear inline widget when switching tabs

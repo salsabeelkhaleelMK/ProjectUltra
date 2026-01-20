@@ -5,21 +5,21 @@
       <button
         @click="$emit('filter-change', 'all')"
         class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-        :class="typeFilter === 'all' ? 'bg-brand-dark text-white border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        :class="typeFilter === 'all' ? 'bg-surfaceSecondary text-brand-dark border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
       >
         All
       </button>
       <button
         @click="$emit('filter-change', 'lead')"
         class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-        :class="typeFilter === 'lead' ? 'bg-brand-dark text-white border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        :class="typeFilter === 'lead' ? 'bg-surfaceSecondary text-brand-dark border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
       >
         Leads
       </button>
       <button
         @click="$emit('filter-change', 'opportunity')"
         class="text-xs font-medium px-3 py-1.5 rounded-md border transition-colors"
-        :class="typeFilter === 'opportunity' ? 'bg-brand-dark text-white border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
+        :class="typeFilter === 'opportunity' ? 'bg-surfaceSecondary text-brand-dark border-brand-dark' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'"
       >
         Opportunities
       </button>
@@ -34,8 +34,7 @@
         <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
         <span 
           v-if="sortOption && sortOption !== 'recent-first'"
-          class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white"
-          style="background-color: var(--brand-red);"
+          class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-brand-dark"
         ></span>
       </button>
       
@@ -123,7 +122,7 @@ const sortMenuItems = computed(() => {
 :deep(.sort-dropdown-wrapper .sort-item-selected),
 :deep(.sort-dropdown-wrapper button.sort-item-selected),
 :deep(.sort-dropdown-wrapper [class*="item"].sort-item-selected) {
-  background-color: rgba(248, 0, 50, 0.1) !important; /* Light red background */
+  background-color: var(--color-bg-surface-secondary) !important; /* Light grey background */
 }
 
 /* Highlight dot for selected item */
@@ -138,6 +137,6 @@ const sortMenuItems = computed(() => {
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 50%;
-  background-color: var(--brand-red);
+  background-color: var(--brand-dark); /* Black dot instead of red */
 }
 </style>

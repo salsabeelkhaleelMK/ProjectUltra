@@ -5,7 +5,7 @@
       :key="tab.key"
       @click="$emit('update:modelValue', tab.key)"
       class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-      :class="modelValue === tab.key ? 'border-brand-red text-brand-darkDarker' : 'border-transparent hover:text-body hover:border-slate-200'"
+      :class="modelValue === tab.key ? 'border-brand-dark text-brand-darkDarker' : 'border-transparent hover:text-body hover:border-slate-200'"
     >
       <!-- Icon (always visible) -->
       <i 

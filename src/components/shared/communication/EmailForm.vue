@@ -1,63 +1,57 @@
 <template>
-  <div class="bg-surface border border-E5E7EB rounded-lg p-4">
-    <h5 class="text-fluid-sm font-semibold text-heading mb-3">Send Email</h5>
+  <div class="space-y-3">
+    <!-- Template Selection -->
+    <div>
+      <label class="block text-fluid-xs font-medium text-body mb-1">Template</label>
+      <select 
+        v-model="selectedTemplate" 
+        @change="onTemplateChange"
+        class="input"
+      >
+        <option value="">Select a template...</option>
+        <option value="Follow-up">Follow-up</option>
+        <option value="Meeting Confirmation">Meeting Confirmation</option>
+        <option value="Quote Proposal">Quote Proposal</option>
+        <option value="Unable to Reach">Unable to Reach</option>
+      </select>
+    </div>
+
+    <!-- Subject Line -->
+    <div>
+      <label class="block text-fluid-xs font-medium text-body mb-1">Subject</label>
+      <input 
+        v-model="subject"
+        type="text"
+        class="input"
+        placeholder="Email subject..."
+      />
+    </div>
+
+    <!-- Message -->
+    <div>
+      <label class="block text-fluid-xs font-medium text-body mb-1">Message</label>
+      <textarea 
+        v-model="message"
+        class="input" 
+        rows="4" 
+        placeholder="Type your message here..."
+      ></textarea>
+    </div>
     
-    <div class="space-y-3">
-      <!-- Template Selection -->
-      <div>
-        <label class="block text-fluid-xs font-medium text-body mb-1">Template</label>
-        <select 
-          v-model="selectedTemplate" 
-          @change="onTemplateChange"
-          class="input"
-        >
-          <option value="">Select a template...</option>
-          <option value="Follow-up">Follow-up</option>
-          <option value="Meeting Confirmation">Meeting Confirmation</option>
-          <option value="Quote Proposal">Quote Proposal</option>
-          <option value="Unable to Reach">Unable to Reach</option>
-        </select>
-      </div>
-
-      <!-- Subject Line -->
-      <div>
-        <label class="block text-fluid-xs font-medium text-body mb-1">Subject</label>
-        <input 
-          v-model="subject"
-          type="text"
-          class="input"
-          placeholder="Email subject..."
-        />
-      </div>
-
-      <!-- Message -->
-      <div>
-        <label class="block text-fluid-xs font-medium text-body mb-1">Message</label>
-        <textarea 
-          v-model="message"
-          class="input" 
-          rows="4" 
-          placeholder="Type your message here..."
-        ></textarea>
-      </div>
-      
-      <!-- Action Buttons -->
-      <div class="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="small"
-          @click="$emit('cancel')"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          size="small"
-          @click="handleSend"
-        >
-          Send Email
-        </Button>
-      </div>
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-2">
+      <Button
+        label="Cancel"
+        variant="outline"
+        size="small"
+        @click="$emit('cancel')"
+      />
+      <Button
+        label="Send Email"
+        variant="primary"
+        size="small"
+        @click="handleSend"
+      />
     </div>
   </div>
 </template>

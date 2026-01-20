@@ -1,71 +1,92 @@
 <template>
-  <SectionCard
-    title="Leads"
-    icon="fa-solid fa-user-circle"
-    :count="leads.length"
-    count-color-class="bg-blue-100 text-blue-700"
-    show-add-button
-    add-button-label="Add Lead"
-    add-button-color-class="text-blue-600 hover:text-blue-700"
-    :has-empty-state="leads.length === 0"
-    empty-state-message="No leads associated with this customer"
-    @add="$emit('add-lead')"
-  >
-    <template #content>
-      <div class="space-y-3">
-      <div
-        v-for="lead in leads"
-        :key="lead.id"
-        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border-E5E7EB rounded-lg cursor-pointer transition-colors"
-        @click="handleLeadClick(lead)"
+  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-user-circle text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Leads</h2>
+        <span class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded-full">
+          {{ leads.length }}
+        </span>
+      </div>
+      <button
+        @click="$emit('add-lead')"
+        class="text-fluid-xs text-brand-blue hover:text-brand-blue/80 font-medium flex items-center gap-1 transition-colors"
       >
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-heading text-content">Lead #{{ lead.id }}</span>
-              <span 
-                class="text-xs px-2 py-0.5 rounded-full font-medium"
-                :class="getStageBadgeClass(lead.stage)"
-              >
-                {{ lead.stage }}
-              </span>
+        <i class="fa-solid fa-plus text-[10px]"></i>
+        <span>Add Lead</span>
+      </button>
+    </div>
+    
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <div v-if="leads.length > 0" class="divide-y divide-gray-100">
+        <div
+          v-for="lead in leads"
+          :key="lead.id"
+          class="flex flex-col p-3 hover:bg-surfaceSecondary transition-colors rounded-md group cursor-pointer"
+          @click="handleLeadClick(lead)"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-semibold text-heading uppercase tracking-wider">Lead #{{ lead.id }}</span>
+                <span 
+                  class="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
+                  :class="getStageBadgeClass(lead.stage)"
+                >
+                  {{ lead.stage }}
+                </span>
+              </div>
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-sub">
+                <span v-if="lead.assignee" class="flex items-center gap-1">
+                  <i class="fa-solid fa-user text-[9px]"></i>
+                  {{ lead.assignee }}
+                </span>
+                <span v-if="lead.requestedCar" class="flex items-center gap-1">
+                  <i class="fa-solid fa-car text-[9px]"></i>
+                  {{ lead.requestedCar.brand }} {{ lead.requestedCar.model }}
+                </span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 text-meta">
-              <span v-if="lead.assignee">{{ lead.assignee }}</span>
-              <span v-if="lead.requestedCar">{{ lead.requestedCar.brand }} {{ lead.requestedCar.model }}</span>
+            <div class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0">
+              <i class="fa-solid fa-external-link text-xs"></i>
             </div>
           </div>
-          <i class="fa-solid fa-external-link text-gray-400 text-xs ml-2"></i>
-        </div>
 
-        <!-- Nested Tasks for Lead -->
-        <div v-if="getLeadTasks(lead).length > 0" class="mt-2 space-y-2 border-t border pt-2">
-          <div 
-            v-for="task in getLeadTasks(lead)" 
-            :key="task.id"
-            class="flex items-center justify-between p-2 bg-surface border border-E5E7EB rounded-md shadow-sm"
-          >
-            <div class="flex items-center gap-2">
-              <span 
-                class="text-xs px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
-                :class="getTaskTypeBadgeClass(task.type)"
-              >
-                {{ task.type }}
-              </span>
-              <span class="text-meta text-body font-medium">{{ task.description }}</span>
+          <!-- Nested Tasks for Lead -->
+          <div v-if="getLeadTasks(lead).length > 0" class="mt-2 space-y-1.5 border-t border-gray-50 pt-2">
+            <div 
+              v-for="task in getLeadTasks(lead)" 
+              :key="task.id"
+              class="flex items-center justify-between p-2 bg-surfaceSecondary/50 border border-black/5 rounded-md"
+            >
+              <div class="flex items-center gap-2 min-w-0">
+                <span 
+                  class="text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest border"
+                  :class="getTaskTypeBadgeClass(task.type)"
+                >
+                  {{ task.type }}
+                </span>
+                <span class="text-[10px] text-body font-medium truncate">{{ task.description }}</span>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[10px] text-sub opacity-50"></i>
             </div>
-            <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>
         </div>
       </div>
+      
+      <!-- Empty State -->
+      <div v-else class="text-center py-8 text-sub">
+        <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
+        <p class="text-xs">No leads associated with this customer</p>
+      </div>
     </div>
-  </template>
-</SectionCard>
+  </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
-import SectionCard from '@/components/shared/SectionCard.vue'
 
 const props = defineProps({
   leads: {
@@ -124,18 +145,18 @@ const getLeadTasks = (lead) => {
 
 const getTaskTypeBadgeClass = (type) => {
   const classes = {
-    'LQ': 'bg-orange-100 text-orange-700 border border-orange-200'
+    'LQ': 'bg-orange-50 text-orange-600 border-orange-100'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border border-E5E7EB'
+  return classes[type] || 'bg-surface text-body border-gray-100'
 }
 
 const getStageBadgeClass = (stage) => {
   const classes = {
-    'Open Lead': 'bg-orange-100 text-orange-700 border border-orange-200',
-    'Validated': 'bg-blue-100 text-blue-700 border border-blue-200',
-    'Contacted': 'bg-blue-100 text-blue-700 border border-blue-200'
+    'Open Lead': 'bg-orange-50 text-orange-600 border-orange-100',
+    'Validated': 'bg-blue-50 text-blue-600 border-blue-100',
+    'Contacted': 'bg-blue-50 text-blue-600 border-blue-100'
   }
-  return classes[stage] || 'bg-surfaceSecondary text-body border border-E5E7EB'
+  return classes[stage] || 'bg-surfaceSecondary text-body border-gray-100'
 }
 
 const handleLeadClick = (lead) => {
@@ -143,4 +164,3 @@ const handleLeadClick = (lead) => {
   window.open(url.href, '_blank')
 }
 </script>
-

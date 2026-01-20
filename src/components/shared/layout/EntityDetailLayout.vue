@@ -3,8 +3,8 @@
     <!-- Header - Contact Card (Full Width) -->
     <header class="bg-surface border-b border-black/5 shrink-0">
       <!-- Contact Info Header (only shown for customer view, not tasks) -->
-      <div v-if="!isTasksView" class="px-4 md:px-8 py-3 md:py-4">
-        <ContactInfo
+      <div v-if="!isTasksView">
+        <CustomerContactHeader
           :initials="task.customer.initials"
           :name="task.customer.name"
           :email="task.customer.email"
@@ -13,21 +13,13 @@
           :avatar-color-class="getAvatarColorClass"
           :task-type="type"
           :customer-id="task.customer?.id || task.customerId || task.id"
+          :tags="task.tags || []"
           email-label="Email"
           phone-label="Phone"
           third-field-label="Address"
           @action="handleContactInfoAction"
           @add-tag="showAddTagModal = true"
         >
-          <template #tags>
-            <span 
-              v-for="tag in task.tags" 
-              :key="tag"
-              class="badge-ui bg-blue-50 border-blue-100 text-blue-700 font-semibold"
-            >
-              {{ tag }}
-            </span>
-          </template>
           <template #name-action>
             <button
               v-if="isTasksView"
@@ -39,7 +31,7 @@
               <i class="fa-solid fa-external-link text-xs"></i>
             </button>
           </template>
-        </ContactInfo>
+        </CustomerContactHeader>
       </div>
     </header>
 
@@ -190,7 +182,62 @@
           class="mb-6"
         />
         
-        <!-- Tab 1: Request -->
+        <!-- Tab 1: Manage -->
+        <div v-if="gridMainTab === 'manage'" class="space-y-6">
+          <!-- Management Widget -->
+          <div v-if="managementWidget">
+            <component
+              :is="managementWidget"
+              :lead="type === 'lead' ? task : undefined"
+              :opportunity="type === 'opportunity' ? task : undefined"
+              :contact="type === 'contact' ? task : undefined"
+              :activities="allActivities"
+              @car-added="$emit('car-added', $event)"
+              @convert-to-lead="$emit('convert-to-lead')"
+              @convert-to-opportunity="$emit('convert-to-opportunity')"
+              @vehicle-selected="handleVehicleSelected"
+              @create-offer="handleCreateOffer"
+            />
+          </div>
+
+          <!-- Communicate -->
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-comments text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
+              </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+              <CommunicationWidget
+                :task-type="type"
+                :task-id="task.id"
+                :phone-number="task.customer?.phone || ''"
+                :show-arrow="false"
+                @save="handleCommunicationWidgetSave"
+                @cancel="showCommunicationWidget = false"
+              />
+              
+              <!-- Communications List -->
+              <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
+                <div class="space-y-2 max-h-[200px] overflow-y-auto">
+                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
+                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                    </div>
+                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Request -->
         <div v-if="gridMainTab === 'request'" class="space-y-6">
           <!-- Request Card + Contact Info Card -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -204,7 +251,7 @@
             />
 
             <!-- Contact Info Card -->
-            <ContactInfoCard
+            <TaskContactCard
               :task="task"
               :task-type="type"
               :customer-id="task.customer?.id || task.customerId || task.id"
@@ -253,121 +300,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab 2: Manage -->
-        <div v-if="gridMainTab === 'manage'" class="space-y-6">
-          <!-- Management Widget -->
-          <div v-if="managementWidget">
-            <component
-              :is="managementWidget"
-              :lead="type === 'lead' ? task : undefined"
-              :opportunity="type === 'opportunity' ? task : undefined"
-              :contact="type === 'contact' ? task : undefined"
-              :activities="allActivities"
-              @car-added="$emit('car-added', $event)"
-              @convert-to-lead="$emit('convert-to-lead')"
-              @convert-to-opportunity="$emit('convert-to-opportunity')"
-              @vehicle-selected="handleVehicleSelected"
-              @create-offer="handleCreateOffer"
-            />
-          </div>
-
-          <!-- Communicate -->
-          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-            <!-- Title Section -->
-            <div class="px-4 py-4 flex items-center justify-between shrink-0">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-comments text-heading"></i>
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
-              </div>
-            </div>
-            
-            <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <div>
-              
-              <!-- Choice Buttons Grid -->
-              <div class="grid grid-cols-4 gap-2 mb-4">
-                <!-- Outbound Call -->
-                <button 
-                  @click="selectCommunicationMethod('call')"
-                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
-                  :class="selectedCommunicationMethod === 'call' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
-                >
-                  <i class="fa-solid fa-phone text-sm"></i>
-                  <span class="text-fluid-xs">Call</span>
-                </button>
-                
-                <!-- WhatsApp -->
-                <button 
-                  @click="selectCommunicationMethod('whatsapp')"
-                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
-                  :class="selectedCommunicationMethod === 'whatsapp' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
-                >
-                  <i class="fa-brands fa-whatsapp text-sm"></i>
-                  <span class="text-fluid-xs">WhatsApp</span>
-                </button>
-                
-                <!-- SMS -->
-                <button 
-                  @click="selectCommunicationMethod('sms')"
-                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
-                  :class="selectedCommunicationMethod === 'sms' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
-                >
-                  <i class="fa-solid fa-message text-sm"></i>
-                  <span class="text-fluid-xs">SMS</span>
-                </button>
-                
-                <!-- Email -->
-                <button 
-                  @click="selectCommunicationMethod('email')"
-                  class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
-                  :class="selectedCommunicationMethod === 'email' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
-                >
-                  <i class="fa-solid fa-envelope text-sm"></i>
-                  <span class="text-fluid-xs">Email</span>
-                </button>
-              </div>
-              
-              <!-- Input Area for Selected Method -->
-              <div v-if="selectedCommunicationMethod" class="space-y-3">
-                <!-- Template Selection (for WhatsApp, SMS, Email) -->
-                <div v-if="['whatsapp', 'sms', 'email'].includes(selectedCommunicationMethod)" class="space-y-2">
-                  <label class="block text-fluid-xs font-medium text-body">Select Template</label>
-                  <select 
-                    v-model="selectedTemplate"
-                    class="w-full bg-surface border border-E5E7EB rounded-lg px-3 py-2 text-fluid-sm text-body focus:outline-none focus:border-brand-red"
-                  >
-                    <option value="">Select a template...</option>
-                    <option value="followup-1">Follow-up 1</option>
-                    <option value="followup-2">Follow-up 2</option>
-                    <option value="custom">Custom message</option>
-                  </select>
-                  <button
-                    @click="handleCommunicationAction"
-                    class="px-4 py-2 text-fluid-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors"
-                  >
-                    Send {{ selectedCommunicationMethod === 'whatsapp' ? 'WhatsApp' : selectedCommunicationMethod === 'sms' ? 'SMS' : 'Email' }}
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Communications List -->
-              <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
-                <div class="space-y-2 max-h-[200px] overflow-y-auto">
-                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
-                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
-                    </div>
-                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
-                  </div>
-                </div>
-              </div>
               </div>
             </div>
           </div>
@@ -598,15 +530,15 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ContactInfo from '@/components/customer/widgets/ContactInfo.vue'
+import CustomerContactHeader from '@/components/customer/widgets/CustomerContactHeader.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
 import Request from '@/components/shared/Request.vue'
 import RequestCard from '@/components/tasks/RequestCard.vue'
-import ContactInfoCard from '@/components/tasks/ContactInfoCard.vue'
+import TaskContactCard from '@/components/tasks/TaskContactCard.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
 import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummarySidebar.vue'
-import CommunicationWidget from '@/components/customer/activities/CommunicationWidget.vue'
+import CommunicationWidget from '@/components/shared/communication/CommunicationWidget.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
@@ -617,6 +549,7 @@ import OfferModal from '@/components/modals/OfferModal.vue'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
+import { useCustomersStore } from '@/stores/customers'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -629,10 +562,11 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity'])
+const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity', 'tag-updated'])
 
 const route = useRoute()
 const router = useRouter()
+const customersStore = useCustomersStore()
 
 const taskId = computed(() => props.task.id)
 
@@ -642,17 +576,15 @@ const isTasksView = computed(() => {
 })
 
 // Grid view main tabs state
-const gridMainTab = ref('request')
+const gridMainTab = ref('manage')
 const gridMainTabs = [
-  { key: 'request', label: 'Request' },
   { key: 'manage', label: 'Manage' },
+  { key: 'request', label: 'Request' },
   { key: 'data', label: 'Data' }
 ]
 
-// Grid view communication state
-const selectedCommunicationMethod = ref(null)
-const communicationNotes = ref('')
-const selectedTemplate = ref('')
+// Grid view communication state (kept for cancel handler)
+const showCommunicationWidget = ref(false)
 
 // Filter activities by type for grid view
 const gridNotes = computed(() => {
@@ -719,46 +651,18 @@ const formatGridNumber = (value) => {
   return new Intl.NumberFormat('en-US').format(value)
 }
 
-const selectCommunicationMethod = (method) => {
-  selectedCommunicationMethod.value = selectedCommunicationMethod.value === method ? null : method
-  communicationNotes.value = ''
-  selectedTemplate.value = ''
-}
-
-const handleCommunicationAction = async () => {
-  if (!selectedCommunicationMethod.value) return
+const handleCommunicationWidgetSave = async (data) => {
+  // Handle communication save from CommunicationWidget
+  await props.storeAdapter.addActivity(props.task.id, {
+    type: data.communicationType || data.type,
+    content: data.content || data.message || 'Communication logged',
+    subject: data.subject,
+    template: data.template,
+    timestamp: new Date().toISOString()
+  })
   
-  let actionType = selectedCommunicationMethod.value
-  
-  // Handle call logging (no notes input)
-  if (actionType === 'call') {
-    await props.storeAdapter.addActivity(props.task.id, {
-      type: 'call',
-      content: 'Call logged',
-      timestamp: new Date().toISOString()
-    })
-    selectedCommunicationMethod.value = null
-    return
-  }
-  
-  // Handle WhatsApp, SMS, Email with template
-  if (['whatsapp', 'sms', 'email'].includes(actionType)) {
-    if (!selectedTemplate.value) {
-      // Could show error toast here
-      return
-    }
-    
-    // Map method to activity type
-    const activityType = actionType === 'whatsapp' ? 'whatsapp' : actionType === 'sms' ? 'sms' : 'email'
-    
-    await props.storeAdapter.addActivity(props.task.id, {
-      type: activityType,
-      content: `Template: ${selectedTemplate.value}`,
-      timestamp: new Date().toISOString()
-    })
-    selectedCommunicationMethod.value = null
-    selectedTemplate.value = ''
-  }
+  // Hide widget after save
+  showCommunicationWidget.value = false
 }
 
 // Avatar color class based on type
@@ -858,7 +762,7 @@ const handleAddNewAction = (action) => {
   }
 }
 
-// Handle actions from ContactInfo "+" button
+// Handle actions from CustomerContactHeader "+" button
 const handleContactInfoAction = (action) => {
   // For appointments, open CreateEventModal
   if (action === 'appointment') {
@@ -924,7 +828,7 @@ const handleOverviewModalSave = async (data) => {
 const tabs = computed(() => {
   return [
     { key: 'overview', label: 'Overview' },
-    { key: 'data', label: 'Data' },
+    { key: 'data', label: 'Notes' },
     { key: 'communication', label: 'Communication' },
     { key: 'attachment', label: 'Attachments' }
   ]
@@ -988,15 +892,25 @@ const handleAddTag = async (tagName) => {
   try {
     if (props.type === 'lead') {
       await props.storeAdapter.updateLead?.(props.task.id, { tags: updatedTags })
+      // Reload the task to get updated data
+      if (props.storeAdapter.loadLeadById) {
+        await props.storeAdapter.loadLeadById(props.task.id)
+      }
     } else if (props.type === 'opportunity') {
       await props.storeAdapter.updateOpportunity?.(props.task.id, { tags: updatedTags })
-    }
-    
-    // Reload the task to get updated data
-    if (props.type === 'lead' && props.storeAdapter.loadLeadById) {
-      await props.storeAdapter.loadLeadById(props.task.id)
-    } else if (props.type === 'opportunity' && props.storeAdapter.loadOpportunityById) {
-      await props.storeAdapter.loadOpportunityById(props.task.id)
+      // Reload the task to get updated data
+      if (props.storeAdapter.loadOpportunityById) {
+        await props.storeAdapter.loadOpportunityById(props.task.id)
+      }
+    } else if (props.type === 'contact') {
+      // Handle contact/customer tag updates
+      // Determine customer type from route query or default to 'contact'
+      const customerType = route.query.type === 'account' ? 'account' : 'contact'
+      await customersStore.updateCustomer(props.task.id, { tags: updatedTags }, customerType)
+      // Reload customer data
+      await customersStore.fetchCustomerById(props.task.id, customerType)
+      // Emit event to notify parent (Customer.vue) to reload its local customerData
+      emit('tag-updated')
     }
     
     showAddTagModal.value = false

@@ -104,13 +104,8 @@ const stats = computed(() => {
   }
 })
 
-// Set default tab based on user role
+// Set default tab - always show customers tab regardless of user type
 const getDefaultTab = () => {
-  if (userStore.isOperator()) {
-    return 'open-leads'
-  } else if (userStore.isManager() || userStore.isSalesman()) {
-    return 'in-negotiation'
-  }
   return 'contacts'
 }
 

@@ -110,9 +110,9 @@ const buttonText = computed(() => {
 
 // Check if we should show dropdown (multiple actions or communication tab)
 const shouldShowDropdown = computed(() => {
-  // Always show dropdown for communication tab
+  // For communication tab, we now show the inline form directly, so no dropdown needed
   if (props.activeTab === 'communication') {
-    return true
+    return false
   }
   // Show dropdown if there are multiple actions
   return filteredActions.value.length > 1
@@ -172,11 +172,17 @@ const handleAction = (action) => {
 }
 
 const handleButtonClick = () => {
-  // If there's only one action and it's not communication tab, directly trigger it
-  if (showButtonText.value && filteredActions.value.length === 1 && props.activeTab !== 'communication') {
+  // For communication tab, directly trigger the action to show the inline form
+  if (props.activeTab === 'communication') {
+    handleAction('call') // Default to call, the CommunicationWidget handles selection
+    return
+  }
+  
+  // If there's only one action, directly trigger it
+  if (showButtonText.value && filteredActions.value.length === 1) {
     handleAction(filteredActions.value[0])
   } else {
-    // Otherwise, show dropdown (including communication tab which always has multiple options)
+    // Otherwise, show dropdown
     showMenu.value = !showMenu.value
   }
 }

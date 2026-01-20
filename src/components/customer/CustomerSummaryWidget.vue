@@ -1,30 +1,41 @@
 <template>
-  <div class="bg-surface border border-E5E7EB p-6 mb-6">
-    <div class="flex items-start gap-3 mb-4">
-      <div class="flex-shrink-0 mt-1">
-        <i class="fa-solid fa-lightbulb text-2xl text-amber-500"></i>
-      </div>
-      <div class="flex-1">
-        <h3 class="text-lg font-semibold text-heading mb-2">Customer Insights</h3>
-        <p v-if="summary" class="text-sm text-body leading-relaxed whitespace-pre-line">
-          {{ summary }}
-        </p>
-        <p v-else class="text-meta italic">
-          No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.
-        </p>
+  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-lightbulb text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Customer Insights</h2>
       </div>
     </div>
     
-    <!-- Quick Preferences Tags -->
-    <div v-if="preferences && preferences.length > 0" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
-      <span 
-        v-for="(pref, index) in preferences" 
-        :key="index"
-        class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
-      >
-        <i :class="pref.icon" class="text-xs"></i>
-        {{ pref.label }}
-      </span>
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <div class="divide-y divide-gray-100">
+        <!-- Summary Section -->
+        <div class="p-3">
+          <p v-if="summary" class="text-sm text-body leading-relaxed whitespace-pre-line">
+            {{ summary }}
+          </p>
+          <div v-else class="flex items-center gap-3 py-1 text-sub">
+            <i class="fa-solid fa-circle-info text-sm opacity-20"></i>
+            <p class="text-xs italic">No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.</p>
+          </div>
+        </div>
+        
+        <!-- Preferences Tags Section -->
+        <div v-if="preferences && preferences.length > 0" class="p-3">
+          <div class="flex flex-wrap gap-2">
+            <span 
+              v-for="(pref, index) in preferences" 
+              :key="index"
+              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surfaceSecondary text-heading text-[10px] font-semibold uppercase tracking-wider rounded border border-black/5"
+            >
+              <i :class="pref.icon" class="text-[10px] text-brand-blue"></i>
+              {{ pref.label }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -100,4 +111,3 @@ const preferences = computed(() => {
   return prefs
 })
 </script>
-

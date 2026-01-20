@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surfaceSecondary/50 border border-E5E7EB rounded-lg p-6 relative transition-all duration-300">
+  <div class="bg-surfaceSecondary/50 rounded-lg p-6 relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <div>
         <h4 class="font-bold text-heading text-fluid-sm">{{ dynamicTitle }}</h4>
@@ -83,7 +83,7 @@
           <button 
             @click="selectOutcome('no-answer')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'no-answer' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'no-answer' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-phone-slash text-sm"></i>
             <span>No answer</span>
@@ -92,7 +92,7 @@
           <button 
             @click="selectOutcome('not-valid')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'not-valid' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'not-valid' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-ban text-sm"></i>
             <span>Not valid</span>
@@ -101,7 +101,7 @@
           <button 
             @click="selectOutcome('interested')"
             class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'interested' ? 'border-brand-red bg-red-50 text-brand-red' : 'border-E5E7EB hover:border-red-300 hover:bg-red-50/50'"
+            :class="selectedOutcome === 'interested' ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' : 'border-E5E7EB hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             <i class="fa-solid fa-check-circle text-sm"></i>
             <span>Interested</span>
@@ -110,20 +110,23 @@
       </div>
 
       <!-- No Answer Follow-up (Inline) -->
-      <div v-if="selectedOutcome === 'no-answer'" class="space-y-4 bg-surface border border-E5E7EB rounded-lg p-6">
-        <!-- Communication Selector Component -->
-        <CommunicationSelector
-          title="Send follow-up message"
-          :show-email="true"
-          :show-sms="true"
-          :show-whatsapp="true"
-          :show-dont-send="true"
-          @send="handleFollowupSend"
-          @dont-send="() => { followupChannel.value = 'dont-send' }"
-          @cancel="() => { selectedOutcome.value = null }"
-        />
+      <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
+        <!-- Communication Selector Component (with its own border) -->
+        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
+          <CommunicationSelector
+            title="Send follow-up message"
+            :show-email="true"
+            :show-sms="true"
+            :show-whatsapp="true"
+            :show-dont-send="true"
+            @send="handleFollowupSend"
+            @dont-send="() => { followupChannel.value = 'dont-send' }"
+            @cancel="() => { selectedOutcome.value = null }"
+          />
+        </div>
         
-        <div>
+        <!-- Next call attempt (in its own bordered card) -->
+        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
           <h5 class="font-semibold text-heading text-fluid-sm mb-2">Next call attempt</h5>
           <div class="grid grid-cols-3 gap-2">
             <button 
@@ -524,6 +527,7 @@ import CommunicationSelector from '@/components/shared/communication/Communicati
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
+import { useLeadsStore } from '@/stores/leads'
 import { formatDate, formatTime, formatDueDate } from '@/utils/formatters'
 import { useLeadActions } from '@/composables/useLeadActions'
 import { LEAD_STAGES } from '@/utils/stageMapper'
@@ -554,6 +558,7 @@ const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified',
 const usersStore = useUsersStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
+const leadsStore = useLeadsStore()
 
 // Use lead actions composable
 const leadState = useLeadActions(() => props.lead, {})
@@ -722,12 +727,38 @@ const {
 } = handlers
 
 // Handle follow-up communication send
-const handleFollowupSend = (data) => {
-  console.log('Follow-up message sent:', data)
-  followupChannel.value = data.type
-  selectedTemplate.value = data.template || ''
-  // The message data is available in data.message
-  // You can add logic here to save the communication activity
+const handleFollowupSend = async (data) => {
+  try {
+    followupChannel.value = data.type
+    selectedTemplate.value = data.template || ''
+    
+    // Map communication type to activity action
+    const actionMap = {
+      'email': 'sent an email',
+      'sms': 'sent an SMS',
+      'whatsapp': 'sent a WhatsApp message'
+    }
+    
+    // Get user name
+    const userName = currentUser.value?.name || 'You'
+    
+    // Build content string
+    let content = data.message || ''
+    if (data.type === 'email' && data.subject) {
+      content = `${data.subject}: ${content}`
+    }
+    
+    // Save communication activity
+    await leadsStore.addActivity(props.lead.id, {
+      type: data.type,
+      user: userName,
+      action: actionMap[data.type] || 'sent a message',
+      content: content,
+      timestamp: new Date().toISOString()
+    })
+  } catch (err) {
+    console.error('Failed to save follow-up communication:', err)
+  }
 }
 
 </script>

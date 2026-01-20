@@ -17,7 +17,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search users or teams..."
-            class="w-full px-3 py-2 border border-E5E7EB rounded-lg text-fluid-sm text-heading placeholder:text-sub focus:outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/15"
+            class="w-full px-3 py-2 border border-E5E7EB rounded-lg text-fluid-sm text-heading placeholder:text-sub focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/15"
           />
         </div>
 
@@ -27,8 +27,8 @@
             v-for="item in filteredAssignees"
             :key="`${item.type}-${item.id}`"
             @click="handleSelect(item)"
-            class="w-full flex items-center gap-3 p-3 rounded-lg border border-E5E7EB hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
-            :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === item.type && selectedAssignee?.id === item.id }"
+            class="w-full flex items-center gap-3 p-3 rounded-lg border border-E5E7EB hover:bg-surfaceSecondary hover:border-brand-dark/30 transition-colors text-left"
+            :class="{ 'bg-surfaceSecondary border-brand-dark': selectedAssignee?.type === item.type && selectedAssignee?.id === item.id }"
           >
             <div 
               class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-fluid-sm"
@@ -43,7 +43,7 @@
                 {{ item.type === 'team' ? 'Team' : `${item.role} • ${item.email}` }}
               </p>
             </div>
-            <i v-if="selectedAssignee?.type === item.type && selectedAssignee?.id === item.id" class="fa-solid fa-check text-brand-red"></i>
+            <i v-if="selectedAssignee?.type === item.type && selectedAssignee?.id === item.id" class="fa-solid fa-check text-brand-dark"></i>
           </button>
           
           <!-- Empty State -->

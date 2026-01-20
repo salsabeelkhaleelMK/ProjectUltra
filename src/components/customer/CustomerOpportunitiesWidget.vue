@@ -1,73 +1,97 @@
 <template>
-  <SectionCard
-    title="Opportunities"
-    icon="fa-solid fa-briefcase"
-    :count="opportunities.length"
-    count-color-class="bg-purple-100 text-purple-700"
-    show-add-button
-    add-button-label="Add Opportunity"
-    add-button-color-class="text-purple-600 hover:text-purple-700"
-    :has-empty-state="opportunities.length === 0"
-    empty-state-message="No opportunities associated with this customer"
-    @add="$emit('add-opportunity')"
-  >
-    <template #content>
-      <div class="space-y-3">
-      <div
-        v-for="opp in opportunities"
-        :key="opp.id"
-        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border-E5E7EB rounded-lg cursor-pointer transition-colors"
-        @click="handleOpportunityClick(opp)"
+  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-briefcase text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Opportunities</h2>
+        <span class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded-full">
+          {{ opportunities.length }}
+        </span>
+      </div>
+      <button
+        @click="$emit('add-opportunity')"
+        class="text-fluid-xs text-brand-blue hover:text-brand-blue/80 font-medium flex items-center gap-1 transition-colors"
       >
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-heading text-content">Opportunity #{{ opp.id }}</span>
-              <span 
-                class="text-xs px-2 py-0.5 rounded-full font-medium"
-                :class="getStageBadgeClass(opp.stage)"
-              >
-                {{ opp.displayStage || opp.stage }}
-              </span>
+        <i class="fa-solid fa-plus text-[10px]"></i>
+        <span>Add Opportunity</span>
+      </button>
+    </div>
+    
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <div v-if="opportunities.length > 0" class="divide-y divide-gray-100">
+        <div
+          v-for="opp in opportunities"
+          :key="opp.id"
+          class="flex flex-col p-3 hover:bg-surfaceSecondary transition-colors rounded-md group cursor-pointer"
+          @click="handleOpportunityClick(opp)"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-semibold text-heading uppercase tracking-wider">Opp #{{ opp.id }}</span>
+                <span 
+                  class="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
+                  :class="getStageBadgeClass(opp.stage)"
+                >
+                  {{ opp.displayStage || opp.stage }}
+                </span>
+              </div>
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-sub">
+                <span v-if="opp.assignee" class="flex items-center gap-1">
+                  <i class="fa-solid fa-user text-[9px]"></i>
+                  {{ opp.assignee }}
+                </span>
+                <span v-if="opp.value" class="flex items-center gap-1">
+                  <i class="fa-solid fa-tag text-[9px]"></i>
+                  € {{ formatCurrency(opp.value) }}
+                </span>
+                <span v-if="opp.vehicle" class="flex items-center gap-1">
+                  <i class="fa-solid fa-car text-[9px]"></i>
+                  {{ opp.vehicle.brand }} {{ opp.vehicle.model }}
+                </span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 text-meta">
-              <span v-if="opp.assignee">{{ opp.assignee }}</span>
-              <span v-if="opp.value">€ {{ formatCurrency(opp.value) }}</span>
-              <span v-if="opp.vehicle">{{ opp.vehicle.brand }} {{ opp.vehicle.model }}</span>
+            <div class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0">
+              <i class="fa-solid fa-external-link text-xs"></i>
             </div>
           </div>
-          <i class="fa-solid fa-external-link text-gray-400 text-xs ml-2"></i>
-        </div>
 
-        <!-- Nested Tasks for Opportunity -->
-        <div v-if="getOpportunityTasks(opp).length > 0" class="mt-2 space-y-2 border-t border pt-2">
-          <div 
-            v-for="task in getOpportunityTasks(opp)" 
-            :key="task.id"
-            class="flex items-center justify-between p-2 bg-surface border border-E5E7EB rounded-md shadow-sm"
-          >
-            <div class="flex items-center gap-2">
-              <span 
-                class="text-xs px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
-                :class="getTaskTypeBadgeClass(task.type)"
-              >
-                {{ task.type }}
-              </span>
-              <span class="text-meta text-body font-medium">{{ task.description }}</span>
+          <!-- Nested Tasks for Opportunity -->
+          <div v-if="getOpportunityTasks(opp).length > 0" class="mt-2 space-y-1.5 border-t border-gray-50 pt-2">
+            <div 
+              v-for="task in getOpportunityTasks(opp)" 
+              :key="task.id"
+              class="flex items-center justify-between p-2 bg-surfaceSecondary/50 border border-black/5 rounded-md"
+            >
+              <div class="flex items-center gap-2 min-w-0">
+                <span 
+                  class="text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest border"
+                  :class="getTaskTypeBadgeClass(task.type)"
+                >
+                  {{ task.type }}
+                </span>
+                <span class="text-[10px] text-body font-medium truncate">{{ task.description }}</span>
+              </div>
+              <i class="fa-solid fa-chevron-right text-[10px] text-sub opacity-50"></i>
             </div>
-            <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </div>
         </div>
       </div>
+      
+      <!-- Empty State -->
+      <div v-else class="text-center py-8 text-sub">
+        <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
+        <p class="text-xs">No opportunities associated with this customer</p>
+      </div>
     </div>
-  </template>
-</SectionCard>
+  </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { getActiveTaskWidget } from '@/utils/opportunityRules'
-import SectionCard from '@/components/shared/SectionCard.vue'
 
 const props = defineProps({
   opportunities: {
@@ -140,15 +164,15 @@ const getOpportunityTasks = (opportunity) => {
 
 const getTaskTypeBadgeClass = (type) => {
   const classes = {
-    'OOFB': 'bg-blue-100 text-blue-700 border border-blue-200',
-    'UFB': 'bg-purple-100 text-purple-700 border border-purple-200',
-    'NFU': 'bg-red-100 text-red-700 border border-red-200',
-    'OFB': 'bg-yellow-100 text-yellow-700 border border-yellow-200',
-    'CFB': 'bg-green-100 text-green-700 border border-green-200',
-    'DFB': 'bg-teal-100 text-teal-700 border border-teal-200',
-    'NS': 'bg-pink-100 text-pink-700 border border-pink-200'
+    'OOFB': 'bg-blue-50 text-blue-600 border-blue-100',
+    'UFB': 'bg-purple-50 text-purple-600 border-purple-100',
+    'NFU': 'bg-red-50 text-red-600 border-red-100',
+    'OFB': 'bg-yellow-50 text-yellow-600 border-yellow-100',
+    'CFB': 'bg-green-50 text-green-600 border-green-100',
+    'DFB': 'bg-teal-50 text-teal-600 border-teal-100',
+    'NS': 'bg-pink-50 text-pink-600 border-pink-100'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border border-E5E7EB'
+  return classes[type] || 'bg-surface text-body border-gray-100'
 }
 
 const formatCurrency = (value) => {
@@ -157,12 +181,12 @@ const formatCurrency = (value) => {
 
 const getStageBadgeClass = (stage) => {
   const classes = {
-    'Qualified': 'bg-purple-100 text-purple-700 border border-purple-200',
-    'In Negotiation': 'bg-blue-100 text-blue-700 border border-blue-200',
-    'Closed Won': 'bg-green-100 text-green-700 border border-green-200',
-    'Closed Lost': 'bg-red-100 text-red-700 border border-red-200'
+    'Qualified': 'bg-purple-50 text-purple-600 border-purple-100',
+    'In Negotiation': 'bg-blue-50 text-blue-600 border-blue-100',
+    'Closed Won': 'bg-green-50 text-green-600 border-green-100',
+    'Closed Lost': 'bg-red-50 text-red-600 border-red-100'
   }
-  return classes[stage] || 'bg-surfaceSecondary text-body border border-E5E7EB'
+  return classes[stage] || 'bg-surfaceSecondary text-body border-gray-100'
 }
 
 const handleOpportunityClick = (opp) => {
@@ -170,4 +194,3 @@ const handleOpportunityClick = (opp) => {
   window.open(url.href, '_blank')
 }
 </script>
-

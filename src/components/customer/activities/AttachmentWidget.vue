@@ -15,34 +15,29 @@
           class="hidden"
         />
         <Button
+          label="Choose File"
           variant="outline"
           size="small"
           @click="$refs.fileInput.click()"
-          class="flex items-center gap-2"
-        >
-          <i class="fa-solid fa-paperclip"></i>
-          <span>Choose File</span>
-        </Button>
+        />
         <span v-if="selectedFileName" class="text-fluid-sm text-slate-600">{{ selectedFileName }}</span>
         <span v-else class="text-fluid-sm text-sub">No file selected</span>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6 border-t border-E5E7EB pt-4">
       <Button
+        label="Cancel"
         variant="outline"
         size="small"
         @click="$emit('cancel')"
-      >
-        Cancel
-      </Button>
+      />
       <Button
+        label="Save"
         variant="primary"
         size="small"
         :disabled="!selectedFile"
         @click="handleSave"
-      >
-        Save
-      </Button>
+      />
     </div>
   </div>
 </template>

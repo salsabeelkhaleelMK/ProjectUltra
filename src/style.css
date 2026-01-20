@@ -3,6 +3,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap');
 @source "../node_modules/@motork/component-library";
 
+/* Override MotorK Component Library Primary Color Theme */
+:root {
+  /* Override primary color to black for MotorK components */
+  --primary: var(--brand-dark);
+  --primary-hover: var(--brand-darkDarker);
+  --primary-foreground: white;
+  
+  /* Additional possible MotorK CSS variables */
+  --color-primary: var(--brand-dark);
+  --color-primary-hover: var(--brand-darkDarker);
+  --button-primary-bg: var(--brand-dark);
+  --button-primary-hover-bg: var(--brand-darkDarker);
+  --button-primary-text: white;
+}
+
 @layer components {
   /* Eyebrow Header Utility Class */
   .eyebrow-header {
@@ -159,12 +174,87 @@
     border: 1px solid var(--color-border);
   }
   
-  /* Button classes removed - using @motork/component-library Button component */
+  /* Button Utility Classes - Global Button Styles */
   
-  /* Force MotorK Button component primary variant to use brand black (dark) */
+  /* Primary Button - Black background with white text */
+  .btn-primary {
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: var(--brand-dark);
+    color: white;
+    border: 1px solid var(--brand-dark);
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--brand-darkDarker);
+    border-color: var(--brand-darkDarker);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Secondary Button - Outlined grey with grey text */
+  .btn-secondary {
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: white;
+    color: var(--brand-slate);
+    border: 1px solid var(--brand-slate);
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-bg-surface-secondary);
+  }
+  
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Danger Button - Red for destructive actions */
+  .btn-danger {
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: var(--brand-red);
+    color: white;
+    border: 1px solid var(--brand-red);
+  }
+  
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--brand-red-dark);
+    border-color: var(--brand-red-dark);
+  }
+  
+  .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Global Overrides - Convert all primary buttons to black theme */
+  
+  /* MotorK Button Component - Primary Variant (Black Theme) */
+  /* Target all possible MotorK button selectors */
   button[data-variant="primary"],
   button[class*="variant-primary"],
-  button[type="submit"]:not([data-variant]):not([class*="variant-"]) {
+  button[class*="variant_primary"],
+  button[class*="Primary"],
+  .motork-button-primary,
+  [class*="Button"][class*="primary"],
+  [class*="button"][class*="primary"]:not(.btn-secondary):not(.btn-danger) {
     background-color: var(--brand-dark) !important;
     color: white !important;
     border-color: var(--brand-dark) !important;
@@ -172,59 +262,42 @@
   
   button[data-variant="primary"]:hover:not(:disabled),
   button[class*="variant-primary"]:hover:not(:disabled),
-  button[type="submit"]:not([data-variant]):not([class*="variant-"]):hover:not(:disabled) {
+  button[class*="variant_primary"]:hover:not(:disabled),
+  button[class*="Primary"]:hover:not(:disabled),
+  .motork-button-primary:hover:not(:disabled),
+  [class*="Button"][class*="primary"]:hover:not(:disabled),
+  [class*="button"][class*="primary"]:not(.btn-secondary):not(.btn-danger):hover:not(:disabled) {
     background-color: var(--brand-darkDarker) !important;
     border-color: var(--brand-darkDarker) !important;
   }
   
-  /* Force primary button styling for brand black buttons */
-  /* Target buttons with bg-brand-black class (Tailwind !important classes) */
-  [class*="!bg-brand-black"],
-  [class*="!bg-brand-dark"],
-  button[class*="bg-brand-black"][class*="text-white"],
-  button[class*="bg-brand-dark"][class*="text-white"],
-  [class*="bg-brand-black"]:has([class*="!text-white"]),
-  [class*="bg-brand-dark"]:has([class*="!text-white"]) {
+  /* Convert legacy brand-red buttons to black primary style */
+  /* This catches buttons using Tailwind's bg-brand-red class, excluding elements explicitly marked as danger */
+  button[class*="bg-brand-red"]:not(.btn-danger),
+  button[class*="!bg-brand-red"]:not(.btn-danger),
+  [class*="bg-brand-red"]:not(.btn-danger):not(.badge):not(.badge-primary):not(.eyebrow-header) {
     background-color: var(--brand-dark) !important;
-    color: white !important;
     border-color: var(--brand-dark) !important;
+    color: white !important;
   }
-  
-  [class*="!bg-brand-black"]:hover:not(:disabled),
-  [class*="!bg-brand-dark"]:hover:not(:disabled),
-  button[class*="bg-brand-black"][class*="text-white"]:hover:not(:disabled),
-  button[class*="bg-brand-dark"][class*="text-white"]:hover:not(:disabled),
-  [class*="bg-brand-black"]:has([class*="!text-white"]):hover:not(:disabled),
-  [class*="bg-brand-dark"]:has([class*="!text-white"]):hover:not(:disabled) {
+
+  button[class*="bg-brand-red"]:not(.btn-danger):hover:not(:disabled),
+  button[class*="!bg-brand-red"]:not(.btn-danger):hover:not(:disabled) {
     background-color: var(--brand-darkDarker) !important;
     border-color: var(--brand-darkDarker) !important;
   }
-  
-  /* Keep support for explicit brand-red buttons (for special cases like danger/delete) */
-  [class*="!bg-brand-red"],
-  button[class*="bg-brand-red"][class*="text-white"],
-  [class*="bg-brand-red"]:has([class*="!text-white"]) {
-    background-color: var(--brand-red) !important;
-    color: white !important;
-    border-color: var(--brand-red) !important;
+
+  /* Button size variants */
+  .btn-sm {
+    padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
+    font-size: var(--text-fluid-sm);
+    line-height: var(--leading-5);
   }
   
-  [class*="!bg-brand-red"]:hover:not(:disabled),
-  button[class*="bg-brand-red"][class*="text-white"]:hover:not(:disabled),
-  [class*="bg-brand-red"]:has([class*="!text-white"]):hover:not(:disabled) {
-    background-color: var(--brand-red-dark) !important;
-    border-color: var(--brand-red-dark) !important;
-  }
-  
-  /* Force bg-brand-dark to use brand dark color */
-  [class*="bg-brand-dark"] {
-    background-color: var(--brand-dark) !important;
-  }
-  
-  /* Ensure text is white when !text-white class is present */
-  [class*="!text-white"],
-  [class*="!text-white"] * {
-    color: white !important;
+  .btn-lg {
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    font-size: var(--text-fluid-lg);
+    line-height: var(--leading-6);
   }
   
   /* Form Inputs - Global Styles matching OfferWidget.vue */

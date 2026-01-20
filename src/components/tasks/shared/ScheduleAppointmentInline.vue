@@ -42,7 +42,7 @@
           <label class="text-fluid-xs font-medium text-sub">Assigned to</label>
           <button 
             @click="showAssigneeChange = !showAssigneeChange"
-            class="text-fluid-xs text-brand-red hover:underline font-medium"
+            class="text-fluid-xs text-sub hover:text-brand-dark hover:underline font-medium transition-colors"
           >
             {{ showAssigneeChange ? 'Cancel' : 'Change' }}
           </button>
@@ -141,8 +141,8 @@
             @click="selectedTimeSlot = slot"
             class="py-2 border rounded-lg text-fluid-xs font-medium transition-all"
             :class="selectedTimeSlot === slot 
-              ? 'border-brand-red bg-red-50 text-brand-red' 
-              : 'border-E5E7EB text-body hover:border-brand-red hover:bg-red-50/50'"
+              ? 'border-brand-dark bg-surfaceSecondary text-brand-dark' 
+              : 'border-E5E7EB text-body hover:border-brand-dark/30 hover:bg-surfaceSecondary/50'"
           >
             {{ slot }}
           </button>

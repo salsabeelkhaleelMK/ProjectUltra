@@ -40,18 +40,18 @@ export default {
           input: 'var(--color-border-input)',
           light: 'var(--color-border-light)',
         },
-        // Replace primary color scale with brand red
+        // Replace primary color scale with brand black (dark)
         primary: {
-          50: 'rgba(248, 0, 50, 0.05)',
-          100: 'rgba(248, 0, 50, 0.1)',
-          200: 'rgba(248, 0, 50, 0.2)',
-          300: 'rgba(248, 0, 50, 0.3)',
-          400: 'rgba(248, 0, 50, 0.4)',
-          500: 'rgba(248, 0, 50, 0.5)',
-          600: 'var(--brand-red)',
-          700: 'var(--brand-red-dark)',
-          800: 'rgba(208, 0, 42, 0.8)',
-          900: 'rgba(208, 0, 42, 0.9)',
+          50: 'rgba(40, 40, 40, 0.05)',
+          100: 'rgba(40, 40, 40, 0.1)',
+          200: 'rgba(40, 40, 40, 0.2)',
+          300: 'rgba(40, 40, 40, 0.3)',
+          400: 'rgba(40, 40, 40, 0.4)',
+          500: 'rgba(40, 40, 40, 0.5)',
+          600: 'var(--brand-dark)', // #282828 - Main primary color
+          700: 'var(--brand-darkDarker)', // #1a1a1a - Hover state
+          800: 'rgba(26, 26, 26, 0.8)',
+          900: 'rgba(26, 26, 26, 0.9)',
         },
         gray: {
           50: '#f5f5f5',
