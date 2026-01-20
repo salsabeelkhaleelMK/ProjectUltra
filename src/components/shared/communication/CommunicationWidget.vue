@@ -9,7 +9,7 @@
         :class="chipClass(channel.id)"
       >
         <i :class="[channel.icon, 'text-sm']"></i>
-        <span class="text-[10px] font-bold uppercase tracking-wider">{{ channel.label }}</span>
+        <span class="text-xs font-bold uppercase tracking-wider">{{ channel.label }}</span>
       </button>
     </div>
     
@@ -59,7 +59,7 @@
         :class="chipClass(channel.id)"
       >
         <i :class="[channel.icon, 'text-sm']"></i>
-        <span class="text-[10px] font-bold uppercase tracking-wider">{{ channel.label }}</span>
+        <span class="text-xs font-bold uppercase tracking-wider">{{ channel.label }}</span>
       </button>
     </div>
     

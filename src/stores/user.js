@@ -1,11 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { mockUsers } from '@/api/mockData'
+import * as usersApi from '@/api/users'
 
 export const useUserStore = defineStore('user', () => {
   // State
-  const currentUser = ref(mockUsers[0]) // Default: Salsabeel Khaleel (manager)
-  const isAuthenticated = ref(true)
+  const currentUser = ref(null)
+  const isAuthenticated = ref(false)
+  
+  // Initialize with default user
+  const initializeUser = async () => {
+    const users = await usersApi.fetchUsers()
+    currentUser.value = users[0] // Default: First user (Salsabeel Khaleel - manager)
+    isAuthenticated.value = true
+  }
+  
+  // Auto-initialize on store creation
+  initializeUser()
   
   // Getters
   const userRole = () => currentUser.value.role
@@ -32,8 +42,8 @@ export const useUserStore = defineStore('user', () => {
     currentUser.value = user
   }
   
-  function switchRole(role) {
-    const user = mockUsers.find(u => u.role === role)
+  async function switchRole(role) {
+    const user = await usersApi.fetchUserByRole(role)
     if (user) {
       currentUser.value = user
     }

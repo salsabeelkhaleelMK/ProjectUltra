@@ -1,11 +1,12 @@
-import { mockCustomers } from '@/api/mockData'
 import { getDisplayStage, getDeliverySubstatus } from '@/utils/stageMapper'
 import { OpportunityRepository } from '@/repositories/OpportunityRepository'
 import { ActivityRepository } from '@/repositories/ActivityRepository'
+import { CustomerRepository } from '@/repositories/CustomerRepository'
 
 // Create repository instances
 const opportunityRepository = new OpportunityRepository()
 const activityRepository = new ActivityRepository()
+const customerRepository = new CustomerRepository()
 
 /**
  * Opportunity Service
@@ -28,7 +29,7 @@ export class OpportunityService {
   enrichWithCustomer(opportunity) {
     if (!opportunity) return null
     
-    const customer = mockCustomers.find(c => c.id === opportunity.customerId)
+    const customer = customerRepository.findByIdSync(opportunity.customerId)
     if (!customer) {
       // Fallback if customer not found
       return {
@@ -107,7 +108,7 @@ export class OpportunityService {
     if (filters.search) {
       const search = filters.search.toLowerCase()
       results = results.filter(opp => {
-        const customer = mockCustomers.find(c => c.id === opp.customerId)
+        const customer = customerRepository.findByIdSync(opp.customerId)
         const customerName = customer?.name || ''
         return customerName.toLowerCase().includes(search) ||
           (opp.vehicle && opp.vehicle.brand && opp.vehicle.brand.toLowerCase().includes(search)) ||

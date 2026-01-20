@@ -201,7 +201,7 @@
           </div>
 
           <!-- Communicate -->
-          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
@@ -223,7 +223,7 @@
               
               <!-- Communications List -->
               <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
-                <div class="space-y-2 max-h-[200px] overflow-y-auto">
+                <div class="space-y-2 max-h-52 overflow-y-auto">
                   <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
                     <div class="flex items-center gap-2 mb-1">
                       <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
@@ -261,7 +261,7 @@
           </div>
 
           <!-- Activity Summary Card -->
-          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
@@ -308,7 +308,7 @@
         <!-- Tab 3: Data -->
         <div v-if="gridMainTab === 'data'" class="space-y-6">
           <!-- Notes Card -->
-          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
@@ -319,7 +319,7 @@
             
             <!-- Card Content -->
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <div class="space-y-2 max-h-[300px] overflow-y-auto">
+              <div class="space-y-2 max-h-80 overflow-y-auto">
                 <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                   <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
                   <p>No notes yet</p>
@@ -333,7 +333,7 @@
           </div>
 
           <!-- Attachments Card -->
-          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
@@ -344,7 +344,7 @@
             
             <!-- Card Content -->
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <div class="space-y-2 max-h-[300px] overflow-y-auto">
+              <div class="space-y-2 max-h-80 overflow-y-auto">
                 <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                   <i class="fa-solid fa-paperclip text-2xl mb-2"></i>
                   <p>No attachments yet</p>
@@ -363,7 +363,7 @@
           <!-- Trade-in and Purchase Cards (2-column grid) -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Trade-in Card -->
-            <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
               <!-- Title Section -->
               <div class="px-4 py-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
@@ -381,7 +381,7 @@
               
               <!-- Card Content -->
               <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                <div class="space-y-2 max-h-80 overflow-y-auto">
                   <div v-if="gridTradeIns.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                     <i class="fa-solid fa-arrow-right-arrow-left text-2xl mb-2"></i>
                     <p>No trade-ins yet</p>
@@ -409,7 +409,7 @@
             </div>
 
             <!-- Purchase Card -->
-            <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
               <!-- Title Section -->
               <div class="px-4 py-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
@@ -427,7 +427,7 @@
               
               <!-- Card Content -->
               <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                <div class="space-y-2 max-h-80 overflow-y-auto">
                   <div v-if="gridPurchases.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                     <i class="fa-solid fa-shopping-cart text-2xl mb-2"></i>
                     <p>No purchases yet</p>

@@ -1,13 +1,31 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
-import { mockUsers, calendarTeams } from '@/api/mockData'
+import { ref, computed } from 'vue'
+import * as usersApi from '@/api/users'
+import { calendarTeams } from '@/api/mockData' // TODO: Create teams API wrapper
 
 export const useUsersStore = defineStore('users', () => {
-  // Users list
-  const users = computed(() => mockUsers)
+  // State
+  const users = ref([])
+  const loading = ref(false)
   
-  // Teams list
+  // Teams list (still using mockData until teams API is created)
   const teams = computed(() => calendarTeams)
+  
+  // Fetch users from API
+  const fetchUsers = async () => {
+    loading.value = true
+    try {
+      users.value = await usersApi.fetchUsers()
+    } catch (error) {
+      console.error('Failed to fetch users:', error)
+      users.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // Auto-fetch users on store creation
+  fetchUsers()
   
   // Get user by ID
   const getUserById = (id) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
     <div class="px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shrink-0">
       <div class="flex items-center gap-2">

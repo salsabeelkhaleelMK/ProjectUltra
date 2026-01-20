@@ -63,7 +63,7 @@ export function useLeadActions(lead, handlers = {}) {
     
     return {
       ...actionConfig,
-      handler: handler || (() => console.warn(`No handler for action: ${actionConfig.key}`))
+      handler: handler || (() => {})
     }
   })
 
@@ -77,7 +77,7 @@ export function useLeadActions(lead, handlers = {}) {
       
       return {
         ...action,
-        handler: handler || (() => console.warn(`No handler for action: ${action.key}`))
+        handler: handler || (() => {})
       }
     })
   })

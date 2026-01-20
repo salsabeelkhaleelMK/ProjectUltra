@@ -13,7 +13,7 @@
         </div>
         <div class="flex-1">
           <p class="font-bold text-fluid-sm text-heading uppercase tracking-tight">Call with Outbound</p>
-          <p class="text-[10px] text-sub uppercase">Use external calling system</p>
+          <p class="text-xs text-sub uppercase">Use external calling system</p>
         </div>
         <i class="fa-solid fa-chevron-right text-xs text-sub opacity-0 group-hover:opacity-100 transition-opacity"></i>
       </button>
@@ -27,7 +27,7 @@
         </div>
         <div class="flex-1">
           <p class="font-bold text-fluid-sm text-heading uppercase tracking-tight">Call with PBX</p>
-          <p class="text-[10px] text-sub uppercase">Use internal phone system</p>
+          <p class="text-xs text-sub uppercase">Use internal phone system</p>
         </div>
         <i class="fa-solid fa-chevron-right text-xs text-sub opacity-0 group-hover:opacity-100 transition-opacity"></i>
       </button>
@@ -41,7 +41,7 @@
         </div>
         <div class="flex-1">
           <p class="font-bold text-fluid-sm text-heading uppercase tracking-tight">Copy Number</p>
-          <p class="text-[10px] text-sub uppercase">{{ phoneNumber }}</p>
+          <p class="text-xs text-sub uppercase">{{ phoneNumber }}</p>
         </div>
         <i class="fa-solid fa-chevron-right text-xs text-sub opacity-0 group-hover:opacity-100 transition-opacity"></i>
       </button>

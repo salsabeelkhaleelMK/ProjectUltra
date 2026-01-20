@@ -49,7 +49,7 @@
       <span class="text-fluid-sm text-body font-medium">{{ lead.customer.phone }}</span>
       <button
         @click="copyNumber"
-        class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-[21.6px] h-[21.6px]"
+        class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
         title="Copy phone number"
       >
         <i class="fa-regular fa-copy text-xs"></i>

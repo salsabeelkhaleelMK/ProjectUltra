@@ -415,7 +415,7 @@ const handleSearch = () => {
 
 const handleSearchQuery = (query) => {
   // Global search is not implemented yet
-  console.log('Search query:', query)
+  // TODO: Implement global search functionality
 }
 
 const handleClose = () => {

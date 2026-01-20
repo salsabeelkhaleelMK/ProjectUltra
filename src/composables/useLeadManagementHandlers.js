@@ -22,7 +22,6 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
     if (!lead) return
 
     if (!leadState.canPostpone.value) {
-      console.warn('Cannot postpone in current state')
       return
     }
     
@@ -259,7 +258,6 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
 
     // Use state machine to determine if disqualification is allowed
     if (leadState.isClosed.value && !data.force) {
-      console.warn('Lead already closed')
       return
     }
     

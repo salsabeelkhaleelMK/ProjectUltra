@@ -76,7 +76,7 @@
 
           <!-- Pipeline Visualization -->
           <div
-            class="relative shrink-0 bg-[#F9FAFB] rounded-lg overflow-hidden"
+            class="relative shrink-0 bg-greys-50 rounded-lg overflow-hidden"
             style="height: 320px"
           >
             <!-- Area Chart using SVG -->
@@ -169,7 +169,7 @@ const getGradientId = (name) => {
 const getSourceColor = (color) => {
   const colors = {
     red: 'var(--brand-red)',
-    orange: '#f97316',
+    orange: '#f97316', // Orange-500 - no CSS variable available in theme
     blue: 'var(--brand-blue)',
     gray: 'var(--brand-slate)'
   }

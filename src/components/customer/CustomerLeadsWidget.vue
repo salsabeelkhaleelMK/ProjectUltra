@@ -1,11 +1,11 @@
 <template>
-  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-user-circle text-heading"></i>
         <h2 class="text-fluid-sm font-medium text-heading leading-5">Leads</h2>
-        <span class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[10px] font-bold rounded-full">
+        <span class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded-full">
           {{ leads.length }}
         </span>
       </div>
@@ -13,7 +13,7 @@
         @click="$emit('add-lead')"
         class="text-fluid-xs text-brand-blue hover:text-brand-blue/80 font-medium flex items-center gap-1 transition-colors"
       >
-        <i class="fa-solid fa-plus text-[10px]"></i>
+        <i class="fa-solid fa-plus text-xs"></i>
         <span>Add Lead</span>
       </button>
     </div>
@@ -32,19 +32,19 @@
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-xs font-semibold text-heading uppercase tracking-wider">Lead #{{ lead.id }}</span>
                 <span 
-                  class="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
+                  class="text-xs px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
                   :class="getStageBadgeClass(lead.stage)"
                 >
                   {{ lead.stage }}
                 </span>
               </div>
-              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-sub">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub">
                 <span v-if="lead.assignee" class="flex items-center gap-1">
-                  <i class="fa-solid fa-user text-[9px]"></i>
+                  <i class="fa-solid fa-user text-xs"></i>
                   {{ lead.assignee }}
                 </span>
                 <span v-if="lead.requestedCar" class="flex items-center gap-1">
-                  <i class="fa-solid fa-car text-[9px]"></i>
+                  <i class="fa-solid fa-car text-xs"></i>
                   {{ lead.requestedCar.brand }} {{ lead.requestedCar.model }}
                 </span>
               </div>
@@ -63,14 +63,14 @@
             >
               <div class="flex items-center gap-2 min-w-0">
                 <span 
-                  class="text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest border"
+                  class="text-xs px-1.5 py-0.5 rounded font-black uppercase tracking-widest border"
                   :class="getTaskTypeBadgeClass(task.type)"
                 >
                   {{ task.type }}
                 </span>
-                <span class="text-[10px] text-body font-medium truncate">{{ task.description }}</span>
+                <span class="text-xs text-body font-medium truncate">{{ task.description }}</span>
               </div>
-              <i class="fa-solid fa-chevron-right text-[10px] text-sub opacity-50"></i>
+              <i class="fa-solid fa-chevron-right text-xs text-sub opacity-50"></i>
             </div>
           </div>
         </div>

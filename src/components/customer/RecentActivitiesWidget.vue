@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
@@ -20,7 +20,7 @@
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Next Appointment</div>
               <div class="text-sm text-body truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
-              <div class="text-[10px] text-sub truncate">{{ nextAppointment.title || 'Appointment' }}</div>
+              <div class="text-xs text-sub truncate">{{ nextAppointment.title || 'Appointment' }}</div>
             </div>
           </div>
           <button
@@ -41,7 +41,7 @@
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Last Communication</div>
               <div class="text-sm text-body truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
-              <div class="text-[10px] text-sub truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
+              <div class="text-xs text-sub truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
             </div>
           </div>
           <button
@@ -62,7 +62,7 @@
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Lead Request</div>
               <div class="text-sm text-body truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
-              <div class="text-[10px] text-sub truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
+              <div class="text-xs text-sub truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
             </div>
           </div>
           <button
@@ -83,7 +83,7 @@
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Opportunity</div>
               <div class="text-sm text-body truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
-              <div class="text-[10px] text-sub truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
+              <div class="text-xs text-sub truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
             </div>
           </div>
           <button

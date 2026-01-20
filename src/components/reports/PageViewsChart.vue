@@ -9,7 +9,7 @@
       </div>
       <div class="space-y-4">
         <div class="flex items-end gap-1 h-64 overflow-x-auto pb-2">
-          <div v-for="n in 30" :key="`bar-${n}`" class="flex flex-col items-center gap-1 min-w-[20px]">
+          <div v-for="n in 30" :key="`bar-${n}`" class="flex flex-col items-center gap-1 min-w-5">
             <div class="w-full flex items-end justify-center h-full gap-0.5">
               <div class="bg-gray-200 rounded-t w-2 h-full animate-pulse"></div>
               <div class="bg-gray-200 rounded-t w-2 h-3/4 animate-pulse"></div>

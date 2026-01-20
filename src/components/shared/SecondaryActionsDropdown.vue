@@ -23,7 +23,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute top-full right-0 mt-2 min-w-full z-[9999] dropdown-menu-small"
+        class="absolute top-full right-0 mt-2 min-w-full z-50 dropdown-menu-small"
       >
         <DropdownMenu :items="menuItems" className="min-w-full" />
       </div>

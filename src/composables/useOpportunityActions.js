@@ -74,7 +74,6 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
     
     const component = TASK_WIDGET_COMPONENTS[widgetType]
     if (!component) {
-      console.warn(`No component found for widget type: ${widgetType}`)
       return null
     }
     
@@ -107,7 +106,7 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
     
     return {
       ...actionConfig,
-      handler: handler || (() => console.warn(`No handler for action: ${actionConfig.key}`))
+      handler: handler || (() => {})
     }
   })
 
@@ -121,7 +120,7 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
       
       return {
         ...action,
-        handler: handler || (() => console.warn(`No handler for action: ${action.key}`))
+        handler: handler || (() => {})
       }
     })
   })

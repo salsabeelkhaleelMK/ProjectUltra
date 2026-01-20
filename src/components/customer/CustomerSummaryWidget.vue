@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-[12px] flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
@@ -28,9 +28,9 @@
             <span 
               v-for="(pref, index) in preferences" 
               :key="index"
-              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surfaceSecondary text-heading text-[10px] font-semibold uppercase tracking-wider rounded border border-black/5"
+              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surfaceSecondary text-heading text-xs font-semibold uppercase tracking-wider rounded border border-black/5"
             >
-              <i :class="pref.icon" class="text-[10px] text-brand-blue"></i>
+              <i :class="pref.icon" class="text-xs text-brand-blue"></i>
               {{ pref.label }}
             </span>
           </div>

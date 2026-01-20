@@ -1,9 +1,10 @@
-import { mockCustomers } from '@/api/mockData'
 import { getDisplayStage } from '@/utils/stageMapper'
 import { LeadRepository } from '@/repositories/LeadRepository'
+import { CustomerRepository } from '@/repositories/CustomerRepository'
 
-// Create repository instance
+// Create repository instances
 const leadRepository = new LeadRepository()
+const customerRepository = new CustomerRepository()
 
 /**
  * Lead Service
@@ -26,7 +27,7 @@ export class LeadService {
   enrichWithCustomer(lead) {
     if (!lead) return null
     
-    const customer = mockCustomers.find(c => c.id === lead.customerId)
+    const customer = customerRepository.findByIdSync(lead.customerId)
     if (!customer) {
       // Fallback if customer not found
       return {
@@ -90,7 +91,7 @@ export class LeadService {
     if (filters.search) {
       const search = filters.search.toLowerCase()
       results = results.filter(lead => {
-        const customer = mockCustomers.find(c => c.id === lead.customerId)
+        const customer = customerRepository.findByIdSync(lead.customerId)
         const customerName = customer?.name || ''
         return customerName.toLowerCase().includes(search) ||
           (lead.requestedCar && lead.requestedCar.brand && lead.requestedCar.brand.toLowerCase().includes(search)) ||

@@ -106,7 +106,7 @@
     <transition name="fade">
       <div 
         v-if="showFilterDrawer"
-        class="fixed inset-0 bg-black/50 z-[70] lg:hidden"
+        class="fixed inset-0 bg-black/50 z-50 lg:hidden"
         @click="showFilterDrawer = false"
       ></div>
     </transition>
@@ -115,7 +115,7 @@
     <transition name="slide-right">
       <div 
         v-if="showFilterDrawer"
-        class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-surface z-50 lg:hidden overflow-y-auto shadow-xl"
+        class="fixed top-0 right-0 bottom-0 w-80 max-w-screen-sm bg-surface z-50 lg:hidden overflow-y-auto shadow-xl"
       >
         <div class="sticky top-0 bg-surface border-b border p-4 flex items-center justify-between z-10">
           <h3 class="heading-sub">Filters</h3>

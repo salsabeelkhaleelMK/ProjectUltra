@@ -1,10 +1,10 @@
 <template>
   <div
-    class="rounded-[12px] p-px flex flex-col"
+    class="rounded-card p-px flex flex-col"
     style="background: linear-gradient(to right, #40B3E9, #8873FF, #FF8B42); height: 480px"
   >
     <div
-      class="bg-greys-100 rounded-[11px] flex flex-col h-full overflow-hidden"
+      class="bg-greys-100 rounded-card flex flex-col h-full overflow-hidden"
       style="background-color: var(--base-muted, #f5f5f5)"
     >
       <!-- Title Section -->
@@ -36,7 +36,7 @@
             </div>
             <div
               :class="[
-                'rounded-lg px-4 py-2.5 max-w-[80%]',
+                'rounded-lg px-4 py-2.5 max-w-xs md:max-w-sm',
                 message.role === 'user'
                   ? 'bg-purple-600 text-white'
                   : 'bg-greys-50 text-greys-900 border border-black/5',

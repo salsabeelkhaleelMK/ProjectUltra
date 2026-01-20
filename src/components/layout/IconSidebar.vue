@@ -472,7 +472,7 @@ const toggleDarkMode = () => {
 const handleSearch = (query) => {
   // Global search is not implemented yet; this is a no-op hook
   // that can be connected to a backend or in-memory search later.
-  console.log('Search query:', query)
+  // TODO: Implement global search functionality
 }
 </script>
 

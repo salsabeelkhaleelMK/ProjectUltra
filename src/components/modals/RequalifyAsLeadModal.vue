@@ -9,7 +9,7 @@
         </DialogHeader>
 
         <!-- Body with scrollable content -->
-        <div class="space-y-6 max-h-[60vh] overflow-y-auto">
+        <div class="space-y-6 max-h-screen-60 overflow-y-auto">
       <div class="flex items-start gap-4 mb-6">
         <div class="flex-shrink-0">
           <div class="w-12 h-12 rounded-sm bg-yellow-100 flex items-center justify-center border border-yellow-200">

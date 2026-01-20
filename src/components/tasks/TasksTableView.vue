@@ -243,7 +243,7 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-content font-semibold text-heading truncate max-w-[7.5rem] md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-content font-semibold text-heading truncate max-w-32 md:max-w-none' }, task.customer.name),
           h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.email)
         ])
       ])
@@ -263,7 +263,7 @@ const columns = computed(() => [
       }
       return h('div', { class: 'flex items-center gap-2' }, [
         h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
-        h('span', { class: 'text-content font-medium text-heading truncate max-w-[7.5rem]' }, vehicleInfo)
+        h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
       ])
     }
   },

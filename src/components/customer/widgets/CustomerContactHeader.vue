@@ -17,7 +17,7 @@
           <!-- Avatar -->
           <button
             @click.stop="handleAvatarClick"
-            class="w-[70px] h-[70px] rounded-lg bg-black text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0 shadow-sm"
+            class="w-20 h-20 rounded-lg bg-black text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0 shadow-sm"
             :class="{ 'cursor-pointer': customerId }"
           >
             <i class="fa-solid fa-user text-3xl text-white"></i>
@@ -32,20 +32,20 @@
               <div class="flex flex-wrap items-center gap-x-4 gap-y-0.5">
                 <div class="flex items-center gap-1.5 group">
                   <i class="fa-regular fa-envelope text-sm text-brand-dark font-bold"></i>
-                  <span class="text-[11px] text-heading font-medium truncate max-w-[140px] lg:max-w-none">{{ email }}</span>
+                  <span class="text-xs text-heading font-medium truncate max-w-36 lg:max-w-none">{{ email }}</span>
                   <button @click.stop="copyToClipboard(email, 'email')" class="transition-all"><i class="fa-regular fa-copy text-xs text-sub hover:text-brand-dark"></i></button>
                 </div>
                 
                 <div class="flex items-center gap-1.5 group">
                   <i class="fa-solid fa-phone text-sm text-brand-dark font-bold"></i>
-                  <span class="text-[11px] text-heading font-medium whitespace-nowrap">{{ phone }}</span>
+                  <span class="text-xs text-heading font-medium whitespace-nowrap">{{ phone }}</span>
                   <button @click.stop="copyToClipboard(phone, 'phone')" class="transition-all"><i class="fa-regular fa-copy text-xs text-sub hover:text-brand-dark"></i></button>
                 </div>
 
                 <div class="flex items-center gap-1.5">
                   <i class="fa-solid fa-map-marker-alt text-sm text-brand-dark font-bold" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
                   <i class="fa-regular fa-calendar text-sm text-brand-dark font-bold" v-else></i>
-                  <span class="text-[11px] text-heading font-medium truncate max-w-[140px] lg:max-w-none">{{ thirdFieldValue }}</span>
+                  <span class="text-xs text-heading font-medium truncate max-w-36 lg:max-w-none">{{ thirdFieldValue }}</span>
                 </div>
               </div>
 
