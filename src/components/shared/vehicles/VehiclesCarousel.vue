@@ -10,7 +10,7 @@
         <div
           v-for="(car, index) in cars"
           :key="car.id"
-          class="flex-none w-64 snap-start bg-surface border border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
+          class="flex-none w-64 snap-start bg-surface border border-E5E7EB rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer relative"
           @click="handleCarClick(car)"
         >
           <!-- Type Badge -->

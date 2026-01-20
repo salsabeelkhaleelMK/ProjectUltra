@@ -11,7 +11,7 @@
         <div
           v-for="n in 5"
           :key="`skeleton-${n}`"
-          class="bg-surfaceSecondary rounded-lg border border p-3"
+          class="bg-surfaceSecondary rounded-lg border border-E5E7EB p-3"
         >
           <div class="mb-2">
             <div class="h-3 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>

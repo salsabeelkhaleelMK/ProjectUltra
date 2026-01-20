@@ -4,75 +4,68 @@
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
       <DialogContent class="w-full sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Reassign</DialogTitle>
+          <DialogTitle class="text-fluid-lg">{{ title || 'Reassign' }}</DialogTitle>
         </DialogHeader>
 
-        <p class="text-meta mb-4">
-          Select a user or team to reassign:
+        <p class="text-fluid-xs text-body mb-4">
+          Select a user or team to assign:
         </p>
         
+        <!-- Search Input -->
+        <div class="mb-4">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search users or teams..."
+            class="w-full px-3 py-2 border border-E5E7EB rounded-lg text-fluid-sm text-heading placeholder:text-sub focus:outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/15"
+          />
+        </div>
+
+        <!-- Combined List (Teams and Users) -->
         <div class="space-y-2 max-h-96 overflow-y-auto mb-4">
-      <!-- Teams Section -->
-      <div v-if="assignableTeams.length" class="mb-3">
-        <p class="label-upper mb-2 px-1">Teams</p>
-        <button
-          v-for="team in assignableTeams"
-          :key="`team-${team.id}`"
-          @click="handleSelect({ type: 'team', id: team.id, name: team.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
-          :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id }"
-        >
-          <div 
-            class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm bg-green-100 text-green-700"
+          <button
+            v-for="item in filteredAssignees"
+            :key="`${item.type}-${item.id}`"
+            @click="handleSelect(item)"
+            class="w-full flex items-center gap-3 p-3 rounded-lg border border-E5E7EB hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
+            :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === item.type && selectedAssignee?.id === item.id }"
           >
-            <i class="fa-solid fa-users text-sm"></i>
+            <div 
+              class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-fluid-sm"
+              :class="item.type === 'team' ? 'bg-green-100 text-green-700' : getRoleAvatarClass(item.role)"
+            >
+              <i v-if="item.type === 'team'" class="fa-solid fa-users text-fluid-sm"></i>
+              <span v-else>{{ item.initials }}</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-fluid-sm text-heading">{{ item.name }}</p>
+              <p class="text-fluid-xs text-sub capitalize">
+                {{ item.type === 'team' ? 'Team' : `${item.role} • ${item.email}` }}
+              </p>
+            </div>
+            <i v-if="selectedAssignee?.type === item.type && selectedAssignee?.id === item.id" class="fa-solid fa-check text-brand-red"></i>
+          </button>
+          
+          <!-- Empty State -->
+          <div v-if="filteredAssignees.length === 0" class="text-center py-8">
+            <i class="fa-solid fa-search text-3xl text-sub mb-2"></i>
+            <p class="text-fluid-sm text-sub">No users or teams found</p>
           </div>
-          <div class="flex-1">
-            <p class="font-medium text-heading">{{ team.name }}</p>
-            <p class="text-meta">Team</p>
-          </div>
-          <i v-if="selectedAssignee?.type === 'team' && selectedAssignee?.id === team.id" class="fa-solid fa-check text-brand-red"></i>
-        </button>
-      </div>
-      
-      <!-- Users Section -->
-      <div>
-        <p class="text-xs font-semibold text-sub uppercase tracking-wide mb-2 px-1">Users</p>
-        <button
-          v-for="user in assignableUsers"
-          :key="`user-${user.id}`"
-          @click="handleSelect({ type: 'user', id: user.id, name: user.name })"
-          class="w-full flex items-center gap-3 p-3 rounded-lg border border hover:bg-surfaceSecondary hover:border-red-300 transition-colors text-left"
-          :class="{ 'bg-red-50 border-red-400': selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id }"
-        >
-          <div 
-            class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm"
-            :class="getRoleAvatarClass(user.role)"
-          >
-            {{ user.initials }}
-          </div>
-          <div class="flex-1">
-            <p class="font-medium text-heading">{{ user.name }}</p>
-            <p class="text-meta capitalize">{{ user.role }} • {{ user.email }}</p>
-          </div>
-          <i v-if="selectedAssignee?.type === 'user' && selectedAssignee?.id === user.id" class="fa-solid fa-check text-brand-red"></i>
-        </button>
-      </div>
-    </div>
-    
+        </div>
+        
         <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
+            class="rounded-sm w-full sm:w-auto text-fluid-sm"
             @click="$emit('close')"
           />
           <Button
-            label="Reassign"
+            :label="confirmLabel || 'Reassign'"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            class="rounded-sm w-full sm:w-auto text-fluid-sm !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             :disabled="!selectedAssignee"
             @click="handleConfirm"
           />
@@ -100,6 +93,14 @@ const props = defineProps({
   show: {
     type: Boolean,
     required: true
+  },
+  title: {
+    type: String,
+    default: 'Reassign'
+  },
+  confirmLabel: {
+    type: String,
+    default: 'Reassign'
   }
 })
 
@@ -107,9 +108,45 @@ const emit = defineEmits(['close', 'confirm'])
 
 const usersStore = useUsersStore()
 const selectedAssignee = ref(null)
+const searchQuery = ref('')
 
 const assignableUsers = computed(() => usersStore.assignableUsers)
 const assignableTeams = computed(() => usersStore.assignableTeams)
+
+// Combine teams and users into one list
+const allAssignees = computed(() => {
+  const teams = assignableTeams.value.map(team => ({
+    ...team,
+    type: 'team'
+  }))
+  
+  const users = assignableUsers.value.map(user => ({
+    ...user,
+    type: 'user'
+  }))
+  
+  return [...teams, ...users]
+})
+
+// Filter based on search query
+const filteredAssignees = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return allAssignees.value
+  }
+  
+  const query = searchQuery.value.toLowerCase()
+  return allAssignees.value.filter(item => {
+    const name = item.name.toLowerCase()
+    const email = item.email?.toLowerCase() || ''
+    const role = item.role?.toLowerCase() || ''
+    const type = item.type.toLowerCase()
+    
+    return name.includes(query) || 
+           email.includes(query) || 
+           role.includes(query) ||
+           type.includes(query)
+  })
+})
 
 const getRoleAvatarClass = (role) => {
   const classes = {
@@ -129,6 +166,7 @@ const handleOpenChange = (isOpen) => {
 watch(() => props.show, (newVal) => {
   if (!newVal) {
     selectedAssignee.value = null
+    searchQuery.value = ''
   }
 })
 
@@ -140,6 +178,7 @@ const handleConfirm = () => {
   if (selectedAssignee.value) {
     emit('confirm', selectedAssignee.value)
     selectedAssignee.value = null
+    searchQuery.value = ''
   }
 }
 </script>

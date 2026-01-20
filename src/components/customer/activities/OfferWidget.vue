@@ -6,7 +6,7 @@
     </div>
     
     <!-- Selected Vehicle Display -->
-    <div v-if="selectedVehicle" class="mb-6 p-4 bg-surfaceSecondary rounded-lg border border">
+    <div v-if="selectedVehicle" class="mb-6 p-4 bg-surfaceSecondary rounded-lg border border-E5E7EB">
       <p class="text-xs text-sub mb-2">Creating offer for:</p>
       <div class="flex items-center gap-3">
         <div class="w-16 h-16 bg-surfaceTertiary rounded overflow-hidden flex-shrink-0">

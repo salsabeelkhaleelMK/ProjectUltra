@@ -21,7 +21,7 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   ]
   const followupChannel = ref('whatsapp')
   const selectedTemplate = ref('followup-1')
-  const rescheduleTime = ref('custom')
+  const rescheduleTime = ref(null)
   const customDate = ref('')
   const customTime = ref('09:00')
 
@@ -110,7 +110,7 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     scheduledAppointmentData.value = null
     followupChannel.value = 'whatsapp'
     selectedTemplate.value = 'followup-1'
-    rescheduleTime.value = 'custom'
+    rescheduleTime.value = null
     customDate.value = ''
     customTime.value = '09:00'
     disqualifyCategory.value = 'Not Interested'

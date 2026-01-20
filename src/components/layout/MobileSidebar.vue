@@ -54,6 +54,7 @@
         <div class="px-3 space-y-0.5 sm:space-y-1 flex-1">
           <!-- Home -->
           <router-link
+            v-if="navigationVisibility.home !== false"
             to="/home"
             @click="$emit('close')"
             class="mobile-sidebar-link"
@@ -66,6 +67,7 @@
 
           <!-- Tasks -->
           <router-link 
+            v-if="navigationVisibility.tasks !== false"
             to="/tasks" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
@@ -79,6 +81,7 @@
           
           <!-- Customers -->
           <router-link 
+            v-if="navigationVisibility.customers !== false"
             to="/customers" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
@@ -91,6 +94,7 @@
           
           <!-- Calendar -->
           <router-link 
+            v-if="navigationVisibility.calendar !== false"
             to="/calendar" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
@@ -103,7 +107,7 @@
           
           <!-- Reports -->
           <router-link 
-            v-if="userStore.canAccessReports()"
+            v-if="userStore.canAccessReports() && navigationVisibility.reports !== false"
             to="/reports" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
@@ -116,6 +120,7 @@
 
           <!-- Lists Submenu -->
           <button
+            v-if="navigationVisibility.lists !== false"
             @click="toggleListsMenu"
             class="mobile-sidebar-link w-full"
             :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') || showListsMenu }"
@@ -159,6 +164,7 @@
 
           <!-- Language Selector -->
           <button
+            v-if="navigationVisibility.language !== false"
             @click="toggleLanguageMenu"
             class="mobile-sidebar-link w-full"
             :class="{ 'mobile-sidebar-link-active': showLanguageMenu }"
@@ -293,6 +299,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
+import { useSettingsStore } from '@/stores/settings'
 import { useTheme } from '@/composables/useTheme'
 import { 
   Plus, 
@@ -330,7 +337,10 @@ const route = useRoute()
 const { locale, t } = useI18n()
 const leadsStore = useLeadsStore()
 const userStore = useUserStore()
+const settingsStore = useSettingsStore()
 const { isDark, toggleTheme } = useTheme()
+
+const navigationVisibility = computed(() => settingsStore.getSetting('navigationVisibility') || {})
 
 const showListsMenu = ref(false)
 const showLanguageMenu = ref(false)

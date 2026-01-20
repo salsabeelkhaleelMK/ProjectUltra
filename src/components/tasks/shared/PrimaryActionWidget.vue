@@ -5,15 +5,15 @@
   >
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-gray-900 text-sm">{{ action.title }}</h4>
-        <p class="text-xs text-gray-500 mt-0.5">{{ action.description }}</p>
+        <h4 class="font-bold text-gray-900 text-fluid-sm">{{ action.title }}</h4>
+        <p class="text-fluid-xs text-gray-500 mt-0.5">{{ action.description }}</p>
       </div>
     </div>
     <div class="flex gap-3 flex-wrap">
       <button
         @click="$emit('action-clicked')"
         :class="action.buttonClass"
-        class="font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         <i :class="action.icon"></i>
         {{ action.label }}

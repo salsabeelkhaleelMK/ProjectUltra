@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="contact"
-    class="bg-surface border border rounded-xl shadow-sm overflow-hidden"
+    class="bg-surface border border-E5E7EB rounded-xl shadow-sm overflow-hidden"
   >
     <div class="p-4 border-b border bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">

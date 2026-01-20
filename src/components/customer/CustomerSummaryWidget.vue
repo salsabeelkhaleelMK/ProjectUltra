@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surface border border p-6 mb-6">
+  <div class="bg-surface border border-E5E7EB p-6 mb-6">
     <div class="flex items-start gap-3 mb-4">
       <div class="flex-shrink-0 mt-1">
         <i class="fa-solid fa-lightbulb text-2xl text-amber-500"></i>

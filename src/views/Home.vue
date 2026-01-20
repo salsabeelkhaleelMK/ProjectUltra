@@ -11,63 +11,65 @@
           <PerformanceWidget />
           
           <!-- Quick Actions Widget -->
-          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border bg-surface">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-bolt text-body text-sm"></i>
-                  <h2 class="heading-sub text-heading">Quick Actions</h2>
-                  <Badge
-                    v-if="totalNotificationsCount > 0"
-                    :text="String(totalNotificationsCount)"
-                    size="small"
-                    theme="blue"
-                  />
-                </div>
-                <Button
-                  v-if="totalNotificationsCount > 5"
-                  label="View all →"
-                  variant="ghost"
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Quick Actions</h2>
+                <Badge
+                  v-if="totalNotificationsCount > 0"
+                  :text="String(totalNotificationsCount)"
                   size="small"
-                  @click="$router.push('/tasks')"
-                  class="text-xs"
+                  theme="blue"
                 />
               </div>
+              <Button
+                v-if="totalNotificationsCount > 5"
+                label="View all →"
+                variant="ghost"
+                size="small"
+                @click="$router.push('/tasks')"
+                class="text-fluid-xs"
+              />
             </div>
             
-            <div class="p-4 md:p-5 space-y-3">
-              <!-- Loading Skeleton -->
-              <template v-if="loadingNotifications">
-                <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surfaceSecondary border border rounded-lg p-4">
-                  <div class="space-y-2">
-                    <div class="h-4 bg-surfaceTertiary rounded w-3/4 animate-pulse"></div>
-                    <div class="h-3 bg-surfaceTertiary rounded w-1/2 animate-pulse"></div>
-                    <div class="flex gap-2 mt-3">
-                      <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
-                      <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+              <div class="space-y-3">
+                <!-- Loading Skeleton -->
+                <template v-if="loadingNotifications">
+                  <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-4">
+                    <div class="space-y-2">
+                      <div class="h-4 bg-surfaceTertiary rounded w-3/4 animate-pulse"></div>
+                      <div class="h-3 bg-surfaceTertiary rounded w-1/2 animate-pulse"></div>
+                      <div class="flex gap-2 mt-3">
+                        <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
+                        <div class="h-8 bg-surfaceTertiary rounded flex-1 animate-pulse"></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-              
-              <!-- Actual Content -->
-              <template v-else>
-                <div v-if="notifications.length === 0" class="text-center py-8 text-sub">
-                  <i class="fa-solid fa-check-circle text-4xl mb-2 text-sub opacity-50"></i>
-                  <p class="text-content">All caught up!</p>
-                  <p class="text-meta mt-1">No quick actions needed</p>
-                </div>
-                <ActionableQuestionCard
-                  v-for="question in notifications.slice(0, 5)"
-                  :key="question.id"
-                  :question="question"
-                  @answer-yes="handleAnswerYes"
-                  @answer-no="handleAnswerNo"
-                  @reassign="handleReassign"
-                  @view-task="handleViewTask"
-                  @dismiss="handleDismiss"
-                />
-              </template>
+                </template>
+                
+                <!-- Actual Content -->
+                <template v-else>
+                  <div v-if="notifications.length === 0" class="text-center py-8 text-sub">
+                    <i class="fa-solid fa-check-circle text-4xl mb-2 text-sub opacity-50"></i>
+                    <p class="text-fluid-sm">All caught up!</p>
+                    <p class="text-fluid-xs mt-1">No quick actions needed</p>
+                  </div>
+                  <ActionableQuestionCard
+                    v-for="question in notifications.slice(0, 5)"
+                    :key="question.id"
+                    :question="question"
+                    @answer-yes="handleAnswerYes"
+                    @answer-no="handleAnswerNo"
+                    @reassign="handleReassign"
+                    @view-task="handleViewTask"
+                    @dismiss="handleDismiss"
+                  />
+                </template>
+              </div>
             </div>
           </div>
         </div>
@@ -75,59 +77,59 @@
         <!-- Right Column - Sidebar (1/3 width) -->
         <div class="space-y-4 md:space-y-6">
           <!-- Tasks Due Today Widget -->
-          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border bg-surface">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-tasks text-body text-sm"></i>
-                  <h2 class="heading-sub text-heading">Tasks Due Today</h2>
-                  <Badge
-                    v-if="tasksDueToday.length > 0"
-                    :text="String(tasksDueToday.length)"
-                    size="small"
-                    theme="red"
-                  />
-                </div>
-                <Button
-                  label="View all tasks →"
-                  variant="ghost"
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-tasks text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Tasks Due Today</h2>
+                <Badge
+                  v-if="tasksDueToday.length > 0"
+                  :text="String(tasksDueToday.length)"
                   size="small"
-                  @click="$router.push('/tasks')"
-                  class="text-xs"
+                  theme="red"
                 />
               </div>
+              <Button
+                label="View all tasks →"
+                variant="ghost"
+                size="small"
+                @click="$router.push('/tasks')"
+                class="text-fluid-xs"
+              />
             </div>
             
-            <div class="p-4 md:p-5">
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <TodaysTasks :tasks="tasksDueToday" :loading="loadingTasks" />
             </div>
           </div>
           
           <!-- Appointments Today Widget -->
-          <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-4 md:p-5 border-b border bg-surface">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-calendar text-body text-sm"></i>
-                  <h2 class="heading-sub text-heading">Appointments Today</h2>
-                  <Badge
-                    v-if="appointmentsToday.length > 0"
-                    :text="String(appointmentsToday.length)"
-                    size="small"
-                    theme="blue"
-                  />
-                </div>
-                <Button
-                  label="View calendar →"
-                  variant="ghost"
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-calendar text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Appointments Today</h2>
+                <Badge
+                  v-if="appointmentsToday.length > 0"
+                  :text="String(appointmentsToday.length)"
                   size="small"
-                  @click="$router.push('/calendar')"
-                  class="text-xs"
+                  theme="blue"
                 />
               </div>
+              <Button
+                label="View calendar →"
+                variant="ghost"
+                size="small"
+                @click="$router.push('/calendar')"
+                class="text-fluid-xs"
+              />
             </div>
             
-            <div class="p-4 md:p-5">
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <TodaysAppointments :appointments="appointmentsToday" :loading="loadingAppointments" />
             </div>
           </div>

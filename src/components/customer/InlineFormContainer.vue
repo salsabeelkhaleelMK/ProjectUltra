@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surface border border rounded-lg p-4 animate-fade-in">
+  <div class="bg-surface border border-E5E7EB rounded-lg p-4 animate-fade-in">
     <div v-if="title" class="flex justify-between items-center mb-4">
       <h5 class="font-semibold text-heading text-sm">{{ title }}</h5>
       <Button

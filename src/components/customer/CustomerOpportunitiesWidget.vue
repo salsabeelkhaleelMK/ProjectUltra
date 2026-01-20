@@ -16,7 +16,7 @@
       <div
         v-for="opp in opportunities"
         :key="opp.id"
-        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border rounded-lg cursor-pointer transition-colors"
+        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border-E5E7EB rounded-lg cursor-pointer transition-colors"
         @click="handleOpportunityClick(opp)"
       >
         <div class="flex items-center justify-between mb-2">
@@ -44,7 +44,7 @@
           <div 
             v-for="task in getOpportunityTasks(opp)" 
             :key="task.id"
-            class="flex items-center justify-between p-2 bg-surface border border rounded-md shadow-sm"
+            class="flex items-center justify-between p-2 bg-surface border border-E5E7EB rounded-md shadow-sm"
           >
             <div class="flex items-center gap-2">
               <span 
@@ -148,7 +148,7 @@ const getTaskTypeBadgeClass = (type) => {
     'DFB': 'bg-teal-100 text-teal-700 border border-teal-200',
     'NS': 'bg-pink-100 text-pink-700 border border-pink-200'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border border'
+  return classes[type] || 'bg-surfaceSecondary text-body border border-E5E7EB'
 }
 
 const formatCurrency = (value) => {
@@ -162,7 +162,7 @@ const getStageBadgeClass = (stage) => {
     'Closed Won': 'bg-green-100 text-green-700 border border-green-200',
     'Closed Lost': 'bg-red-100 text-red-700 border border-red-200'
   }
-  return classes[stage] || 'bg-surfaceSecondary text-body border border'
+  return classes[stage] || 'bg-surfaceSecondary text-body border border-E5E7EB'
 }
 
 const handleOpportunityClick = (opp) => {

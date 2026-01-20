@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-0 md:gap-8 text-content font-medium text-sub py-1">
+  <div class="flex gap-0 md:gap-8 text-fluid-sm font-medium text-sub py-1">
     <div 
       v-for="tab in tabs"
       :key="tab.key"
@@ -9,7 +9,7 @@
     >
       <!-- Icon (always visible) -->
       <i 
-        :class="[getIconClass(tab.key), 'text-base md:text-base', modelValue === tab.key ? 'text-brand-darkDarker' : 'text-sub']"
+        :class="[getIconClass(tab.key), 'text-sm md:text-sm', modelValue === tab.key ? 'text-brand-darkDarker' : 'text-sub']"
       ></i>
       
       <!-- Label (hidden on mobile, visible on desktop) -->

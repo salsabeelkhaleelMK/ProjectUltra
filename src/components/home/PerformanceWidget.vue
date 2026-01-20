@@ -1,21 +1,24 @@
 <template>
-  <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-    <div class="p-4 md:p-5">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-chart-line text-sub text-sm"></i>
-          <h2 class="heading-sub">Performance</h2>
-        </div>
-        <select
-          v-model="selectedPeriod"
-          @change="loadMetrics"
-          class="input text-xs w-full sm:w-auto"
-        >
-          <option value="month">Month</option>
-          <option value="quarter">Quarter</option>
-          <option value="year">Year</option>
-        </select>
+  <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-chart-line text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Performance</h2>
       </div>
+      <select
+        v-model="selectedPeriod"
+        @change="loadMetrics"
+        class="input text-fluid-xs w-full sm:w-auto"
+      >
+        <option value="month">Month</option>
+        <option value="quarter">Quarter</option>
+        <option value="year">Year</option>
+      </select>
+    </div>
+    
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
       <!-- Loading State -->
       <div v-if="loading" class="space-y-4">
         <div v-for="n in 4" :key="`skeleton-${n}`" class="h-16 bg-gray-100 rounded animate-pulse"></div>
@@ -24,23 +27,23 @@
       <!-- BDC Operator View -->
       <div v-else-if="userRole === 'operator'" class="space-y-4">
         <!-- SLA Compliance -->
-        <div class="bg-surface rounded-lg p-3 border border">
+        <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-body">SLA Compliance</span>
-            <span class="text-xs font-bold" :class="slaCompliancePercentage >= 90 ? 'text-green-600' : 'text-yellow-600'">
+            <span class="text-fluid-xs font-medium text-body">SLA Compliance</span>
+            <span class="text-fluid-xs font-bold" :class="slaCompliancePercentage >= 90 ? 'text-green-600' : 'text-yellow-600'">
               {{ slaCompliancePercentage }}%
             </span>
           </div>
-          <div class="text-xs sm:text-sm text-gray-600">
+          <div class="text-fluid-xs text-gray-600">
             {{ bdcMetrics?.slaCompliance?.withinSLA || 0 }} / {{ bdcMetrics?.slaCompliance?.total || 0 }} tasks completed within SLA
           </div>
         </div>
 
         <!-- Tasks Per Day -->
-        <div class="bg-surface rounded-lg p-3 border border">
+        <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-body">Tasks Per Day</span>
-            <span class="text-xs font-bold" :class="getTasksPerDayStatusClass()">
+            <span class="text-fluid-xs font-medium text-body">Tasks Per Day</span>
+            <span class="text-fluid-xs font-bold" :class="getTasksPerDayStatusClass()">
               {{ bdcMetrics?.tasksPerDay?.current || 0 }} / {{ bdcMetrics?.tasksPerDay?.target || 0 }}
             </span>
           </div>
@@ -51,16 +54,16 @@
               :style="{ width: `${Math.min((bdcMetrics?.tasksPerDay?.current || 0) / 50 * 100, 100)}%` }"
             ></div>
           </div>
-          <div class="text-xs text-gray-500 mt-1">Target: 20-50 tasks/day</div>
+          <div class="text-fluid-xs text-gray-500 mt-1">Target: 20-50 tasks/day</div>
         </div>
 
         <!-- Appointments Reserved -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Appointments Reserved</div>
-                <div class="text-base font-bold text-gray-900 mb-1">{{ bdcMetrics?.appointmentsReserved || 0 }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Appointments Reserved</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">{{ bdcMetrics?.appointmentsReserved || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="bdcMetrics?.appointmentsReservedTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -88,11 +91,11 @@
               </div>
             </div>
           </div>
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Lead-to-Opportunity Rate</div>
-                <div class="text-base font-bold text-gray-900 mb-1">{{ bdcMetrics?.leadToOpportunityConversion || 0 }}%</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Lead-to-Opportunity Rate</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">{{ bdcMetrics?.leadToOpportunityConversion || 0 }}%</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="bdcMetrics?.leadToOpportunityConversionTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -127,11 +130,11 @@
       <div v-else-if="userRole === 'salesman'" class="space-y-4">
         <!-- Contracts & Revenue -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Contracts Closed</div>
-                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.contractsClosed?.[selectedPeriod] || 0 }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Contracts Closed</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">{{ salespersonMetrics?.contractsClosed?.[selectedPeriod] || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('contractsClosed')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -159,11 +162,11 @@
               </div>
             </div>
           </div>
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Revenue</div>
-                <div class="text-base font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.revenue?.[selectedPeriod] || 0) }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Revenue</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.revenue?.[selectedPeriod] || 0) }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('revenue')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -195,7 +198,7 @@
 
         <!-- Revenue Targets -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center justify-between text-fluid-xs">
             <span class="text-body">Monthly Target</span>
             <span class="font-bold">{{ getRevenueProgress('month') }}%</span>
           </div>
@@ -205,7 +208,7 @@
               :style="{ width: `${Math.min(getRevenueProgress('month'), 100)}%` }"
             ></div>
           </div>
-          <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center justify-between text-fluid-xs">
             <span class="text-body">Quarterly Target</span>
             <span class="font-bold">{{ getRevenueProgress('quarter') }}%</span>
           </div>
@@ -219,11 +222,11 @@
 
         <!-- Pipeline & Win Rate -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Pipeline Value</div>
-                <div class="text-base font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.pipelineValue || 0) }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Pipeline Value</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">€{{ formatCurrency(salespersonMetrics?.pipelineValue || 0) }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.pipelineValueTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -251,11 +254,11 @@
               </div>
             </div>
           </div>
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Win Rate</div>
-                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.winRate || 0 }}%</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Win Rate</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">{{ salespersonMetrics?.winRate || 0 }}%</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.winRateTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -287,11 +290,11 @@
 
         <!-- New & Dormant Opportunities -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">New Opportunities</div>
-                <div class="text-base font-bold text-gray-900 mb-1">{{ salespersonMetrics?.newOpportunities?.[selectedPeriod] || 0 }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">New Opportunities</div>
+                <div class="text-fluid-sm font-bold text-gray-900 mb-1">{{ salespersonMetrics?.newOpportunities?.[selectedPeriod] || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="getTrendData('newOpportunities')">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -319,11 +322,11 @@
               </div>
             </div>
           </div>
-          <div class="bg-surface rounded-lg p-3 border border">
+          <div class="bg-surface rounded-lg p-3 border border-E5E7EB">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-1">Dormant Opportunities</div>
-                <div class="text-base font-bold text-red-600 mb-1">{{ salespersonMetrics?.dormantOpportunities || 0 }}</div>
+                <div class="text-fluid-xs text-gray-500 mb-1">Dormant Opportunities</div>
+                <div class="text-fluid-sm font-bold text-red-600 mb-1">{{ salespersonMetrics?.dormantOpportunities || 0 }}</div>
               </div>
               <div class="h-12 w-16 flex-shrink-0" v-if="salespersonMetrics?.dormantOpportunitiesTrend">
                 <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -359,7 +362,7 @@
         <!-- Funnel Visualization & Conversion Rate -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <!-- Conversion Rate Card -->
-          <div class="bg-surface border border rounded-lg p-6 flex flex-col items-center justify-center">
+          <div class="bg-surface border border-E5E7EB rounded-lg p-6 flex flex-col items-center justify-center">
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 mb-3">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <!-- Background circle -->
@@ -386,21 +389,21 @@
               </svg>
               <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center">
-                  <div class="text-base font-bold text-green-700">
+                  <div class="text-fluid-sm font-bold text-green-700">
                     {{ managerMetrics?.conversionRate || 0 }}%
                   </div>
                 </div>
               </div>
             </div>
-            <div class="text-sm font-bold text-green-800 mb-1">Conversion Rate</div>
-            <div class="text-xs text-green-600 text-center">
+            <div class="text-fluid-sm font-bold text-green-800 mb-1">Conversion Rate</div>
+            <div class="text-fluid-xs text-green-600 text-center">
               {{ getConversionDescription(managerMetrics?.conversionRate || 0) }}
             </div>
           </div>
 
           <!-- Bar Chart -->
           <div class="lg:col-span-2 bg-surface rounded-lg p-6 md:p-8">
-            <h3 class="text-base font-bold text-gray-900 mb-4">Sales Funnel</h3>
+            <h3 class="text-fluid-sm font-bold text-gray-900 mb-4">Sales Funnel</h3>
             <div class="space-y-3">
               <div
                 v-for="(stage, index) in managerMetrics?.stages || []"
@@ -408,7 +411,7 @@
                 class="relative"
               >
                 <div class="flex items-center gap-3 mb-1">
-                  <span class="text-xs font-medium text-body w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
+                  <span class="text-fluid-xs font-medium text-body w-32 sm:w-40 flex-shrink-0">{{ stage.name }}</span>
                   <div class="flex-1 relative">
                     <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
                       <div
@@ -416,11 +419,11 @@
                         :class="getStageColorClass(stage.color)"
                         :style="{ width: `${stage.percentage}%`, minWidth: '2px' }"
                       >
-                        <span class="text-xs font-bold text-gray-900">{{ formatNumber(stage.count) }}</span>
+                        <span class="text-fluid-xs font-bold text-gray-900">{{ formatNumber(stage.count) }}</span>
                       </div>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-gray-900 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
+                  <span class="text-fluid-xs font-bold text-gray-900 w-12 text-right flex-shrink-0">{{ stage.percentage }}%</span>
                 </div>
               </div>
             </div>
@@ -431,8 +434,8 @@
       <!-- Fallback for other roles -->
       <div v-else class="text-center py-8 text-gray-500">
         <i class="fa-solid fa-chart-line text-4xl mb-2 text-gray-300"></i>
-        <p class="text-sm">Performance metrics not available</p>
-        <p class="text-xs text-sub mt-1">Contact your administrator</p>
+        <p class="text-fluid-sm">Performance metrics not available</p>
+        <p class="text-fluid-xs text-sub mt-1">Contact your administrator</p>
       </div>
     </div>
   </div>

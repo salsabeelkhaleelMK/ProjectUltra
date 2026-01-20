@@ -66,7 +66,7 @@ const getStatusClass = (status) => {
     'pending': 'bg-yellow-100 text-yellow-700 border border-yellow-200',
     'cancelled': 'bg-red-100 text-red-700 border border-red-200'
   }
-  return classes[status?.toLowerCase()] || 'bg-surfaceSecondary text-body border border'
+  return classes[status?.toLowerCase()] || 'bg-surfaceSecondary text-body border border-E5E7EB'
 }
 </script>
 

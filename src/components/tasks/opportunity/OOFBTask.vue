@@ -7,13 +7,13 @@
     <template #actions>
       <button
         @click="handleCreateOffer"
-        class="bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         Create Offer
       </button>
       <button
         @click="handleReview"
-        class="bg-surface hover:bg-surfaceSecondary border border text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-slate-700 font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors"
       >
         Review Opportunity
       </button>

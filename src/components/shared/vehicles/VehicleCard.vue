@@ -1,7 +1,7 @@
 <template>
   <div 
     @click="$emit('select')"
-    class="border border rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-surface"
+    class="border border-E5E7EB rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-surface"
     :class="{ 'border-blue-500 shadow': selected }"
   >
     <!-- Vehicle Image -->

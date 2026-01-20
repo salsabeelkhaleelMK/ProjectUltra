@@ -2,7 +2,7 @@
   <div class="relative" v-click-outside="closeDropdown">
     <button 
       @click="toggleDropdown"
-      class="w-auto bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
+      class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
     >
       <span>More actions</span>
@@ -23,7 +23,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute top-full right-0 mt-2 min-w-full z-[9999]"
+        class="absolute top-full right-0 mt-2 min-w-full z-[9999] dropdown-menu-small"
       >
         <DropdownMenu :items="menuItems" className="min-w-full" />
       </div>
@@ -75,4 +75,23 @@ const menuItems = computed(() => {
   }))
 })
 </script>
+
+<style>
+/* Apply smaller text size to dropdown menu items - unscoped for higher specificity */
+.dropdown-menu-small button,
+.dropdown-menu-small a,
+.dropdown-menu-small [role="menuitem"],
+.dropdown-menu-small div[role="menuitem"],
+.dropdown-menu-small span,
+.dropdown-menu-small li button,
+.dropdown-menu-small li a {
+  font-size: var(--text-fluid-xs, 0.75rem) !important;
+  line-height: 1.5 !important;
+}
+
+/* Target nested elements more aggressively */
+.dropdown-menu-small * {
+  font-size: var(--text-fluid-xs, 0.75rem) !important;
+}
+</style>
 

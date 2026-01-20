@@ -5,7 +5,7 @@
       <template #actions>
         <button 
           @click="showAddModal = true" 
-          class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+          class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
         >
           <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">Add new</span>
@@ -425,7 +425,7 @@ const columns = computed(() => {
               class: 'w-16 h-16 object-cover rounded-md'
             })
           }
-          return h('div', { class: 'w-16 h-16 bg-surface border border rounded-md flex items-center justify-center shrink-0' }, [
+          return h('div', { class: 'w-16 h-16 bg-surface border border-E5E7EB rounded-md flex items-center justify-center shrink-0' }, [
             h('i', { class: 'fa-solid fa-car text-2xl text-sub' })
           ])
         }

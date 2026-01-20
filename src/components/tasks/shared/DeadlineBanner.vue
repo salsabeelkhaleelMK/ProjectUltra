@@ -10,25 +10,25 @@
         :class="[deadlineStatus.bgClass, deadlineStatus.borderClass, 'border']"
       >
         <i 
-          class="text-base"
+          class="text-sm"
           :class="[`fa-solid ${deadlineStatus.icon}`, deadlineStatus.textClass]"
         ></i>
       </div>
       <div class="flex-1">
-        <div class="text-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
+        <div class="text-fluid-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
         <div 
-          class="text-sm font-bold"
+          class="text-fluid-sm font-bold"
           :class="deadlineStatus.textClass"
         >
           {{ formatDeadlineFull(nextActionDue) }}
-          <span v-if="deadlineStatus.type !== 'overdue'" class="text-xs font-normal opacity-75">
+          <span v-if="deadlineStatus.type !== 'overdue'" class="text-fluid-xs font-normal opacity-75">
             ({{ formatDueDate(nextActionDue) }})
           </span>
         </div>
       </div>
       <div 
         v-if="deadlineStatus.type === 'overdue'"
-        class="text-xs font-bold uppercase px-2.5 py-1 rounded-md"
+        class="text-fluid-xs font-bold uppercase px-2.5 py-1 rounded-md"
         :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
       >
         <i class="fa-solid fa-exclamation-circle mr-1"></i>
@@ -36,7 +36,7 @@
       </div>
       <div 
         v-else-if="deadlineStatus.type === 'urgent'"
-        class="text-xs font-bold uppercase px-2.5 py-1 rounded-md"
+        class="text-fluid-xs font-bold uppercase px-2.5 py-1 rounded-md"
         :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
       >
         <i class="fa-solid fa-bolt mr-1"></i>

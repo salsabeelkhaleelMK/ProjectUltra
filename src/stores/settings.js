@@ -53,7 +53,20 @@ const DEFAULT_SETTINGS = {
   dormantOpportunityAfterOfferHours: 0,
   
   // UI Theme
-  darkMode: false
+  darkMode: false,
+  
+  // Navigation Visibility (per-item control)
+  navigationVisibility: {
+    home: true,
+    tasks: true,
+    customers: true,
+    calendar: true,
+    reports: true,
+    lists: true,
+    search: true,
+    language: true
+    // Note: Settings is always visible
+  }
 }
 
 // Load settings from localStorage

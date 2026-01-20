@@ -87,13 +87,13 @@
           </button>
           <button
             @click="handleRefuse"
-            class="bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Customer Refused
           </button>
           <button
             @click="handleNotResponding"
-            class="bg-surface hover:bg-surfaceSecondary border border text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
+            class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-2.5 py-1 rounded-md text-xs transition-colors"
           >
             Not Responding
           </button>

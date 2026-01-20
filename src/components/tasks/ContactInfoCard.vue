@@ -1,8 +1,17 @@
 <template>
-  <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden h-full">
-    <div class="p-6">
+  <div class="rounded-[12px] flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-user text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Contact</h2>
+      </div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1" style="box-shadow: var(--nsc-card-shadow);">
       <!-- Card Header with Avatar and Name -->
-      <div class="flex items-center mb-4">
+      <div class="flex items-center mb-3">
         <div class="flex items-center gap-3 flex-1 min-w-0">
           <button
             @click.stop="handleAvatarClick"
@@ -15,7 +24,7 @@
           
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <h3 class="text-lg font-bold uppercase text-brand-dark truncate">{{ task.customer?.name || 'Unknown' }}</h3>
+              <h3 class="text-fluid-sm font-bold uppercase text-brand-dark truncate">{{ task.customer?.name || 'Unknown' }}</h3>
               <button
                 @click="openCustomerPage"
                 class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
@@ -46,13 +55,13 @@
       </div>
 
       <!-- Contact Details -->
-      <div class="space-y-3 pt-4">
+      <div class="space-y-3 pt-3">
         <!-- Email -->
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
             <i class="fa-regular fa-envelope text-sub text-sm"></i>
           </div>
-          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.email || '' }}</span>
+          <span class="text-fluid-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.email || '' }}</span>
           <button 
             @click.stop="copyToClipboard(task.customer?.email || '', 'email')"
             class="w-7 h-7 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
@@ -67,7 +76,7 @@
           <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
             <i class="fa-solid fa-phone text-sub text-sm"></i>
           </div>
-          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.phone || '' }}</span>
+          <span class="text-fluid-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.phone || '' }}</span>
           <button 
             @click.stop="copyToClipboard(task.customer?.phone || '', 'phone')"
             class="w-7 h-7 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
@@ -82,7 +91,7 @@
           <div class="w-8 h-8 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
             <i class="fa-solid fa-map-marker-alt text-sub text-sm"></i>
           </div>
-          <span class="text-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.address || '' }}</span>
+          <span class="text-fluid-sm text-heading font-medium flex-1 min-w-0 truncate">{{ task.customer?.address || '' }}</span>
         </div>
       </div>
     </div>

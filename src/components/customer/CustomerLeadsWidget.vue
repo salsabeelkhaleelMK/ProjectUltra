@@ -16,7 +16,7 @@
       <div
         v-for="lead in leads"
         :key="lead.id"
-        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border rounded-lg cursor-pointer transition-colors"
+        class="flex flex-col p-3 bg-surfaceSecondary hover:bg-surfaceSecondary border border-E5E7EB rounded-lg cursor-pointer transition-colors"
         @click="handleLeadClick(lead)"
       >
         <div class="flex items-center justify-between mb-2">
@@ -43,7 +43,7 @@
           <div 
             v-for="task in getLeadTasks(lead)" 
             :key="task.id"
-            class="flex items-center justify-between p-2 bg-surface border border rounded-md shadow-sm"
+            class="flex items-center justify-between p-2 bg-surface border border-E5E7EB rounded-md shadow-sm"
           >
             <div class="flex items-center gap-2">
               <span 
@@ -126,7 +126,7 @@ const getTaskTypeBadgeClass = (type) => {
   const classes = {
     'LQ': 'bg-orange-100 text-orange-700 border border-orange-200'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border border'
+  return classes[type] || 'bg-surfaceSecondary text-body border border-E5E7EB'
 }
 
 const getStageBadgeClass = (stage) => {
@@ -135,7 +135,7 @@ const getStageBadgeClass = (stage) => {
     'Validated': 'bg-blue-100 text-blue-700 border border-blue-200',
     'Contacted': 'bg-blue-100 text-blue-700 border border-blue-200'
   }
-  return classes[stage] || 'bg-surfaceSecondary text-body border border'
+  return classes[stage] || 'bg-surfaceSecondary text-body border border-E5E7EB'
 }
 
 const handleLeadClick = (lead) => {

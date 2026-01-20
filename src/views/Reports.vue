@@ -7,7 +7,7 @@
     >
       <div class="flex items-center justify-between px-6 pt-5 pb-4">
         <h1 class="text-fluid-xl font-medium text-greys-900">Reports</h1>
-        <select class="px-3 py-1.5 rounded-2xl border border bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all cursor-pointer">
+        <select class="px-3 py-1.5 rounded-2xl border border-E5E7EB bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all cursor-pointer">
           <option>This month</option>
           <option>Last month</option>
           <option>This quarter</option>

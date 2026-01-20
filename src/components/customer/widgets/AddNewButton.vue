@@ -143,11 +143,11 @@ const dropdownItems = computed(() => {
 const buttonClass = computed(() => {
   if (props.inline) {
     // Overview usage: primary brand-red button with rounded corners, icon only
-    return 'bg-surface hover:bg-surfaceSecondary text-body font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border'
+    return 'bg-surface hover:bg-surfaceSecondary text-body font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border-E5E7EB'
   }
   // Default usage (other tabs): white background with grey text
   // If showing text, adjust padding
-  const baseClass = 'bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border'
+  const baseClass = 'bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border-E5E7EB'
   if (showButtonText.value) {
     return `${baseClass} px-4 py-2 h-9`
   }

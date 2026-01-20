@@ -6,7 +6,7 @@
       <button
         :disabled="isCallActive"
         @click="$emit('start-call')"
-        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-phone text-xs"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
@@ -16,7 +16,7 @@
       <button
         :disabled="isCallActive"
         @click="$emit('log-manual-call')"
-        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary disabled:bg-surfaceSecondary disabled:cursor-not-allowed border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-clipboard-check text-xs"></i>
         Log Call Outcome

@@ -41,7 +41,7 @@
   .page-header {
     background-color: var(--base-muted, #f5f5f5); /* Muted background like Reports.vue */
     border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* border-black/5 */
-    @apply px-4 md:px-8 shrink-0;
+    @apply px-6 shrink-0;
     position: relative; /* Ensure proper positioning */
     z-index: 1; /* Ensure it's above content but below modals */
     width: 100%; /* Full width */
@@ -49,10 +49,8 @@
   }
   
   .page-header-main {
-    @apply flex items-center;
+    @apply flex items-center pt-5 pb-4;
     min-height: 3.5rem; /* Use min-height to accommodate wrapped content - mobile */
-    padding-top: var(--spacing-md); /* 0.75rem - Motork spacing token */
-    padding-bottom: var(--spacing-md); /* 0.75rem - Motork spacing token */
   }
   
   .page-header-content {
@@ -135,8 +133,6 @@
     .page-header-main {
       align-items: center; /* Center align on desktop */
       min-height: 4rem; /* Use min-height for desktop */
-      padding-top: var(--spacing-lg); /* 1rem - Motork spacing token */
-      padding-bottom: var(--spacing-lg); /* 1rem - Motork spacing token */
     }
     
     .page-header-content {
@@ -165,8 +161,46 @@
   
   /* Button classes removed - using @motork/component-library Button component */
   
-  /* Force primary button styling to use brand colors */
-  /* Target buttons with bg-brand-red class (Tailwind !important classes) */
+  /* Force MotorK Button component primary variant to use brand black (dark) */
+  button[data-variant="primary"],
+  button[class*="variant-primary"],
+  button[type="submit"]:not([data-variant]):not([class*="variant-"]) {
+    background-color: var(--brand-dark) !important;
+    color: white !important;
+    border-color: var(--brand-dark) !important;
+  }
+  
+  button[data-variant="primary"]:hover:not(:disabled),
+  button[class*="variant-primary"]:hover:not(:disabled),
+  button[type="submit"]:not([data-variant]):not([class*="variant-"]):hover:not(:disabled) {
+    background-color: var(--brand-darkDarker) !important;
+    border-color: var(--brand-darkDarker) !important;
+  }
+  
+  /* Force primary button styling for brand black buttons */
+  /* Target buttons with bg-brand-black class (Tailwind !important classes) */
+  [class*="!bg-brand-black"],
+  [class*="!bg-brand-dark"],
+  button[class*="bg-brand-black"][class*="text-white"],
+  button[class*="bg-brand-dark"][class*="text-white"],
+  [class*="bg-brand-black"]:has([class*="!text-white"]),
+  [class*="bg-brand-dark"]:has([class*="!text-white"]) {
+    background-color: var(--brand-dark) !important;
+    color: white !important;
+    border-color: var(--brand-dark) !important;
+  }
+  
+  [class*="!bg-brand-black"]:hover:not(:disabled),
+  [class*="!bg-brand-dark"]:hover:not(:disabled),
+  button[class*="bg-brand-black"][class*="text-white"]:hover:not(:disabled),
+  button[class*="bg-brand-dark"][class*="text-white"]:hover:not(:disabled),
+  [class*="bg-brand-black"]:has([class*="!text-white"]):hover:not(:disabled),
+  [class*="bg-brand-dark"]:has([class*="!text-white"]):hover:not(:disabled) {
+    background-color: var(--brand-darkDarker) !important;
+    border-color: var(--brand-darkDarker) !important;
+  }
+  
+  /* Keep support for explicit brand-red buttons (for special cases like danger/delete) */
   [class*="!bg-brand-red"],
   button[class*="bg-brand-red"][class*="text-white"],
   [class*="bg-brand-red"]:has([class*="!text-white"]) {
@@ -238,6 +272,17 @@
     &:focus {
       border-color: var(--brand-red);
     }
+  }
+  
+  /* Native Checkboxes - Styling for card-style selectors */
+  input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--brand-red);
+  }
+  
+  input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(248, 0, 50, 0.2);
   }
   
   /* Badge */

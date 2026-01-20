@@ -125,6 +125,7 @@
                 :type="communicationType"
                 :task-type="type"
                 :task-id="task.id"
+                :phone-number="task.customer?.phone || ''"
                 :item="editingItem"
                 @save="handleWidgetSave"
                 @cancel="handleWidgetCancel"
@@ -211,6 +212,50 @@
               @add-tag="showAddTagModal = true"
             />
           </div>
+
+          <!-- Activity Summary Card -->
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-clock text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Activity Summary</h2>
+              </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+              <!-- Timeline -->
+              <div class="relative">
+                <div v-if="allActivities.length > 0" class="absolute left-5 top-0 bottom-0 w-0.5 bg-border z-0"></div>
+                
+                <div v-if="allActivities.length === 0" class="text-center py-6 text-sub">
+                  <i class="fa-solid fa-clock text-2xl mb-2"></i>
+                  <p class="text-fluid-sm">No activities yet</p>
+                </div>
+                
+                <div v-else class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                  <div v-for="activity in allActivities" :key="activity.id" class="flex gap-4 relative">
+                    <div 
+                      class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
+                      :class="getActivityIconClass(activity.type)"
+                    >
+                      <i :class="getActivityIcon(activity.type)" class="text-fluid-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-fluid-sm text-slate-700 leading-snug">
+                        <span class="font-bold">{{ activity.user }}</span> {{ activity.action }}
+                      </div>
+                      <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-fluid-sm text-body">
+                        {{ activity.content }}
+                      </div>
+                      <div class="text-fluid-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Tab 2: Manage -->
@@ -232,12 +277,18 @@
           </div>
 
           <!-- Communicate -->
-          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-comments text-sub text-sm"></i>
-                <h3 class="font-bold text-heading text-base">Communicate</h3>
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-comments text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
               </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+              <div>
               
               <!-- Choice Buttons Grid -->
               <div class="grid grid-cols-4 gap-2 mb-4">
@@ -247,8 +298,8 @@
                   class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
                   :class="selectedCommunicationMethod === 'call' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
                 >
-                  <i class="fa-solid fa-phone text-base"></i>
-                  <span class="text-xs">Call</span>
+                  <i class="fa-solid fa-phone text-sm"></i>
+                  <span class="text-fluid-xs">Call</span>
                 </button>
                 
                 <!-- WhatsApp -->
@@ -257,8 +308,8 @@
                   class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
                   :class="selectedCommunicationMethod === 'whatsapp' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
                 >
-                  <i class="fa-brands fa-whatsapp text-base"></i>
-                  <span class="text-xs">WhatsApp</span>
+                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                  <span class="text-fluid-xs">WhatsApp</span>
                 </button>
                 
                 <!-- SMS -->
@@ -267,8 +318,8 @@
                   class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
                   :class="selectedCommunicationMethod === 'sms' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
                 >
-                  <i class="fa-solid fa-message text-base"></i>
-                  <span class="text-xs">SMS</span>
+                  <i class="fa-solid fa-message text-sm"></i>
+                  <span class="text-fluid-xs">SMS</span>
                 </button>
                 
                 <!-- Email -->
@@ -277,8 +328,8 @@
                   class="bg-surface border-2 rounded-lg py-3 px-3 flex flex-col items-center justify-center gap-1.5 text-sm font-medium transition-all"
                   :class="selectedCommunicationMethod === 'email' ? 'border-brand-red bg-red-50 text-brand-red' : 'border text-body hover:border-red-300 hover:bg-red-50/50'"
                 >
-                  <i class="fa-solid fa-envelope text-base"></i>
-                  <span class="text-xs">Email</span>
+                  <i class="fa-solid fa-envelope text-sm"></i>
+                  <span class="text-fluid-xs">Email</span>
                 </button>
               </div>
               
@@ -286,10 +337,10 @@
               <div v-if="selectedCommunicationMethod" class="space-y-3">
                 <!-- Template Selection (for WhatsApp, SMS, Email) -->
                 <div v-if="['whatsapp', 'sms', 'email'].includes(selectedCommunicationMethod)" class="space-y-2">
-                  <label class="block text-xs font-medium text-body">Select Template</label>
+                  <label class="block text-fluid-xs font-medium text-body">Select Template</label>
                   <select 
                     v-model="selectedTemplate"
-                    class="w-full bg-surface border border rounded-lg px-3 py-2 text-sm text-body focus:outline-none focus:border-brand-red"
+                    class="w-full bg-surface border border-E5E7EB rounded-lg px-3 py-2 text-fluid-sm text-body focus:outline-none focus:border-brand-red"
                   >
                     <option value="">Select a template...</option>
                     <option value="followup-1">Follow-up 1</option>
@@ -298,7 +349,7 @@
                   </select>
                   <button
                     @click="handleCommunicationAction"
-                    class="px-4 py-2 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors"
+                    class="px-4 py-2 text-fluid-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors"
                   >
                     Send {{ selectedCommunicationMethod === 'whatsapp' ? 'WhatsApp' : selectedCommunicationMethod === 'sms' ? 'SMS' : 'Email' }}
                   </button>
@@ -308,14 +359,15 @@
               <!-- Communications List -->
               <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
                 <div class="space-y-2 max-h-[200px] overflow-y-auto">
-                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
                     <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xs font-semibold text-heading">{{ comm.type }}</span>
-                      <span class="text-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
+                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
                     </div>
-                    <p class="text-sm text-body">{{ comm.content }}</p>
+                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -324,42 +376,52 @@
         <!-- Tab 3: Data -->
         <div v-if="gridMainTab === 'data'" class="space-y-6">
           <!-- Notes Card -->
-          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-note-sticky text-sub text-sm"></i>
-                <h3 class="font-bold text-heading text-base">Notes</h3>
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-note-sticky text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Notes</h2>
               </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <div class="space-y-2 max-h-[300px] overflow-y-auto">
-                <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-sm">
+                <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                   <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
                   <p>No notes yet</p>
                 </div>
-                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
-                  <div class="text-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
-                  <p class="text-sm text-body">{{ note.content }}</p>
+                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
+                  <div class="text-fluid-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
+                  <p class="text-fluid-sm text-body">{{ note.content }}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Attachments Card -->
-          <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-paperclip text-sub text-sm"></i>
-                <h3 class="font-bold text-heading text-base">Attachments</h3>
+          <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-paperclip text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Attachments</h2>
               </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <div class="space-y-2 max-h-[300px] overflow-y-auto">
-                <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-sm">
+                <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                   <i class="fa-solid fa-paperclip text-2xl mb-2"></i>
                   <p>No attachments yet</p>
                 </div>
-                <div v-for="attachment in gridAttachments" :key="attachment.id" class="p-3 bg-surfaceSecondary border border rounded-lg flex items-center gap-3">
+                <div v-for="attachment in gridAttachments" :key="attachment.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg flex items-center gap-3">
                   <i class="fa-solid fa-file text-sub text-lg"></i>
                   <div class="flex-1 min-w-0">
-                    <div class="text-sm font-medium text-heading truncate">{{ attachment.filename }}</div>
-                    <div class="text-xs text-sub">{{ formatGridDate(attachment.timestamp) }}</div>
+                    <div class="text-fluid-sm font-medium text-heading truncate">{{ attachment.filename }}</div>
+                    <div class="text-fluid-xs text-sub">{{ formatGridDate(attachment.timestamp) }}</div>
                   </div>
                 </div>
               </div>
@@ -369,36 +431,38 @@
           <!-- Trade-in and Purchase Cards (2-column grid) -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Trade-in Card -->
-            <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-              <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-right-arrow-left text-sub text-sm"></i>
-                    <h3 class="font-bold text-heading text-base">Trade-in</h3>
-                  </div>
-                  <button
-                    @click="openTradeInModal"
-                    class="px-3 py-1.5 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors flex items-center gap-1.5"
-                  >
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Add New</span>
-                  </button>
+            <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+              <!-- Title Section -->
+              <div class="px-4 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-arrow-right-arrow-left text-heading"></i>
+                  <h2 class="text-fluid-sm font-medium text-heading leading-5">Trade-in</h2>
                 </div>
-                
+                <button
+                  @click="openTradeInModal"
+                  class="px-3 py-1.5 text-fluid-xs font-medium bg-brand-dark text-white rounded-lg hover:bg-brand-darkDarker transition-colors flex items-center gap-1.5"
+                >
+                  <i class="fa-solid fa-plus text-xs"></i>
+                  <span>Add New</span>
+                </button>
+              </div>
+              
+              <!-- Card Content -->
+              <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
                 <div class="space-y-2 max-h-[300px] overflow-y-auto">
-                  <div v-if="gridTradeIns.length === 0" class="text-center py-6 text-sub text-sm">
+                  <div v-if="gridTradeIns.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                     <i class="fa-solid fa-arrow-right-arrow-left text-2xl mb-2"></i>
                     <p>No trade-ins yet</p>
                   </div>
-                  <div v-for="tradein in gridTradeIns" :key="tradein.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                  <div v-for="tradein in gridTradeIns" :key="tradein.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
                     <div class="flex items-center justify-between mb-1">
-                      <div class="text-xs text-sub">{{ formatGridDate(tradein.timestamp) }}</div>
+                      <div class="text-fluid-xs text-sub">{{ formatGridDate(tradein.timestamp) }}</div>
                     </div>
-                    <div v-if="tradein.data && tradein.data.brand" class="text-sm font-medium text-heading">
+                    <div v-if="tradein.data && tradein.data.brand" class="text-fluid-sm font-medium text-heading">
                       {{ tradein.data.brand }} {{ tradein.data.model }}
                       <span v-if="tradein.data.version"> {{ tradein.data.version }}</span>
                     </div>
-                    <div v-if="tradein.data && (tradein.data.kilometers || tradein.data.price)" class="grid grid-cols-2 gap-2 mt-2 text-xs text-body">
+                    <div v-if="tradein.data && (tradein.data.kilometers || tradein.data.price)" class="grid grid-cols-2 gap-2 mt-2 text-fluid-xs text-body">
                       <div v-if="tradein.data.kilometers">
                         <span class="text-sub">KM:</span> {{ formatGridNumber(tradein.data.kilometers) }}
                       </div>
@@ -406,46 +470,48 @@
                         <span class="text-sub">Price:</span> € {{ formatGridCurrency(tradein.data.price) }}
                       </div>
                     </div>
-                    <div v-if="tradein.content" class="text-xs text-body mt-2">{{ tradein.content }}</div>
+                    <div v-if="tradein.content" class="text-fluid-sm text-body mt-2">{{ tradein.content }}</div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Purchase Card -->
-            <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden">
-              <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-shopping-cart text-sub text-sm"></i>
-                    <h3 class="font-bold text-heading text-base">Purchase</h3>
-                  </div>
-                  <button
-                    @click="openPurchaseModal"
-                    class="px-3 py-1.5 text-xs font-medium bg-brand-red text-white rounded-lg hover:bg-brand-redDark transition-colors flex items-center gap-1.5"
-                  >
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Add New</span>
-                  </button>
+            <div class="rounded-[12px] flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+              <!-- Title Section -->
+              <div class="px-4 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-shopping-cart text-heading"></i>
+                  <h2 class="text-fluid-sm font-medium text-heading leading-5">Purchase</h2>
                 </div>
-                
+                <button
+                  @click="openPurchaseModal"
+                  class="px-3 py-1.5 text-fluid-xs font-medium bg-brand-dark text-white rounded-lg hover:bg-brand-darkDarker transition-colors flex items-center gap-1.5"
+                >
+                  <i class="fa-solid fa-plus text-xs"></i>
+                  <span>Add New</span>
+                </button>
+              </div>
+              
+              <!-- Card Content -->
+              <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
                 <div class="space-y-2 max-h-[300px] overflow-y-auto">
-                  <div v-if="gridPurchases.length === 0" class="text-center py-6 text-sub text-sm">
+                  <div v-if="gridPurchases.length === 0" class="text-center py-6 text-sub text-fluid-sm">
                     <i class="fa-solid fa-shopping-cart text-2xl mb-2"></i>
                     <p>No purchases yet</p>
                   </div>
-                  <div v-for="purchase in gridPurchases" :key="purchase.id" class="p-3 bg-surfaceSecondary border border rounded-lg">
+                  <div v-for="purchase in gridPurchases" :key="purchase.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
                     <div class="flex items-center justify-between mb-1">
-                      <div class="text-xs text-sub">{{ formatGridDate(purchase.timestamp) }}</div>
+                      <div class="text-fluid-xs text-sub">{{ formatGridDate(purchase.timestamp) }}</div>
                     </div>
-                    <div v-if="purchase.data && purchase.data.brand" class="text-sm font-medium text-heading">
+                    <div v-if="purchase.data && purchase.data.brand" class="text-fluid-sm font-medium text-heading">
                       {{ purchase.data.brand }} {{ purchase.data.model }}
                       <span v-if="purchase.data.year">({{ purchase.data.year }})</span>
                     </div>
-                    <div v-if="purchase.data && purchase.data.price" class="text-sm text-body mt-1">
+                    <div v-if="purchase.data && purchase.data.price" class="text-fluid-sm text-body mt-1">
                       € {{ formatGridCurrency(purchase.data.price) }}
                     </div>
-                    <div v-if="purchase.content" class="text-xs text-body mt-2">{{ purchase.content }}</div>
+                    <div v-if="purchase.content" class="text-fluid-sm text-body mt-2">{{ purchase.content }}</div>
                   </div>
                 </div>
               </div>
@@ -457,7 +523,8 @@
       </div>
 
       <!-- Right: Activity Timeline (collapsed by default) -->
-      <ActivitySummarySidebar
+      <!-- COMMENTED OUT: Moved to Manage tab as a card -->
+      <!-- <ActivitySummarySidebar
         :title="'Activity summary'"
         :activities="allActivities"
         :collapsed="activitySidebarCollapsed"
@@ -465,7 +532,7 @@
         :show="true"
         class="hidden lg:flex"
         @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
-      />
+      /> -->
     </div>
 
     <!-- Financing Modal -->
@@ -936,6 +1003,41 @@ const handleAddTag = async (tagName) => {
   } catch (error) {
     console.error('Error adding tag:', error)
   }
+}
+
+// Activity summary helper methods
+const getActivityIcon = (type) => {
+  const icons = {
+    'call': 'fa-solid fa-phone text-blue-600',
+    'email': 'fa-solid fa-envelope text-green-600',
+    'note': 'fa-solid fa-sticky-note text-yellow-600',
+    'meeting': 'fa-solid fa-calendar text-purple-600',
+    'task': 'fa-solid fa-check-circle text-indigo-600',
+    'attachment': 'fa-solid fa-paperclip text-body',
+    'status': 'fa-solid fa-tag text-orange-600',
+    'default': 'fa-solid fa-circle text-sub'
+  }
+  return icons[type] || icons.default
+}
+
+const getActivityIconClass = (type) => {
+  const classes = {
+    'call': 'bg-blue-100 text-blue-600',
+    'email': 'bg-green-100 text-green-600',
+    'note': 'bg-yellow-100 text-yellow-600',
+    'meeting': 'bg-purple-100 text-purple-600',
+    'task': 'bg-indigo-100 text-indigo-600',
+    'attachment': 'bg-surfaceSecondary text-body',
+    'status': 'bg-orange-100 text-orange-600',
+    'default': 'bg-surfaceSecondary text-sub'
+  }
+  return classes[type] || classes.default
+}
+
+const formatActivityTime = (timestamp) => {
+  if (!timestamp) return ''
+  const date = new Date(timestamp)
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }
 </script>
 

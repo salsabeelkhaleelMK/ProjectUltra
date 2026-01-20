@@ -7,19 +7,19 @@
     <template #actions>
       <button
         @click="handleReopen"
-        class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         <i class="fa-solid fa-rotate-left"></i> Reopen Opportunity
       </button>
       <button
         @click="handleCloseLost"
-        class="bg-surface hover:bg-surfaceSecondary border border text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-slate-700 font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-xmark"></i> Close as Lost
       </button>
       <button
         @click="handleRequalify"
-        class="bg-surface hover:bg-surfaceSecondary border border text-slate-700 font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors"
+        class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-slate-700 font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-arrow-left"></i> Requalify as Lead
       </button>

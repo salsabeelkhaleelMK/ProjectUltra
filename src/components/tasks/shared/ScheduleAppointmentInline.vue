@@ -1,14 +1,18 @@
 <template>
-  <Dialog :open="show" @update:open="handleOpenChange">
-    <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle class="text-fluid-lg">Schedule Appointment</DialogTitle>
-          <DialogDescription class="text-fluid-xs">Book an appointment with the customer</DialogDescription>
-        </DialogHeader>
+  <div class="bg-surface border border-E5E7EB rounded-lg p-6 space-y-4">
+    <div class="flex items-center justify-between mb-2">
+      <h5 class="font-semibold text-heading text-fluid-sm">Schedule Appointment</h5>
+      <button
+        v-if="canCancel"
+        @click="handleCancel"
+        class="text-fluid-xs text-sub hover:text-body transition-colors"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
 
-        <div class="space-y-4">
+    <div class="space-y-4">
+      <!-- Appointment Type -->
       <div>
         <label class="block text-fluid-xs font-medium text-sub mb-1.5">Appointment Type</label>
         <select v-model="appointmentType" class="input text-fluid-sm">
@@ -21,13 +25,19 @@
         </select>
       </div>
       
+      <!-- Date Selection -->
       <div>
         <label class="block text-fluid-xs font-medium text-sub mb-1.5">Select Date</label>
-        <input type="date" v-model="appointmentDate" :min="minDate" class="input text-fluid-sm">
+        <input 
+          type="date" 
+          v-model="appointmentDate" 
+          :min="minDate" 
+          class="input text-fluid-sm"
+        >
       </div>
       
       <!-- Assigned To Display -->
-      <div v-if="selectedAssignee" class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
+      <div v-if="currentAssignee" class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
         <div class="flex items-center justify-between mb-2">
           <label class="text-fluid-xs font-medium text-sub">Assigned to</label>
           <button 
@@ -41,18 +51,18 @@
         <div v-if="!showAssigneeChange" class="flex items-center gap-3">
           <div 
             class="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-fluid-sm"
-            :class="currentAssigneeDisplay.avatarClass"
+            :class="assigneeDisplay.avatarClass"
           >
-            <i v-if="isTeamSelected" class="fa-solid fa-users text-fluid-sm"></i>
-            <span v-else>{{ currentAssigneeDisplay.initials }}</span>
+            <i v-if="assigneeDisplay.isTeam" class="fa-solid fa-users text-fluid-sm"></i>
+            <span v-else>{{ assigneeDisplay.initials }}</span>
           </div>
           <div class="flex-1">
-            <p class="font-medium text-fluid-sm text-heading">{{ currentAssigneeDisplay.name }}</p>
-            <p class="text-fluid-xs text-sub capitalize">{{ currentAssigneeDisplay.subtitle }}</p>
+            <p class="font-medium text-fluid-sm text-heading">{{ assigneeDisplay.name }}</p>
+            <p class="text-fluid-xs text-sub capitalize">{{ assigneeDisplay.subtitle }}</p>
           </div>
         </div>
         
-        <!-- Change Assignee -->
+        <!-- Change Assignee Dropdown -->
         <div v-else class="animate-fade-in">
           <select v-model="selectedAssignee" class="input text-fluid-sm">
             <optgroup label="Teams">
@@ -79,7 +89,7 @@
               <p class="text-fluid-xs text-amber-700 mt-1">
                 Try selecting a different date or 
                 <button @click="showAlternatives = !showAlternatives" class="underline font-medium">
-                  view other {{ isTeamSelected ? 'teams' : 'salespeople' }}
+                  view other {{ assigneeDisplay.isTeam ? 'teams' : 'salespeople' }}
                 </button>
               </p>
             </div>
@@ -138,43 +148,33 @@
           </button>
         </div>
       </div>
+      
+      <!-- Confirm Button -->
+      <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
+        <Button
+          v-if="canCancel"
+          label="Cancel"
+          variant="outline"
+          size="small"
+          class="text-fluid-sm"
+          @click="handleCancel"
+        />
+        <Button
+          label="Confirm Appointment"
+          variant="primary"
+          size="small"
+          class="text-fluid-sm !bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+          :disabled="!isValid"
+          @click="handleConfirm"
+        />
+      </div>
     </div>
-
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            class="rounded-sm w-full sm:w-auto text-fluid-sm"
-            @click="handleClose"
-          />
-          <Button
-            label="Confirm Appointment"
-            variant="primary"
-            size="small"
-            class="rounded-sm w-full sm:w-auto text-fluid-sm !bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-            :disabled="!isValid"
-            @click="handleConfirm"
-          />
-        </DialogFooter>
-      </DialogContent>
-    </DialogPortal>
-  </Dialog>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Button } from '@motork/component-library'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle
-} from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 import { 
@@ -184,17 +184,17 @@ import {
 } from '@/services/availabilityService'
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true
-  },
   preselectedAssignee: {
     type: Object,
     default: null // { type: 'user', id: 1, name: 'John Smith', role: 'salesman' }
+  },
+  canCancel: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['close', 'confirm'])
+const emit = defineEmits(['confirm', 'cancel'])
 
 const userStore = useUserStore()
 const usersStore = useUsersStore()
@@ -216,16 +216,16 @@ const minDate = computed(() => {
   return today.toISOString().split('T')[0]
 })
 
-// Check if a team is selected
-const isTeamSelected = computed(() => {
-  return selectedAssignee.value && selectedAssignee.value.startsWith('team-')
+// Current assignee (either selected or preselected)
+const currentAssignee = computed(() => {
+  return selectedAssignee.value || (props.preselectedAssignee ? `${props.preselectedAssignee.type}-${props.preselectedAssignee.id}` : null)
 })
 
-// Get current assignee display info
-const currentAssigneeDisplay = computed(() => {
-  if (!selectedAssignee.value) return {}
+// Get assignee display info
+const assigneeDisplay = computed(() => {
+  if (!currentAssignee.value) return {}
   
-  const [type, id] = selectedAssignee.value.split('-')
+  const [type, id] = currentAssignee.value.split('-')
   const numericId = parseInt(id)
   
   if (type === 'team') {
@@ -234,7 +234,8 @@ const currentAssigneeDisplay = computed(() => {
       name: team?.name || 'Unknown Team',
       subtitle: 'Team',
       avatarClass: 'bg-green-100 text-green-700',
-      initials: ''
+      initials: '',
+      isTeam: true
     }
   } else {
     const user = usersStore.getUserById(numericId)
@@ -242,26 +243,27 @@ const currentAssigneeDisplay = computed(() => {
       name: user?.name || 'Unknown',
       subtitle: user?.role || 'User',
       avatarClass: getRoleAvatarClass(user?.role),
-      initials: getInitials(user?.name)
+      initials: getInitials(user?.name),
+      isTeam: false
     }
   }
 })
 
 // Get available slots for selected assignee and date
 const availableSlots = computed(() => {
-  if (!appointmentDate.value || !selectedAssignee.value) return []
-  return getAvailabilityForAssignee(selectedAssignee.value, appointmentDate.value)
+  if (!appointmentDate.value || !currentAssignee.value) return []
+  return getAvailabilityForAssignee(currentAssignee.value, appointmentDate.value)
 })
 
 // Get availability status
 const availabilityStatus = computed(() => {
-  if (!appointmentDate.value || !selectedAssignee.value) return null
-  return getAvailabilityStatus(selectedAssignee.value, appointmentDate.value)
+  if (!appointmentDate.value || !currentAssignee.value) return null
+  return getAvailabilityStatus(currentAssignee.value, appointmentDate.value)
 })
 
 // Get alternative assignees when no availability
 const alternatives = computed(() => {
-  if (!appointmentDate.value || !selectedAssignee.value) return []
+  if (!appointmentDate.value || !currentAssignee.value) return []
   if (availabilityStatus.value !== 'none') return []
   
   // Combine all users and teams
@@ -270,12 +272,12 @@ const alternatives = computed(() => {
     ...assignableUsers.value.map(u => ({ ...u, type: 'user' }))
   ]
   
-  return findAlternativeAssignees(selectedAssignee.value, appointmentDate.value, allAssignees)
+  return findAlternativeAssignees(currentAssignee.value, appointmentDate.value, allAssignees)
 })
 
 // Check if form is valid
 const isValid = computed(() => {
-  return !!(appointmentType.value && appointmentDate.value && selectedTimeSlot.value && selectedAssignee.value)
+  return !!(appointmentType.value && appointmentDate.value && selectedTimeSlot.value && currentAssignee.value)
 })
 
 // Helper functions
@@ -305,15 +307,6 @@ const selectAlternative = (alternative) => {
   showAssigneeChange.value = false
 }
 
-// Initialize assignee when modal opens
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    initializeAssignee()
-  } else {
-    resetForm()
-  }
-})
-
 // Watch for date changes to reset time slot
 watch(appointmentDate, () => {
   selectedTimeSlot.value = ''
@@ -321,60 +314,41 @@ watch(appointmentDate, () => {
 })
 
 // Watch for assignee changes to reset time slot
-watch(selectedAssignee, () => {
+watch(() => currentAssignee.value, () => {
   selectedTimeSlot.value = ''
   showAlternatives.value = false
 })
 
-const initializeAssignee = () => {
-  if (props.preselectedAssignee) {
-    // Use preselected assignee from previous step
-    const { type, id } = props.preselectedAssignee
-    selectedAssignee.value = `${type}-${id}`
-  } else {
-    // Default to current user
-    selectedAssignee.value = `user-${userStore.currentUser?.id || 1}`
+// Initialize assignee
+watch(() => props.preselectedAssignee, (newVal) => {
+  if (newVal && !selectedAssignee.value) {
+    selectedAssignee.value = `${newVal.type}-${newVal.id}`
   }
-}
-
-const resetForm = () => {
-  appointmentType.value = ''
-  selectedAssignee.value = `user-${userStore.currentUser?.id || 1}`
-  appointmentDate.value = ''
-  showTimeslots.value = false
-  selectedTimeSlot.value = ''
-}
-
-const handleOpenChange = (isOpen) => {
-  if (!isOpen) {
-    emit('close')
-  }
-}
+}, { immediate: true })
 
 const handleConfirm = () => {
-  if (!isValid.value) {
-    return
-  }
+  if (!isValid.value) return
   
-  const isTeam = selectedAssignee.value.startsWith('team-')
-  const id = parseInt(selectedAssignee.value.split('-')[1])
+  const [type, id] = currentAssignee.value.split('-')
+  const numericId = parseInt(id)
+  const isTeam = type === 'team'
   
   let assigneeData = {}
   
   if (isTeam) {
-    const team = usersStore.getTeamById(id)
+    const team = usersStore.getTeamById(numericId)
     assigneeData = {
       assigneeType: 'team',
-      teamId: id,
+      teamId: numericId,
       team: team?.name || 'Unknown Team',
       assignee: null,
       assigneeId: null
     }
   } else {
-    const selectedUser = usersStore.getUserById(id)
+    const selectedUser = usersStore.getUserById(numericId)
     assigneeData = {
       assigneeType: 'user',
-      assigneeId: id,
+      assigneeId: numericId,
       assignee: selectedUser?.name || 'Unknown',
       teamId: null,
       team: null
@@ -388,10 +362,15 @@ const handleConfirm = () => {
     ...assigneeData
   })
   
-  emit('close')
+  // Reset form
+  appointmentType.value = ''
+  appointmentDate.value = ''
+  selectedTimeSlot.value = ''
+  showAssigneeChange.value = false
+  showAlternatives.value = false
 }
 
-const handleClose = () => {
-  emit('close')
+const handleCancel = () => {
+  emit('cancel')
 }
 </script>

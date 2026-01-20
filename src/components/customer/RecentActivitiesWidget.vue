@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surface border border rounded-card p-6 mb-6">
+  <div class="bg-surface border border-E5E7EB rounded-card p-6 mb-6">
     <h3 class="text-h3-card text-heading mb-4">Recent Activities</h3>
     
     <div class="space-y-4">

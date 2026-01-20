@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-surface border border rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in mb-4 feed-item">
+  <div class="bg-surface border border-E5E7EB rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in mb-4 feed-item">
     <div 
       class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border"
       :class="getItemIconClass(item.type)"
@@ -40,7 +40,7 @@
         <div v-if="item.type === 'appointment'">
           <AppointmentWidget :appointment-data="item.data" />
         </div>
-        <div v-else class="bg-surfaceSecondary border border rounded-lg p-3">
+        <div v-else class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
           <div v-if="item.type === 'tradein'">
               <h4 class="text-content font-bold text-heading">{{ item.data.brand }} {{ item.data.model }}</h4>
               <p v-if="item.data.version" class="text-meta mt-0.5">{{ item.data.version }}</p>

@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-y-auto space-y-3">
     <!-- Quick Filters Card - Always Visible -->
-    <div class="bg-surface rounded-xl border border shadow-sm p-3">
+    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm p-3">
       <div class="flex items-center justify-between mb-2">
         <h3 class="label-upper">Quick Filters</h3>
         <button 
@@ -53,7 +53,7 @@
     </div>
     
     <!-- Event Type Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
       <button
         @click="expandedSections.eventTypes = !expandedSections.eventTypes"
         class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
@@ -100,7 +100,7 @@
     </div>
     
     <!-- Dealership Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
       <button
         @click="expandedSections.dealerships = !expandedSections.dealerships"
         class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
@@ -139,7 +139,7 @@
     </div>
     
     <!-- Team Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
       <button
         @click="expandedSections.teams = !expandedSections.teams"
         class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
@@ -178,10 +178,10 @@
     </div>
     
     <!-- Apply Filters Button -->
-    <div class="sticky bottom-0 bg-surface rounded-xl border border shadow-sm p-3 mt-3">
+    <div class="sticky bottom-0 bg-surface rounded-xl border border-E5E7EB shadow-sm p-3 mt-3">
       <button
         @click="$emit('apply')"
-        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border-E5E7EB px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
         <i class="fa-solid fa-check text-gray-400 group-hover:text-brand-red"></i>
         <span>Apply Filters</span>

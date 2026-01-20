@@ -204,7 +204,7 @@
               </div>
               <div v-if="vin">
                 <div class="text-xs text-sub mb-1">VIN Number</div>
-                <div class="font-mono text-xs bg-surface border border px-2 py-1 rounded inline-block text-body">
+                <div class="font-mono text-xs bg-surface border border-E5E7EB px-2 py-1 rounded inline-block text-body">
                   {{ vin }}
                 </div>
               </div>
@@ -214,7 +214,7 @@
               </div>
             </div>
             <div v-if="showTechnicalSpecs" class="mt-6 flex justify-end">
-              <button class="bg-surface border border text-body hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
+              <button class="bg-surface border border-E5E7EB text-body hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
                 <i class="fa-solid fa-list-check text-sub group-hover:text-blue-500"></i> View technical specs
               </button>
             </div>

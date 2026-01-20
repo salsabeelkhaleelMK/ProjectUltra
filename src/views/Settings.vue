@@ -9,15 +9,15 @@
     <!-- Content -->
     <div class="p-4 md:p-6 lg:p-8">
       <!-- Tabs -->
-      <div class="mb-6 border-b border">
+      <div class="mb-6 border-b border-E5E7EB">
         <nav class="flex gap-4">
           <button
             type="button"
             @click="activeTab = 'general'"
             class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
             :class="activeTab === 'general' 
-              ? 'border-blue-600 text-blue-600' 
-              : 'border-transparent text-sub hover:text-body hover:border'"
+              ? 'border-brand-red text-brand-red' 
+              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
           >
             General
           </button>
@@ -26,10 +26,20 @@
             @click="activeTab = 'urgency'"
             class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
             :class="activeTab === 'urgency' 
-              ? 'border-blue-600 text-blue-600' 
-              : 'border-transparent text-sub hover:text-body hover:border'"
+              ? 'border-brand-red text-brand-red' 
+              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
           >
             Urgency Settings
+          </button>
+          <button
+            type="button"
+            @click="activeTab = 'navigation'"
+            class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+            :class="activeTab === 'navigation' 
+              ? 'border-brand-red text-brand-red' 
+              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
+          >
+            Navigation
           </button>
         </nav>
       </div>
@@ -38,7 +48,7 @@
         <!-- General Tab Content -->
         <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Opportunity Task Widget Thresholds -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6 lg:col-span-2">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6 lg:col-span-2">
           <h2 class="heading-sub mb-4">Opportunity Task Widget Thresholds</h2>
           <p class="text-meta mb-6">Configure the number of days before task widgets are triggered for opportunities.</p>
           
@@ -145,7 +155,7 @@
         </div>
 
         <!-- Opportunity Abandonment -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Opportunity Abandonment</h2>
           <p class="text-meta mb-6">Configure when opportunities are marked as abandoned.</p>
           
@@ -168,14 +178,14 @@
                 <label
                   v-for="stage in availableStages"
                   :key="stage"
-                  class="flex items-center gap-2 p-3 border border rounded-lg cursor-pointer hover:bg-surfaceSecondary transition-colors"
+                  class="flex items-center gap-2 p-3 border border-E5E7EB rounded-lg cursor-pointer hover:bg-surfaceSecondary transition-colors"
                   :class="{ 'bg-blue-50 border-blue-300': localSettings.abandonedEligibleStages?.includes(stage) }"
                 >
                   <input
                     type="checkbox"
                     :value="stage"
                     v-model="localSettings.abandonedEligibleStages"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    class="w-4 h-4 rounded border-gray-300 text-brand-red focus:ring-brand-red focus:ring-2"
                   />
                   <span class="text-content">{{ stage }}</span>
                 </label>
@@ -185,7 +195,7 @@
         </div>
 
         <!-- Lead Management -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Lead Management</h2>
           <p class="text-meta mb-6">Configure lead qualification and conversion settings.</p>
           
@@ -210,7 +220,7 @@
         </div>
 
         <!-- Dormant Opportunities -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6 lg:col-span-2">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6 lg:col-span-2">
           <h2 class="heading-sub mb-4">Dormant Opportunities</h2>
           <p class="text-meta mb-6">Configure when opportunities are marked as dormant.</p>
           
@@ -223,7 +233,7 @@
               </span>
             </div>
 
-            <div v-if="localSettings.dormantOpportunityEnabled" class="space-y-6 border-t border pt-6">
+            <div v-if="localSettings.dormantOpportunityEnabled" class="space-y-6 border-t border-E5E7EB pt-6">
               <!-- Conditions Description -->
               <div>
                 <h3 class="text-meta-bold mb-2">Conditions</h3>
@@ -299,7 +309,7 @@
         </div>
 
         <!-- Task Widgets -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Task Widgets</h2>
           <p class="text-meta mb-6">Configure task widget behavior.</p>
           
@@ -310,10 +320,58 @@
         </div>
         </div>
 
+        <!-- Navigation Settings Tab Content -->
+        <div v-if="activeTab === 'navigation'">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
+          <h2 class="heading-sub mb-4">Navigation Menu Items</h2>
+          <p class="text-meta mb-6">Control which navigation items appear in the sidebar and mobile menu.</p>
+          
+          <div class="space-y-4">
+            <Checkbox
+              v-model="localSettings.navigationVisibility.home"
+              label="Home"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.tasks"
+              label="Tasks"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.customers"
+              label="Customers"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.calendar"
+              label="Calendar"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.reports"
+              label="Reports"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.lists"
+              label="Lists"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.search"
+              label="Search"
+            />
+            <Checkbox
+              v-model="localSettings.navigationVisibility.language"
+              label="Language"
+            />
+            <div class="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p class="text-xs text-blue-800">
+                <strong>Note:</strong> The Settings icon is always visible to ensure you can access this page.
+              </p>
+            </div>
+          </div>
+        </div>
+        </div>
+
         <!-- Urgency Settings Tab Content -->
         <div v-if="activeTab === 'urgency'">
         <!-- Lead Urgency Auto-Sorter -->
-        <div class="bg-surface border border rounded-xl shadow-sm p-6">
+        <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Lead Urgency Auto-Sorter</h2>
           
           <!-- Explanation Section -->
@@ -321,7 +379,7 @@
             <p class="text-meta mb-4">
               Prioritizes leads based on intent signals, behavioral engagement, and temporal urgency. Leads are scored and categorized into urgency levels.
             </p>
-            <table class="w-full text-meta border border rounded-lg">
+            <table class="w-full text-meta border border-E5E7EB rounded-lg">
               <thead class="bg-surfaceSecondary">
                 <tr>
                   <th class="px-3 py-2 text-left font-semibold">Level</th>
@@ -350,7 +408,7 @@
           </div>
           
           <!-- Configuration Controls -->
-          <div class="space-y-6 border-t border pt-6">
+          <div class="space-y-6 border-t border-E5E7EB pt-6">
             <!-- Enable/Disable Toggle -->
             <div class="flex items-center gap-3">
               <Toggle v-model="localSettings.urgencyEnabled" name="urgencyEnabled" />
@@ -466,7 +524,7 @@
               </div>
               
               <!-- Preview Section -->
-              <div class="bg-surfaceSecondary border border rounded-lg p-4">
+              <div class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-4">
                 <h3 class="text-sm font-semibold text-gray-800 mb-3">Preview</h3>
                 <p class="text-xs text-gray-600 mb-2">
                   Example scores based on current settings:
@@ -496,7 +554,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-between items-center pt-4 border-t border">
+        <div class="flex justify-between items-center pt-4 border-t border-E5E7EB">
           <Button
             label="Reset to Defaults"
             variant="outline"
@@ -561,7 +619,17 @@ const localSettings = ref({
   dormantOpportunityAfterAppointmentDays: 7,
   dormantOpportunityAfterAppointmentHours: 0,
   dormantOpportunityAfterOfferDays: 7,
-  dormantOpportunityAfterOfferHours: 0
+  dormantOpportunityAfterOfferHours: 0,
+  navigationVisibility: {
+    home: true,
+    tasks: true,
+    customers: true,
+    calendar: true,
+    reports: true,
+    lists: true,
+    search: true,
+    language: true
+  }
 })
 
 // Load settings into local state
@@ -591,7 +659,18 @@ function loadSettings() {
     dormantOpportunityAfterAppointmentDays: settingsStore.settings.dormantOpportunityAfterAppointmentDays ?? 7,
     dormantOpportunityAfterAppointmentHours: settingsStore.settings.dormantOpportunityAfterAppointmentHours ?? 0,
     dormantOpportunityAfterOfferDays: settingsStore.settings.dormantOpportunityAfterOfferDays ?? 7,
-    dormantOpportunityAfterOfferHours: settingsStore.settings.dormantOpportunityAfterOfferHours ?? 0
+    dormantOpportunityAfterOfferHours: settingsStore.settings.dormantOpportunityAfterOfferHours ?? 0,
+    // Ensure navigation visibility settings exist with defaults
+    navigationVisibility: {
+      home: settingsStore.settings.navigationVisibility?.home ?? true,
+      tasks: settingsStore.settings.navigationVisibility?.tasks ?? true,
+      customers: settingsStore.settings.navigationVisibility?.customers ?? true,
+      calendar: settingsStore.settings.navigationVisibility?.calendar ?? true,
+      reports: settingsStore.settings.navigationVisibility?.reports ?? true,
+      lists: settingsStore.settings.navigationVisibility?.lists ?? true,
+      search: settingsStore.settings.navigationVisibility?.search ?? true,
+      language: settingsStore.settings.navigationVisibility?.language ?? true
+    }
   }
 }
 

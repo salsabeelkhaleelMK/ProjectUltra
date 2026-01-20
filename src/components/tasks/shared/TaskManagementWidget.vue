@@ -1,32 +1,36 @@
 <template>
   <div
     v-if="task"
-    class="bg-white border border-gray-200 rounded-xl shadow-sm"
+    class="rounded-[12px] flex flex-col"
     :class="containerClass"
+    style="background-color: var(--base-muted, #f5f5f5)"
   >
-    <!-- Header -->
-    <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-clipboard-check text-gray-400 text-xs"></i>
-        <h3 class="font-bold text-gray-800 text-sm">Manage next steps</h3>
+        <i class="fa-solid fa-clipboard-check text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Manage next steps</h2>
       </div>
     </div>
 
-    <!-- Deadline Banner (optional - leads only) -->
-    <slot name="deadline-banner" />
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <!-- Deadline Banner (optional - leads only) -->
+      <slot name="deadline-banner" />
 
-    <div class="p-5 space-y-6">
-      <!-- Primary Action -->
-      <slot name="primary-action" />
+      <div class="space-y-6">
+        <!-- Primary Action -->
+        <slot name="primary-action" />
 
-      <!-- Task Widgets -->
-      <slot name="task-widgets" />
+        <!-- Task Widgets -->
+        <slot name="task-widgets" />
 
-      <!-- Closed State -->
-      <slot name="closed-state" />
+        <!-- Closed State -->
+        <slot name="closed-state" />
 
-      <!-- Secondary Actions -->
-      <slot name="secondary-actions" />
+        <!-- Secondary Actions -->
+        <slot name="secondary-actions" />
+      </div>
     </div>
   </div>
 </template>

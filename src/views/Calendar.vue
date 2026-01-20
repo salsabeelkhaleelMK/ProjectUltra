@@ -7,7 +7,7 @@
         <div class="lg:hidden flex items-center gap-2">
           <button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
           >
             <i class="fa-solid fa-filter text-sub group-hover:text-brand-red"></i>
             <span class="hidden sm:inline">Filters</span>
@@ -24,7 +24,7 @@
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             :class="{ 'bg-red-50 border-red-200 text-brand-red': connectedCalendars.length > 0 }"
           >
             <i class="fa-solid fa-link text-sub group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
@@ -81,7 +81,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Calendar Area (3/4) -->
         <div class="lg:col-span-3 overflow-y-auto">
-          <div class="bg-surface rounded-xl border border shadow-sm p-2 md:p-3 lg:p-4">
+          <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm p-2 md:p-3 lg:p-4">
             <FullCalendar :options="calendarOptions" />
           </div>
         </div>

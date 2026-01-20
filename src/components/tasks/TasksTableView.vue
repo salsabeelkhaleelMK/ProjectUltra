@@ -41,7 +41,7 @@
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
               <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
@@ -78,7 +78,7 @@
           <template #toolbar>
             <div class="flex justify-end">
               <button 
-                class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-4 py-2 text-sm font-medium text-body hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
               >
                 <i class="fa-solid fa-arrow-left text-sub group-hover:text-purple-500"></i>
                 <span class="hidden sm:inline">Switch back to old design</span>

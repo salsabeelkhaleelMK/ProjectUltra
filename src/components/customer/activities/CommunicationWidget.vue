@@ -1,48 +1,43 @@
 <template>
-  <div class="bg-surface border border rounded-xl p-4 shadow-sm mb-6 animate-fade-in relative">
-    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border rotate-45"></div>
-    <h5 class="heading-sub mb-3">{{ type === 'email' ? 'Send Email' : type === 'whatsapp' ? 'Send WhatsApp' : type === 'sms' ? 'Send SMS' : 'Send Message' }}</h5>
+  <div class="bg-surface border border-E5E7EB rounded-xl p-4 shadow-sm mb-6 animate-fade-in relative">
+    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
     
-    <div class="mb-3">
-      <label class="block text-xs font-medium text-body mb-1">Template</label>
-      <select v-model="selectedTemplate" class="input">
-        <option value="">Select a template...</option>
-        <option>Follow-up</option>
-        <option>Meeting Confirmation</option>
-        <option>Quote Proposal</option>
-        <option>Unable to Reach</option>
-      </select>
-    </div>
-
-    <textarea 
-      v-model="message"
-      class="input mb-3" 
-      rows="4" 
-      placeholder="Type your message here..."
-    ></textarea>
+    <!-- Email Form -->
+    <EmailForm
+      v-if="type === 'email'"
+      @send="handleSend"
+      @cancel="$emit('cancel')"
+    />
     
-    <div class="flex justify-end gap-2">
-      <Button
-        variant="outline"
-        size="small"
-        @click="$emit('cancel')"
-      >
-        Cancel
-      </Button>
-      <Button
-        variant="primary"
-        size="small"
-        @click="handleSave"
-      >
-        Send
-      </Button>
-    </div>
+    <!-- SMS Form -->
+    <SMSForm
+      v-else-if="type === 'sms'"
+      @send="handleSend"
+      @cancel="$emit('cancel')"
+    />
+    
+    <!-- WhatsApp Form -->
+    <WhatsAppForm
+      v-else-if="type === 'whatsapp'"
+      @send="handleSend"
+      @cancel="$emit('cancel')"
+    />
+    
+    <!-- Call Form -->
+    <CallForm
+      v-else-if="type === 'call'"
+      :phone-number="phoneNumber"
+      @call="handleCall"
+      @cancel="$emit('cancel')"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Button } from '@motork/component-library'
+import EmailForm from '@/components/shared/communication/EmailForm.vue'
+import SMSForm from '@/components/shared/communication/SMSForm.vue'
+import WhatsAppForm from '@/components/shared/communication/WhatsAppForm.vue'
+import CallForm from '@/components/shared/communication/CallForm.vue'
 
 const props = defineProps({
   type: {
@@ -56,22 +51,49 @@ const props = defineProps({
   taskId: {
     type: Number,
     required: true
+  },
+  phoneNumber: {
+    type: String,
+    default: ''
   }
 })
 
 const emit = defineEmits(['save', 'cancel'])
 
-const message = ref('')
-const selectedTemplate = ref('')
+const handleSend = (data) => {
+  emit('save', {
+    type: 'communication',
+    action: `sent via ${data.type}`,
+    content: data.message,
+    communicationType: data.type,
+    template: data.template,
+    subject: data.subject // For emails
+  })
+}
 
-const handleSave = () => {
-  if (!message.value.trim() && !selectedTemplate.value) return
+const handleCall = (data) => {
+  // Handle different call options
+  switch(data.option) {
+    case 'outbound':
+      console.log('Initiating outbound call...')
+      // TODO: Implement outbound call logic
+      break
+    case 'pbx':
+      console.log('Initiating PBX call...')
+      // TODO: Implement PBX call logic
+      break
+    case 'copy':
+      navigator.clipboard.writeText(data.phoneNumber)
+      console.log('Number copied to clipboard')
+      break
+  }
   
   emit('save', {
     type: 'communication',
-    action: `sent via ${props.type}`,
-    content: message.value || `Sent template: ${selectedTemplate.value}`,
-    communicationType: props.type
+    action: `called via ${data.option}`,
+    content: data.notes || 'Call attempt logged',
+    communicationType: 'call',
+    callOption: data.option
   })
 }
 </script>

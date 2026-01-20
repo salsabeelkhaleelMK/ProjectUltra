@@ -42,7 +42,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search by brand, model, year..."
-              class="w-full bg-surface border border rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+              class="w-full bg-surface border border-E5E7EB rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
         </div>
@@ -72,7 +72,7 @@
           <i class="fa-solid fa-wrench text-orange-600"></i>
           Configure Custom Vehicle
         </h3>
-        <div class="border border rounded-lg p-4 bg-surfaceSecondary">
+        <div class="border border-E5E7EB rounded-lg p-4 bg-surfaceSecondary">
           <p class="text-xs text-body mb-3">
             Build a custom configuration with specific options and features
           </p>

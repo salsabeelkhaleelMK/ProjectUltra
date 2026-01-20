@@ -10,8 +10,8 @@
       >
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-heading text-sm">Opportunity Closed</h4>
-            <p class="text-xs text-gray-500 mt-0.5">
+            <h4 class="font-bold text-heading text-fluid-sm">Opportunity Closed</h4>
+            <p class="text-fluid-xs text-gray-500 mt-0.5">
               This opportunity has been closed. Reopen it to restart the management process, or requalify as a lead.
             </p>
           </div>
@@ -53,7 +53,7 @@
         <!-- Task Title Header -->
         <div class="flex items-center gap-2 pb-2 border-b border">
           <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-          <h5 class="font-semibold text-heading text-sm">{{ taskWidgetTitle }}</h5>
+          <h5 class="font-semibold text-heading text-fluid-sm">{{ taskWidgetTitle }}</h5>
         </div>
         
         <component

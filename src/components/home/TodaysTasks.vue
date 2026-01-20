@@ -2,7 +2,7 @@
   <div class="space-y-3">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surface border border rounded-lg p-4">
+      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surface border border-E5E7EB rounded-lg p-4">
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0 space-y-2">
             <div class="flex items-center gap-2">
@@ -25,34 +25,34 @@
     <template v-else>
       <div v-if="tasks.length === 0" class="text-center py-8 text-sub">
         <i class="fa-solid fa-tasks text-4xl mb-2 text-gray-300"></i>
-        <p class="text-content">No tasks due today</p>
+        <p class="text-fluid-sm">No tasks due today</p>
       </div>
       
       <div
         v-for="task in tasks"
         :key="`${task.type}-${task.id}`"
         @click="handleClick(task)"
-        class="bg-surface border border rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+        class="bg-surface border border-E5E7EB rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
       >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <span 
               v-if="task.priority === 'Hot'"
-              class="text-xs font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 flex items-center gap-1"
+              class="text-fluid-xs font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 flex items-center gap-1"
             >
-              <i class="fa-solid fa-fire text-xs"></i> HOT
+              <i class="fa-solid fa-fire text-fluid-xs"></i> HOT
             </span>
             <span 
               v-else
-              class="text-xs font-medium px-2 py-0.5 rounded bg-surfaceSecondary text-body border border"
+              class="text-fluid-xs font-medium px-2 py-0.5 rounded bg-surfaceSecondary text-body border border-E5E7EB"
             >
               Normal
             </span>
             
             <span 
               v-if="task.dueTime"
-              class="text-xs font-bold px-2 py-0.5 rounded"
+              class="text-fluid-xs font-bold px-2 py-0.5 rounded"
               :class="getTimeBadgeClass(task.dueDate)"
             >
               {{ task.dueTime }}
@@ -60,26 +60,26 @@
             
             <span 
               v-if="task.isOverdue"
-              class="text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200"
+              class="text-fluid-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200"
             >
               OVERDUE
             </span>
           </div>
           
-          <h4 class="heading-sub mb-1">
+          <h4 class="text-fluid-sm font-semibold text-heading mb-1">
             {{ task.customer?.name || 'Unknown Customer' }}
           </h4>
           
-          <p class="text-meta mb-2">
+          <p class="text-fluid-xs mb-2">
             {{ task.taskType }}
             <span v-if="task.requestedCar || task.vehicle">
               - {{ task.requestedCar ? `${task.requestedCar.brand} ${task.requestedCar.model}` : `${task.vehicle.brand} ${task.vehicle.model}` }}
             </span>
           </p>
           
-          <div class="flex items-center gap-2 text-xs text-sub">
+          <div class="flex items-center gap-2 text-fluid-xs text-sub">
             <span 
-              class="px-2 py-0.5 rounded border text-xs font-bold uppercase"
+              class="px-2 py-0.5 rounded border text-fluid-xs font-bold uppercase"
               :class="task.type === 'lead' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200'"
             >
               {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}

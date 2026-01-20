@@ -2,7 +2,7 @@
   <div class="animate-fade-in">
     <div class="space-y-4">
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1">Class</label>
+        <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Class</label>
         <select v-model="tradeInData.class" class="input">
           <option value="Car">Car</option>
           <option value="Motorcycle">Motorcycle</option>
@@ -11,36 +11,36 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Brand</label>
+          <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Brand</label>
           <input type="text" v-model="tradeInData.brand" class="input">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Model</label>
+          <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Model</label>
           <input type="text" v-model="tradeInData.model" class="input">
         </div>
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1">Version</label>
+        <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Version</label>
         <input type="text" v-model="tradeInData.version" class="input">
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Km</label>
+          <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Km</label>
           <input type="number" v-model="tradeInData.km" class="input">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Plate</label>
+          <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Plate</label>
           <input type="text" v-model="tradeInData.plate" class="input">
         </div>
       </div>
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1">Registration date</label>
+        <label class="block text-fluid-xs font-medium text-slate-700 mb-1">Registration date</label>
         <input type="date" v-model="tradeInData.date" class="input">
       </div>
     </div>
     <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
-      <button @click="$emit('cancel')" class="text-xs font-medium text-sub hover:text-body px-3 py-2 rounded-lg hover:bg-surfaceSecondary transition-colors">Cancel</button>
-      <button @click="handleSave" :disabled="!tradeInData.brand" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
+      <button @click="$emit('cancel')" class="text-fluid-xs font-medium text-sub hover:text-body px-3 py-2 rounded-lg hover:bg-surfaceSecondary transition-colors">Cancel</button>
+      <button @click="handleSave" :disabled="!tradeInData.brand" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-fluid-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
     </div>
   </div>
 </template>

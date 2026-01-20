@@ -5,8 +5,8 @@
   >
     <div class="flex justify-between items-start mb-3">
       <div>
-        <h4 class="font-bold text-gray-900 text-sm">{{ title }}</h4>
-        <p class="text-xs text-gray-500 mt-0.5">{{ description }}</p>
+        <h4 class="font-bold text-heading text-fluid-sm">{{ title }}</h4>
+        <p class="text-fluid-xs text-sub mt-0.5">{{ description }}</p>
       </div>
       <slot name="badge" />
     </div>

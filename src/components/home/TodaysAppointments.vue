@@ -2,7 +2,7 @@
   <div class="space-y-3">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surface border border rounded-lg p-4">
+      <div v-for="n in 3" :key="`skeleton-${n}`" class="bg-surface border border-E5E7EB rounded-lg p-4">
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0 space-y-2">
             <div class="flex items-center gap-2">
@@ -22,42 +22,42 @@
     <template v-else>
       <div v-if="appointments.length === 0" class="text-center py-8 text-sub">
         <i class="fa-solid fa-calendar-check text-4xl mb-2 text-gray-300"></i>
-        <p class="text-content">No appointments scheduled for today</p>
+        <p class="text-fluid-sm">No appointments scheduled for today</p>
       </div>
       
       <div
         v-for="appointment in appointments"
         :key="appointment.id"
         @click="handleClick(appointment)"
-        class="bg-surface border border rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
+        class="bg-surface border border-E5E7EB rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
       >
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <span 
-              class="text-xs font-bold px-2 py-0.5 rounded"
+              class="text-fluid-xs font-bold px-2 py-0.5 rounded"
               :class="getTimeBadgeClass(appointment.date)"
             >
               {{ appointment.time }}
             </span>
             <span 
-              class="text-xs font-medium px-2 py-0.5 rounded border"
+              class="text-fluid-xs font-medium px-2 py-0.5 rounded border"
               :class="getStatusClass(appointment.status)"
             >
               {{ appointment.status }}
             </span>
           </div>
           
-          <h4 class="heading-sub mb-1">
+          <h4 class="text-fluid-sm font-semibold text-heading mb-1">
             {{ appointment.customer || appointment.title }}
           </h4>
           
-          <p class="text-meta mb-2">
+          <p class="text-fluid-xs mb-2">
             {{ appointment.type }}
             <span v-if="appointment.vehicle"> - {{ appointment.vehicle }}</span>
           </p>
           
-          <div class="flex items-center gap-2 text-xs text-sub">
+          <div class="flex items-center gap-2 text-fluid-xs text-sub">
             <i class="fa-solid fa-user text-sub"></i>
             <span v-if="appointment.assigneeType === 'team'">
               {{ appointment.team }} Team

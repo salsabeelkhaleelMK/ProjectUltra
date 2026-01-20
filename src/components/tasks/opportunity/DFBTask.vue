@@ -7,7 +7,7 @@
     <template #actions>
       <button
         @click="handleDeliveryFeedback"
-        class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         Delivery Feedback
       </button>

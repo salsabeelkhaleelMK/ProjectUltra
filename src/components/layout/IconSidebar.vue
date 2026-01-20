@@ -40,6 +40,7 @@
     <div class="flex flex-col gap-2 flex-1 w-full px-2">
       <!-- Home -->
       <router-link
+        v-if="navigationVisibility.home !== false"
         to="/home"
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -61,6 +62,7 @@
       
       <!-- Tasks -->
       <router-link 
+        v-if="navigationVisibility.tasks !== false"
         to="/tasks" 
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -83,6 +85,7 @@
       
       <!-- Customers -->
       <router-link 
+        v-if="navigationVisibility.customers !== false"
         to="/customers" 
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -104,6 +107,7 @@
       
       <!-- Calendar -->
       <router-link 
+        v-if="navigationVisibility.calendar !== false"
         to="/calendar" 
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -125,7 +129,7 @@
       
       <!-- Reports -->
       <router-link 
-        v-if="userStore.canAccessReports()"
+        v-if="userStore.canAccessReports() && navigationVisibility.reports !== false"
         to="/reports" 
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -146,7 +150,7 @@
       </router-link>
       
       <!-- Lists Icon with Dropdown -->
-      <div class="relative" v-click-outside="() => (showListsMenu = false)">
+      <div v-if="navigationVisibility.lists !== false" class="relative" v-click-outside="() => (showListsMenu = false)">
         <button
           @click.stop="toggleListsMenu"
           :class="[
@@ -191,6 +195,7 @@
     <div class="w-full px-2 flex flex-col gap-2">
       <!-- Search Icon -->
       <button
+        v-if="navigationVisibility.search !== false"
         @click="showSearchModal = true"
         :class="[
           'relative group w-full h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer',
@@ -211,7 +216,7 @@
       </button>
 
       <!-- Language Selector -->
-      <div class="relative" v-click-outside="() => (showLanguageMenu = false)">
+      <div v-if="navigationVisibility.language !== false" class="relative" v-click-outside="() => (showLanguageMenu = false)">
         <button
           @click.stop="toggleLanguageMenu"
           :class="[
@@ -367,6 +372,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
+import { useSettingsStore } from '@/stores/settings'
 import { useTheme } from '@/composables/useTheme'
 import { 
   Plus, 
@@ -393,7 +399,10 @@ const route = useRoute()
 const { locale, t } = useI18n()
 const leadsStore = useLeadsStore()
 const userStore = useUserStore()
+const settingsStore = useSettingsStore()
 const { isDark, toggleTheme } = useTheme()
+
+const navigationVisibility = computed(() => settingsStore.getSetting('navigationVisibility') || {})
 
 const showListsMenu = ref(false)
 const showLanguageMenu = ref(false)

@@ -7,7 +7,7 @@
     <template #actions>
       <button
         @click="handleCreateContract"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         Create Contract
       </button>

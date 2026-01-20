@@ -1,25 +1,27 @@
 <template>
-  <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden h-full">
-    <div class="p-6">
-      <!-- Card Header -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-thumbtack text-sub text-sm"></i>
-          <h3 class="font-bold text-heading text-base">Request</h3>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-sub font-medium">Owner:</span>
-          <button 
-            @click="$emit('reassign')"
-            class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
-          >
-            {{ task.assignee }}
-          </button>
-        </div>
+  <div class="rounded-[12px] flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-thumbtack text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Request</h2>
       </div>
+      <div class="flex items-center gap-2">
+        <span class="text-fluid-xs text-sub font-medium">Owner:</span>
+        <button 
+          @click="$emit('reassign')"
+          class="text-fluid-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+        >
+          {{ task.assignee }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1" style="box-shadow: var(--nsc-card-shadow);">
 
       <!-- Badges Row -->
-      <div class="flex items-center gap-2 flex-wrap mb-4">
+      <div class="flex items-center gap-2 flex-wrap mb-3">
         <span 
           class="px-2 py-1 rounded text-xs font-medium border"
           :class="entityType === 'lead' 
@@ -56,7 +58,7 @@
             <i v-else class="fa-solid fa-car text-2xl text-sub w-full h-full flex items-center justify-center"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-heading text-sm mb-1">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
+            <div class="font-bold text-heading text-fluid-sm mb-1">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
             <div class="flex items-center gap-2 flex-wrap">
               <div 
                 v-if="stockDays !== undefined && stockDays !== null"
@@ -73,26 +75,26 @@
             </div>
           </div>
           <div v-if="carPrice" class="text-right">
-            <div class="text-xs text-sub font-medium">Price</div>
-            <div class="font-bold text-heading text-base">€ {{ formatCurrency(carPrice) }}</div>
+            <div class="text-fluid-xs text-sub font-medium">Price</div>
+            <div class="font-bold text-heading text-fluid-sm">€ {{ formatCurrency(carPrice) }}</div>
           </div>
         </div>
       </div>
 
       <!-- Request Details (condensed) -->
-      <div class="mt-4 pt-4 space-y-2">
-        <div v-if="task.source" class="flex items-center justify-between text-xs">
+      <div class="mt-3 pt-3 space-y-2">
+        <div v-if="task.source" class="flex items-center justify-between text-fluid-xs">
           <span class="text-sub">Source</span>
           <span class="text-heading font-medium">{{ task.source }}</span>
         </div>
-        <div v-if="task.requestType || task.requestedCar?.requestType" class="flex items-center justify-between text-xs">
+        <div v-if="task.requestType || task.requestedCar?.requestType" class="flex items-center justify-between text-fluid-xs">
           <span class="text-sub">Request Type</span>
           <span class="text-heading font-medium">{{ task.requestType || task.requestedCar?.requestType }}</span>
         </div>
         <div v-if="requestMessage" class="pt-2">
-          <div class="text-xs text-sub mb-1">Message</div>
+          <div class="text-fluid-xs text-sub mb-1">Message</div>
           <div class="bg-surfaceSecondary rounded-lg p-2">
-            <p class="text-xs text-body leading-relaxed line-clamp-3">{{ requestMessage }}</p>
+            <p class="text-fluid-xs text-body leading-relaxed line-clamp-3">{{ requestMessage }}</p>
           </div>
         </div>
       </div>
