@@ -12,128 +12,179 @@
   <transition name="slide">
     <div 
       v-if="isOpen"
-      class="mobile-sidebar-drawer fixed top-0 left-0 bottom-0 w-64 z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom"
+      class="mobile-sidebar-drawer fixed top-0 left-0 bottom-0 w-64 z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom flex flex-col"
+      :style="{ backgroundColor: 'var(--base-sidebar-foreground, #0a0a0a)' }"
     >
       <!-- Header -->
-      <div class="p-4 border-b border-white/20 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-lg" style="background-color: var(--brand-dark-darker);">
-            <span class="font-bold text-lg">PU</span>
+      <div class="p-3 sm:p-4 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-md flex items-center justify-center text-white bg-white/20">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-white bg-brand-red font-bold text-xs sm:text-sm">
+              PU
+            </div>
           </div>
-          <span class="text-white font-bold">Project Ultra</span>
+          <span class="text-white font-bold text-sm sm:text-base">Project Ultra</span>
         </div>
         <button 
-          @click="$emit('close')"
-          class="w-11 h-11 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-colors shrink-0 rounded-lg"
+          @click="handleClose"
+          class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors shrink-0 rounded-md"
           aria-label="Close menu"
         >
-          <i class="fa-solid fa-xmark text-lg"></i>
+          <X :size="18" class="sm:hidden" />
+          <X :size="20" class="hidden sm:block" />
         </button>
       </div>
       
       <!-- Navigation Items -->
-      <div class="py-4">
-        <!-- Add New Section -->
-        <div class="px-4 mb-1">
+      <div class="flex-1 flex flex-col py-2 sm:py-3">
+        <!-- Add New Button -->
+        <div class="px-3 mb-2 sm:mb-3">
           <router-link
             to="/add-new"
             @click="$emit('close')"
-            class="w-full flex items-center gap-3 px-4 py-3 text-white/90 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
-            :class="{ 'text-white bg-white/20': isActive('/add-new') }"
+            class="w-full flex items-center justify-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 text-white bg-brand-red hover:bg-brand-redDark rounded-md transition-colors font-medium text-sm sm:text-base"
           >
-            <i class="fa-solid fa-plus"></i>
-            <span class="font-medium">Add New</span>
+            <Plus :size="16" class="sm:hidden shrink-0" />
+            <Plus :size="18" class="hidden sm:block shrink-0" />
+            <span>Add New Customer</span>
           </router-link>
         </div>
 
-        <!-- Home -->
-        <div class="px-4 mb-4">
+        <!-- Primary Navigation -->
+        <div class="px-3 space-y-0.5 sm:space-y-1 flex-1">
+          <!-- Home -->
           <router-link
             to="/home"
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/home') }"
           >
-            <i class="fa-solid fa-house w-5"></i>
+            <Home :size="18" class="shrink-0 sm:hidden" />
+            <Home :size="20" class="shrink-0 hidden sm:block" />
             <span>Home</span>
           </router-link>
-        </div>
-        
-        <!-- Primary Navigation -->
-        <div class="px-4 space-y-1 mb-4">
+
+          <!-- Tasks -->
           <router-link 
             to="/tasks" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/tasks') }"
           >
-            <i class="fa-solid fa-list-check w-5"></i>
+            <List :size="18" class="shrink-0 sm:hidden" />
+            <List :size="20" class="shrink-0 hidden sm:block" />
             <span>Tasks</span>
-            <div v-if="hotLeadsCount > 0" class="ml-auto w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style="background-color: var(--brand-dark-darker);">
-              {{ hotLeadsCount }}
-            </div>
+            <div v-if="hotLeadsCount > 0" class="ml-auto w-2 h-2 rounded-full bg-brand-red"></div>
           </router-link>
           
+          <!-- Customers -->
           <router-link 
             to="/customers" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/customers') }"
           >
-            <i class="fa-solid fa-users w-5"></i>
+            <Users :size="18" class="shrink-0 sm:hidden" />
+            <Users :size="20" class="shrink-0 hidden sm:block" />
             <span>Customers</span>
           </router-link>
           
+          <!-- Calendar -->
           <router-link 
             to="/calendar" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/calendar') }"
           >
-            <i class="fa-regular fa-calendar w-5"></i>
+            <Calendar :size="18" class="shrink-0 sm:hidden" />
+            <Calendar :size="20" class="shrink-0 hidden sm:block" />
             <span>Calendar</span>
           </router-link>
           
+          <!-- Reports -->
           <router-link 
+            v-if="userStore.canAccessReports()"
             to="/reports" 
             @click="$emit('close')"
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/reports') }"
           >
-            <i class="fa-solid fa-chart-pie w-5"></i>
+            <LineChart :size="18" class="shrink-0 sm:hidden" />
+            <LineChart :size="20" class="shrink-0 hidden sm:block" />
             <span>Reports</span>
           </router-link>
-        </div>
-        
-        <!-- Divider -->
-        <div class="h-px bg-white/20 mx-4 my-4"></div>
-        
-        <!-- Secondary Navigation -->
-        <div class="px-4 space-y-1">
+
           <!-- Lists Submenu -->
           <button
             @click="toggleListsMenu"
-            class="mobile-sidebar-link"
-            :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') }"
+            class="mobile-sidebar-link w-full"
+            :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') || showListsMenu }"
           >
-            <i class="fa-solid fa-list w-5"></i>
+            <List :size="18" class="shrink-0 sm:hidden" />
+            <List :size="20" class="shrink-0 hidden sm:block" />
             <span>Lists</span>
-            <i class="fa-solid fa-chevron-down ml-auto text-xs" :class="{ 'rotate-180': showListsMenu }"></i>
+            <ChevronDown :size="14" class="ml-auto transition-transform sm:hidden" :class="{ 'rotate-180': showListsMenu }" />
+            <ChevronDown :size="16" class="ml-auto transition-transform hidden sm:block" :class="{ 'rotate-180': showListsMenu }" />
           </button>
           
           <!-- Lists Submenu Items -->
-          <div v-if="showListsMenu" class="pl-8 space-y-1 mt-1">
+          <div v-if="showListsMenu" class="pl-8 sm:pl-9 space-y-0.5 sm:space-y-1">
             <router-link 
               to="/vehicles"
               @click="$emit('close')"
-              class="mobile-sidebar-link text-content"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link"
               :class="{ 'mobile-sidebar-link-active': isActive('/vehicles') }"
             >
-              <i class="fa-solid fa-car w-5 text-white/70"></i>
+              <CarFront :size="16" class="shrink-0 sm:hidden" />
+              <CarFront :size="18" class="shrink-0 hidden sm:block" />
               <span>Vehicles</span>
             </router-link>
           </div>
-          
+        </div>
+
+        <!-- Divider -->
+        <div class="h-px bg-white/10 mx-3 my-2 sm:my-3"></div>
+        
+        <!-- Bottom Navigation -->
+        <div class="px-3 space-y-0.5 sm:space-y-1">
+          <!-- Search -->
+          <button
+            @click="handleSearch"
+            class="mobile-sidebar-link w-full"
+          >
+            <Search :size="18" class="shrink-0 sm:hidden" />
+            <Search :size="20" class="shrink-0 hidden sm:block" />
+            <span>Search</span>
+          </button>
+
+          <!-- Language Selector -->
+          <button
+            @click="toggleLanguageMenu"
+            class="mobile-sidebar-link w-full"
+            :class="{ 'mobile-sidebar-link-active': showLanguageMenu }"
+          >
+            <Globe :size="18" class="shrink-0 sm:hidden" />
+            <Globe :size="20" class="shrink-0 hidden sm:block" />
+            <span>Language</span>
+            <ChevronDown :size="14" class="ml-auto transition-transform sm:hidden" :class="{ 'rotate-180': showLanguageMenu }" />
+            <ChevronDown :size="16" class="ml-auto transition-transform hidden sm:block" :class="{ 'rotate-180': showLanguageMenu }" />
+          </button>
+
+          <!-- Language Submenu -->
+          <div v-if="showLanguageMenu" class="pl-8 sm:pl-9 space-y-0.5 sm:space-y-1">
+            <button
+              v-for="lang in languages"
+              :key="lang.code"
+              @click="changeLanguage(lang.code)"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+              :class="{ 'mobile-sidebar-link-active': currentLocale === lang.code }"
+            >
+              <span class="text-sm sm:text-base shrink-0">{{ lang.flag }}</span>
+              <span>{{ lang.name }}</span>
+            </button>
+          </div>
+
+          <!-- Settings -->
           <router-link 
             v-if="userStore.canAccessSettings()"
             to="/settings" 
@@ -141,20 +192,129 @@
             class="mobile-sidebar-link"
             :class="{ 'mobile-sidebar-link-active': isActive('/settings') }"
           >
-            <i class="fa-solid fa-gear w-5"></i>
+            <Settings :size="18" class="shrink-0 sm:hidden" />
+            <Settings :size="20" class="shrink-0 hidden sm:block" />
             <span>Settings</span>
           </router-link>
+        </div>
+
+        <!-- Divider -->
+        <div class="h-px bg-white/10 mx-3 my-2 sm:my-3"></div>
+
+        <!-- User Menu -->
+        <div class="px-3 pb-2 sm:pb-0">
+          <button
+            @click="toggleUserMenu"
+            class="mobile-sidebar-link w-full"
+            :class="{ 'mobile-sidebar-link-active': showUserMenu }"
+          >
+            <div 
+              class="user-avatar-mobile rounded-full flex items-center justify-center font-medium text-white shrink-0"
+              :style="{ backgroundColor: 'var(--brand-slate, #6B7280)' }"
+            >
+              {{ userInitials }}
+            </div>
+            <span class="truncate text-sm sm:text-base">{{ userStore.currentUser?.name || 'User' }}</span>
+            <ChevronDown :size="14" class="ml-auto transition-transform sm:hidden" :class="{ 'rotate-180': showUserMenu }" />
+            <ChevronDown :size="16" class="ml-auto transition-transform hidden sm:block" :class="{ 'rotate-180': showUserMenu }" />
+          </button>
+
+          <!-- User Submenu -->
+          <div v-if="showUserMenu" class="pl-8 sm:pl-9 space-y-0.5 sm:space-y-1 mt-0.5 sm:mt-1">
+            <!-- Role Switching -->
+            <button 
+              @click="switchRole('manager')"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+              :class="{ 'mobile-sidebar-link-active': userStore.currentUser?.role === 'manager' }"
+            >
+              <Shield :size="16" class="shrink-0 sm:hidden" />
+              <Shield :size="18" class="shrink-0 hidden sm:block" />
+              <span>{{ $t('common.roles.manager') }}</span>
+            </button>
+            <button 
+              @click="switchRole('salesman')"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+              :class="{ 'mobile-sidebar-link-active': userStore.currentUser?.role === 'salesman' }"
+            >
+              <User :size="16" class="shrink-0 sm:hidden" />
+              <User :size="18" class="shrink-0 hidden sm:block" />
+              <span>{{ $t('common.roles.salesman') }}</span>
+            </button>
+            <button 
+              @click="switchRole('operator')"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+              :class="{ 'mobile-sidebar-link-active': userStore.currentUser?.role === 'operator' }"
+            >
+              <Headphones :size="16" class="shrink-0 sm:hidden" />
+              <Headphones :size="18" class="shrink-0 hidden sm:block" />
+              <span>{{ $t('common.roles.operator') }}</span>
+            </button>
+
+            <!-- Dark Mode Toggle -->
+            <div class="h-px bg-white/10 my-0.5 sm:my-1"></div>
+            <button 
+              @click="toggleDarkMode"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+            >
+              <Moon v-if="!isDarkMode" :size="16" class="shrink-0 sm:hidden" />
+              <Moon v-if="!isDarkMode" :size="18" class="shrink-0 hidden sm:block" />
+              <Sun v-if="isDarkMode" :size="16" class="shrink-0 sm:hidden" />
+              <Sun v-if="isDarkMode" :size="18" class="shrink-0 hidden sm:block" />
+              <span>{{ isDarkMode ? $t('common.actions.lightMode') : $t('common.actions.darkMode') }}</span>
+            </button>
+
+            <!-- Logout -->
+            <div class="h-px bg-white/10 my-0.5 sm:my-1"></div>
+            <button 
+              @click="handleLogout"
+              class="mobile-sidebar-link mobile-sidebar-submenu-link w-full"
+            >
+              <LogOut :size="16" class="shrink-0 sm:hidden" />
+              <LogOut :size="18" class="shrink-0 hidden sm:block" />
+              <span>{{ $t('common.actions.logout') }}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </transition>
+
+  <!-- Search Modal -->
+  <FloatingSearchModal 
+    :show="showSearchModal" 
+    @close="showSearchModal = false"
+    @search="handleSearchQuery"
+  />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useLeadsStore } from '@/stores/leads'
 import { useUserStore } from '@/stores/user'
+import { useTheme } from '@/composables/useTheme'
+import { 
+  Plus, 
+  Home, 
+  List, 
+  Users, 
+  Calendar, 
+  LineChart, 
+  Settings,
+  CarFront,
+  Search,
+  Globe,
+  Shield,
+  User,
+  Headphones,
+  Moon,
+  Sun,
+  LogOut,
+  X,
+  ChevronDown
+} from 'lucide-vue-next'
+import FloatingSearchModal from '@/components/shared/FloatingSearchModal.vue'
 
 const props = defineProps({
   isOpen: {
@@ -165,51 +325,126 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+const router = useRouter()
 const route = useRoute()
+const { locale, t } = useI18n()
 const leadsStore = useLeadsStore()
 const userStore = useUserStore()
+const { isDark, toggleTheme } = useTheme()
 
-const showAddMenu = ref(false)
 const showListsMenu = ref(false)
+const showLanguageMenu = ref(false)
+const showUserMenu = ref(false)
+const showSearchModal = ref(false)
+
+const languages = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' }
+]
 
 const hotLeadsCount = computed(() => leadsStore.hotLeads.length)
+const isDarkMode = computed(() => isDark())
+const currentLocale = computed(() => locale.value)
+
+const userInitials = computed(() => {
+  if (!userStore.currentUser || !userStore.currentUser.name) {
+    return 'U'
+  }
+  const nameParts = userStore.currentUser.name.split(' ')
+  if (nameParts.length >= 2) {
+    return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+  }
+  return nameParts[0][0].toUpperCase()
+})
 
 const isActive = (path) => {
   return route.path.startsWith(path)
-}
-
-const toggleAddMenu = () => {
-  showAddMenu.value = !showAddMenu.value
 }
 
 const toggleListsMenu = () => {
   showListsMenu.value = !showListsMenu.value
 }
 
-const handleAddItem = (type) => {
-  showAddMenu.value = false
+const toggleLanguageMenu = () => {
+  showLanguageMenu.value = !showLanguageMenu.value
+}
+
+const changeLanguage = (langCode) => {
+  locale.value = langCode
+  localStorage.setItem('app-locale', langCode)
+  showLanguageMenu.value = false
+}
+
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+}
+
+const switchRole = (role) => {
+  userStore.switchRole(role)
+  showUserMenu.value = false
   emit('close')
-  // TODO: Open creation modals for each entity type
+  router.push('/home')
+}
+
+const handleLogout = () => {
+  showUserMenu.value = false
+  emit('close')
+  // TODO: Implement logout functionality
+}
+
+const toggleDarkMode = () => {
+  toggleTheme()
+}
+
+const handleSearch = () => {
+  showSearchModal.value = true
+}
+
+const handleSearchQuery = (query) => {
+  // Global search is not implemented yet
+  console.log('Search query:', query)
+}
+
+const handleClose = () => {
+  emit('close')
 }
 </script>
 
 <style scoped>
 @reference "tailwindcss";
-.mobile-sidebar-drawer {
-  background-color: var(--brand-red) !important;
-}
 
 .mobile-sidebar-link {
-  @apply flex items-center gap-3 px-4 py-3 text-white/90 hover:text-white rounded-lg transition-colors;
+  @apply flex items-center gap-2.5 sm:gap-3 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors;
 }
 
-.mobile-sidebar-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+.mobile-sidebar-submenu-link {
+  @apply text-xs sm:text-sm py-1.5 sm:py-2;
 }
 
 .mobile-sidebar-link-active {
-  @apply text-white;
-  background-color: rgba(255, 255, 255, 0.2);
+  @apply text-white bg-white/20;
+}
+
+.user-avatar-mobile {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .user-avatar-mobile {
+    width: 1.75rem;
+    height: 1.75rem;
+    min-width: 1.75rem;
+    min-height: 1.75rem;
+    font-size: 0.75rem;
+  }
 }
 
 .safe-area-top {

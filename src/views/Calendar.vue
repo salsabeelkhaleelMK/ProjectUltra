@@ -7,7 +7,7 @@
         <div class="lg:hidden flex items-center gap-2">
           <button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
           >
             <i class="fa-solid fa-filter text-sub group-hover:text-brand-red"></i>
             <span class="hidden sm:inline">Filters</span>
@@ -24,7 +24,7 @@
         <div class="flex items-center gap-2">
           <button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             :class="{ 'bg-red-50 border-red-200 text-brand-red': connectedCalendars.length > 0 }"
           >
             <i class="fa-solid fa-link text-sub group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
@@ -41,7 +41,7 @@
         <!-- New Event Button (Secondary) -->
         <button
           @click="showCreateEventModal = true"
-          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-3 py-1.5 text-fluid-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
         >
             <i class="fa-solid fa-plus text-sub group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">New Event</span>
@@ -200,7 +200,6 @@ import EditEventModal from '@/components/modals/EditEventModal.vue'
 
 // Utilities
 import { getEventCalendarClass } from '@/utils/calendarHelpers'
-import { useCalendarEvents } from '@/composables/useCalendarEvents'
 
 const userStore = useUserStore()
 
@@ -522,130 +521,200 @@ const handleSaveEditedEvent = async (eventData) => {
 </script>
 
 <style>
-@reference "tailwindcss";
 /* FullCalendar custom styles - Improved readability */
 .fc {
-  @apply text-sm;
+  font-size: 0.875rem;
 }
 
 .fc .fc-button {
-  @apply bg-blue-600 border-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded-lg text-sm transition-colors;
+  background-color: var(--brand-dark) !important;
+  border-color: var(--brand-dark) !important;
+  color: white !important;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.fc .fc-button:hover {
+  background-color: var(--brand-dark-darker) !important;
+  border-color: var(--brand-dark-darker) !important;
 }
 
 .fc .fc-button-primary:not(:disabled).fc-button-active {
-  @apply bg-blue-700;
+  background-color: var(--brand-dark-darker) !important;
+  border-color: var(--brand-dark-darker) !important;
 }
 
 .fc .fc-button-primary:disabled {
-  @apply opacity-50 cursor-not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--brand-dark) !important;
+  border-color: var(--brand-dark) !important;
+}
+
+.fc .fc-button:focus {
+  background-color: var(--brand-dark-darker) !important;
+  border-color: var(--brand-dark-darker) !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 40, 40, 0.15);
 }
 
 .fc .fc-toolbar-title {
-  @apply text-base font-bold text-gray-900;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
 }
 
 .fc .fc-col-header-cell {
-  @apply bg-gray-50/50 border-b border-gray-100;
+  background-color: rgba(249, 250, 251, 0.5);
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .fc .fc-col-header-cell-cushion {
-  @apply text-sm font-bold uppercase tracking-wide text-gray-500 py-1.5;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: #6b7280;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
 }
 
 .fc .fc-daygrid-day {
-  @apply border-r border-b border-gray-100;
+  border-right: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
-  @apply bg-blue-50/30;
+  background-color: rgba(239, 246, 255, 0.3);
 }
 
 .fc .fc-daygrid-day-number {
-  @apply text-sm text-gray-700 p-1.5 font-medium;
+  font-size: 0.875rem;
+  color: #374151;
+  padding: 0.375rem;
+  font-weight: 500;
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  @apply font-bold text-blue-600;
+  font-weight: 700;
+  color: #2563eb;
 }
 
 .fc .fc-event {
-  @apply cursor-pointer border-0 rounded px-1.5 py-0.5 text-sm font-medium;
+  cursor: pointer;
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .fc .fc-event-title {
-  @apply font-medium;
+  font-weight: 500;
 }
 
 .fc .fc-daygrid-event {
-  @apply mb-0.5;
+  margin-bottom: 0.125rem;
 }
 
 .fc .fc-scrollgrid {
-  @apply border-gray-100;
+  border-color: #f3f4f6;
 }
 
 .fc .fc-scrollgrid-section-header {
-  @apply border-gray-100;
+  border-color: #f3f4f6;
 }
 
 .fc .fc-timegrid-slot {
-  @apply border-gray-100;
+  border-color: #f3f4f6;
 }
 
 .fc .fc-timegrid-col {
-  @apply border-gray-100;
+  border-color: #f3f4f6;
 }
 
 .fc .fc-timegrid-axis {
-  @apply border-gray-100;
+  border-color: #f3f4f6;
 }
 
 .fc .fc-timegrid-axis-cushion {
-  @apply text-sm text-gray-500;
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
 /* Custom event type colors with light backgrounds */
 .fc .fc-event.event-blue {
-  @apply bg-blue-50 border border-blue-200 text-blue-700;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
 }
 .fc .fc-event.event-green {
-  @apply bg-green-50 border border-green-200 text-green-700;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
 }
 .fc .fc-event.event-emerald {
-  @apply bg-emerald-50 border border-emerald-200 text-emerald-700;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
 }
 .fc .fc-event.event-indigo {
-  @apply bg-indigo-50 border border-indigo-200 text-indigo-700;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #4338ca;
 }
 .fc .fc-event.event-orange {
-  @apply bg-orange-50 border border-orange-200 text-orange-700;
+  background-color: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
 }
 .fc .fc-event.event-teal {
-  @apply bg-teal-50 border border-teal-200 text-teal-700;
+  background-color: #f0fdfa;
+  border: 1px solid #99f6e4;
+  color: #0f766e;
 }
 .fc .fc-event.event-purple {
-  @apply bg-purple-50 border border-purple-200 text-purple-700;
+  background-color: #faf5ff;
+  border: 1px solid #e9d5ff;
+  color: #7c3aed;
 }
 .fc .fc-event.event-pink {
-  @apply bg-pink-50 border border-pink-200 text-pink-700;
+  background-color: #fdf2f8;
+  border: 1px solid #fbcfe8;
+  color: #be185d;
 }
 .fc .fc-event.event-yellow {
-  @apply bg-yellow-50 border border-yellow-200 text-yellow-700;
+  background-color: #fefce8;
+  border: 1px solid #fef08a;
+  color: #a16207;
 }
 .fc .fc-event.event-red {
-  @apply bg-red-50 border border-red-200 text-red-700;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
 }
 .fc .fc-event.event-gray {
-  @apply bg-gray-50 border border-gray-200 text-gray-700;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #374151;
 }
 .fc .fc-event.event-cyan {
-  @apply bg-cyan-50 border border-cyan-200 text-cyan-700;
+  background-color: #ecfeff;
+  border: 1px solid #a5f3fc;
+  color: #0e7490;
 }
 .fc .fc-event.event-rose {
-  @apply bg-rose-50 border border-rose-200 text-rose-700;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
 }
 .fc .fc-event.event-slate {
-  @apply bg-gray-50 border border-gray-200 text-gray-700;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #374151;
 }
 
 /* Mobile Filter Drawer Transitions */
@@ -672,19 +741,22 @@ const handleSaveEditedEvent = async (eventData) => {
 /* Mobile Calendar Adjustments */
 @media (max-width: 1023px) {
   .fc .fc-toolbar {
-    @apply flex-col gap-2;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
   .fc .fc-toolbar-chunk {
-    @apply flex justify-center;
+    display: flex;
+    justify-content: center;
   }
   
   .fc .fc-button {
-    @apply text-sm px-2 py-1;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
   }
   
   .fc .fc-toolbar-title {
-    @apply text-sm;
+    font-size: 0.875rem;
   }
 }
 </style>

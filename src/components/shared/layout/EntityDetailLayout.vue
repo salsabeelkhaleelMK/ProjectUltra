@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
-    <header class="bg-surface border-b border shrink-0">
+    <header class="bg-surface border-b border-black/5 shrink-0">
       <!-- Contact Info Header (only shown for customer view, not tasks) -->
       <div v-if="!isTasksView" class="px-4 md:px-8 py-3 md:py-4">
         <ContactInfo

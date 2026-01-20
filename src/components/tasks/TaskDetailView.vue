@@ -10,14 +10,14 @@
   </div>
   
   <!-- Empty State (right side on desktop, hidden on mobile) -->
-  <div v-else class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border bg-surface">
+  <div v-else class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border-black/5 bg-surface">
     <div class="flex-1 flex items-center justify-center p-8">
       <div class="text-center max-w-sm">
         <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surfaceSecondary flex items-center justify-center">
           <i class="fa-solid fa-tasks text-2xl text-sub"></i>
         </div>
-        <h3 class="text-base font-semibold text-heading mb-2">No task selected</h3>
-        <p class="text-meta">Select a task from the list to view its details and manage activities</p>
+        <h3 class="text-fluid-base font-semibold text-heading mb-2">No task selected</h3>
+        <p class="text-fluid-sm text-sub">Select a task from the list to view its details and manage activities</p>
       </div>
     </div>
   </div>

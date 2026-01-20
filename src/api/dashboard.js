@@ -50,8 +50,57 @@ export const fetchManagerFunnelMetrics = async (period = 'month') => {
   return mockManagerFunnelMetrics
 }
 
-
-
-
+export const fetchTasksDue = async () => {
+  await delay(800)
+  
+  // Return mock data matching screenshot structure
+  return [
+    {
+      id: '1',
+      dealershipName: 'David Martin',
+      customerName: 'Jean-Pierre Dubois',
+      car: 'Volvo XC90',
+      dueTime: '10:00',
+      dueDate: '2024-02-14',
+      isExpired: true
+    },
+    {
+      id: '2',
+      dealershipName: 'Sophie Dubois',
+      customerName: 'Marie Lefebvre',
+      car: 'Volvo V60',
+      dueTime: '14:30',
+      dueDate: '2024-02-14',
+      isExpired: false
+    },
+    {
+      id: '3',
+      dealershipName: 'Thomas Anderson',
+      customerName: 'Pierre Moreau',
+      car: 'Volvo S90',
+      dueTime: '16:00',
+      dueDate: '2024-02-14',
+      isExpired: false
+    },
+    {
+      id: '4',
+      dealershipName: 'Marie Leclerc',
+      customerName: 'Sarah Johnson',
+      car: 'Volvo XC60',
+      dueTime: '09:00',
+      dueDate: '2024-02-15',
+      isExpired: false
+    },
+    {
+      id: '5',
+      dealershipName: 'James Wilson',
+      customerName: 'Michael Brown',
+      car: 'Volvo C40',
+      dueTime: '15:00',
+      dueDate: '2024-02-15',
+      isExpired: true
+    }
+  ]
+}
 
 

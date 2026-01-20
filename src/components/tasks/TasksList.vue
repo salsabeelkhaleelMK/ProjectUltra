@@ -1,43 +1,43 @@
 <template>
   <div 
-    class="bg-surface border-r border flex flex-col shrink-0 w-full lg:w-80 h-full"
+    class="tasks-list-container border-r border-black/5 flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
     <!-- Header: Title + View Toggle -->
     <header class="page-header shrink-0">
       <div class="page-header-main">
         <div class="page-header-content">
-          <div>
+          <div class="page-header-title-container">
             <h1 class="page-header-title">{{ title }}</h1>
           </div>
           
           <!-- View Toggle -->
-          <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
-            <button
-              @click="$emit('view-change', 'card')"
-              :class="[
-                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
-                viewMode === 'card' 
-                  ? 'bg-surface text-heading shadow-sm' 
-                  : 'text-sub hover:text-body'
-              ]"
-              title="Card View"
-            >
-              <i class="fa-solid fa-columns text-xs"></i>
-              <span>Card</span>
-            </button>
-            <button
-              @click="$emit('view-change', 'table')"
-              :class="[
-                'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
-                viewMode === 'table' 
-                  ? 'bg-surface text-heading shadow-sm' 
-                  : 'text-sub hover:text-body'
-              ]"
-              title="Table View"
-            >
-              <i class="fa-solid fa-table text-xs"></i>
-              <span>Table</span>
-            </button>
+          <div class="page-header-actions">
+            <div class="bg-white border border-black/5 p-0.5 rounded-lg inline-flex gap-0.5">
+              <button
+                @click="$emit('view-change', 'table')"
+                :class="[
+                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
+                  viewMode === 'table' 
+                    ? 'bg-brand-gray text-heading shadow-sm' 
+                    : 'text-sub hover:text-heading'
+                ]"
+                title="Table View"
+              >
+                <Table :size="14" />
+              </button>
+              <button
+                @click="$emit('view-change', 'card')"
+                :class="[
+                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
+                  viewMode === 'card' 
+                    ? 'bg-brand-gray text-heading shadow-sm' 
+                    : 'text-sub hover:text-heading'
+                ]"
+                title="Card View"
+              >
+                <LayoutGrid :size="14" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -47,12 +47,12 @@
     <!-- Search Bar -->
     <div class="px-5 py-3">
       <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-sm"></i>
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-fluid-sm"></i>
         <input 
           v-model="searchQuery"
           type="text" 
           :placeholder="searchPlaceholder" 
-          class="w-full bg-surfaceSecondary border border rounded-lg pl-9 pr-3 py-2 text-sm"
+          class="w-full bg-white border border-black/5 rounded-lg pl-9 pr-3 py-2 text-fluid-sm"
         />
       </div>
     </div>
@@ -104,6 +104,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { Table, LayoutGrid } from 'lucide-vue-next'
 import TaskCard from '@/components/tasks/TaskCard.vue'
 import TaskFilters from '@/components/tasks/TaskFilters.vue'
 
@@ -163,3 +164,9 @@ const selectSort = (option) => {
   emit('sort-change', option)
 }
 </script>
+
+<style scoped>
+.tasks-list-container {
+  background-color: var(--brand-gray) !important;
+}
+</style>

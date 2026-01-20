@@ -1,65 +1,96 @@
 <template>
-  <div class="bg-surface border border rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
-    <!-- Dark Header -->
-    <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="text-white font-bold text-sm">Insights</span>
-        <span class="text-gray-300 text-sm">powered by AI</span>
+  <div
+    class="rounded-[12px] p-px flex flex-col"
+    style="background: linear-gradient(to right, #40B3E9, #8873FF, #FF8B42); height: 480px"
+  >
+    <div
+      class="bg-greys-100 rounded-[11px] flex flex-col h-full overflow-hidden"
+      style="background-color: var(--base-muted, #f5f5f5)"
+    >
+      <!-- Title Section -->
+      <div class="px-4 py-4 flex items-center gap-2 shrink-0">
+        <Sparkles :size="16" class="text-heading" />
+        <h3 class="text-lg font-medium text-heading leading-5">AI Assistant</h3>
       </div>
-    </div>
-    
-    <!-- White Content Area -->
-    <div class="bg-surface flex-1 overflow-y-auto">
-      <div class="p-6 space-y-2">
-        <!-- Suggested Questions -->
-        <button
-          v-for="(question, index) in suggestedQuestions"
-          :key="index"
-          @click="askQuestion(question)"
-          class="w-full text-left px-4 py-3 bg-surface hover:bg-surfaceSecondary border border rounded-lg transition-colors text-sm text-body"
-        >
-          {{ question }}
-        </button>
-      </div>
-      
-      <!-- Show More Ideas -->
-      <div class="px-4 pb-4">
-        <button
-          @click="showMoreIdeas = !showMoreIdeas"
-          class="w-full text-left text-sm text-body hover:text-heading flex items-center gap-2 transition-colors"
-        >
-          <span>Show more ideas</span>
-          <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': showMoreIdeas }"></i>
-        </button>
-      </div>
-    </div>
 
-    <!-- Input Area -->
-    <div class="p-6 bg-surface border-t border">
-      <div class="flex gap-2 items-center">
-        <!-- Icon/Avatar -->
-        <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center shrink-0">
-          <i class="fa-solid fa-sparkles text-white text-xs"></i>
-        </div>
-        
-        <!-- Input Field -->
-        <div class="flex-1 relative">
-          <input
-            v-model="questionInput"
-            @keyup.enter="handleAsk"
-            type="text"
-            placeholder="Ask me anything"
-            class="input"
+      <!-- Card Content -->
+      <div
+        class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden"
+        style="box-shadow: var(--nsc-card-shadow);"
+      >
+        <div ref="chatContainer" class="flex-1 overflow-y-auto space-y-4 min-h-0 pr-2">
+          <div
+            v-for="message in chatMessages"
+            :key="message.id"
+            :class="[
+              'flex gap-3',
+              message.role === 'user' ? 'justify-end' : 'justify-start',
+            ]"
           >
+            <div
+              v-if="message.role === 'assistant'"
+              class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+              style="background: linear-gradient(to bottom right, #40B3E9, #8873FF, #FF8B42);"
+            >
+              <Sparkles :size="14" class="text-white" />
+            </div>
+            <div
+              :class="[
+                'rounded-lg px-4 py-2.5 max-w-[80%]',
+                message.role === 'user'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-greys-50 text-greys-900 border border-black/5',
+              ]"
+            >
+              <p class="text-fluid-sm leading-relaxed whitespace-pre-wrap text-heading">
+                {{ message.content }}
+              </p>
+            </div>
+            <div
+              v-if="message.role === 'user'"
+              class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0"
+            >
+              <span class="text-fluid-xs font-medium text-purple-700">You</span>
+            </div>
+          </div>
         </div>
-        
-        <!-- Submit Button -->
-        <button
-          @click="handleAsk"
-          class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center transition-all shrink-0"
-        >
-          <i class="fa-solid fa-arrow-right text-sm"></i>
-        </button>
+
+        <div class="border-t border-black/5 shrink-0 pt-4">
+          <div
+            v-if="chatMessages.length === 0"
+            class="mb-3 flex flex-wrap gap-2"
+          >
+            <button
+              v-for="suggestion in suggestedQuestions"
+              :key="suggestion"
+              @click="askQuestion(suggestion)"
+              class="px-3 py-1.5 text-fluid-sm bg-greys-50 hover:bg-greys-100 border border-black/5 rounded-lg text-greys-700 transition-colors cursor-pointer"
+            >
+              {{ suggestion }}
+            </button>
+          </div>
+          <div class="relative">
+            <input
+              v-model="questionInput"
+              type="text"
+              placeholder="Ask anything..."
+              class="w-full pr-12 text-fluid-sm input"
+              @keypress="handleKeyPress"
+            />
+            <button
+              :disabled="!questionInput.trim()"
+              @click="handleAsk"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-greys-100 active:bg-greys-200"
+              :class="
+                questionInput.trim()
+                  ? 'text-purple-600'
+                  : 'text-greys-400'
+              "
+            >
+              <Send :size="18" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -67,25 +98,51 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Send, Sparkles } from 'lucide-vue-next'
 
 const suggestedQuestions = ref([
-  'Who are my top 3 best performing sales people?',
-  "What's our current pipeline conversion rate?",
-  'How many leads did we get today?',
-  'How many leads are in negotiation?'
+  "Who's performing best?",
+  "How many deals were closed?",
+  "What's the conversion rate?"
 ])
 
 const questionInput = ref('')
-const showMoreIdeas = ref(false)
+const chatMessages = ref([])
+const chatContainer = ref(null)
 
 const askQuestion = (question) => {
   questionInput.value = question
   handleAsk()
 }
 
+const handleKeyPress = (e) => {
+  if (e.key === 'Enter') {
+    handleAsk()
+  }
+}
+
 const handleAsk = () => {
   if (questionInput.value.trim()) {
-    // Placeholder for AI logic
+    // Add user message
+    chatMessages.value.push({
+      id: Date.now(),
+      role: 'user',
+      content: questionInput.value
+    })
+    
+    // Simulate AI response (placeholder)
+    setTimeout(() => {
+      chatMessages.value.push({
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: 'This is a placeholder response. AI functionality will be implemented later.'
+      })
+      // Scroll to bottom
+      if (chatContainer.value) {
+        chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+      }
+    }, 500)
+    
     questionInput.value = ''
   }
 }

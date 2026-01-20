@@ -8,7 +8,7 @@
     <div class="page-header-main">
       <div class="page-header-content">
         <div class="page-header-title-container">
-          <h2 class="page-header-title">{{ title }}</h2>
+          <h1 class="page-header-title">{{ title }}</h1>
         </div>
         <div class="page-header-actions">
           <slot name="actions"></slot>

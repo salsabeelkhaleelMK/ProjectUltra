@@ -58,6 +58,15 @@ export default {
           200: '#E5E7EB', // For borders (Gray-200)
           300: '#D1D5DB', // For form inputs (Gray-300)
         },
+        greys: {
+          50: '#F9FAFB',
+          100: '#F5F5F5',  // var(--base-muted)
+          300: '#D4D4D4',
+          500: '#6B7280',  // Similar to gray-500
+          600: '#4B5563',
+          700: '#374151',
+          900: '#111827',   // Dark text
+        },
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'sans-serif'],
@@ -130,6 +139,13 @@ export default {
             textTransform: 'uppercase'
           }
         ],
+        // Fluid Typography - Responsive scaling
+        'fluid-xs': ['var(--text-fluid-xs)', { lineHeight: 'var(--leading-4)' }],
+        'fluid-sm': ['var(--text-fluid-sm)', { lineHeight: 'var(--leading-5)' }],
+        'fluid-base': ['var(--text-fluid-base)', { lineHeight: 'var(--leading-5)' }],
+        'fluid-lg': ['var(--text-fluid-lg)', { lineHeight: 'var(--leading-6)' }],
+        'fluid-xl': ['var(--text-fluid-xl)', { lineHeight: 'var(--leading-7)' }],
+        'fluid-2xl': ['var(--text-fluid-2xl)', { lineHeight: 'var(--leading-7)' }],
         // Legacy aliases for backward compatibility
         'h4-sub': ['var(--text-h4)', { lineHeight: '1.4', fontWeight: '600' }],
         'nav-text': ['var(--text-small)', { lineHeight: '1.5', fontWeight: '500' }],
@@ -141,6 +157,8 @@ export default {
       boxShadow: {
         'subtle': 'var(--shadow-subtle)',
         'card': 'var(--shadow-card)',
+        'mk-dashboard-card': 'var(--mk-dashboard-card-shadow)',
+        'nsc-card': 'var(--nsc-card-shadow)',
       },
       borderRadius: {
         '2xl': '1rem',

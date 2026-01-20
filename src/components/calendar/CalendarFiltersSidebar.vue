@@ -15,7 +15,7 @@
       
       <div class="space-y-2">
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-content text-body font-medium group-hover:text-heading">Only mine</span>
+          <span class="text-xs text-body font-medium group-hover:text-heading">Only mine</span>
           <Toggle
             name="onlyMine"
             :modelValue="modelValue.onlyMine"
@@ -24,7 +24,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-sm text-body font-medium group-hover:text-heading">Most relevant</span>
+          <span class="text-xs text-body font-medium group-hover:text-heading">Most relevant</span>
           <Toggle
             name="mostRelevant"
             :modelValue="modelValue.mostRelevant"
@@ -33,7 +33,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-sm text-body font-medium group-hover:text-heading">Include cancelled</span>
+          <span class="text-xs text-body font-medium group-hover:text-heading">Include cancelled</span>
           <Toggle
             name="includeCancelled"
             :modelValue="modelValue.includeCancelled"
@@ -42,7 +42,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-sm text-body font-medium group-hover:text-heading">No-shows only</span>
+          <span class="text-xs text-body font-medium group-hover:text-heading">No-shows only</span>
           <Toggle
             name="noShowsOnly"
             :modelValue="modelValue.noShowsOnly"
@@ -264,7 +264,11 @@ const setArrayFilter = (key, value, checked) => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+/* Ensure all filter text uses consistent smallest theme size (text-xs = 10px) */
+:deep(.space-y-1 > div label),
+:deep(.space-y-1 label) {
+  font-size: var(--text-xs);
+}
 
 /* Accordion transition */
 .accordion-enter-active,

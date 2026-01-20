@@ -2,7 +2,7 @@
   <div 
     ref="cardRef"
     @click="$emit('select', itemId)"
-    class="bg-white rounded-lg p-2.5 min-h-32 flex flex-col justify-between hover:shadow-sm cursor-pointer relative"
+    class="bg-white rounded-xl p-2.5 min-h-32 flex flex-col justify-between hover:shadow-mk-dashboard-card cursor-pointer relative transition-shadow"
     :class="cardClass"
   >
     <!-- Menu Button -->
@@ -28,7 +28,7 @@
       <!-- Badges -->
       <div class="flex gap-2 mb-0.5">
         <span 
-          class="px-2 py-0.5 rounded text-xs font-medium border"
+          class="px-2 py-0.5 rounded text-fluid-xs font-medium border"
           :class="item.type === 'lead' 
             ? 'bg-blue-50 text-blue-700 border-blue-200' 
             : 'bg-purple-50 text-purple-700 border-purple-200'"
@@ -37,30 +37,30 @@
         </span>
         <span 
           v-if="item.displayStage || item.stage"
-          class="px-2 py-0.5 rounded text-xs font-medium border"
+          class="px-2 py-0.5 rounded text-fluid-xs font-medium border"
           :class="stageColorClass"
         >
           {{ item.displayStage || item.stage }}
         </span>
         <span 
           v-if="item.priority === 'Hot'"
-          class="px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200"
+          class="px-2 py-0.5 rounded text-fluid-xs font-medium bg-red-50 text-red-700 border border-red-200"
         >
           Hot
         </span>
       </div>
 
       <!-- Name -->
-      <h3 class="font-bold text-gray-900 text-content-bold line-clamp-2 pt-0.5">{{ getName(item) }}</h3>
+      <h3 class="font-bold text-gray-900 text-fluid-sm line-clamp-2 pt-0.5">{{ getName(item) }}</h3>
 
       <!-- Location and Source -->
-      <div class="flex gap-3 text-xs mt-0.5 mb-1">
+      <div class="flex gap-3 text-fluid-xs mt-0.5 mb-1">
         <span class="flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot text-xs"></i>
+          <i class="fa-solid fa-location-dot text-fluid-xs"></i>
           <slot name="location" :item="item"></slot>
         </span>
         <span class="flex items-center gap-1.5">
-          <i class="fa-solid fa-globe text-xs"></i>
+          <i class="fa-solid fa-globe text-fluid-xs"></i>
           <slot name="source" :item="item">
             {{ item.source || item.customer?.source || 'Unknown' }}
           </slot>
@@ -68,16 +68,16 @@
       </div>
 
       <!-- Vehicle Details -->
-      <p v-if="getVehicleInfo" class="text-xs text-gray-600 pb-3">{{ getVehicleInfo(item) }}</p>
+      <p v-if="getVehicleInfo" class="text-fluid-xs text-gray-600 pb-3">{{ getVehicleInfo(item) }}</p>
     </div>
 
     <!-- Optional Footer: Owner + Due Date (hidden by default, can be shown via slot) -->
-    <div v-if="$slots.owner || $slots.dates" class="flex items-center justify-between pt-1 border-t border-gray-100">
-      <div class="text-xs flex items-center gap-2">
+    <div v-if="$slots.owner || $slots.dates" class="flex items-center justify-between pt-1 border-t border-black/5">
+      <div class="text-fluid-xs flex items-center gap-2">
         <slot name="owner" :item="item">
           <template v-if="item.assignee">
             <div 
-              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-[6px] shrink-0 w-3 h-3"
+              class="rounded-full bg-black text-white font-medium flex items-center justify-center text-fluid-xs shrink-0 w-3 h-3"
             >
               {{ getAssigneeInitials(item.assignee) }}
             </div>
@@ -86,7 +86,7 @@
           <span v-else>Unassigned</span>
         </slot>
       </div>
-      <div class="text-xs font-medium">
+      <div class="text-fluid-xs font-medium">
         <slot name="dates" :item="item"></slot>
       </div>
     </div>
@@ -113,7 +113,7 @@ const props = defineProps({
   },
   unselectedClass: {
     type: [String, Function],
-    default: 'bg-white border border-gray-200 hover:border-blue-300'
+    default: 'bg-white border border-black/5 hover:border-blue-300'
   },
   showMenu: {
     type: Boolean,

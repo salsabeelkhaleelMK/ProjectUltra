@@ -16,16 +16,16 @@
         <!-- Name & Tags -->
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <h1 class="text-xl font-bold uppercase text-brand-dark truncate leading-tight">{{ name }}</h1>
+            <h1 class="text-fluid-xl font-bold uppercase text-brand-dark truncate leading-tight">{{ name }}</h1>
             <slot name="name-action"></slot>
           </div>
           <div class="flex flex-wrap items-center gap-2 mt-1">
             <slot name="tags"></slot>
             <button
               @click.stop="handleAddTag"
-              class="text-xs text-brand-red hover:text-brand-red-dark font-medium hover:underline flex items-center gap-1"
+              class="text-fluid-xs text-brand-red hover:text-brand-red-dark font-medium hover:underline flex items-center gap-1"
             >
-              <i class="fa-solid fa-plus text-xs"></i>
+              <i class="fa-solid fa-plus text-fluid-xs"></i>
               <span>add tag</span>
             </button>
           </div>
@@ -37,10 +37,10 @@
         <div class="relative">
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
-            class="w-9 h-9 flex items-center justify-center bg-surface border border rounded-lg hover:bg-surfaceSecondary shrink-0"
+            class="w-9 h-9 flex items-center justify-center bg-surface border border-black/5 rounded-lg hover:bg-surfaceSecondary shrink-0"
             aria-label="Quick actions"
           >
-            <i class="fa-solid fa-plus text-base text-body"></i>
+            <i class="fa-solid fa-plus text-fluid-base text-body"></i>
           </button>
           
           <!-- Quick Action Dropdown Menu -->
@@ -55,9 +55,9 @@
         
         <button 
           @click="showContactInfo = !showContactInfo" 
-          class="w-9 h-9 flex items-center justify-center bg-surface border border rounded-lg hover:bg-surfaceSecondary shrink-0"
+          class="w-9 h-9 flex items-center justify-center bg-surface border border-black/5 rounded-lg hover:bg-surfaceSecondary shrink-0"
         >
-          <i class="fa-solid fa-chevron-up text-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
+          <i class="fa-solid fa-chevron-up text-fluid-sm transition-transform duration-200" :class="{ 'rotate-180': showContactInfo }"></i>
         </button>
       </div>
     </div>
@@ -73,40 +73,40 @@
           <!-- Email -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
-              <i class="fa-regular fa-envelope text-sub text-xs"></i>
+              <i class="fa-regular fa-envelope text-sub text-fluid-xs"></i>
             </div>
-            <span class="text-meta text-heading font-medium">{{ email }}</span>
+            <span class="text-fluid-sm text-heading font-medium">{{ email }}</span>
             <button 
               @click.stop="copyToClipboard(email, 'email')"
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
               title="Copy email"
             >
-              <i class="fa-regular fa-copy text-xs"></i>
+              <i class="fa-regular fa-copy text-fluid-xs"></i>
             </button>
           </div>
           
           <!-- Phone -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-phone text-sub text-xs"></i>
+              <i class="fa-solid fa-phone text-sub text-fluid-xs"></i>
             </div>
-            <span class="text-meta text-heading font-medium">{{ phone }}</span>
+            <span class="text-fluid-sm text-heading font-medium">{{ phone }}</span>
             <button 
               @click.stop="copyToClipboard(phone, 'phone')"
               class="w-5 h-5 flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors shrink-0"
               title="Copy phone"
             >
-              <i class="fa-regular fa-copy text-xs"></i>
+              <i class="fa-regular fa-copy text-fluid-xs"></i>
             </button>
           </div>
           
           <!-- Third Field (Address/Date) -->
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded bg-surfaceSecondary flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-map-marker-alt text-sub text-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
-              <i class="fa-regular fa-calendar text-sub text-xs" v-else></i>
+              <i class="fa-solid fa-map-marker-alt text-sub text-fluid-xs" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
+              <i class="fa-regular fa-calendar text-sub text-fluid-xs" v-else></i>
             </div>
-            <span class="text-meta text-heading font-medium">{{ thirdFieldValue }}</span>
+            <span class="text-fluid-sm text-heading font-medium">{{ thirdFieldValue }}</span>
           </div>
         </div>
       </div>

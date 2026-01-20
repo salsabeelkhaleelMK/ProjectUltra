@@ -1,21 +1,19 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
     <!-- Loading Skeleton -->
     <div
       v-if="loading"
       v-for="n in 4"
       :key="`skeleton-${n}`"
-      class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 md:p-8"
+      class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-4 relative"
     >
-      <div class="flex items-start justify-between mb-2">
-        <div class="flex-1">
-          <div class="h-3 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
-          <div class="flex items-baseline gap-1.5 mb-1">
-            <div class="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
-            <div class="h-4 bg-gray-200 rounded w-10 animate-pulse"></div>
-          </div>
-          <div class="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+      <div class="flex flex-col gap-2">
+        <div class="h-3 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
+        <div class="flex items-baseline gap-1.5 mb-1">
+          <div class="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+          <div class="h-4 bg-gray-200 rounded w-10 animate-pulse"></div>
         </div>
+        <div class="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
       </div>
       <div class="h-8 mt-2 bg-gray-100 rounded animate-pulse"></div>
     </div>
@@ -25,64 +23,57 @@
       v-else
       v-for="kpi in kpis"
       :key="kpi.id"
-      class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow group"
+      class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-4 relative"
     >
-      <div class="flex items-start justify-between mb-2">
-        <div class="flex-1">
-          <h3 class="label-upper mb-0.5">{{ kpi.title }}</h3>
-          <div class="flex items-baseline gap-1.5">
-            <span class="text-base font-bold leading-tight">{{ kpi.value }}</span>
-            <span
-              class="text-xs font-bold flex items-center gap-0.5"
-              :class="kpi.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
+      <div class="flex flex-col gap-2">
+        <h4 class="text-sm font-medium text-greys-500 leading-5 whitespace-nowrap">
+          {{ kpi.title }}
+        </h4>
+
+        <div class="flex flex-col gap-1">
+          <div class="flex items-baseline gap-2">
+            <h2 class="text-xl font-semibold text-greys-900 leading-none">
+              {{ kpi.value }}
+            </h2>
+            <Badge
+              :variant="kpi.changeType === 'increase' ? 'success' : 'error'"
+              size="sm"
+              class="inline-flex items-center gap-1"
             >
-              <i :class="kpi.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-xs"></i>
-              {{ Math.abs(kpi.change) }}%
-            </span>
+              <ArrowUp v-if="kpi.changeType === 'increase'" :size="12" />
+              <ArrowDown v-else :size="12" />
+              <span>{{ kpi.changeType === 'increase' ? '+' : '-' }}{{ Math.abs(kpi.change) }}%</span>
+            </Badge>
           </div>
-          <p class="text-xs text-gray-400 mt-0.5">vs Last month</p>
+          <p class="text-sm text-greys-500">vs last month</p>
         </div>
       </div>
-      <!-- Mini Line Chart with Smooth Curves and Gradient Fill -->
-      <div class="h-8 mt-2 relative">
-        <svg class="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
+      <!-- Mini Line Chart -->
+      <div class="absolute top-1/2 -translate-y-1/2 right-3">
+        <svg
+          width="60"
+          height="24"
+          viewBox="0 0 60 24"
+          preserveAspectRatio="none"
+          class="overflow-visible"
+        >
           <defs>
             <linearGradient :id="`gradient-${kpi.id}`" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :style="`stop-color:${getLineColor(kpi)};stop-opacity:0.2`" />
-              <stop offset="100%" :style="`stop-color:${getLineColor(kpi)};stop-opacity:0`" />
+              <stop offset="0%" :stop-color="getLineColor(kpi)" stop-opacity="0.4" />
+              <stop offset="100%" :stop-color="getLineColor(kpi)" stop-opacity="0" />
             </linearGradient>
-            <filter :id="`glow-${kpi.id}`" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
           </defs>
-          
-          <!-- Area Fill -->
-          <path
-            :d="generateAreaPath(kpi.trend)"
+          <polygon
+            :points="getTrendGraphAreaPath(kpi.trend)"
             :fill="`url(#gradient-${kpi.id})`"
-            class="transition-all duration-700"
           />
-          
-          <!-- Smooth Line -->
-          <path
-            :d="generateSmoothPath(kpi.trend)"
+          <polyline
+            :points="getTrendGraphPath(kpi.trend)"
+            fill="none"
             :stroke="getLineColor(kpi)"
             stroke-width="2.5"
-            fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"
-            :filter="`url(#glow-${kpi.id})`"
-            class="transition-all duration-700"
-          />
-          
-          <!-- End point dot -->
-          <circle
-            :cx="getEndPoint(kpi.trend).x"
-            :cy="getEndPoint(kpi.trend).y"
-            r="2"
-            :fill="getLineColor(kpi)"
-            class="group-hover:scale-150 transition-transform duration-300"
           />
         </svg>
       </div>
@@ -92,6 +83,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { ArrowUp, ArrowDown } from 'lucide-vue-next'
+import { Badge } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   kpis: {
@@ -104,63 +97,45 @@ const props = defineProps({
   }
 })
 
-const generateSmoothPath = (data) => {
-  if (!data || data.length === 0) return ''
-  
+const getTrendGraphPath = (data) => {
+  const width = 60
+  const height = 24
+  const padding = 3
   const maxValue = Math.max(...data)
   const minValue = Math.min(...data)
   const range = maxValue - minValue || 1
-  
-  const width = 100
-  const height = 40
-  const padding = 4
-  
+
+  const points = data
+    .map((value, index) => {
+      const x = padding + (index / (data.length - 1 || 1)) * (width - padding * 2)
+      const y = height - padding - ((value - minValue) / range) * (height - padding * 2)
+      return `${x},${y}`
+    })
+    .join(' ')
+
+  return points
+}
+
+const getTrendGraphAreaPath = (data) => {
+  const width = 60
+  const height = 24
+  const padding = 3
+  const maxValue = Math.max(...data)
+  const minValue = Math.min(...data)
+  const range = maxValue - minValue || 1
+
   const points = data.map((value, index) => {
-    return {
-      x: (index / (data.length - 1)) * (width - padding * 2) + padding,
-      y: height - padding - ((value - minValue) / range) * (height - padding * 2)
-    }
+    const x = padding + (index / (data.length - 1 || 1)) * (width - padding * 2)
+    const y = height - padding - ((value - minValue) / range) * (height - padding * 2)
+    return `${x},${y}`
   })
-  
-  if (points.length < 2) return ''
-  
-  let path = `M ${points[0].x},${points[0].y}`
-  
-  for (let i = 0; i < points.length - 1; i++) {
-    const curr = points[i]
-    const next = points[i + 1]
-    const cp1x = curr.x + (next.x - curr.x) / 2
-    const cp2x = curr.x + (next.x - curr.x) / 2
-    path += ` C ${cp1x},${curr.y} ${cp2x},${next.y} ${next.x},${next.y}`
-  }
-  
-  return path
-}
 
-const generateAreaPath = (data) => {
-  const smoothLine = generateSmoothPath(data)
-  if (!smoothLine) return ''
-  
-  const width = 100
-  const height = 40
-  const padding = 4
-  
-  const firstPointX = padding
-  const lastPointX = width - padding
-  
-  return `${smoothLine} L ${lastPointX},${height} L ${firstPointX},${height} Z`
-}
+  if (points.length === 0) return ''
+  const firstX = points[0]?.split(',')[0] || '0'
+  const lastX = points[points.length - 1]?.split(',')[0] || '0'
+  const bottomY = height - padding
 
-const getEndPoint = (data) => {
-  if (!data || data.length === 0) return { x: 0, y: 0 }
-  const maxValue = Math.max(...data)
-  const minValue = Math.min(...data)
-  const range = maxValue - minValue || 1
-  const padding = 4
-  return {
-    x: 100 - padding,
-    y: 40 - padding - ((data[data.length - 1] - minValue) / range) * (40 - padding * 2)
-  }
+  return `${points.join(' ')}, ${lastX},${bottomY}, ${firstX},${bottomY}`
 }
 
 const getLineColor = (kpi) => {

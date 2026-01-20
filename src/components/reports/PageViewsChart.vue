@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-surface rounded-xl border border shadow-sm p-4 md:p-5">
+  <div class="bg-greys-100 rounded-xl p-1 flex flex-col shrink-0" style="background-color: var(--base-muted, #f5f5f5)">
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
     <!-- Loading Skeleton -->
     <template v-if="loading">
       <div class="flex items-center justify-between mb-4">
@@ -33,7 +34,7 @@
     <template v-else>
       <div class="flex items-center justify-between mb-4">
         <h2 class="heading-sub">Page Views: Organic vs. Paid</h2>
-        <select class="input text-sm w-auto">
+        <select class="input text-fluid-sm w-auto">
           <option>This month</option>
           <option>Last month</option>
           <option>This quarter</option>
@@ -62,23 +63,24 @@
               :title="`Paid: ${day.paid}`"
             ></div>
           </div>
-          <span class="text-xs text-gray-500 mt-1">{{ index + 1 }}</span>
+          <span class="text-fluid-xs text-greys-500 mt-1">{{ index + 1 }}</span>
         </div>
       </div>
       
       <!-- Legend -->
-      <div class="flex items-center justify-center gap-6 pt-4 border-t border">
+      <div class="flex items-center justify-center gap-6 pt-4 border-t border-black/5">
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 bg-blue-600 rounded"></div>
-          <span class="text-meta text-gray-600">Organic</span>
+          <span class="text-fluid-sm text-greys-500">Organic</span>
         </div>
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 bg-orange-500 rounded"></div>
-          <span class="text-meta text-gray-600">Paid</span>
+          <span class="text-fluid-sm text-greys-500">Paid</span>
         </div>
       </div>
     </div>
     </template>
+    </div>
   </div>
 </template>
 

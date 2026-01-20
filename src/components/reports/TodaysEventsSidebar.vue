@@ -1,9 +1,12 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-5">
+  <div class="bg-greys-100 rounded-xl p-1 flex flex-col shrink-0" style="background-color: var(--base-muted, #f5f5f5)">
+    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
     <!-- Loading Skeleton -->
     <template v-if="loading">
-      <div class="h-3 bg-gray-200 rounded w-24 mb-4 animate-pulse"></div>
-      <div class="space-y-3">
+      <div class="px-4 py-4 shrink-0">
+        <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
+      </div>
+      <div class="px-4 pb-4 space-y-3">
         <div
           v-for="n in 5"
           :key="`skeleton-${n}`"
@@ -23,27 +26,31 @@
     
     <!-- Actual Content -->
     <template v-else>
-      <h2 class="label-upper mb-4">Today's Events</h2>
-      <div class="space-y-3">
+      <!-- Title Section -->
+      <div class="px-4 py-4 flex items-center gap-2 shrink-0">
+        <Calendar :size="16" class="text-heading" />
+        <h3 class="text-lg font-medium text-heading leading-5">Today's events</h3>
+      </div>
+      <div class="px-4 pb-4 space-y-3">
         <div
           v-for="event in events"
           :key="event.id"
-          class="pb-3 border-b border-gray-50 last:border-0 last:pb-0"
+          class="pb-3 border-b border-black/5 last:border-0 last:pb-0"
         >
         <div class="flex items-start gap-3">
           <!-- Compact Date/Time Square -->
-          <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex flex-col items-center justify-center shrink-0 leading-none">
-            <span class="text-xs font-bold text-gray-400 uppercase">{{ event.time.split(':')[0] }}</span>
-            <span class="text-xs font-bold text-gray-900 mt-0.5">{{ event.time.split(':')[1].split(' ')[0] }}</span>
+          <div class="w-10 h-10 rounded-lg bg-greys-50 border border-black/5 flex flex-col items-center justify-center shrink-0 leading-none">
+            <span class="text-fluid-xs font-medium text-greys-500 uppercase">{{ event.time.split(':')[0] }}</span>
+            <span class="text-fluid-xs font-semibold text-greys-900 mt-0.5">{{ event.time.split(':')[1].split(' ')[0] }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <div class="text-xs font-bold text-gray-900 truncate">{{ event.type }}</div>
-              <div class="text-xs text-gray-400">{{ event.time }}</div>
+              <div class="text-fluid-xs font-medium text-greys-900 truncate">{{ event.type }}</div>
+              <div class="text-fluid-xs text-greys-500">{{ event.time }}</div>
             </div>
-            <div class="text-xs text-gray-500 mt-0.5 truncate">{{ event.customer }}</div>
-            <div class="text-xs text-gray-400 mt-0.5 truncate flex items-center gap-1">
-              <i class="fa-solid fa-location-dot text-xs"></i>
+            <div class="text-fluid-xs text-greys-500 mt-0.5 truncate">{{ event.customer }}</div>
+            <div class="text-fluid-xs text-greys-500 mt-0.5 truncate flex items-center gap-1">
+              <i class="fa-solid fa-location-dot text-fluid-xs"></i>
               {{ event.location }}
             </div>
           </div>
@@ -51,10 +58,13 @@
       </div>
     </div>
     </template>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { Calendar } from 'lucide-vue-next'
+
 defineProps({
   events: {
     type: Array,

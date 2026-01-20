@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-surface rounded-xl border border shadow-sm p-6 md:p-8">
+  <div class="bg-greys-100 rounded-xl p-1 flex flex-col shrink-0" style="background-color: var(--base-muted, #f5f5f5)">
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
     <!-- Loading Skeleton -->
     <template v-if="loading">
       <div class="flex items-center justify-between mb-4">
@@ -31,8 +32,8 @@
     <!-- Actual Content -->
     <template v-else>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-sub">Page Views by Vehicle</h2>
-        <select class="input !py-1.5 !px-3 text-sm w-auto">
+        <h3 class="text-lg font-medium text-greys-500 leading-5">Page Views by Vehicle</h3>
+        <select class="input !py-1.5 !px-3 text-fluid-sm w-auto">
           <option>This month</option>
           <option>Last month</option>
         </select>
@@ -42,25 +43,25 @@
       <div
         v-for="vehicle in vehicles"
         :key="vehicle.id"
-        class="bg-surfaceSecondary rounded-lg border border p-3"
+        class="bg-greys-50 rounded-lg border border-black/5 p-3"
       >
         <div class="mb-2">
-          <h3 class="text-sm font-semibold text-heading truncate mb-0.5">{{ vehicle.brand }} {{ vehicle.model }}</h3>
+          <h4 class="text-fluid-sm font-medium text-greys-900 truncate mb-0.5">{{ vehicle.brand }} {{ vehicle.model }}</h4>
           <div class="flex items-baseline gap-1.5">
-            <span class="text-sm font-bold text-heading leading-tight">{{ vehicle.views }}</span>
-            <span class="text-xs text-gray-500">views</span>
+            <span class="text-fluid-sm font-semibold text-greys-900 leading-tight">{{ vehicle.views }}</span>
+            <span class="text-fluid-xs text-greys-500">views</span>
           </div>
         </div>
         
         <div class="flex items-center gap-2 mb-2">
           <span
-            class="text-xs font-bold flex items-center gap-0.5"
+            class="text-fluid-xs font-medium flex items-center gap-0.5"
             :class="vehicle.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
           >
-            <i :class="vehicle.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-xs"></i>
+            <i :class="vehicle.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-fluid-xs"></i>
             {{ Math.abs(vehicle.change) }}%
           </span>
-          <span class="text-xs text-gray-500">{{ vehicle.avgPerDay }} avg/day</span>
+          <span class="text-fluid-xs text-greys-500">{{ vehicle.avgPerDay }} avg/day</span>
         </div>
         
         <!-- Mini Line Chart with Smooth Curves and Gradient -->
@@ -95,6 +96,7 @@
       </div>
     </div>
     </template>
+    </div>
   </div>
 </template>
 

@@ -4,46 +4,44 @@
     <header class="page-header shrink-0">
       <div class="page-header-main">
         <div class="page-header-content">
-          <div>
+          <div class="page-header-title-container">
             <h1 class="page-header-title">Tasks</h1>
           </div>
           
           <!-- Right Actions: View Toggle + Show Closed -->
-          <div class="flex items-center gap-3">
+          <div class="page-header-actions">
             <!-- View Toggle -->
-            <div class="flex items-center gap-1 bg-surfaceSecondary rounded-lg p-1">
-              <button
-                @click="$emit('view-change', 'card')"
-                :class="[
-                  'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
-                  viewMode === 'card' 
-                    ? 'bg-surface text-heading shadow-sm' 
-                    : 'text-sub hover:text-body'
-                ]"
-                title="Card View"
-              >
-                <i class="fa-solid fa-columns text-xs"></i>
-                <span>Card</span>
-              </button>
+            <div class="bg-white border border-black/5 p-0.5 rounded-lg inline-flex gap-0.5">
               <button
                 @click="$emit('view-change', 'table')"
                 :class="[
-                  'px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1.5',
+                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
                   viewMode === 'table' 
-                    ? 'bg-surface text-heading shadow-sm' 
-                    : 'text-sub hover:text-body'
+                    ? 'bg-brand-gray text-heading shadow-sm' 
+                    : 'text-sub hover:text-heading'
                 ]"
                 title="Table View"
               >
-                <i class="fa-solid fa-table text-xs"></i>
-                <span>Table</span>
+                <Table :size="14" />
+              </button>
+              <button
+                @click="$emit('view-change', 'card')"
+                :class="[
+                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
+                  viewMode === 'card' 
+                    ? 'bg-brand-gray text-heading shadow-sm' 
+                    : 'text-sub hover:text-heading'
+                ]"
+                title="Card View"
+              >
+                <LayoutGrid :size="14" />
               </button>
             </div>
             
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-2xl border border px-3 py-1.5 bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
               <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
@@ -101,6 +99,7 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
+import { Table, LayoutGrid } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
@@ -118,13 +117,14 @@ const props = defineProps({
   showMobileClose: { type: Boolean, default: false },
   openMenuId: { type: [Number, String], default: null },
   searchPlaceholder: { type: String, default: 'Search tasks...' },
+  viewMode: { type: String, default: 'table' },
   getVehicleType: { type: Function, required: true },
   getVehicleTypeBadgeClass: { type: Function, required: true },
   getOwnerInfo: { type: Function, required: true },
   getStageBadgeClass: { type: Function, required: true }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close'])
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
 const settingsStore = useSettingsStore()
 const searchQuery = ref('')

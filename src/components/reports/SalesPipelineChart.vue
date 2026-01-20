@@ -1,12 +1,13 @@
 <template>
-  <div class="bg-surface rounded-xl border border shadow-sm p-4 md:p-5">
-    <!-- Loading Skeleton -->
-    <template v-if="loading">
-      <div class="flex items-center justify-between mb-4">
-        <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
-        <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
-      </div>
-      <div class="mb-4 pb-4 border-b border">
+  <div class="bg-greys-100 rounded-xl p-1 flex flex-col shrink-0" style="background-color: var(--base-muted, #f5f5f5)">
+    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <!-- Loading Skeleton -->
+      <template v-if="loading">
+        <div class="px-4 py-4 flex items-center justify-between shrink-0">
+          <div class="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
+          <div class="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+        </div>
+      <div class="px-4 pb-4 border-b border">
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           <div v-for="n in 4" :key="`stage-${n}`" class="flex items-center gap-2">
             <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
@@ -15,113 +16,140 @@
           </div>
         </div>
       </div>
-      <div class="mb-4">
+      <div class="px-4 pb-4">
         <div class="h-40 md:h-48 lg:h-56 bg-gray-100 rounded animate-pulse"></div>
       </div>
-      <div class="flex flex-wrap gap-4 mt-4">
+      <div class="px-4 pb-4 flex flex-wrap gap-4">
         <div v-for="n in 4" :key="`legend-${n}`" class="flex items-center gap-2">
           <div class="w-3 h-3 bg-gray-200 rounded-full animate-pulse"></div>
           <div class="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-6 pt-4 border-t border">
+      <div class="px-4 pb-4 flex flex-wrap items-center gap-6 pt-4 border-t border">
         <div v-for="n in 4" :key="`time-${n}`" class="flex items-center gap-2">
           <div class="h-4 bg-gray-200 rounded w-4 animate-pulse"></div>
           <div class="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
           <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
         </div>
-      </div>
-    </template>
-    
-    <!-- Actual Content -->
-    <template v-else>
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-sub">Sales Pipeline</h2>
-        <select class="input !py-1.5 !px-3 text-sm w-auto">
-          <option>This month</option>
-          <option>Last month</option>
-          <option>This quarter</option>
-        </select>
-      </div>
-
-    <!-- Stage Stats - Horizontal Flow -->
-    <div class="mb-4 pb-4 border-b border">
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div
-          v-for="stage in pipeline.stages"
-          :key="stage.name"
-          class="flex items-center gap-2"
-        >
-          <span class="text-sm text-gray-600">{{ stage.name }}</span>
-          <span class="text-sm font-bold text-heading">{{ stage.percentage }}%</span>
-          <span class="text-xs text-gray-400">({{ stage.count }})</span>
         </div>
-      </div>
-    </div>
+      </template>
+      
+      <!-- Actual Content -->
+      <template v-else>
+        <!-- Title Section -->
+        <div class="px-4 py-4 flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2">
+            <TrendingUp :size="16" class="text-heading" />
+            <h3 class="text-lg font-medium text-heading leading-5">Sales Pipeline</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              class="relative"
+              @click="toggleTimeRange"
+            >
+              {{ selectedTimeRange }}
+              <ChevronDown :size="16" class="ml-1" />
+            </Button>
+          </div>
+        </div>
 
-    <!-- Pipeline Visualization -->
-    <div class="mb-4">
-      <div class="relative h-40 md:h-48 lg:h-56">
-        <!-- Area Chart using SVG -->
-        <svg class="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="none">
-          <!-- Background grid lines -->
-          <defs>
-            <linearGradient v-for="source in pipeline.leadSources" :key="`gradient-${source.name}`" :id="`gradient-${getGradientId(source.name)}`" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :style="`stop-color:${getSourceColor(source.color)};stop-opacity:0.8`" />
-              <stop offset="100%" :style="`stop-color:${getSourceColor(source.color)};stop-opacity:0.1`" />
-            </linearGradient>
-          </defs>
-          
-          <!-- Area paths for each source (stacked) -->
-          <path
-            v-for="(source, idx) in pipeline.leadSources"
-            :key="source.name"
-            :d="generateAreaPath(source.data, idx)"
-            :fill="`url(#gradient-${getGradientId(source.name)})`"
-            opacity="0.7"
-          />
-        </svg>
-      </div>
+        <div class="flex flex-col gap-6 px-4 pb-4">
+          <!-- Stage Labels and Percentages Above -->
+          <div class="flex items-center justify-between shrink-0">
+            <div
+              v-for="stage in pipeline.stages"
+              :key="`${stage.name}-header`"
+              class="flex flex-col items-center text-center"
+              :style="{ width: `${100 / pipeline.stages.length}%` }"
+            >
+              <p class="text-fluid-sm font-medium text-greys-500 mb-1">{{ stage.name }}</p>
+              <p
+                v-if="stage.percentage"
+                class="text-xl font-semibold text-greys-900 leading-none"
+              >
+                {{ stage.percentage }}%
+              </p>
+            </div>
+          </div>
 
-      <!-- Lead Source Legend -->
-      <div class="flex flex-wrap gap-4 mt-4">
-        <div
-          v-for="source in pipeline.leadSources"
-          :key="source.name"
-          class="flex items-center gap-2"
-        >
+          <!-- Pipeline Visualization -->
           <div
-            class="w-3 h-3 rounded-full"
-            :class="{
-              'bg-red-500': source.color === 'red',
-              'bg-orange-500': source.color === 'orange',
-              'bg-blue-500': source.color === 'blue',
-              'bg-gray-500': source.color === 'gray'
-            }"
-          ></div>
-          <span class="text-xs text-gray-600">{{ source.name }}</span>
-        </div>
-      </div>
-    </div>
+            class="relative shrink-0 bg-[#F9FAFB] rounded-lg overflow-hidden"
+            style="height: 320px"
+          >
+            <!-- Area Chart using SVG -->
+            <svg class="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="none">
+              <!-- Background grid lines -->
+              <defs>
+                <linearGradient v-for="source in pipeline.leadSources" :key="`gradient-${source.name}`" :id="`gradient-${getGradientId(source.name)}`" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" :style="`stop-color:${getSourceColor(source.color)};stop-opacity:0.8`" />
+                  <stop offset="100%" :style="`stop-color:${getSourceColor(source.color)};stop-opacity:0.1`" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Area paths for each source (stacked) -->
+              <path
+                v-for="(source, idx) in pipeline.leadSources"
+                :key="source.name"
+                :d="generateAreaPath(source.data, idx)"
+                :fill="`url(#gradient-${getGradientId(source.name)})`"
+                opacity="0.7"
+              />
+            </svg>
+          </div>
 
-    <!-- Average Times per Lead Source -->
-    <div class="flex flex-wrap items-center gap-6 pt-4 border-t border">
-      <div
-        v-for="source in pipeline.leadSources"
-        :key="source.name"
-        class="flex items-center gap-2"
-      >
-        <i class="fa-regular fa-clock text-xs text-gray-400"></i>
-        <span class="text-sm font-bold text-body">{{ getSourceAvgTime(source.name) }}</span>
-        <span class="text-xs text-gray-500">on avg.</span>
-      </div>
+          <!-- Lead Source Legend -->
+          <div class="flex flex-wrap gap-4">
+            <div
+              v-for="source in pipeline.leadSources"
+              :key="source.name"
+              class="flex items-center gap-2"
+            >
+              <div
+                class="w-3 h-3 rounded-full"
+                :class="{
+                  'bg-red-500': source.color === 'red',
+                  'bg-orange-500': source.color === 'orange',
+                  'bg-blue-500': source.color === 'blue',
+                  'bg-gray-500': source.color === 'gray'
+                }"
+              ></div>
+              <span class="text-xs text-greys-500">{{ source.name }}</span>
+            </div>
+          </div>
+
+          <!-- Average Times per Lead Source -->
+          <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-black/5">
+            <div
+              v-for="source in pipeline.leadSources"
+              :key="source.name"
+              class="flex items-center gap-2"
+            >
+              <i class="fa-regular fa-clock text-xs text-greys-500"></i>
+              <span class="text-sm font-bold text-greys-900">{{ getSourceAvgTime(source.name) }}</span>
+              <span class="text-xs text-greys-500">on avg.</span>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
-    </template>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { ChevronDown, TrendingUp } from 'lucide-vue-next'
+import { Button } from '@motork/component-library/future/primitives'
+
+const selectedTimeRange = ref('This month')
+const timeRangeOptions = ['This month', 'Last month', 'This quarter']
+
+const toggleTimeRange = () => {
+  const currentIndex = timeRangeOptions.indexOf(selectedTimeRange.value)
+  selectedTimeRange.value = timeRangeOptions[(currentIndex + 1) % timeRangeOptions.length] || 'This month'
+}
 
 const props = defineProps({
   pipeline: {

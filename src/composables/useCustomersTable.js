@@ -90,7 +90,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
   // Table meta configuration
   const tableMeta = computed(() => ({
     class: {
-      tr: 'cursor-pointer hover:bg-gray-50 transition-colors'
+      tr: 'cursor-pointer hover:bg-gray-50 transition-colors border-black/5'
     }
   }))
 
@@ -110,10 +110,10 @@ export function useCustomersTable(activeTab, handleRowClick) {
             const rowData = row.original
             return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
               h('div', {
-                class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-blue-100 text-blue-600'
+                class: 'w-9 h-9 rounded-full flex items-center justify-center text-fluid-xs font-bold shrink-0 bg-blue-100 text-blue-600'
               }, rowData.initials),
               h('div', { class: 'min-w-0' }, [
-                h('div', { class: 'text-sm font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, rowData.customer)
+                h('div', { class: 'text-fluid-sm font-semibold text-gray-900 truncate max-w-[120px] md:max-w-none' }, rowData.customer)
               ])
             ])
           }
@@ -123,7 +123,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Account type',
           meta: { title: 'Account type' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.accountType || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.accountType || 'N/A')
           }
         },
         {
@@ -131,7 +131,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Telephone',
           meta: { title: 'Telephone' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.telephone || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.telephone || 'N/A')
           }
         },
         {
@@ -139,7 +139,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Location',
           meta: { title: 'Location' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600 truncate max-w-[150px]' }, row.original.location || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600 truncate max-w-[150px]' }, row.original.location || 'N/A')
           }
         },
         {
@@ -147,7 +147,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Created at',
           meta: { title: 'Created at' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.createdAt || 'N/A')
           }
         },
         // Account-specific columns (show N/A for contacts)
@@ -156,7 +156,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Account owner',
           meta: { title: 'Account owner' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.accountOwner || 'N/A') : 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.type === 'account' ? (row.original.accountOwner || 'N/A') : 'N/A')
           }
         },
         {
@@ -164,7 +164,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Updated at',
           meta: { title: 'Updated at' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.updatedAt || 'N/A') : 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.type === 'account' ? (row.original.updatedAt || 'N/A') : 'N/A')
           }
         },
         {
@@ -172,7 +172,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Last activity',
           meta: { title: 'Last activity' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? (row.original.lastActivity || 'N/A') : 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.type === 'account' ? (row.original.lastActivity || 'N/A') : 'N/A')
           }
         },
         {
@@ -180,7 +180,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Open opportunities',
           meta: { title: 'Open opportunities' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.openOpportunities || 0) : 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.openOpportunities || 0) : 'N/A')
           }
         },
         {
@@ -188,7 +188,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Won opportunities',
           meta: { title: 'Won opportunities' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.wonOpportunities || 0) : 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.type === 'account' ? String(row.original.wonOpportunities || 0) : 'N/A')
           }
         },
         {
@@ -218,11 +218,11 @@ export function useCustomersTable(activeTab, handleRowClick) {
             const rowData = row.original
             return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
               h('div', {
-                class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-orange-100 text-orange-600'
+                class: 'w-9 h-9 rounded-full flex items-center justify-center text-fluid-xs font-bold shrink-0 bg-orange-100 text-orange-600'
               }, rowData.initials),
               h('div', { class: 'min-w-0' }, [
-                h('div', { class: 'text-sm font-semibold text-gray-900 truncate' }, rowData.customer),
-                h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
+                h('div', { class: 'text-fluid-sm font-semibold text-gray-900 truncate' }, rowData.customer),
+                h('div', { class: 'text-fluid-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
               ])
             ])
           }
@@ -234,14 +234,14 @@ export function useCustomersTable(activeTab, handleRowClick) {
           cell: ({ row }) => {
             const rowData = row.original
             if (!rowData.nextActionFull) return '-'
-            return h('div', { class: 'text-sm' }, [
+            return h('div', { class: 'text-fluid-sm' }, [
               h('div', {
                 class: `font-medium mb-0.5 ${rowData.deadlineStatus?.textClass || 'text-gray-600'}`
               }, rowData.nextActionFull),
               h('div', {
-                class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
+                class: `text-fluid-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
               }, [
-                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-xs` }) : null,
+                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-fluid-xs` }) : null,
                 h('span', rowData.nextAction)
               ])
             ])
@@ -253,8 +253,8 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Requested car' },
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
-              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-              h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
+              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-fluid-sm' }),
+              h('span', { class: 'text-fluid-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
             ])
           }
         },
@@ -264,7 +264,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Car status' },
           cell: ({ row }) => {
             return h('span', {
-              class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.carStatusClass}`
+              class: `inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold ${row.original.carStatusClass}`
             }, row.original.carStatus)
           }
         },
@@ -273,7 +273,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Request type',
           meta: { title: 'Request type' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.requestType || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.requestType || 'N/A')
           }
         },
         {
@@ -282,7 +282,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Source' },
           cell: ({ row }) => {
             return h('span', {
-              class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+              class: 'inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold bg-gray-100 text-gray-700'
             }, row.original.source || 'N/A')
           }
         },
@@ -293,9 +293,9 @@ export function useCustomersTable(activeTab, handleRowClick) {
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
               h('div', {
-                class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
+                class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-fluid-xs font-bold text-gray-600 shrink-0'
               }, row.original.assigneeInitials),
-              h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
+              h('span', { class: 'text-fluid-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
             ])
           }
         },
@@ -304,7 +304,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Created at',
           meta: { title: 'Created at' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.createdAt || 'N/A')
           }
         },
         {
@@ -312,7 +312,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Last activity',
           meta: { title: 'Last activity' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.lastActivity || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.lastActivity || 'N/A')
           }
         },
         {
@@ -321,7 +321,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Status' },
           cell: ({ row }) => {
             return h('span', {
-              class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.statusClass}`
+              class: `inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold ${row.original.statusClass}`
             }, row.original.status)
           }
         },
@@ -352,11 +352,11 @@ export function useCustomersTable(activeTab, handleRowClick) {
             const rowData = row.original
             return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
               h('div', {
-                class: 'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-purple-100 text-purple-600'
+                class: 'w-9 h-9 rounded-full flex items-center justify-center text-fluid-xs font-bold shrink-0 bg-purple-100 text-purple-600'
               }, rowData.initials),
               h('div', { class: 'min-w-0' }, [
-                h('div', { class: 'text-sm font-semibold text-gray-900 truncate' }, rowData.customer),
-                h('div', { class: 'text-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
+                h('div', { class: 'text-fluid-sm font-semibold text-gray-900 truncate' }, rowData.customer),
+                h('div', { class: 'text-fluid-xs text-gray-500 truncate hidden sm:block' }, rowData.email)
               ])
             ])
           }
@@ -368,14 +368,14 @@ export function useCustomersTable(activeTab, handleRowClick) {
           cell: ({ row }) => {
             const rowData = row.original
             if (!rowData.nextActionFull) return '-'
-            return h('div', { class: 'text-sm' }, [
+            return h('div', { class: 'text-fluid-sm' }, [
               h('div', {
                 class: `font-medium mb-0.5 ${rowData.deadlineStatus?.textClass || 'text-gray-600'}`
               }, rowData.nextActionFull),
               h('div', {
-                class: `text-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
+                class: `text-fluid-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
               }, [
-                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-xs` }) : null,
+                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-fluid-xs` }) : null,
                 h('span', rowData.nextAction)
               ])
             ])
@@ -387,8 +387,8 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Offered car' },
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
-              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-sm' }),
-              h('span', { class: 'text-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
+              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-fluid-sm' }),
+              h('span', { class: 'text-fluid-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
             ])
           }
         },
@@ -398,7 +398,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Car status' },
           cell: ({ row }) => {
             return h('span', {
-              class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.carStatusClass}`
+              class: `inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold ${row.original.carStatusClass}`
             }, row.original.carStatus)
           }
         },
@@ -407,7 +407,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Request type',
           meta: { title: 'Request type' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.requestType || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.requestType || 'N/A')
           }
         },
         {
@@ -416,7 +416,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Source' },
           cell: ({ row }) => {
             return h('span', {
-              class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700'
+              class: 'inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold bg-gray-100 text-gray-700'
             }, row.original.source || 'N/A')
           }
         },
@@ -427,9 +427,9 @@ export function useCustomersTable(activeTab, handleRowClick) {
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
               h('div', {
-                class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0'
+                class: 'w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-fluid-xs font-bold text-gray-600 shrink-0'
               }, row.original.assigneeInitials),
-              h('span', { class: 'text-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
+              h('span', { class: 'text-fluid-sm text-gray-600 truncate max-w-[80px] hidden md:inline' }, row.original.assignee || 'N/A')
             ])
           }
         },
@@ -438,7 +438,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Created at',
           meta: { title: 'Created at' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.createdAt || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.createdAt || 'N/A')
           }
         },
         {
@@ -446,7 +446,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           header: 'Last appointment',
           meta: { title: 'Last appointment' },
           cell: ({ row }) => {
-            return h('span', { class: 'text-sm text-gray-600' }, row.original.lastAppointment || 'N/A')
+            return h('span', { class: 'text-fluid-sm text-gray-600' }, row.original.lastAppointment || 'N/A')
           }
         },
         {
@@ -455,7 +455,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Status' },
           cell: ({ row }) => {
             return h('span', {
-              class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${row.original.statusClass}`
+              class: `inline-flex items-center px-2 py-0.5 rounded text-fluid-xs font-semibold ${row.original.statusClass}`
             }, row.original.status)
           }
         },
