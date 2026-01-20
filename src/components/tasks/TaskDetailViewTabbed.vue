@@ -170,7 +170,7 @@
             :customer-id="task.customerId || task.customer?.id"
             @action="handleContactAction"
           />
-          <TaskRequestCard
+          <VehicleRequestCard
             v-if="task.requestedCar || task.vehicle"
             :vehicle="task.requestedCar || task.vehicle"
             :request-message="task.requestMessage || task.requestedCar?.requestMessage"
@@ -210,7 +210,7 @@ import TaskDetailHeader from './TaskDetailHeader.vue'
 import TaskInfoCards from './TaskInfoCards.vue'
 import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'
-import TaskRequestCard from './TaskRequestCard.vue'
+import VehicleRequestCard from './VehicleRequestCard.vue'
 import TaskActivityCard from './TaskActivityCard.vue'
 
 const props = defineProps({

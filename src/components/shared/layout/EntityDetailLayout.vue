@@ -242,7 +242,7 @@
           <!-- Request Card + Contact Info Card -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Request Card -->
-            <RequestCard
+            <TaskRequestOverviewTab
               v-if="type !== 'contact'"
               :task="task"
               :entity-type="type"
@@ -467,19 +467,19 @@
       /> -->
     </div>
 
-    <!-- Financing Modal -->
-    <FinancingModal
+    <!-- Purchase Method Modal -->
+    <PurchaseMethodModal
       :show="overviewModalType === 'financing' && showOverviewModal"
-      :item="null"
       :task-type="type"
       :task-id="task.id"
-      @save="handleOverviewModalSave"
+      @save="handlePurchaseMethodSave"
       @close="closeOverviewModal"
     />
     
     <!-- Trade-In Modal -->
-    <TradeInModal
+    <AddVehicleModal
       :show="overviewModalType === 'tradein' && showOverviewModal"
+      mode="tradein"
       :item="null"
       :task-type="type"
       :task-id="task.id"
@@ -533,7 +533,7 @@ import { useRoute, useRouter } from 'vue-router'
 import CustomerContactHeader from '@/components/customer/widgets/CustomerContactHeader.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
 import Request from '@/components/shared/Request.vue'
-import RequestCard from '@/components/tasks/RequestCard.vue'
+import TaskRequestOverviewTab from '@/components/tasks/TaskRequestOverviewTab.vue'
 import TaskContactCard from '@/components/tasks/TaskContactCard.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
@@ -543,10 +543,11 @@ import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
-import FinancingModal from '@/components/modals/FinancingModal.vue'
-import TradeInModal from '@/components/modals/TradeInModal.vue'
+import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
+import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import OfferModal from '@/components/modals/OfferModal.vue'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
+import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 import { useCustomersStore } from '@/stores/customers'
@@ -820,9 +821,56 @@ const closeOverviewModal = () => {
 }
 
 // Handle modal save
+const handlePurchaseMethodSave = async (purchaseMethodData) => {
+  try {
+    // Create activity for the purchase method (for activity feed display)
+    const typeLabel = purchaseMethodData.type === 'FIN' ? 'Captive Financing' 
+      : purchaseMethodData.type === 'LEA' ? 'Leasing' 
+      : 'Long-Term Rental'
+    const monthly = purchaseMethodData.fields?.monthlyInstalment || 0
+    
+    // Use standard handler to save as activity
+    await handleWidgetSave({
+      type: 'purchase-method',
+      action: `added a ${typeLabel} purchase method`,
+      content: `${typeLabel}: €${monthly.toLocaleString()}/month for ${purchaseMethodData.fields?.duration || 0} months`,
+      data: {
+        purchaseMethodId: purchaseMethodData.id,
+        type: purchaseMethodData.type,
+        ...purchaseMethodData.fields
+      }
+    })
+    closeOverviewModal()
+  } catch (error) {
+    console.error('Error saving purchase method:', error)
+  }
+}
+
 const handleOverviewModalSave = async (data) => {
-  await handleWidgetSave(data)
-  closeOverviewModal()
+  // Special handling for trade-in: save vehicle and activity
+  if (overviewModalType.value === 'tradein') {
+    try {
+      const { saveTradeInVehicle } = useTradeInVehicle()
+      const result = await saveTradeInVehicle(props.type, props.task.id, data.vehicle, data.valuation || {})
+      // Add to inline content for immediate display
+      inlineContent.value.push({
+        id: result.activity.id,
+        type: 'tradein',
+        action: 'added a trade-in',
+        vehicleId: result.vehicle.id,
+        data: result.activity.data,
+        timestamp: result.activity.timestamp,
+        activityId: result.activity.id
+      })
+      closeOverviewModal()
+    } catch (error) {
+      console.error('Error saving trade-in:', error)
+    }
+  } else if (overviewModalType.value === 'purchase') {
+    // For purchase offers, use standard handler
+    await handleWidgetSave(data)
+    closeOverviewModal()
+  }
 }
 
 const tabs = computed(() => {

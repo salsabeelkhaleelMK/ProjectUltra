@@ -1,12 +1,17 @@
 <template>
-  <div 
-    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
-  >
-    <!-- Card Header -->
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Customer information</h3>
-    
-    <!-- Contact Details -->
-    <div class="space-y-2 mb-4">
+  <div class="rounded-card flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
+    <!-- Title Section -->
+    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-thumbtack text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Customer information</h2>
+      </div>
+    </div>
+
+    <!-- Card Content -->
+    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1" style="box-shadow: var(--nsc-card-shadow);">
+      <!-- Contact Details -->
+      <div class="space-y-2 mb-4">
       <!-- Customer Name -->
       <div class="flex justify-between gap-2 items-center">
         <p class="text-sm text-greys-500 shrink-0">Customer</p>
@@ -70,16 +75,17 @@
       </div>
     </div>
     
-    <!-- Negotiations Banner -->
-    <div 
-      v-if="negotiationsCount > 0" 
-      class="rounded-btn p-3 flex items-center gap-2"
-      style="background-color: rgba(59, 130, 246, 0.1);"
-    >
-      <Info :size="16" class="text-blue-600 shrink-0" />
-      <p class="text-sm text-blue-900">
-        {{ negotiationsCount }} other negotiation{{ negotiationsCount > 1 ? 's' : '' }} active
-      </p>
+      <!-- Negotiations Banner -->
+      <div 
+        v-if="negotiationsCount > 0" 
+        class="rounded-btn p-3 flex items-center gap-2"
+        style="background-color: rgba(59, 130, 246, 0.1);"
+      >
+        <Info :size="16" class="text-blue-600 shrink-0" />
+        <p class="text-sm text-blue-900">
+          {{ negotiationsCount }} other negotiation{{ negotiationsCount > 1 ? 's' : '' }} active
+        </p>
+      </div>
     </div>
   </div>
 </template>

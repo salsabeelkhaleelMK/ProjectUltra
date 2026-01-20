@@ -275,13 +275,6 @@
               class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
             />
             <Button
-              label="+ Add trade-in"
-              variant="primary"
-              size="small"
-              @click="showTradeInModal = true"
-              class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-            />
-            <Button
               label="+ Add financing"
               variant="primary"
               size="small"
@@ -537,31 +530,24 @@
       @close="showAssignmentModal = false"
     />
 
-    <!-- Trade-In Modal -->
-    <TradeInModal
-      :show="showTradeInModal"
-      :task-type="'lead'"
-      :task-id="lead.id"
-      @save="handleTradeInSave"
-      @close="showTradeInModal = false"
-    />
-
-    <!-- Financing Modal -->
-    <FinancingModal
+    <!-- Purchase Method Modal -->
+    <PurchaseMethodModal
       :show="showFinancingModal"
       :task-type="'lead'"
       :task-id="lead.id"
-      @save="handleFinancingSave"
+      @save="handlePurchaseMethodSave"
       @close="showFinancingModal = false"
     />
 
     <!-- Add Vehicle Modal -->
     <AddVehicleModal
       :show="showVehicleModal"
-      :lead="lead"
+      mode="vehicle"
+      :task-type="'lead'"
+      :task-id="lead.id"
       :customer-id="lead.customerId"
       @close="showVehicleModal = false"
-      @saved="handleVehicleSaved"
+      @save="handleVehicleSave"
     />
 
   </div>
@@ -583,9 +569,9 @@ import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
 import ScheduleAppointmentInline from '@/components/tasks/shared/ScheduleAppointmentInline.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
-import TradeInModal from '@/components/modals/TradeInModal.vue'
-import FinancingModal from '@/components/modals/FinancingModal.vue'
+import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
 import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
+import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import SurveyWidget from '@/components/customer/SurveyWidget.vue'
 import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
 import CommunicationSelector from '@/components/shared/communication/CommunicationSelector.vue'
@@ -649,7 +635,6 @@ const {
 const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
 const showInlineAppointmentBooking = ref(false)
-const showTradeInModal = ref(false)
 const showFinancingModal = ref(false)
 const showVehicleModal = ref(false)
 
@@ -837,26 +822,62 @@ const leadQualificationSurveyQuestions = [
   }
 ]
 
-// Trade-in and Financing handlers
-const handleTradeInSave = (tradeInData) => {
-  showTradeInModal.value = false
-  preferences.value.tradeIn = true
-  emit('note-saved', { type: 'trade-in', ...tradeInData })
+// Trade-in handler
+const { saveTradeInVehicle } = useTradeInVehicle()
+
+const handlePurchaseMethodSave = async (purchaseMethodData) => {
+  try {
+    showFinancingModal.value = false
+    preferences.value.financing = true
+    
+    // Create activity for the purchase method (for activity feed display)
+    const typeLabel = purchaseMethodData.type === 'FIN' ? 'Captive Financing' 
+      : purchaseMethodData.type === 'LEA' ? 'Leasing' 
+      : 'Long-Term Rental'
+    const monthly = purchaseMethodData.fields?.monthlyInstalment || 0
+    
+    await leadsStore.addActivity(props.lead.id, {
+      type: 'purchase-method',
+      user: currentUser.value?.name || 'You',
+      action: `added a ${typeLabel} purchase method`,
+      content: `${typeLabel}: €${monthly.toLocaleString()}/month for ${purchaseMethodData.fields?.duration || 0} months`,
+      data: {
+        purchaseMethodId: purchaseMethodData.id,
+        type: purchaseMethodData.type,
+        ...purchaseMethodData.fields
+      },
+      timestamp: new Date().toISOString()
+    })
+    
+    emit('note-saved', { type: 'purchase-method', ...purchaseMethodData })
+  } catch (error) {
+    console.error('Error saving purchase method:', error)
+  }
 }
 
-const handleFinancingSave = (financingData) => {
-  showFinancingModal.value = false
-  preferences.value.financing = true
-  emit('note-saved', { type: 'financing', ...financingData })
-}
-
-// Handle vehicle save
-const handleVehicleSaved = async (vehicleData) => {
+// Handle vehicle save (handles drove, requested, and trade-in)
+const handleVehicleSave = async (data) => {
   try {
     showVehicleModal.value = false
-    const { addVehicleToCustomer } = await import('@/api/contacts')
-    await addVehicleToCustomer(props.lead.customerId, vehicleData)
-    emit('note-saved', { type: 'vehicle', ...vehicleData })
+    
+    // If it's a trade-in, use the trade-in handler
+    if (data.vehicleType === 'tradein' || props.mode === 'tradein') {
+      const result = await saveTradeInVehicle('lead', props.lead.id, data.vehicle, data.valuation || {})
+      preferences.value.tradeIn = true
+      emit('note-saved', { 
+        type: 'tradein',
+        id: result.activity.id,
+        action: 'added a trade-in',
+        vehicleId: result.vehicle.id,
+        data: result.activity.data,
+        timestamp: result.activity.timestamp
+      })
+    } else {
+      // For drove or requested vehicles, add to customer
+      const { addVehicleToCustomer } = await import('@/api/contacts')
+      await addVehicleToCustomer(props.lead.customerId, data.vehicle)
+      emit('note-saved', { type: 'vehicle', vehicleType: data.vehicleType, ...data.vehicle })
+    }
   } catch (err) {
     console.error('Error saving vehicle:', err)
   }
