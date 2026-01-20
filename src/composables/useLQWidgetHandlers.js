@@ -2,7 +2,7 @@
  * Composable for LQWidget handler functions
  * Coordinates between call and outcome composables
  */
-export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef) {
+export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef, leadsStore) {
   const { callData, extractedData, isCallActive, callEnded } = callState
   const {
     showOutcomeSelection,
@@ -13,7 +13,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     preferences,
     cancelOutcome,
     calculateNextCallDate,
-    showScheduleAppointmentModal
+    showScheduleAppointmentModal,
+    surveyCompleted,
+    surveyResponses,
+    showSurvey
   } = outcomeState
 
   const logManualCall = () => {
@@ -50,10 +53,73 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       assignment: assignment.value,
       preferences: preferences.value,
       scheduleAppointment: appointmentScheduled.value,
-      appointmentData: scheduledAppointmentData.value
+      appointmentData: scheduledAppointmentData.value,
+      surveyData: surveyCompleted.value ? surveyResponses.value : null
     })
     
     cancelOutcome()
+  }
+
+  const handleSurveyCompleted = async (responses) => {
+    surveyResponses.value = responses
+    surveyCompleted.value = true
+    showSurvey.value = false
+    
+    // Create survey activity
+    if (leadsStore && lead.value?.id) {
+      try {
+        await leadsStore.addActivity(lead.value.id, {
+          type: 'survey',
+          action: 'Lead Qualification Survey',
+          content: JSON.stringify(responses),
+          timestamp: new Date().toISOString()
+        })
+      } catch (error) {
+        console.error('Failed to save survey activity:', error)
+      }
+    }
+    
+    emit('survey-completed', { lead: lead.value, responses })
+  }
+
+  const handleSurveyRefused = async () => {
+    showSurvey.value = false
+    
+    // Log survey refusal as activity
+    if (leadsStore && lead.value?.id) {
+      try {
+        await leadsStore.addActivity(lead.value.id, {
+          type: 'survey',
+          action: 'Lead Qualification Survey',
+          content: 'Customer refused to complete survey',
+          timestamp: new Date().toISOString()
+        })
+      } catch (error) {
+        console.error('Failed to save survey refusal activity:', error)
+      }
+    }
+    
+    emit('survey-refused', { lead: lead.value })
+  }
+
+  const handleNotResponding = async () => {
+    showSurvey.value = false
+    
+    // Log not responding as activity
+    if (leadsStore && lead.value?.id) {
+      try {
+        await leadsStore.addActivity(lead.value.id, {
+          type: 'survey',
+          action: 'Lead Qualification Survey',
+          content: 'Customer not responding to survey',
+          timestamp: new Date().toISOString()
+        })
+      } catch (error) {
+        console.error('Failed to save survey not responding activity:', error)
+      }
+    }
+    
+    emit('not-responding', { lead: lead.value })
   }
 
   const handleDisqualifyFromInterested = () => {
@@ -133,7 +199,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     handleDisqualifyFromInterested,
     handleNoAnswerConfirm,
     handleNotValidConfirm,
-    handleNoteSave
+    handleNoteSave,
+    handleSurveyCompleted,
+    handleSurveyRefused,
+    handleNotResponding
   }
 }
 

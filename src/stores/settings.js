@@ -55,6 +55,9 @@ const DEFAULT_SETTINGS = {
   // UI Theme
   darkMode: false,
   
+  // Task Details View Mode
+  taskDetailsViewMode: 'compact', // 'compact' | 'tabbed'
+  
   // Navigation Visibility (per-item control)
   navigationVisibility: {
     home: true,

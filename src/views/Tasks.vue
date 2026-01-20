@@ -157,6 +157,8 @@
         :management-widget="managementWidget"
         :store-adapter="storeAdapter"
         :add-new-config="addNewConfig"
+        :filtered-tasks="filteredTasks"
+        @task-navigate="handleTaskNavigate"
       />
       
       <!-- Empty State for Card View (right side on desktop, hidden on mobile) -->
@@ -209,6 +211,8 @@
         :management-widget="managementWidget"
         :store-adapter="storeAdapter"
         :add-new-config="addNewConfig"
+        :filtered-tasks="filteredTasks"
+        @task-navigate="handleTaskNavigate"
       />
     </div>
     
@@ -449,18 +453,8 @@ const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
   
-  // Find the task to get customer name for search
-  const task = allTasks.value.find(t => t.compositeId === compositeId)
-  
   // Switch to card view
   viewMode.value = 'card'
-  
-  // Set search query to customer name or task ID for filtering/highlighting
-  if (task && task.customer && task.customer.name) {
-    cardSearchQuery.value = task.customer.name
-  } else {
-    cardSearchQuery.value = id
-  }
   
   // Navigate to the task
   router.push({ path: `/tasks/${id}`, query: { type } })
@@ -469,6 +463,26 @@ const selectTask = (compositeId) => {
 const handleBackToTaskList = () => {
   // Navigate back to task list (no task selected)
   router.push({ path: '/tasks' })
+}
+
+const handleTaskNavigate = (direction) => {
+  if (!currentTask.value) return
+  
+  const index = filteredTasks.value.findIndex(t => {
+    const currentCompositeId = currentTask.value.compositeId || `${currentTask.value.type}-${currentTask.value.id}`
+    const taskCompositeId = t.compositeId || `${t.type}-${t.id}`
+    return taskCompositeId === currentCompositeId
+  })
+  
+  if (index === -1) return
+  
+  if (direction === 'previous' && index > 0) {
+    const prevTask = filteredTasks.value[index - 1]
+    selectTask(prevTask.compositeId)
+  } else if (direction === 'next' && index < filteredTasks.value.length - 1) {
+    const nextTask = filteredTasks.value[index + 1]
+    selectTask(nextTask.compositeId)
+  }
 }
 
 const toggleCardMenu = (taskId) => {

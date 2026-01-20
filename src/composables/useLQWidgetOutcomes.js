@@ -42,6 +42,11 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     contactAvailability: false
   })
 
+  // Survey state
+  const surveyCompleted = ref(false)
+  const surveyResponses = ref(null)
+  const showSurvey = ref(true) // Show by default when Interested selected
+
   const messageTemplates = computed(() => {
     const customerName = lead.value?.customer?.name?.split(' ')[0] || ''
     const carBrand = lead.value?.requestedCar?.brand || ''
@@ -89,10 +94,17 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
 
   const selectOutcome = (outcome) => {
     selectedOutcome.value = outcome
-    if (outcome === 'interested' && extractedDataRef?.value) {
+    if (outcome === 'interested') {
+      // Reset survey state when selecting interested outcome
+      surveyCompleted.value = false
+      surveyResponses.value = null
+      showSurvey.value = true
+      
       // Pre-populate from extracted data
-      preferences.value.tradeIn = extractedDataRef.value.tradeIn || false
-      preferences.value.financing = extractedDataRef.value.financing || false
+      if (extractedDataRef?.value) {
+        preferences.value.tradeIn = extractedDataRef.value.tradeIn || false
+        preferences.value.financing = extractedDataRef.value.financing || false
+      }
     }
   }
 
@@ -115,6 +127,9 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     customTime.value = '09:00'
     disqualifyCategory.value = 'Not Interested'
     disqualifyReason.value = ''
+    surveyCompleted.value = false
+    surveyResponses.value = null
+    showSurvey.value = true
   }
 
   return {
@@ -135,6 +150,9 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     disqualifyReason,
     assignment,
     preferences,
+    surveyCompleted,
+    surveyResponses,
+    showSurvey,
     // Computed
     messageTemplates,
     messagePreview,

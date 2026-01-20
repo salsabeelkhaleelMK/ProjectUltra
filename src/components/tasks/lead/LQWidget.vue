@@ -196,20 +196,25 @@
           </div>
         </div>
         
-        <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
+        <div class="flex items-center gap-2 pt-3 border-t border-E5E7EB flex-wrap">
           <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
+            variant="secondary"
+            size="sm"
+            class="flex-1 min-w-0"
             @click="cancelOutcome"
-          />
+          >
+            <i class="fa-solid fa-xmark mr-1.5"></i>
+            <span class="truncate">Cancel</span>
+          </Button>
           <Button
-            label="Send and reschedule"
             variant="primary"
-            size="small"
+            size="sm"
+            class="flex-1 min-w-0 !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             @click="handleNoAnswerConfirm"
-            class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-          />
+          >
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>
+            <span class="truncate">Send and reschedule</span>
+          </Button>
         </div>
       </div>
 
@@ -257,21 +262,26 @@
           </select>
         </div>
         
-        <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
+        <div class="flex items-center gap-2 pt-3 border-t border-E5E7EB flex-wrap">
           <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
+            variant="secondary"
+            size="sm"
+            class="flex-1 min-w-0"
             @click="cancelOutcome"
-          />
+          >
+            <i class="fa-solid fa-xmark mr-1.5"></i>
+            <span class="truncate">Cancel</span>
+          </Button>
           <Button
-            label="Confirm Disqualification"
             variant="primary"
-            size="small"
+            size="sm"
+            class="flex-1 min-w-0 !bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
             :disabled="!disqualifyCategory || !disqualifyReason"
             @click="handleNotValidConfirm"
-            class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
-          />
+          >
+            <i class="fa-solid fa-ban mr-1.5"></i>
+            <span class="truncate">Confirm Disqualification</span>
+          </Button>
         </div>
       </div>
 
@@ -281,8 +291,8 @@
         <div class="bg-surface border border-E5E7EB rounded-lg p-4">
           <h5 class="font-semibold text-heading text-sm mb-3">Customer preferences</h5>
           
-          <!-- Purchase Method, Trade-in, and Note Buttons -->
-          <div class="flex gap-2">
+          <!-- Purchase Method, Trade-in, Financing, and Note Buttons -->
+          <div class="flex gap-2 flex-wrap">
             <Button
               label="+ Add purchase method"
               variant="primary"
@@ -294,7 +304,14 @@
               label="+ Add trade-in"
               variant="primary"
               size="small"
-              @click="emit('open-trade-in')"
+              @click="showTradeInModal = true"
+              class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+            />
+            <Button
+              label="+ Add financing"
+              variant="primary"
+              size="small"
+              @click="showFinancingModal = true"
               class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
             />
             <Button
@@ -304,8 +321,32 @@
               @click="showNoteModal = true"
               class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
             />
-      </div>
-    </div>
+          </div>
+        </div>
+
+        <!-- Survey Section -->
+        <div v-if="showSurvey && !surveyCompleted" class="bg-surface border border-E5E7EB rounded-lg p-4 space-y-3">
+          <div class="flex items-center gap-2 pb-2 border-b border-E5E7EB">
+            <i class="fa-solid fa-clipboard-check text-brand-red text-sm"></i>
+            <h5 class="font-semibold text-heading text-sm">Lead Qualification Survey</h5>
+            <span class="text-xs text-sub ml-auto">(Optional but recommended)</span>
+          </div>
+          <SurveyWidget
+            :questions="leadQualificationSurveyQuestions"
+            :initial-expanded="true"
+            @survey-completed="handleSurveyCompleted"
+            @survey-refused="handleSurveyRefused"
+            @not-responding="handleNotResponding"
+          />
+        </div>
+
+        <!-- Survey Completed Indicator -->
+        <div v-if="surveyCompleted" class="bg-green-50 border border-green-200 rounded-lg p-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-check-circle text-green-600 text-sm"></i>
+            <span class="text-xs font-semibold text-green-900">Survey completed</span>
+          </div>
+        </div>
 
         <!-- Assignment Section (second step, after preferences) -->
         <div class="bg-surface border border-E5E7EB rounded-lg p-4">
@@ -439,29 +480,34 @@
         </div>
         
         <!-- Action Buttons -->
-        <div class="flex justify-between items-center pt-3 border-t border-E5E7EB">
+        <div class="flex items-center gap-2 pt-3 border-t border-E5E7EB flex-wrap">
           <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
+            variant="secondary"
+            size="sm"
+            class="flex-1 min-w-0"
             @click="cancelOutcome"
-          />
-          
-          <div class="flex gap-2">
-            <Button
-              label="Disqualify"
-              variant="outline"
-              size="small"
-              @click="handleDisqualifyFromInterested"
-            />
-            <Button
-              label="Qualify"
-              variant="primary"
-              size="small"
-              @click="handleQualify"
-              class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600"
-            />
-          </div>
+          >
+            <i class="fa-solid fa-xmark mr-1.5"></i>
+            <span class="truncate">Cancel</span>
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            class="flex-1 min-w-0"
+            @click="handleDisqualifyFromInterested"
+          >
+            <i class="fa-solid fa-ban mr-1.5"></i>
+            <span class="truncate">Disqualify</span>
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            class="flex-1 min-w-0 !bg-green-600 !hover:bg-green-700 !text-white !border-green-600"
+            @click="handleQualify"
+          >
+            <i class="fa-solid fa-check mr-1.5"></i>
+            <span class="truncate">Qualify</span>
+          </Button>
         </div>
       </div>
     </div>
@@ -513,6 +559,24 @@
       @close="showAssignmentModal = false"
     />
 
+    <!-- Trade-In Modal -->
+    <TradeInModal
+      :show="showTradeInModal"
+      :task-type="'lead'"
+      :task-id="lead.id"
+      @save="handleTradeInSave"
+      @close="showTradeInModal = false"
+    />
+
+    <!-- Financing Modal -->
+    <FinancingModal
+      :show="showFinancingModal"
+      :task-type="'lead'"
+      :task-id="lead.id"
+      @save="handleFinancingSave"
+      @close="showFinancingModal = false"
+    />
+
   </div>
 </template>
 
@@ -523,6 +587,8 @@ import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
 import ScheduleAppointmentInline from '@/components/tasks/shared/ScheduleAppointmentInline.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
+import TradeInModal from '@/components/modals/TradeInModal.vue'
+import FinancingModal from '@/components/modals/FinancingModal.vue'
 import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
 import ModalShell from '@/components/shared/ModalShell.vue'
 import { useUsersStore } from '@/stores/users'
@@ -535,6 +601,8 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useLQWidgetOutcomes } from '@/composables/useLQWidgetOutcomes'
 import { useLQWidgetHandlers } from '@/composables/useLQWidgetHandlers'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
+import SurveyWidget from '@/components/customer/SurveyWidget.vue'
+import { useLeadsStore } from '@/stores/leads'
 
 const props = defineProps({
   lead: {
@@ -547,11 +615,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified', 'call-attempt-logged', 'note-saved', 'open-purchase-method', 'open-trade-in', 'appointment-scheduled'])
+const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified', 'call-attempt-logged', 'note-saved', 'open-purchase-method', 'appointment-scheduled', 'survey-completed', 'survey-refused', 'not-responding'])
 
 const usersStore = useUsersStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
+const leadsStore = useLeadsStore()
 
 // Use lead actions composable
 const leadState = useLeadActions(() => props.lead, {})
@@ -577,6 +646,8 @@ const {
 const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
 const showInlineAppointmentBooking = ref(false)
+const showTradeInModal = ref(false)
+const showFinancingModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -688,12 +759,49 @@ const {
   hasExistingAppointment,
   selectOutcome,
   cancelOutcome,
-  calculateNextCallDate
+  calculateNextCallDate,
+  surveyCompleted,
+  surveyResponses,
+  showSurvey
 } = outcomeState
 
 const existingNotes = computed(() => {
   return props.activities.filter(activity => activity.type === 'note')
 })
+
+// Define survey questions
+const leadQualificationSurveyQuestions = [
+  {
+    key: 'interestLevel',
+    label: 'Customer interest level?',
+    type: 'radio',
+    options: ['High', 'Medium', 'Low']
+  },
+  {
+    key: 'purchaseTimeline',
+    label: 'Expected purchase timeline?',
+    type: 'select',
+    options: ['Immediate', 'Within 1 month', 'Within 3 months', 'Within 6 months', 'Just browsing']
+  },
+  {
+    key: 'budgetRange',
+    label: 'Budget range (if discussed)?',
+    type: 'select',
+    options: ['Under €30k', '€30k-€50k', '€50k-€80k', '€80k+', 'Not discussed']
+  },
+  {
+    key: 'preferredContact',
+    label: 'Preferred contact method?',
+    type: 'radio',
+    options: ['Phone', 'Email', 'WhatsApp', 'SMS']
+  },
+  {
+    key: 'additionalNotes',
+    label: 'Additional notes',
+    type: 'text',
+    placeholder: 'Any relevant information about customer interest or preferences...'
+  }
+]
 
 // Use handlers composable
 const handlers = useLQWidgetHandlers(
@@ -702,7 +810,8 @@ const handlers = useLQWidgetHandlers(
   outcomeState,
   toRef(props, 'lead'),
   contactAttempts,
-  maxContactAttempts
+  maxContactAttempts,
+  leadsStore
 )
 
 const {
@@ -712,10 +821,26 @@ const {
   handleDisqualifyFromInterested,
   handleNoAnswerConfirm,
   handleNotValidConfirm,
-  handleNoteSave
+  handleNoteSave,
+  handleSurveyCompleted,
+  handleSurveyRefused,
+  handleNotResponding
 } = handlers
 
+// Trade-in and Financing handlers
+const handleTradeInSave = (tradeInData) => {
+  showTradeInModal.value = false
+  // Update preferences to reflect trade-in was added
+  preferences.value.tradeIn = true
+  emit('note-saved', { type: 'trade-in', ...tradeInData })
+}
 
+const handleFinancingSave = (financingData) => {
+  showFinancingModal.value = false
+  // Update preferences to reflect financing was added
+  preferences.value.financing = true
+  emit('note-saved', { type: 'financing', ...financingData })
+}
 
 </script>
 

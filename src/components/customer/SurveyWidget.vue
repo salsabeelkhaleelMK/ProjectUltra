@@ -111,12 +111,16 @@ const props = defineProps({
     type: Array,
     required: true,
     // Format: [{ key: 'interest', label: 'Is customer still interested?', type: 'select', options: ['Yes', 'No', 'Maybe'], placeholder: '' }]
+  },
+  initialExpanded: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['survey-completed', 'survey-refused', 'not-responding'])
 
-const isExpanded = ref(false)
+const isExpanded = ref(props.initialExpanded)
 const responses = ref({})
 
 // Initialize responses object
