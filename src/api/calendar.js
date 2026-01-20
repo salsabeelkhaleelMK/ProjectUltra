@@ -66,9 +66,7 @@ export const fetchUpcomingAppointments = async (days = 7) => {
     const eventDate = new Date(event.start)
     return eventDate >= today && eventDate < endDate
   })
-}
-
-export const fetchCalendarFilterOptions = async () => {
+}export const fetchCalendarFilterOptions = async () => {
   await delay()
   
   // Extract unique values from calendar events

@@ -193,7 +193,9 @@ const shouldShowLastActivitySummary = computed(() => {
   const hasContactAttempts = (currentLead.contactAttempts || []).length > 0
   const hasScheduledAppointment = !!currentLead.scheduledAppointment
   const hasNextActionDue = !!currentLead.nextActionDue
-  const hasActivities = (leadsStore.currentLeadActivities || []).length > 0
+  // Only use activities if they match the current lead (prevent using stale activities from different lead)
+  const activitiesMatch = leadsStore.currentLead?.id === props.lead?.id
+  const hasActivities = activitiesMatch && (leadsStore.currentLeadActivities || []).length > 0
   
   // Valid but needs next attempt: has contact attempts/appointment/nextAction AND has activities (something happened before)
   const validNeedsNextAttempt = isValid && hasActivities && (hasContactAttempts || hasScheduledAppointment || hasNextActionDue)
@@ -207,6 +209,10 @@ const shouldShowLastActivitySummary = computed(() => {
 
 // Get last activity (most recent)
 const lastActivity = computed(() => {
+  // Only use activities if they match the current lead (prevent using stale activities from different lead)
+  const activitiesMatch = leadsStore.currentLead?.id === props.lead?.id
+  if (!activitiesMatch) return null
+  
   const activities = leadsStore.currentLeadActivities || []
   if (activities.length === 0) return null
   
