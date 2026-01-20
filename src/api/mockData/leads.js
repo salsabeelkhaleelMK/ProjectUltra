@@ -1552,57 +1552,6 @@ export const mockLeads = [
     scheduledAppointment: null,
     contactAttempts: []
   },
-  // Lead for customer 3
-  {
-    id: 29,
-    customerId: 3,
-    status: 'Open',
-    priority: 'Hot',
-    requestedCar: {
-      brand: 'BMW',
-      model: 'M4 Coupe',
-      year: 2024,
-      price: 85000,
-      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=900&auto=format&fit=crop&q=60',
-      vin: 'BMW456789012',
-      kilometers: 0,
-      status: 'New',
-      fuelType: 'Petrol',
-      gearType: 'Automatic',
-      registration: '02/2024',
-      dealership: 'Berlin',
-      stockDays: 15,
-      requestMessage: 'Interested in sporty coupes. Looking for performance vehicles.'
-    },
-    carStatus: 'In Stock',
-    requestType: 'Test Drive',
-    source: 'Google Ads',
-    fiscalEntity: '',
-    sourceDetails: '',
-    assignee: 'David Miller',
-    assigneeInitials: 'DM',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 1)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setHours(date.getHours() - 2)
-      return date.toISOString()
-    })(),
-    nextActionDue: (() => {
-      const date = new Date()
-      date.setHours(date.getHours() + 4)
-      return date.toISOString()
-    })(),
-    tags: ['Hot'],
-    stage: 'Open Lead',
-    isDisqualified: false,
-    disqualifyReason: null,
-    scheduledAppointment: null,
-    contactAttempts: []
-  },
   // Lead for customer 8
   {
     id: 30,
