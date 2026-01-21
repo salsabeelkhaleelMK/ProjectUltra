@@ -7,13 +7,15 @@
   >
     <!-- Logo at Top -->
     <div class="w-full px-2 pt-2 pb-2">
-      <div class="w-full h-8 rounded-md flex items-center justify-center bg-white/20">
-        <div 
-          class="user-avatar-logo rounded-md flex items-center justify-center font-medium text-white bg-brand-red"
-        >
-          PU
+      <router-link to="/home" class="block">
+        <div class="w-full h-8 rounded-md flex items-center justify-center">
+          <img 
+            src="@/assets/images/logo.png" 
+            alt="ProjectUltra Logo" 
+            class="h-6 w-auto object-contain"
+          />
         </div>
-      </div>
+      </router-link>
     </div>
 
     <!-- Create New Button -->

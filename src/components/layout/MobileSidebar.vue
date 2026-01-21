@@ -17,14 +17,16 @@
     >
       <!-- Header -->
       <div class="p-3 sm:p-4 border-b border-white/10 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2 sm:gap-3">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-md flex items-center justify-center text-white bg-white/20">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-white bg-brand-red font-bold text-xs sm:text-sm">
-              PU
-            </div>
+        <router-link to="/home" @click="$emit('close')" class="flex items-center gap-2 sm:gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-md flex items-center justify-center">
+            <img 
+              src="@/assets/images/logo.png" 
+              alt="ProjectUltra Logo" 
+              class="h-7 w-auto sm:h-8 object-contain"
+            />
           </div>
           <span class="text-white font-bold text-sm sm:text-base">Project Ultra</span>
-        </div>
+        </router-link>
         <button 
           @click="handleClose"
           class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors shrink-0 rounded-md"
