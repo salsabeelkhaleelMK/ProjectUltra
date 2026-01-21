@@ -38,10 +38,11 @@ const iconMap = {
   note: 'fa-solid fa-note-sticky',
   communication: 'fa-solid fa-comments',
   attachment: 'fa-solid fa-paperclip',
-  request: 'fa-solid fa-thumbtack',
+  request: 'fa-solid fa-globe',
   manage: 'fa-solid fa-gear',
-  data: 'fa-solid fa-database',
-  notes: 'fa-solid fa-note-sticky'
+  data: 'fa-solid fa-pen',
+  notes: 'fa-solid fa-note-sticky',
+  enrich: 'fa-solid fa-pen'
 }
 
 const getIconClass = (tabKey) => {

@@ -314,7 +314,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-note-sticky text-heading"></i>
+                <FilePlus :size="18" class="text-heading" />
                 <h2 class="text-fluid-sm font-medium text-heading leading-5">Notes</h2>
               </div>
             </div>
@@ -323,7 +323,7 @@
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <div class="space-y-2 max-h-80 overflow-y-auto">
                 <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                  <i class="fa-solid fa-note-sticky text-2xl mb-2"></i>
+                  <FilePlus :size="48" class="text-greys-400 mb-2 mx-auto" />
                   <p>No notes yet</p>
                 </div>
                 <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
@@ -339,7 +339,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-paperclip text-heading"></i>
+                <Files :size="18" class="text-heading" />
                 <h2 class="text-fluid-sm font-medium text-heading leading-5">Attachments</h2>
               </div>
             </div>
@@ -348,7 +348,7 @@
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <div class="space-y-2 max-h-80 overflow-y-auto">
                 <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                  <i class="fa-solid fa-paperclip text-2xl mb-2"></i>
+                  <Files :size="48" class="text-greys-400 mb-2 mx-auto" />
                   <p>No attachments yet</p>
                 </div>
                 <div v-for="attachment in gridAttachments" :key="attachment.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg flex items-center gap-3">
@@ -553,6 +553,7 @@ import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 import { useCustomersStore } from '@/stores/customers'
+import { FilePlus, Files } from 'lucide-vue-next'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -583,7 +584,7 @@ const gridMainTab = ref('manage')
 const gridMainTabs = [
   { key: 'manage', label: 'Manage' },
   { key: 'request', label: 'Request' },
-  { key: 'data', label: 'Data' }
+  { key: 'data', label: 'Enrich' }
 ]
 
 // Grid view communication state (kept for cancel handler)
@@ -888,7 +889,7 @@ const handleOverviewModalSave = async (data) => {
 const tabs = computed(() => {
   return [
     { key: 'overview', label: 'Overview' },
-    { key: 'data', label: 'Notes' },
+    { key: 'data', label: 'Enrich' },
     { key: 'communication', label: 'Communication' },
     { key: 'attachment', label: 'Attachments' }
   ]

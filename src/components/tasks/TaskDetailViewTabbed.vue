@@ -21,11 +21,6 @@
               @click="activeTab = tab.key"
               class="relative flex items-center gap-1.5 px-0 h-full"
             >
-              <component
-                :is="tab.icon"
-                :size="16"
-                :class="activeTab === tab.key ? 'text-greys-900' : 'text-greys-500'"
-              />
               <span 
                 class="text-sm font-medium"
                 :class="activeTab === tab.key ? 'text-greys-900' : 'text-greys-500'"
@@ -128,7 +123,7 @@
               <!-- Note card header -->
               <div class="px-4 py-2 flex items-center justify-between rounded-t-card -mx-1 -mt-1">
                 <div class="flex items-center gap-2">
-                  <FilePlus :size="18" class="text-orange-600" />
+                  <StickyNote :size="18" class="text-orange-600" />
                   <h3 class="text-base font-medium text-greys-500">Note by {{ note.user }}</h3>
                 </div>
                 <span class="text-sm text-greys-500">{{ note.timestamp || note.time }}</span>
@@ -144,7 +139,7 @@
             
             <!-- Empty state -->
             <div v-if="noteItems.length === 0" class="empty-state flex flex-col items-center justify-center py-12">
-              <FilePlus :size="48" class="text-greys-400 mb-4" />
+              <StickyNote :size="48" class="text-greys-400 mb-4" />
               <h3 class="text-base font-medium text-greys-900 mb-2">No notes yet</h3>
               <p class="text-sm text-greys-500 mb-4">Add a note to keep track of important information</p>
               <Button>Add note</Button>
@@ -154,7 +149,7 @@
           <!-- Attachments Tab -->
           <div v-if="activeTab === 'attachments'" class="p-6">
             <div v-if="attachmentItems.length === 0" class="empty-state flex flex-col items-center justify-center py-12">
-              <Files :size="48" class="text-greys-400 mb-4" />
+              <Paperclip :size="48" class="text-greys-400 mb-4" />
               <h3 class="text-base font-medium text-greys-900 mb-2">No attachments yet</h3>
               <p class="text-sm text-greys-500 mb-4">Upload files related to this task</p>
               <Button>Add attachment</Button>
@@ -210,7 +205,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
-import { FilePlus, MessageCircle, Mail, Files, LayoutDashboard } from 'lucide-vue-next'
+import { StickyNote, MessageCircle, Mail, Paperclip } from 'lucide-vue-next'
 import TaskDetailHeader from './TaskDetailHeader.vue'
 import TaskInfoCards from './TaskInfoCards.vue'
 import TaskManagementCard from './TaskManagementCard.vue'
@@ -248,10 +243,10 @@ const activeTab = ref('overview')
 const expandedSummaries = ref({})
 
 const tabs = [
-  { key: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { key: 'communication', label: 'Communication', icon: MessageCircle },
-  { key: 'notes', label: 'Enrich', icon: FilePlus },
-  { key: 'attachments', label: 'Attachments', icon: Files }
+  { key: 'overview', label: 'Overview' },
+  { key: 'communication', label: 'Communication' },
+  { key: 'notes', label: 'Notes' },
+  { key: 'attachments', label: 'Attachments' }
 ]
 
 // Activities
