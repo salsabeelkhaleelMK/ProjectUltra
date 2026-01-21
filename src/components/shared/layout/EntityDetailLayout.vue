@@ -202,66 +202,6 @@
           />
           </div>
 
-          <!-- Communicate -->
-          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-            <!-- Title Section -->
-            <div class="px-4 py-4 flex items-center justify-between shrink-0">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-comments text-heading"></i>
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
-              </div>
-            </div>
-            
-            <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <CommunicationWidget
-                :task-type="type"
-                :task-id="task.id"
-                :phone-number="task.customer?.phone || ''"
-                :show-arrow="false"
-                @save="handleCommunicationWidgetSave"
-                @cancel="showCommunicationWidget = false"
-              />
-              
-              <!-- Communications List -->
-              <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
-                <div class="space-y-2 max-h-52 overflow-y-auto">
-                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
-                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
-                    </div>
-                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab 2: Request -->
-        <div v-if="gridMainTab === 'request'" class="space-y-6">
-          <!-- Request Card + Contact Info Card -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Request Card -->
-            <TaskRequestOverviewTab
-              v-if="type !== 'contact'"
-              :task="task"
-              :entity-type="type"
-              :activities="task.activities || []"
-              @reassign="handleReassign"
-            />
-
-            <!-- Contact Info Card -->
-            <TaskContactCard
-              :task="task"
-              :task-type="type"
-              :customer-id="task.customer?.id || task.customerId || task.id"
-              @action="handleContactInfoAction"
-              @add-tag="showAddTagModal = true"
-            />
-          </div>
-
           <!-- Activity Summary Card -->
           <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
@@ -300,6 +240,66 @@
                       </div>
                       <div class="text-fluid-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Request -->
+        <div v-if="gridMainTab === 'request'" class="space-y-6">
+          <!-- Request Card + Contact Info Card -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Request Card -->
+            <TaskRequestOverviewTab
+              v-if="type !== 'contact'"
+              :task="task"
+              :entity-type="type"
+              :activities="task.activities || []"
+              @reassign="handleReassign"
+            />
+
+            <!-- Contact Info Card -->
+            <TaskContactCard
+              :task="task"
+              :task-type="type"
+              :customer-id="task.customer?.id || task.customerId || task.id"
+              @action="handleContactInfoAction"
+              @add-tag="showAddTagModal = true"
+            />
+          </div>
+
+          <!-- Communicate -->
+          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+            <!-- Title Section -->
+            <div class="px-4 py-4 flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-comments text-heading"></i>
+                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
+              </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+              <CommunicationWidget
+                :task-type="type"
+                :task-id="task.id"
+                :phone-number="task.customer?.phone || ''"
+                :show-arrow="false"
+                @save="handleCommunicationWidgetSave"
+                @cancel="showCommunicationWidget = false"
+              />
+              
+              <!-- Communications List -->
+              <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
+                <div class="space-y-2 max-h-52 overflow-y-auto">
+                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
+                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                    </div>
+                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
                   </div>
                 </div>
               </div>
