@@ -16,13 +16,16 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
   })
 
   // Watch for currentOpportunity changes and load activities
-  watch(currentOpportunity, async (opportunity) => {
+  watch(currentOpportunity, async (opportunity, oldOpportunity) => {
     if (opportunity) {
-      try {
-        currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunity.id)
-      } catch (err) {
-        console.error('Failed to load opportunity activities:', err)
-        currentOpportunityActivities.value = []
+      // Only clear activities if we're switching to a different opportunity
+      if (!oldOpportunity || oldOpportunity.id !== opportunity.id) {
+        try {
+          currentOpportunityActivities.value = await opportunitiesApi.fetchOpportunityActivities(opportunity.id)
+        } catch (err) {
+          console.error('Failed to load opportunity activities:', err)
+          currentOpportunityActivities.value = []
+        }
       }
     } else {
       currentOpportunityActivities.value = []

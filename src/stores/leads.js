@@ -16,13 +16,16 @@ export const useLeadsStore = defineStore('leads', () => {
   })
 
   // Watch for currentLead changes and load activities
-  watch(currentLead, async (lead) => {
+  watch(currentLead, async (lead, oldLead) => {
     if (lead) {
-      try {
-        currentLeadActivities.value = await leadsApi.fetchLeadActivities(lead.id)
-      } catch (err) {
-        console.error('Failed to load lead activities:', err)
-        currentLeadActivities.value = []
+      // Only clear activities if we're switching to a different lead
+      if (!oldLead || oldLead.id !== lead.id) {
+        try {
+          currentLeadActivities.value = await leadsApi.fetchLeadActivities(lead.id)
+        } catch (err) {
+          console.error('Failed to load lead activities:', err)
+          currentLeadActivities.value = []
+        }
       }
     } else {
       currentLeadActivities.value = []

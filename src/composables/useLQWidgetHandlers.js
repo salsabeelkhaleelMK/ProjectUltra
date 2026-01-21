@@ -16,7 +16,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     showScheduleAppointmentModal,
     surveyCompleted,
     surveyResponses,
-    showSurvey
+    showSurvey,
+    initCallLogForm,
+    callLogDateTime,
+    callLogAssignee
   } = outcomeState
 
   const logManualCall = () => {
@@ -25,7 +28,8 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       notes: '',
       transcription: null
     }
-    showOutcomeSelection.value = true
+    // Show the call log form first with datetime and assignee
+    initCallLogForm()
   }
 
   const handleScheduleAppointmentConfirm = async (appointmentData) => {

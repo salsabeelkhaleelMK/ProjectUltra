@@ -109,6 +109,40 @@
               <p v-if="item.data.notes" class="text-meta mt-1">{{ item.data.notes }}</p>
             </div>
           </div>
+          <div v-else-if="item.type === 'purchase-method'">
+            <h4 class="text-content font-bold text-heading mb-2">{{ item.data.typeLabel || item.data.type }}</h4>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-meta">
+              <div v-if="item.data.monthlyInstalment">
+                <span class="text-gray-500">Monthly:</span>
+                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.monthlyInstalment) }}</span>
+              </div>
+              <div v-if="item.data.duration">
+                <span class="text-gray-500">Duration:</span>
+                <span class="text-body font-medium ml-1">{{ item.data.duration }} months</span>
+              </div>
+              <div v-if="item.data.downPayment">
+                <span class="text-gray-500">Down Payment:</span>
+                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.downPayment) }}</span>
+              </div>
+              <div v-if="item.data.interestRate">
+                <span class="text-gray-500">Interest Rate:</span>
+                <span class="text-body font-medium ml-1">{{ item.data.interestRate }}%</span>
+              </div>
+              <div v-if="item.data.mileageLimit">
+                <span class="text-gray-500">Mileage Limit:</span>
+                <span class="text-body font-medium ml-1">{{ formatCurrency(item.data.mileageLimit) }} km/year</span>
+              </div>
+              <div v-if="item.data.customerType">
+                <span class="text-gray-500">Customer Type:</span>
+                <span class="text-body font-medium ml-1">{{ item.data.customerType }}</span>
+              </div>
+            </div>
+            <div v-if="item.data.insuranceIncluded || item.data.maintenanceIncluded || item.data.registrationTaxesIncluded" class="flex flex-wrap gap-2 mt-2">
+              <span v-if="item.data.insuranceIncluded" class="bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded border border-green-100">Insurance</span>
+              <span v-if="item.data.maintenanceIncluded" class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded border border-blue-100">Maintenance</span>
+              <span v-if="item.data.registrationTaxesIncluded" class="bg-purple-50 text-purple-700 text-xs px-2 py-0.5 rounded border border-purple-100">Registration/Taxes</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -156,6 +190,7 @@ const getItemIcon = (type) => {
     'financing': 'fa-solid fa-file-invoice-dollar',
     'offer': 'fa-solid fa-handshake',
     'purchase': 'fa-solid fa-shopping-cart',
+    'purchase-method': 'fa-solid fa-credit-card',
     'appointment': 'fa-solid fa-calendar'
   }
   return icons[type] || 'fa-solid fa-circle'
@@ -173,6 +208,7 @@ const getItemIconClass = (type) => {
     'financing': 'bg-purple-50 text-purple-600 border-purple-100',
     'offer': 'bg-indigo-50 text-indigo-600 border-indigo-100',
     'purchase': 'bg-teal-50 text-teal-600 border-teal-100',
+    'purchase-method': 'bg-amber-50 text-amber-600 border-amber-100',
     'appointment': 'bg-purple-100 text-purple-600 border-purple-200'
   }
   return classes[type] || 'bg-surfaceSecondary text-body border'

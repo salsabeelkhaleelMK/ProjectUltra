@@ -3,8 +3,8 @@
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-thumbtack text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Request</h2>
+        <i class="fa-solid fa-car text-heading"></i>
+        <h2 class="text-fluid-sm font-medium text-heading leading-5">Requested Car</h2>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-fluid-xs text-sub font-medium">Owner:</span>

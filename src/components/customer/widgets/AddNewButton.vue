@@ -55,9 +55,11 @@ const emit = defineEmits(['action'])
 const showMenu = ref(false)
 
 // Map actions to their owning tab (if any)
-// Actions without a mapping are considered \"overview-only\"
+// Actions without a mapping are considered "overview-only"
 const actionToTab = {
   note: 'data',
+  tradein: 'data',
+  purchase: 'data',
   attachment: 'attachment',
   email: 'communication',
   whatsapp: 'communication',
@@ -126,7 +128,7 @@ const dropdownItems = computed(() => {
     financing: 'Financing',
     tradein: 'Trade-in',
     requestedCar: 'Requested car',
-    purchase: 'Purchase',
+    purchase: 'Purchase Method',
     attachment: 'Attachment',
     email: 'Send Email',
     whatsapp: 'Send WhatsApp',

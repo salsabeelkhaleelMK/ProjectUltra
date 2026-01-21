@@ -65,6 +65,7 @@
       :formatted-call-duration="formattedCallDuration"
       :mock-transcription="mockTranscription"
       :show-outcome-selection="showOutcomeSelection"
+      :show-call-log-form="showCallLogForm"
       :contact-attempts="contactAttempts"
       :max-contact-attempts="maxContactAttempts"
       @start-call="startCall"
@@ -74,6 +75,59 @@
       @update:call-notes="updateCallNotes"
       @copy-number="copyNumber"
     />
+
+    <!-- Call Log Form (shows datetime and assignee before outcome selection) -->
+    <div v-if="showCallLogForm && !showOutcomeSelection" class="mt-4 space-y-4 border-t border-E5E7EB pt-4">
+      <div class="bg-surface border border-E5E7EB rounded-lg p-6">
+        <h4 class="font-semibold text-heading mb-4 text-fluid-sm">Log Call Details</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- DateTime Input -->
+          <div>
+            <label class="block text-fluid-xs font-medium text-body mb-1.5">Call Date & Time</label>
+            <input 
+              type="datetime-local" 
+              v-model="callLogDateTime"
+              class="input w-full"
+            >
+          </div>
+          
+          <!-- Assigned To -->
+          <div>
+            <label class="block text-fluid-xs font-medium text-body mb-1.5">Assigned To</label>
+            <div class="flex items-center gap-3 p-3 bg-surfaceSecondary rounded-lg border border-E5E7EB">
+              <div 
+                class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs"
+                :class="getRoleAvatarClass(callLogAssignee?.role)"
+              >
+                {{ getInitials(callLogAssignee?.name) }}
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-fluid-sm text-heading">{{ callLogAssignee?.name || 'Unknown' }}</p>
+                <p class="text-fluid-xs text-sub capitalize">{{ callLogAssignee?.role || 'User' }}</p>
+              </div>
+              <span class="text-fluid-xs text-green-600 font-medium">Auto-assigned</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-E5E7EB">
+          <Button
+            label="Cancel"
+            variant="outline"
+            size="small"
+            @click="cancelCallLogForm"
+          />
+          <Button
+            label="Continue"
+            variant="primary"
+            size="small"
+            @click="confirmCallLogForm"
+            class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+          />
+        </div>
+      </div>
+    </div>
 
     <!-- Inline Outcome Selection (replaces modal) -->
     <div v-if="showOutcomeSelection" class="mt-4 space-y-4 border-t border-E5E7EB pt-4">
@@ -757,7 +811,13 @@ const {
   surveyResponses,
   showSurvey,
   aiSuggestionData,
-  handleAISuggestionClick
+  handleAISuggestionClick,
+  // Call log form state
+  showCallLogForm,
+  callLogDateTime,
+  callLogAssignee,
+  confirmCallLogForm,
+  cancelCallLogForm
 } = outcomeState
 
 const existingNotes = computed(() => {

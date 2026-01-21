@@ -11,6 +11,11 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const scheduledAppointmentData = ref(null)
   const showNoteModal = ref(false)
   const showScheduleAppointmentModal = ref(false)
+  
+  // Call log form state (shown before outcome selection)
+  const showCallLogForm = ref(false)
+  const callLogDateTime = ref('')
+  const callLogAssignee = ref(null)
 
   // No Answer state
   const followupChannels = [
@@ -182,6 +187,7 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     showOutcomeSelection.value = false
     appointmentScheduled.value = false
     scheduledAppointmentData.value = null
+    showCallLogForm.value = false
   }
 
   const resetOutcomeState = () => {
@@ -200,6 +206,39 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     surveyResponses.value = null
     showSurvey.value = true
     aiSuggestionData.value = null
+    showCallLogForm.value = false
+    callLogDateTime.value = ''
+    callLogAssignee.value = null
+  }
+  
+  // Initialize call log form with current datetime and auto-assign to current user
+  const initCallLogForm = () => {
+    // Set current datetime in local timezone format for datetime-local input
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    callLogDateTime.value = `${year}-${month}-${day}T${hours}:${minutes}`
+    
+    // Auto-assign to current user
+    if (currentUserRef?.value) {
+      callLogAssignee.value = currentUserRef.value
+    }
+    
+    showCallLogForm.value = true
+  }
+  
+  const confirmCallLogForm = () => {
+    showCallLogForm.value = false
+    showOutcomeSelection.value = true
+  }
+  
+  const cancelCallLogForm = () => {
+    showCallLogForm.value = false
+    callLogDateTime.value = ''
+    callLogAssignee.value = null
   }
 
   return {
@@ -224,6 +263,10 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     surveyResponses,
     showSurvey,
     aiSuggestionData,
+    // Call log form state
+    showCallLogForm,
+    callLogDateTime,
+    callLogAssignee,
     // Computed
     messageTemplates,
     messagePreview,
@@ -234,7 +277,10 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     calculateNextCallDate,
     calculateAISuggestion,
     handleAISuggestionClick,
-    resetOutcomeState
+    resetOutcomeState,
+    initCallLogForm,
+    confirmCallLogForm,
+    cancelCallLogForm
   }
 }
 

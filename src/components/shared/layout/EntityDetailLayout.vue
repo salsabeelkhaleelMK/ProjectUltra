@@ -201,6 +201,30 @@
             @view-history="handleViewHistory"
           />
           </div>
+        </div>
+
+        <!-- Tab 2: Request -->
+        <div v-if="gridMainTab === 'request'" class="space-y-6">
+          <!-- Request Card + Contact Info Card -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Request Card -->
+            <TaskRequestOverviewTab
+              v-if="type !== 'contact'"
+              :task="task"
+              :entity-type="type"
+              :activities="task.activities || []"
+              @reassign="handleReassign"
+            />
+
+            <!-- Contact Info Card -->
+            <TaskContactCard
+              :task="task"
+              :task-type="type"
+              :customer-id="task.customer?.id || task.customerId || task.id"
+              @action="handleContactInfoAction"
+              @add-tag="showAddTagModal = true"
+            />
+          </div>
 
           <!-- Activity Summary Card -->
           <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
@@ -247,29 +271,77 @@
           </div>
         </div>
 
-        <!-- Tab 2: Request -->
-        <div v-if="gridMainTab === 'request'" class="space-y-6">
-          <!-- Request Card + Contact Info Card -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Request Card -->
-            <TaskRequestOverviewTab
-              v-if="type !== 'contact'"
-              :task="task"
-              :entity-type="type"
-              :activities="task.activities || []"
-              @reassign="handleReassign"
+        <!-- Tab 3: Data (Enrich) - Feed Layout -->
+        <div v-if="gridMainTab === 'data'">
+          <!-- Add Button with Dropdown -->
+          <AddNewButton
+            :actions="enrichActions"
+            :active-tab="'data'"
+            @action="handleEnrichAction"
+          />
+
+          <!-- Inline Widgets for Enrich Tab -->
+          <div>
+            <NoteWidget
+              v-if="enrichWidgetType === 'note'"
+              :item="enrichEditingItem"
+              :task-type="type"
+              :task-id="task.id"
+              @save="handleEnrichWidgetSave"
+              @cancel="handleEnrichWidgetCancel"
             />
 
-            <!-- Contact Info Card -->
-            <TaskContactCard
-              :task="task"
+            <AttachmentWidget
+              v-if="enrichWidgetType === 'attachment'"
+              :item="enrichEditingItem"
               :task-type="type"
-              :customer-id="task.customer?.id || task.customerId || task.id"
-              @action="handleContactInfoAction"
-              @add-tag="showAddTagModal = true"
+              :task-id="task.id"
+              @save="handleEnrichWidgetSave"
+              @cancel="handleEnrichWidgetCancel"
+            />
+
+            <TradeInWidget
+              v-if="enrichWidgetType === 'tradein'"
+              :item="enrichEditingItem"
+              :task-type="type"
+              :task-id="task.id"
+              @save="handleEnrichWidgetSave"
+              @cancel="handleEnrichWidgetCancel"
+            />
+
+            <PurchaseMethodWidget
+              v-if="enrichWidgetType === 'purchase'"
+              :item="enrichEditingItem"
+              :task-type="type"
+              :task-id="task.id"
+              @save="handleEnrichWidgetSave"
+              @cancel="handleEnrichWidgetCancel"
             />
           </div>
 
+          <!-- Feed Items -->
+          <div v-if="enrichFeedItems.length > 0" class="space-y-4 mt-4">
+            <FeedItemCard
+              v-for="item in enrichFeedItems"
+              :key="item.id"
+              :item="item"
+              :task-type="type"
+              :customer-initials="task.customer?.initials || 'SK'"
+              @edit="handleEnrichEditItem"
+              @delete="handleEnrichDeleteItem"
+            />
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="!enrichWidgetType" class="text-center py-12 text-sub">
+            <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+            <p class="text-fluid-sm">No enrichment data yet</p>
+            <p class="text-fluid-xs mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
+          </div>
+        </div>
+
+        <!-- Tab 4: Contact -->
+        <div v-if="gridMainTab === 'contact'" class="space-y-6">
           <!-- Communicate -->
           <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
@@ -283,6 +355,7 @@
             <!-- Card Content -->
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <CommunicationWidget
+                type="call"
                 :task-type="type"
                 :task-id="task.id"
                 :phone-number="task.customer?.phone || ''"
@@ -300,152 +373,6 @@
                       <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
                     </div>
                     <p class="text-fluid-sm text-body">{{ comm.content }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab 3: Data -->
-        <div v-if="gridMainTab === 'data'" class="space-y-6">
-          <!-- Notes Card -->
-          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-            <!-- Title Section -->
-            <div class="px-4 py-4 flex items-center justify-between shrink-0">
-              <div class="flex items-center gap-2">
-                <FilePlus :size="18" class="text-heading" />
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Notes</h2>
-              </div>
-            </div>
-            
-            <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <div class="space-y-2 max-h-80 overflow-y-auto">
-                <div v-if="gridNotes.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                  <FilePlus :size="48" class="text-greys-400 mb-2 mx-auto" />
-                  <p>No notes yet</p>
-                </div>
-                <div v-for="note in gridNotes" :key="note.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-                  <div class="text-fluid-xs text-sub mb-1">{{ formatGridDate(note.timestamp) }}</div>
-                  <p class="text-fluid-sm text-body">{{ note.content }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Attachments Card -->
-          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-            <!-- Title Section -->
-            <div class="px-4 py-4 flex items-center justify-between shrink-0">
-              <div class="flex items-center gap-2">
-                <Files :size="18" class="text-heading" />
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Attachments</h2>
-              </div>
-            </div>
-            
-            <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-              <div class="space-y-2 max-h-80 overflow-y-auto">
-                <div v-if="gridAttachments.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                  <Files :size="48" class="text-greys-400 mb-2 mx-auto" />
-                  <p>No attachments yet</p>
-                </div>
-                <div v-for="attachment in gridAttachments" :key="attachment.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg flex items-center gap-3">
-                  <i class="fa-solid fa-file text-sub text-lg"></i>
-                  <div class="flex-1 min-w-0">
-                    <div class="text-fluid-sm font-medium text-heading truncate">{{ attachment.filename }}</div>
-                    <div class="text-fluid-xs text-sub">{{ formatGridDate(attachment.timestamp) }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Trade-in and Purchase Cards (2-column grid) -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Trade-in Card -->
-            <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-              <!-- Title Section -->
-              <div class="px-4 py-4 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-arrow-right-arrow-left text-heading"></i>
-                  <h2 class="text-fluid-sm font-medium text-heading leading-5">Trade-in</h2>
-                </div>
-                <button
-                  @click="openTradeInModal"
-                  class="px-3 py-1.5 text-fluid-xs font-medium bg-brand-dark text-white rounded-lg hover:bg-brand-darkDarker transition-colors flex items-center gap-1.5"
-                >
-                  <i class="fa-solid fa-plus text-xs"></i>
-                  <span>Add New</span>
-                </button>
-              </div>
-              
-              <!-- Card Content -->
-              <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-                <div class="space-y-2 max-h-80 overflow-y-auto">
-                  <div v-if="gridTradeIns.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                    <i class="fa-solid fa-arrow-right-arrow-left text-2xl mb-2"></i>
-                    <p>No trade-ins yet</p>
-                  </div>
-                  <div v-for="tradein in gridTradeIns" :key="tradein.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-                    <div class="flex items-center justify-between mb-1">
-                      <div class="text-fluid-xs text-sub">{{ formatGridDate(tradein.timestamp) }}</div>
-                    </div>
-                    <div v-if="tradein.data && tradein.data.brand" class="text-fluid-sm font-medium text-heading">
-                      {{ tradein.data.brand }} {{ tradein.data.model }}
-                      <span v-if="tradein.data.version"> {{ tradein.data.version }}</span>
-                    </div>
-                    <div v-if="tradein.data && (tradein.data.kilometers || tradein.data.price)" class="grid grid-cols-2 gap-2 mt-2 text-fluid-xs text-body">
-                      <div v-if="tradein.data.kilometers">
-                        <span class="text-sub">KM:</span> {{ formatGridNumber(tradein.data.kilometers) }}
-                      </div>
-                      <div v-if="tradein.data.price">
-                        <span class="text-sub">Price:</span> € {{ formatGridCurrency(tradein.data.price) }}
-                      </div>
-                    </div>
-                    <div v-if="tradein.content" class="text-fluid-sm text-body mt-2">{{ tradein.content }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Purchase Card -->
-            <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-              <!-- Title Section -->
-              <div class="px-4 py-4 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-shopping-cart text-heading"></i>
-                  <h2 class="text-fluid-sm font-medium text-heading leading-5">Purchase</h2>
-                </div>
-                <button
-                  @click="openPurchaseModal"
-                  class="px-3 py-1.5 text-fluid-xs font-medium bg-brand-dark text-white rounded-lg hover:bg-brand-darkDarker transition-colors flex items-center gap-1.5"
-                >
-                  <i class="fa-solid fa-plus text-xs"></i>
-                  <span>Add New</span>
-                </button>
-              </div>
-              
-              <!-- Card Content -->
-              <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-                <div class="space-y-2 max-h-80 overflow-y-auto">
-                  <div v-if="gridPurchases.length === 0" class="text-center py-6 text-sub text-fluid-sm">
-                    <i class="fa-solid fa-shopping-cart text-2xl mb-2"></i>
-                    <p>No purchases yet</p>
-                  </div>
-                  <div v-for="purchase in gridPurchases" :key="purchase.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-                    <div class="flex items-center justify-between mb-1">
-                      <div class="text-fluid-xs text-sub">{{ formatGridDate(purchase.timestamp) }}</div>
-                    </div>
-                    <div v-if="purchase.data && purchase.data.brand" class="text-fluid-sm font-medium text-heading">
-                      {{ purchase.data.brand }} {{ purchase.data.model }}
-                      <span v-if="purchase.data.year">({{ purchase.data.year }})</span>
-                    </div>
-                    <div v-if="purchase.data && purchase.data.price" class="text-fluid-sm text-body mt-1">
-                      € {{ formatGridCurrency(purchase.data.price) }}
-                    </div>
-                    <div v-if="purchase.content" class="text-fluid-sm text-body mt-2">{{ purchase.content }}</div>
                   </div>
                 </div>
               </div>
@@ -543,6 +470,8 @@ import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummar
 import CommunicationWidget from '@/components/shared/communication/CommunicationWidget.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
+import TradeInWidget from '@/components/customer/activities/TradeInWidget.vue'
+import PurchaseMethodWidget from '@/components/customer/activities/PurchaseMethodWidget.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
 import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
@@ -553,7 +482,6 @@ import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 import { useCustomersStore } from '@/stores/customers'
-import { FilePlus, Files } from 'lucide-vue-next'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -584,11 +512,126 @@ const gridMainTab = ref('manage')
 const gridMainTabs = [
   { key: 'manage', label: 'Manage' },
   { key: 'request', label: 'Request' },
-  { key: 'data', label: 'Enrich' }
+  { key: 'data', label: 'Enrich' },
+  { key: 'contact', label: 'Contact' }
 ]
 
 // Grid view communication state (kept for cancel handler)
 const showCommunicationWidget = ref(false)
+
+// Enrich tab state
+const enrichWidgetType = ref(null) // 'note' | 'attachment' | 'tradein' | 'purchase' | null
+const enrichEditingItem = ref(null)
+const enrichActions = ['note', 'attachment', 'tradein', 'purchase']
+
+// Computed: Enrich feed items (notes, attachments, trade-ins, purchase methods) sorted by timestamp
+const enrichFeedItems = computed(() => {
+  const items = []
+  const seenIds = new Set()
+  const enrichTypes = ['note', 'attachment', 'tradein', 'purchase', 'purchase-method', 'financing']
+  
+  // First, get activities from store adapter (this is the primary source of loaded activities)
+  if (props.storeAdapter?.currentActivities?.value) {
+    const storeActivities = props.storeAdapter.currentActivities.value.filter(a => enrichTypes.includes(a.type))
+    storeActivities.forEach(a => {
+      if (!seenIds.has(a.id)) {
+        seenIds.add(a.id)
+        items.push(a)
+      }
+    })
+  }
+  
+  // Also check props.task.activities as fallback (may contain activities not yet in store)
+  if (props.task.activities) {
+    const taskActivities = props.task.activities.filter(a => enrichTypes.includes(a.type))
+    taskActivities.forEach(a => {
+      if (!seenIds.has(a.id)) {
+        seenIds.add(a.id)
+        items.push(a)
+      }
+    })
+  }
+  
+  // Also include inline content that matches enrich types (for newly added items in current session)
+  const enrichInlineContent = inlineContent.value.filter(item => enrichTypes.includes(item.type))
+  enrichInlineContent.forEach(item => {
+    if (!seenIds.has(item.id)) {
+      seenIds.add(item.id)
+      items.push(item)
+    }
+  })
+  
+  // Sort by timestamp descending (newest first)
+  return items.sort((a, b) => {
+    const dateA = new Date(a.timestamp || 0)
+    const dateB = new Date(b.timestamp || 0)
+    return dateB - dateA
+  })
+})
+
+// Handle enrich tab actions
+const handleEnrichAction = (action) => {
+  enrichEditingItem.value = null
+  enrichWidgetType.value = action
+}
+
+// Handle enrich widget save
+const handleEnrichWidgetSave = async (data) => {
+  try {
+    // Add activity to the store
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: data.type,
+      action: data.action,
+      content: data.content,
+      data: data.data,
+      fileName: data.fileName,
+      timestamp: data.timestamp || new Date().toISOString()
+    })
+    
+    // Also add to inline content for immediate display
+    inlineContent.value.push({
+      id: data.id || Date.now(),
+      type: data.type,
+      action: data.action,
+      content: data.content,
+      data: data.data,
+      fileName: data.fileName,
+      timestamp: data.timestamp || new Date().toISOString()
+    })
+    
+    // Close the widget
+    enrichWidgetType.value = null
+    enrichEditingItem.value = null
+  } catch (error) {
+    console.error('Error saving enrich data:', error)
+  }
+}
+
+// Handle enrich widget cancel
+const handleEnrichWidgetCancel = () => {
+  enrichWidgetType.value = null
+  enrichEditingItem.value = null
+}
+
+// Handle enrich item edit
+const handleEnrichEditItem = (item) => {
+  enrichEditingItem.value = item
+  enrichWidgetType.value = item.type === 'purchase-method' ? 'purchase' : item.type
+}
+
+// Handle enrich item delete
+const handleEnrichDeleteItem = async (item) => {
+  try {
+    await props.storeAdapter.deleteActivity(props.task.id, item.id)
+    // Remove from inline content
+    const index = inlineContent.value.findIndex(i => i.id === item.id)
+    if (index !== -1) {
+      inlineContent.value.splice(index, 1)
+    }
+  } catch (error) {
+    console.error('Error deleting enrich item:', error)
+  }
+}
 
 // Filter activities by type for grid view
 const gridNotes = computed(() => {
