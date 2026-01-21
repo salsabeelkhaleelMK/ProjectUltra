@@ -644,6 +644,24 @@ const unmarkAsHot = async (task) => {
   }
 }
 
+const assignToMe = async (task) => {
+  openCardMenu.value = null
+  const currentUser = userStore.user
+  if (!currentUser) return
+  
+  if (task.type === 'lead') {
+    await leadsStore.updateLead(task.id, { 
+      assignee: currentUser.name,
+      assigneeType: 'user'
+    })
+  } else if (task.type === 'opportunity') {
+    await opportunitiesStore.updateOpportunity(task.id, { 
+      assignee: currentUser.name,
+      assigneeType: 'user'
+    })
+  }
+}
+
 const reopenLead = async (task) => {
   openCardMenu.value = null
   if (task.type !== 'lead') return
@@ -711,6 +729,15 @@ const getTaskMenuItems = (task) => {
     label: 'Reassign',
     onClick: () => reassignTask(task)
   })
+  
+  // Assign to me
+  if (task.assignee !== userStore.user?.name) {
+    items.push({
+      key: 'assign-me',
+      label: 'Assign to me',
+      onClick: () => assignToMe(task)
+    })
+  }
   
   // Mark as hot / Unmark as hot
   if (task.priority !== 'Hot') {
