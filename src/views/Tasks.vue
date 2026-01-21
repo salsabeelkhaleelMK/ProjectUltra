@@ -2,7 +2,7 @@
   <div class="h-full flex flex-col lg:flex-row overflow-hidden bg-surface">
     <!-- Unified Mobile Header - Shows when task is selected (both views) -->
     <MobileDetailHeader
-      :show="!!currentTask"
+      :show="!!currentTask || (viewMode === 'table' && !!drawerTask)"
       back-label="Back to task list"
       @back="handleBackToTaskList"
     />
@@ -175,11 +175,11 @@
       </div>
     </div>
     
-    <!-- Table View - Takes remaining space, detail panel shown alongside when task selected -->
-    <div v-if="viewMode === 'table'" class="flex-1 flex flex-col lg:flex-row overflow-hidden min-w-0">
+    <!-- Table View - Takes remaining space, drawer shown on top when task selected -->
+    <div v-if="viewMode === 'table'" class="flex-1 flex flex-col overflow-hidden min-w-0 relative">
       <TasksTableView
         :tasks="filteredTasks"
-        :current-task-id="currentTask?.compositeId"
+        :current-task-id="drawerTask?.compositeId"
         :highlight-id="highlightId"
         :type-filter="typeFilter"
         :sort-option="sortOption"
@@ -199,22 +199,51 @@
         @sort-change="handleSortChange"
         @toggle-closed="showClosed = $event"
         @reassign="reassignTask"
-          @close="handleBackToTaskList"
+        @close="handleBackToTaskList"
         @view-change="handleViewChange"
-        :class="currentTask ? 'hidden lg:flex shrink-0' : 'flex-1 w-full'"
-      />
-      
-      <!-- Task Detail Panel for Table View (right side on desktop, full screen on mobile) -->
-      <TaskDetailView
-        v-if="currentTask"
-        :task="currentTask"
-        :management-widget="managementWidget"
-        :store-adapter="storeAdapter"
-        :add-new-config="addNewConfig"
-        :filtered-tasks="filteredTasks"
-        @task-navigate="handleTaskNavigate"
+        class="flex-1 w-full"
       />
     </div>
+    
+    <!-- Task Drawer Backdrop (outside table container) -->
+    <transition name="fade">
+      <div 
+        v-if="showTaskDrawer && viewMode === 'table'"
+        class="fixed inset-0 bg-black/50 z-40"
+        @click="closeTaskDrawer"
+      ></div>
+    </transition>
+    
+    <!-- Task Drawer (outside table container) -->
+    <transition name="slide-right">
+      <div 
+        v-if="showTaskDrawer && viewMode === 'table'"
+        class="fixed top-0 right-0 bottom-0 w-full lg:w-4/5 xl:w-3/4 bg-white z-50 overflow-y-auto shadow-xl"
+      >
+        <!-- Drawer Header with close button -->
+        <div class="sticky top-0 bg-white border-b border-E5E7EB p-4 flex items-center justify-between z-10">
+          <h3 class="text-h3-card text-heading font-semibold">Task Details</h3>
+          <button 
+            @click="closeTaskDrawer"
+            class="w-8 h-8 flex items-center justify-center text-sub hover:text-body hover:bg-surfaceSecondary rounded transition-colors"
+            aria-label="Close task details"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        
+        <!-- TaskDetailView in Drawer -->
+        <TaskDetailView
+          v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
+          :task="drawerTask"
+          :management-widget="drawerManagementWidget"
+          :store-adapter="drawerStoreAdapter"
+          :add-new-config="drawerAddNewConfig"
+          :filtered-tasks="filteredTasks"
+          @task-navigate="handleDrawerTaskNavigate"
+        />
+      </div>
+    </transition>
     
     <!-- Reassign Modal -->
     <ReassignUserModal
@@ -332,6 +361,8 @@ const openCardMenu = ref(null)
 const showTaskListMobile = ref(false)
 const showReassignModal = ref(false)
 const taskToReassign = ref(null)
+const showTaskDrawer = ref(false) // Control drawer visibility in table view
+const drawerTask = ref(null) // Task displayed in drawer
 
 // Use task filters composable
 const { allTasks, filterByType, shouldShowTypeFilter } = useTaskFilters(showClosed)
@@ -403,6 +434,17 @@ const managementWidget = taskShellProps.managementWidget
 const storeAdapter = taskShellProps.storeAdapter
 const addNewConfig = taskShellProps.addNewConfig
 
+// Computed ref for drawer task (for useTaskShell)
+const drawerTaskRef = computed(() => drawerTask.value)
+
+// Get task shell props for drawer task
+const drawerTaskShellPropsRaw = useTaskShell(drawerTaskRef)
+
+// Unwrap the computed refs for use in template
+const drawerManagementWidget = computed(() => drawerTaskShellPropsRaw.managementWidget.value)
+const drawerStoreAdapter = computed(() => drawerTaskShellPropsRaw.storeAdapter.value)
+const drawerAddNewConfig = computed(() => drawerTaskShellPropsRaw.addNewConfig.value)
+
 // Get unselected class based on task type (function from composable)
 const getUnselectedClass = getUnselectedClassHelper
 
@@ -435,6 +477,17 @@ watch(currentTask, (task) => {
   }
 }, { immediate: true })
 
+// Watch for drawer task changes to load activities
+watch(drawerTask, (task) => {
+  if (task) {
+    if (task.type === 'lead') {
+      leadsStore.fetchLeadById(task.id)
+    } else {
+      opportunitiesStore.fetchOpportunityById(task.id)
+    }
+  }
+}, { immediate: true })
+
 
 const loadTaskById = (id) => {
   const taskId = parseInt(id)
@@ -453,7 +506,26 @@ const selectTask = (compositeId) => {
   // compositeId is in format "lead-1" or "opportunity-1"
   const [type, id] = compositeId.split('-')
   
-  // Switch to card view
+  // If in table view, open drawer instead of switching views
+  if (viewMode.value === 'table') {
+    // Find the task from allTasks
+    const task = allTasks.value.find(t => t.compositeId === compositeId)
+    
+    if (task) {
+      drawerTask.value = task
+      showTaskDrawer.value = true
+      
+      // Load task data if needed
+      if (task.type === 'lead') {
+        leadsStore.fetchLeadById(task.id)
+      } else {
+        opportunitiesStore.fetchOpportunityById(task.id)
+      }
+    }
+    return
+  }
+  
+  // Card view behavior: Switch to card view and navigate
   viewMode.value = 'card'
   
   // Navigate to the task
@@ -461,8 +533,19 @@ const selectTask = (compositeId) => {
 }
 
 const handleBackToTaskList = () => {
+  // If drawer is open, close it
+  if (showTaskDrawer.value) {
+    closeTaskDrawer()
+    return
+  }
+  
   // Navigate back to task list (no task selected)
   router.push({ path: '/tasks' })
+}
+
+const closeTaskDrawer = () => {
+  showTaskDrawer.value = false
+  drawerTask.value = null
 }
 
 const handleTaskNavigate = (direction) => {
@@ -470,6 +553,26 @@ const handleTaskNavigate = (direction) => {
   
   const index = filteredTasks.value.findIndex(t => {
     const currentCompositeId = currentTask.value.compositeId || `${currentTask.value.type}-${currentTask.value.id}`
+    const taskCompositeId = t.compositeId || `${t.type}-${t.id}`
+    return taskCompositeId === currentCompositeId
+  })
+  
+  if (index === -1) return
+  
+  if (direction === 'previous' && index > 0) {
+    const prevTask = filteredTasks.value[index - 1]
+    selectTask(prevTask.compositeId)
+  } else if (direction === 'next' && index < filteredTasks.value.length - 1) {
+    const nextTask = filteredTasks.value[index + 1]
+    selectTask(nextTask.compositeId)
+  }
+}
+
+const handleDrawerTaskNavigate = (direction) => {
+  if (!drawerTask.value) return
+  
+  const index = filteredTasks.value.findIndex(t => {
+    const currentCompositeId = drawerTask.value.compositeId || `${drawerTask.value.type}-${drawerTask.value.id}`
     const taskCompositeId = t.compositeId || `${t.type}-${t.id}`
     return taskCompositeId === currentCompositeId
   })
@@ -643,5 +746,26 @@ const getTaskMenuItems = (task) => {
 .view-fade-leave-to {
   opacity: 0;
   transform: translateX(20px);
+}
+
+/* Task Drawer Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
 }
 </style>

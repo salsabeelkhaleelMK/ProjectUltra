@@ -75,16 +75,6 @@
             placeholder: 'Q Search or ask a question'
           }"
         >
-          <template #toolbar>
-            <div class="flex justify-end">
-              <button 
-                class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-4 py-2 text-sm font-medium text-body hover:border-purple-100 hover:bg-purple-50 hover:text-purple-600 transition-all"
-              >
-                <i class="fa-solid fa-arrow-left text-sub group-hover:text-purple-500"></i>
-                <span class="hidden sm:inline">Switch back to old design</span>
-              </button>
-            </div>
-          </template>
           <template #empty-state>
             <div class="empty-state">
               <i class="fa-solid fa-tasks empty-state-icon"></i>
@@ -137,13 +127,8 @@ const pagination = ref({
 
 const globalFilter = ref('')
 const sorting = ref([])
-const columnFilters = ref([
-  { id: 'status', value: ['Valid', 'Qualified', 'Open Lead'], operator: 'in' },
-  { id: 'type', value: 'lead', operator: 'eq' },
-  { id: 'source', value: ['Marketing', 'Website'], operator: 'in' },
-  { id: 'assignee', value: undefined },
-  { id: 'urgencyLevel', value: undefined }
-])
+// Start with empty filters - let users add filters via the UI
+const columnFilters = ref([])
 const columnVisibility = ref({})
 
 // Use filter definitions composable
@@ -415,4 +400,24 @@ const tableMeta = computed(() => ({
 
 </script>
 
+<style scoped>
+/* DataTable styling overrides to match attached code */
+:deep(div[data-slot='frame-panel'].relative.bg-clip-padding) {
+  background-color: var(--base-muted, #f5f5f5) !important;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+
+:deep(footer.flex.items-center.justify-between) {
+  background-color: var(--base-muted, #f5f5f5) !important;
+  border-bottom-left-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+:deep([data-radix-avatar-fallback]),
+:deep(.avatar-fallback),
+:deep(span[class*='AvatarFallback']) {
+  background-color: #d4d4d4 !important;
+}
+</style>
 
