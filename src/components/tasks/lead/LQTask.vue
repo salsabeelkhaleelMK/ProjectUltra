@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-greys-100 rounded-xl p-1 flex flex-col"
+    class="rounded-lg flex flex-col"
     style="background-color: var(--base-muted, #f5f5f5)"
   >
     <!-- Success state (post qualify / disqualify / no-answer) -->
@@ -431,39 +431,9 @@
               </div>
             </div>
 
-            <!-- Select team -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <div class="flex items-center justify-between mb-4">
-                <h5 class="font-semibold text-heading text-fluid-sm">Select team</h5>
-                <Button
-                  label="Change"
-                  variant="outline"
-                  size="small"
-                  class="text-fluid-xs"
-                  @click="showAssignmentModal = true"
-                />
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button
-                  v-for="team in suggestedTeams"
-                  :key="team.id"
-                  type="button"
-                  class="flex items-center gap-2 p-2 rounded-lg border-2 transition-all text-left"
-                  :class="
-                    assignment.assignee && assignment.assignee.type === 'team' && assignment.assignee.id === team.id
-                      ? 'border-brand-blue bg-surfaceSecondary'
-                      : 'border-E5E7EB hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
-                  "
-                  @click="assignment.assignee = { ...team, type: 'team' }"
-                >
-                  <div class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-users text-fluid-xs"></i>
-                  </div>
-                  <p class="font-medium text-fluid-sm text-heading">{{ team.name }}</p>
-                </button>
-              </div>
-              <p v-if="suggestedTeams.length === 0" class="text-fluid-xs text-sub">No teams available. Use Change to assign.</p>
-            </div>
+            <!-- Select team - REMOVED: Now handled by TaskAssignee component shown before LQTask -->
+            <!-- Team assignment is now managed via TaskAssignee component in LeadManagementWidget -->
+            <!-- The assignee data flows from lead.assignee prop, set by TaskAssignee component -->
 
             <!-- Qualification method -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
@@ -1038,18 +1008,6 @@ const startCall = () => {
   initCallLogForm(false)
 }
 
-// Watch for call ending to show outcome selection
-watch(callEnded, (ended) => {
-  if (ended && !showOutcomeSelection.value && !successState.value) {
-    // Ensure assignment and time are set
-    if (!callLogAssignee.value) {
-      initCallLogForm(false)
-    }
-    // Show outcome selection when call ends
-    showOutcomeSelection.value = true
-  }
-})
-
 const copyNumber = () => {
   copyNumberFromComposable(props.lead.customer.phone)
 }
@@ -1182,16 +1140,29 @@ const existingNotes = computed(() => {
   return props.activities.filter(activity => activity.type === 'note')
 })
 
-// Three suggested teams (first 3 from assignable teams), first selected by default
+// Three suggested teams (first 3 from assignable teams) - kept for potential future use
 const suggestedTeams = computed(() => {
   const teams = assignableTeams.value || []
   return teams.slice(0, 3)
 })
 
-// Set first suggested team as assignee when entering "interested" flow with no assignee
+// Use lead.assignee (set by TaskAssignee component) when entering "interested" flow
 watch(selectedOutcome, (outcome) => {
-  if (outcome === 'interested' && !assignment.value?.assignee && suggestedTeams.value.length > 0) {
-    assignment.value = { ...assignment.value, assignee: { ...suggestedTeams.value[0], type: 'team' } }
+  if (outcome === 'interested' && !assignment.value?.assignee) {
+    // Try to use the assignee from the lead object (set by TaskAssignee component)
+    if (props.lead.assignee) {
+      const assigneeUser = assignableUsers.value?.find(u => u.name === props.lead.assignee)
+      const assigneeTeam = assignableTeams.value?.find(t => t.name === props.lead.assignee)
+      
+      if (assigneeUser) {
+        assignment.value = { ...assignment.value, assignee: { ...assigneeUser, type: 'user' } }
+      } else if (assigneeTeam) {
+        assignment.value = { ...assignment.value, assignee: { ...assigneeTeam, type: 'team' } }
+      }
+    } else if (suggestedTeams.value.length > 0) {
+      // Fallback: use first suggested team if no assignee
+      assignment.value = { ...assignment.value, assignee: { ...suggestedTeams.value[0], type: 'team' } }
+    }
   }
 })
 
@@ -1210,6 +1181,18 @@ watch(qualificationSelectedDate, () => {
 // Watch for salesman changes to reset slot selection
 watch(qualificationSelectedSalesman, () => {
   qualificationSelectedSlot.value = ''
+})
+
+// Watch for call ending to show outcome selection
+watch(callEnded, (ended) => {
+  if (ended && !showOutcomeSelection.value && !successState.value) {
+    // Ensure assignment and time are set
+    if (!callLogAssignee.value) {
+      initCallLogForm(false)
+    }
+    // Show outcome selection when call ends
+    showOutcomeSelection.value = true
+  }
 })
 
 const qualificationEventTypeOptions = [

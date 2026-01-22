@@ -1,7 +1,7 @@
 <template>
   <div 
     v-if="shouldShow"
-    class="mx-4 mt-4 mb-6 px-4 py-3 rounded-lg border flex items-center justify-between"
+    class="mb-2 px-4 py-3 rounded-lg border flex items-center justify-between"
     :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
   >
     <div class="flex items-center gap-3">

@@ -10,6 +10,15 @@
     </template>
 
     <template #primary-action>
+      <!-- NEW: TaskAssignee Component (shows first, extremely compact) -->
+      <TaskAssignee
+        v-if="!leadState.isClosed.value"
+        :task="lead"
+        task-type="lead"
+        @reassigned="handleOwnerReassigned"
+        class="mb-3"
+      />
+      
       <!-- Primary action = LQTask -->
       <LQTask
         v-if="!leadState.isClosed.value && leadState.showLQWidget.value" 
@@ -79,6 +88,7 @@ import { useLeadManagementHandlers } from '@/composables/useLeadManagementHandle
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
 import PrimaryActionWidget from '@/components/tasks/shared/PrimaryActionWidget.vue'
 import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
+import TaskAssignee from '@/components/tasks/TaskAssignee.vue'
 import LQTask from '@/components/tasks/lead/LQTask.vue'
 
 const props = defineProps({
@@ -126,6 +136,14 @@ const {
   leadState,
   emit
 })
+
+// Handle owner reassignment from TaskAssignee component
+const handleOwnerReassigned = async (assignee) => {
+  // Reload the lead to get updated assignee data
+  if (props.lead?.id) {
+    await leadsStore.loadLeadById(props.lead.id)
+  }
+}
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="rounded-lg p-4 relative transition-all duration-300 border"
+    class="rounded-lg p-3 relative transition-all duration-300 border"
     :class="[colorScheme.background, colorScheme.border]"
   >
     <div class="flex justify-between items-start mb-3">

@@ -44,27 +44,37 @@
     </header>
     
     
-    <!-- Search Bar -->
+    <!-- Search Bar with Filter Button -->
     <div class="px-5 py-3">
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-fluid-sm"></i>
-        <input 
-          v-model="searchQuery"
-          type="text" 
-          :placeholder="searchPlaceholder" 
-          class="w-full bg-white border border-black/5 rounded-btn pl-9 pr-3 py-2 text-fluid-sm"
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-fluid-sm"></i>
+          <input 
+            v-model="searchQuery"
+            type="text" 
+            :placeholder="searchPlaceholder" 
+            class="w-full bg-white border border-black/5 rounded-btn pl-9 pr-3 py-2 text-fluid-sm"
+          />
+        </div>
+        <TaskFilters
+          :active-filters="activeFilters"
+          :sort-option="currentSort"
+          :button-only="true"
+          @filter-change="$emit('filter-change', $event)"
+          @sort-change="selectSort"
         />
       </div>
-    </div>
-    
-    <!-- Filters (Card View Only) -->
-    <div class="px-5 pb-3">
-      <TaskFilters
-        :active-filters="activeFilters"
-        :sort-option="currentSort"
-        @filter-change="$emit('filter-change', $event)"
-        @sort-change="selectSort"
-      />
+      
+      <!-- Filter Chips -->
+      <div v-if="activeFilters.length > 0" class="mt-2">
+        <TaskFilters
+          :active-filters="activeFilters"
+          :sort-option="currentSort"
+          :chips-only="true"
+          @filter-change="$emit('filter-change', $event)"
+          @sort-change="selectSort"
+        />
+      </div>
     </div>
     
     <div ref="scrollContainer" class="flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide">

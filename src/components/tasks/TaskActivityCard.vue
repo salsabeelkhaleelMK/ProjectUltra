@@ -1,108 +1,261 @@
 <template>
   <div 
-    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
+    class="overflow-hidden p-4"
+    style="
+      border-radius: var(--border-radius-rounded-lg, 10px);
+      background: var(--base-card, #FFF);
+      box-shadow: var(--nsc-card-shadow);
+    "
   >
-    <!-- Card Header -->
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Activity</h3>
-    
-    <!-- Timeline -->
-    <div v-if="sortedActivities.length > 0" class="space-y-6">
-      <!-- Date Header -->
-      <h3 class="text-sm text-greys-500 font-medium">
-        {{ getActivityDateHeader(sortedActivities) }}
-      </h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-medium text-greys-900 leading-6">Activity</h3>
       
-      <!-- Activity Items -->
-      <div class="space-y-4">
-        <div
-          v-for="activity in sortedActivities"
-          :key="activity.id"
-          class="flex gap-2"
-          :class="{
-            'cursor-pointer hover:opacity-80 transition-opacity':
-              activity.type === 'note' ||
-              activity.type === 'email' ||
-              activity.type === 'whatsapp' ||
-              activity.type === 'survey'
-          }"
-          @click="handleActivityClick(activity)"
+      <!-- Add Activity Dropdown -->
+      <div class="relative">
+        <button
+          @click="showAddDropdown = !showAddDropdown"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
         >
-          <!-- Icon -->
-          <div 
-            class="size-8 rounded-btn flex items-center justify-center shrink-0"
-            :style="getIconStyle(activity.type)"
+          <Plus :size="16" />
+          Add activity
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div
+          v-if="showAddDropdown"
+          class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-black/10 py-1 z-10"
+          @click="showAddDropdown = false"
+        >
+          <button
+            @click="$emit('add-activity', 'note')"
+            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
           >
-            <component 
-              :is="getActivityIcon(activity.type)" 
-              :size="16" 
-              :class="getIconClass(activity.type)"
-            />
-          </div>
-          
-          <!-- Content -->
-          <div class="flex-1 min-w-0">
-            <!-- Activity Description -->
-            <p class="text-sm leading-5">
-              <span class="font-normal text-greys-900">{{ activity.user }}</span>
-              <span class="text-greys-500"> {{ activity.action }}</span>
-            </p>
-            
-            <!-- Activity Content (for notes and messages) -->
-            <div 
-              v-if="activity.content && shouldShowContent(activity)" 
-              class="mt-2 rounded-card p-4"
-              :style="getContentBackgroundStyle(activity.type)"
-            >
-              <p 
-                class="text-sm text-greys-900"
-                :class="{ 'whitespace-pre-line': activity.type === 'survey' }"
-              >
-                {{ getDisplayContent(activity) }}
-              </p>
-              <button
-                v-if="getContentLength(activity) > 100 && !expandedSummaries[activity.id]"
-                @click.stop="toggleSummaryExpanded(activity.id)"
-                class="text-xs text-blue-600 hover:text-blue-700 mt-1"
-              >
-                Show more
-              </button>
-              <button
-                v-else-if="getContentLength(activity) > 100 && expandedSummaries[activity.id]"
-                @click.stop="toggleSummaryExpanded(activity.id)"
-                class="text-xs text-blue-600 hover:text-blue-700 mt-1"
-              >
-                Show less
-              </button>
-            </div>
-            
-            <!-- Timestamp -->
-            <p class="text-xs text-greys-500 mt-1">{{ activity.time }}</p>
-          </div>
+            <StickyNote :size="16" class="text-orange-600" />
+            Note
+          </button>
+          <button
+            @click="$emit('add-activity', 'sms')"
+            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+          >
+            <MessageCircle :size="16" class="text-purple-600" />
+            SMS
+          </button>
+          <button
+            @click="$emit('add-activity', 'whatsapp')"
+            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+          >
+            <MessageCircle :size="16" class="text-green-600" />
+            WhatsApp
+          </button>
+          <button
+            @click="$emit('add-activity', 'tradein')"
+            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-600">
+              <path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Trade-In
+          </button>
+          <button
+            @click="$emit('add-activity', 'purchase-method')"
+            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+          >
+            <FileText :size="16" class="text-indigo-600" />
+            Purchase Method
+          </button>
         </div>
       </div>
     </div>
     
-    <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-8 text-center">
-      <Clock :size="32" class="text-greys-400 mb-2" />
-      <p class="text-sm text-greys-500">No activity yet</p>
+    <div class="space-y-6">
+      <div v-if="sortedActivities.length > 0">
+        <h3
+          class="text-fluid-sm font-normal text-greys-500 mb-6"
+          style="line-height: var(--leading-5)"
+        >
+          {{ getActivityDateHeader(sortedActivities) }}
+        </h3>
+        <div class="space-y-4">
+          <div
+            v-for="activity in sortedActivities"
+            :key="activity.id"
+            class="space-y-2"
+          >
+            <div
+              class="flex items-start gap-2"
+              :class="{
+                'cursor-pointer hover:opacity-80 transition-opacity':
+                  activity.type === 'note' ||
+                  activity.type === 'email' ||
+                  activity.type === 'whatsapp',
+              }"
+              @click="handleActivityClick(activity)"
+            >
+              <div
+                :class="[
+                  'size-8 rounded-md flex items-center justify-center shrink-0 p-2',
+                  activity.type === 'note'
+                    ? 'bg-orange-100'
+                    : activity.type === 'call'
+                      ? 'bg-green-100'
+                      : activity.type === 'ai-summary'
+                        ? 'bg-purple-100'
+                        : activity.type === 'email'
+                          ? 'bg-blue-100'
+                          : activity.type === 'whatsapp'
+                            ? 'bg-green-100'
+                            : 'bg-greys-100',
+                ]"
+              >
+                <StickyNote
+                  v-if="activity.type === 'note'"
+                  :size="16"
+                  class="text-orange-600"
+                />
+                <Phone
+                  v-else-if="activity.type === 'call'"
+                  :size="16"
+                  class="text-green-600"
+                />
+                <Sparkles
+                  v-else-if="activity.type === 'ai-summary'"
+                  :size="16"
+                  class="text-purple-600"
+                />
+                <Mail
+                  v-else-if="activity.type === 'email'"
+                  :size="16"
+                  class="text-blue-600"
+                />
+                <MessageCircle
+                  v-else-if="activity.type === 'whatsapp'"
+                  :size="16"
+                  class="text-green-600"
+                />
+                <FileText v-else :size="16" class="text-greys-900" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                  <p
+                    class="text-fluid-sm text-greys-900 flex-1 wrap-break-word min-w-0"
+                    style="line-height: var(--leading-5)"
+                  >
+                    <span
+                      :class="[
+                        'font-normal',
+                        activity.type === 'ai-summary' ? 'font-medium' : '',
+                      ]"
+                    >
+                      {{ activity.type === 'ai-summary' ? 'MotorKAI' : activity.user }}
+                    </span>
+                    <span v-if="activity.type === 'note'" class="text-greys-500">
+                      added a note</span
+                    >
+                    <span
+                      v-else-if="activity.type === 'created'"
+                      class="text-greys-500"
+                    >
+                      {{ activity.message || activity.action }}</span
+                    >
+                    <span v-else-if="activity.type === 'call'" class="text-greys-500">
+                      {{ ' ' + (activity.message || activity.action) }}</span
+                    >
+                    <span
+                      v-else-if="activity.type === 'ai-summary'"
+                      class="text-greys-500"
+                    >
+                      summary</span
+                    >
+                    <span v-else-if="activity.type === 'email'" class="text-greys-500">
+                      {{ ' sent an email' }}</span
+                    >
+                    <span
+                      v-else-if="activity.type === 'whatsapp'"
+                      class="text-greys-500"
+                    >
+                      {{ ' sent a WhatsApp message' }}</span
+                    >
+                    <span v-else class="text-greys-500">
+                      {{ ' ' + (activity.message || activity.action) }}</span
+                    >
+                  </p>
+                  <p
+                    class="text-fluid-sm text-greys-500 text-right shrink-0 w-14"
+                    style="line-height: var(--leading-5)"
+                  >
+                    {{ activity.time }}
+                  </p>
+                </div>
+                <div
+                  v-if="activity.type === 'note' && (activity.message || activity.content)"
+                  class="mt-2 bg-[#fef7ee] rounded-lg p-4 backdrop-blur-sm"
+                >
+                  <p
+                    class="text-fluid-sm text-greys-900 wrap-break-word"
+                    style="line-height: var(--leading-5)"
+                  >
+                    {{ activity.message || activity.content }}
+                  </p>
+                </div>
+                <div
+                  v-if="activity.type === 'email' && activity.content"
+                  class="mt-2 bg-blue-50 rounded-lg p-4"
+                >
+                  <p
+                    class="text-fluid-sm text-greys-900 wrap-break-word"
+                    style="line-height: var(--leading-5)"
+                  >
+                    {{ activity.content }}
+                  </p>
+                </div>
+                <div
+                  v-if="activity.type === 'whatsapp' && activity.content"
+                  class="mt-2 bg-green-50 rounded-lg p-4"
+                >
+                  <p
+                    class="text-fluid-sm text-greys-900 wrap-break-word"
+                    style="line-height: var(--leading-5)"
+                  >
+                    {{ activity.content }}
+                  </p>
+                </div>
+                <div
+                  v-if="activity.type === 'ai-summary' && (activity.message || activity.content)"
+                  class="mt-2 bg-purple-50 rounded-lg p-4"
+                >
+                  <p
+                    class="text-fluid-sm text-greys-900 wrap-break-word"
+                    style="line-height: var(--leading-5)"
+                  >
+                    {{ activity.message || activity.content }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else class="text-center py-8">
+        <Clock :size="32" class="mx-auto text-greys-400 mb-2" />
+        <p class="text-sm text-greys-500">No activity yet</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { 
   StickyNote, 
   Mail, 
   MessageCircle, 
-  Phone, 
-  Calendar, 
+  Phone,
   FileText,
   Clock,
-  User,
-  Tag,
-  ClipboardCheck
+  Sparkles,
+  Plus
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -116,151 +269,22 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['activity-click', 'toggle-summary-expanded'])
+const emit = defineEmits(['activity-click', 'toggle-summary-expanded', 'add-activity'])
+
+const showAddDropdown = ref(false)
 
 // Sort activities by timestamp (most recent first)
 const sortedActivities = computed(() => {
   return [...props.activities].sort((a, b) => {
-    // Assuming activities have a timestamp field
     const timeA = new Date(a.timestamp || a.createdAt || 0).getTime()
     const timeB = new Date(b.timestamp || b.createdAt || 0).getTime()
-    return timeB - timeA // Descending order (most recent first)
+    return timeB - timeA
   })
 })
-
-const getActivityIcon = (type) => {
-  const iconMap = {
-    note: StickyNote,
-    email: Mail,
-    whatsapp: MessageCircle,
-    sms: MessageCircle,
-    call: Phone,
-    meeting: Calendar,
-    task: FileText,
-    status_change: Tag,
-    assignment: User,
-    survey: ClipboardCheck
-  }
-  
-  return iconMap[type] || FileText
-}
-
-const getIconStyle = (type) => {
-  const styleMap = {
-    note: 'background-color: #fef7ee;',
-    email: 'background-color: #eff6ff;',
-    whatsapp: 'background-color: #dcfce7;',
-    sms: 'background-color: #f3e8ff;',
-    call: 'background-color: #dbeafe;',
-    meeting: 'background-color: #e0e7ff;',
-    task: 'background-color: #f5f5f5;',
-    status_change: 'background-color: #fef3c7;',
-    assignment: 'background-color: #e5e7eb;',
-    survey: 'background-color: #f0f9ff;'
-  }
-  
-  return styleMap[type] || 'background-color: #f5f5f5;'
-}
-
-const getIconClass = (type) => {
-  const classMap = {
-    note: 'text-orange-600',
-    email: 'text-blue-600',
-    whatsapp: 'text-green-600',
-    sms: 'text-purple-600',
-    call: 'text-blue-500',
-    meeting: 'text-indigo-600',
-    task: 'text-gray-600',
-    status_change: 'text-yellow-600',
-    assignment: 'text-gray-500',
-    survey: 'text-blue-600'
-  }
-  
-  return classMap[type] || 'text-gray-600'
-}
-
-const getContentBackgroundStyle = (type) => {
-  const bgMap = {
-    note: 'background-color: #fef7ee;',
-    email: 'background-color: #eff6ff;',
-    whatsapp: 'background-color: #dcfce7;',
-    survey: 'background-color: #f0f9ff;'
-  }
-  
-  return bgMap[type] || 'background-color: #f5f5f5;'
-}
-
-const shouldShowContent = (activity) => {
-  // Show content for notes, emails, whatsapp messages, and surveys
-  return ['note', 'email', 'whatsapp', 'survey'].includes(activity.type) && activity.content
-}
-
-const getDisplayContent = (activity) => {
-  if (!activity.content) return ''
-  
-  // For survey activities, format JSON responses as readable text
-  if (activity.type === 'survey') {
-    try {
-      const responses = typeof activity.content === 'string' 
-        ? JSON.parse(activity.content) 
-        : activity.content
-      
-      // Format survey responses as key-value pairs
-      const formattedResponses = Object.entries(responses)
-        .filter(([key, value]) => value && value !== '')
-        .map(([key, value]) => {
-          // Convert camelCase to readable labels
-          const label = key
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase())
-            .trim()
-          return `${label}: ${value}`
-        })
-        .join('\n')
-      
-      const fullContent = formattedResponses || activity.content
-      
-      // If expanded, show full content
-      if (props.expandedSummaries[activity.id]) {
-        return fullContent
-      }
-      
-      // Otherwise, truncate to 100 characters
-      if (fullContent.length > 100) {
-        return fullContent.substring(0, 100) + '...'
-      }
-      
-      return fullContent
-    } catch (e) {
-      // If parsing fails, treat as regular string
-      const content = activity.content
-      if (props.expandedSummaries[activity.id]) {
-        return content
-      }
-      if (content.length > 100) {
-        return content.substring(0, 100) + '...'
-      }
-      return content
-    }
-  }
-  
-  // For other activity types, show content as-is
-  if (props.expandedSummaries[activity.id]) {
-    return activity.content
-  }
-  
-  // Otherwise, truncate to 100 characters
-  if (activity.content.length > 100) {
-    return activity.content.substring(0, 100) + '...'
-  }
-  
-  return activity.content
-}
 
 const getActivityDateHeader = (activities) => {
   if (!activities || activities.length === 0) return ''
   
-  // Get the most recent activity's timestamp
   const mostRecent = activities[0]
   const timestamp = mostRecent.timestamp || mostRecent.createdAt
   
@@ -271,17 +295,14 @@ const getActivityDateHeader = (activities) => {
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
   
-  // Check if today
   if (date.toDateString() === today.toDateString()) {
     return 'Today'
   }
   
-  // Check if yesterday
   if (date.toDateString() === yesterday.toDateString()) {
     return 'Yesterday'
   }
   
-  // Otherwise, return formatted date
   return date.toLocaleDateString('en-US', { 
     month: 'long', 
     day: 'numeric',
@@ -290,57 +311,21 @@ const getActivityDateHeader = (activities) => {
 }
 
 const handleActivityClick = (activity) => {
-  // Only emit click for activities that have detailed views
-  if (['note', 'email', 'whatsapp', 'survey'].includes(activity.type)) {
+  if (['note', 'email', 'whatsapp'].includes(activity.type)) {
     emit('activity-click', activity)
   }
-}
-
-const toggleSummaryExpanded = (activityId) => {
-  emit('toggle-summary-expanded', activityId)
-}
-
-const getContentLength = (activity) => {
-  if (!activity.content) return 0
-  if (activity.type === 'survey') {
-    try {
-      const responses = typeof activity.content === 'string' 
-        ? JSON.parse(activity.content) 
-        : activity.content
-      const formattedResponses = Object.entries(responses)
-        .filter(([key, value]) => value && value !== '')
-        .map(([key, value]) => {
-          const label = key
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase())
-            .trim()
-          return `${label}: ${value}`
-        })
-        .join('\n')
-      return formattedResponses.length || activity.content.length
-    } catch (e) {
-      return activity.content.length
-    }
-  }
-  return activity.content.length
 }
 </script>
 
 <style scoped>
-.text-greys-400 {
-  color: #9CA3AF;
-}
-
-.text-greys-500 {
-  color: #6B7280;
-}
-
-.text-greys-900 {
-  color: #111827;
-}
-
 .size-8 {
   width: 2rem;
   height: 2rem;
+}
+
+.wrap-break-word {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 </style>

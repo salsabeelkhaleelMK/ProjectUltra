@@ -7,7 +7,7 @@
     <!-- Vehicle Image -->
     <div 
       v-if="imageUrl" 
-      class="w-full h-40 rounded-btn overflow-hidden mb-4 bg-gray-100"
+      class="w-full h-20 rounded-btn overflow-hidden mb-4 bg-gray-100"
     >
       <img 
         :src="imageUrl" 

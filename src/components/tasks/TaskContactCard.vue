@@ -1,90 +1,88 @@
 <template>
-  <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-    <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-user text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Customer</h2>
-      </div>
-    </div>
-
-    <!-- Card Content -->
-    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+  <!-- Simplified: No outer background container, just the card -->
+  <div 
+    class="overflow-hidden p-4"
+    style="
+      border-radius: var(--border-radius-rounded-lg, 10px);
+      background: var(--base-card, #FFF);
+      box-shadow: var(--nsc-card-shadow);
+    "
+  >
+    <h3 class="text-base font-medium text-greys-900 mb-4 leading-6">Customer information</h3>
+    
+    <!-- Card Content --><div class="flex flex-col">
       <!-- Contact Details -->
-      <div class="space-y-2 mb-4">
-      <!-- Customer Name -->
-      <div class="flex justify-between gap-2 items-center">
-        <p class="text-sm text-greys-500 shrink-0">Customer</p>
-        <div class="flex items-center gap-2 min-w-0">
-          <p class="text-sm font-medium text-greys-900 truncate">
+      <div class="space-y-3">
+        <!-- Customer Name -->
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-sm text-greys-500 leading-5 shrink-0">Customer</p>
+          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.name || 'Unknown' }}
           </p>
-          <button
-            v-if="customerId"
-            @click="openCustomerPage"
-            class="w-5 h-5 flex items-center justify-center bg-blue-50 hover:bg-blue-100 rounded text-blue-600 hover:text-blue-700 transition-colors shrink-0"
-            title="Open customer profile"
-          >
-            <ExternalLink :size="12" />
-          </button>
         </div>
-      </div>
-      
-      <!-- Email -->
-      <div class="flex justify-between gap-2 items-center">
-        <p class="text-sm text-greys-500 shrink-0">Email</p>
-        <div class="flex items-center gap-2 min-w-0">
-          <p class="text-sm font-medium text-greys-900 truncate">
+        
+        <!-- Email -->
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-sm text-greys-500 leading-5 shrink-0">Email</p>
+          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.email || 'N/A' }}
           </p>
-          <button 
-            v-if="task.customer?.email"
-            @click.stop="copyToClipboard(task.customer.email, 'email')"
-            class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-greys-500 hover:text-greys-900 transition-colors shrink-0"
-            title="Copy email"
-          >
-            <Copy :size="12" />
-          </button>
         </div>
-      </div>
-      
-      <!-- Phone -->
-      <div class="flex justify-between gap-2 items-center">
-        <p class="text-sm text-greys-500 shrink-0">Phone</p>
-        <div class="flex items-center gap-2 min-w-0">
-          <p class="text-sm font-medium text-greys-900 truncate">
+        
+        <!-- Phone -->
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-sm text-greys-500 leading-5 shrink-0">Phone</p>
+          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.phone || 'N/A' }}
           </p>
-          <button 
-            v-if="task.customer?.phone"
-            @click.stop="copyToClipboard(task.customer.phone, 'phone')"
-            class="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-greys-500 hover:text-greys-900 transition-colors shrink-0"
-            title="Copy phone"
-          >
-            <Copy :size="12" />
-          </button>
+        </div>
+        
+        <!-- Address -->
+        <div v-if="task.customer?.address" class="flex items-start justify-between gap-2">
+          <p class="text-sm text-greys-500 leading-5 shrink-0">Address</p>
+          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
+            {{ task.customer.address }}
+          </p>
         </div>
       </div>
-      
-      <!-- Address -->
-      <div v-if="task.customer?.address" class="flex justify-between gap-2 items-start">
-        <p class="text-sm text-greys-500 shrink-0">Address</p>
-        <p class="text-sm font-medium text-greys-900 text-right min-w-0">
-          {{ task.customer.address }}
-        </p>
-      </div>
-    </div>
-    
-      <!-- Negotiations Banner -->
-      <div 
-        v-if="negotiationsCount > 0" 
-        class="rounded-btn p-3 flex items-center gap-2"
-        style="background-color: rgba(59, 130, 246, 0.1);"
-      >
-        <Info :size="16" class="text-blue-600 shrink-0" />
-        <p class="text-sm text-blue-900">
-          {{ negotiationsCount }} other negotiation{{ negotiationsCount > 1 ? 's' : '' }} active
-        </p>
+
+      <!-- Other Tasks from Same Customer (Ultra-Compact) -->
+      <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-black/5">
+        <h4 class="text-[11px] font-bold uppercase tracking-wider text-greys-500 mb-2">Other customer requests</h4>
+        <div class="space-y-1.5">
+          <div
+            v-for="relatedTask in relatedTasks"
+            :key="relatedTask.compositeId"
+            @click="goToTask(relatedTask)"
+            class="group p-2 rounded-lg border border-transparent hover:border-brand-blue/30 hover:bg-blue-50/20 transition-all cursor-pointer flex flex-col"
+          >
+            <!-- Top Line: Type + Stage + Date -->
+            <div class="flex items-center gap-2 mb-0.5">
+              <span 
+                class="text-[9px] font-bold uppercase px-1 py-0.5 rounded leading-none"
+                :class="relatedTask.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
+              >
+                {{ relatedTask.type === 'lead' ? 'Lead' : 'Opp' }}
+              </span>
+              <span class="text-[10px] font-medium text-greys-900 truncate flex-1">
+                {{ getTaskStage(relatedTask) }}
+              </span>
+              <span class="text-[10px] text-greys-400 shrink-0">
+                {{ formatTaskDate(relatedTask) }}
+              </span>
+            </div>
+            
+            <!-- Bottom Line: Vehicle + Price -->
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-[11px] text-greys-600 truncate flex-1">
+                {{ getVehicleDisplay(relatedTask) }}
+              </p>
+              <p v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-[11px] font-bold text-greys-900 shrink-0">
+                {{ formatCurrency(relatedTask.estimatedValue) }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -94,7 +92,10 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastStore } from '@/stores/toast'
-import { Info, ExternalLink, Copy } from 'lucide-vue-next'
+import { useLeadsStore } from '@/stores/leads'
+import { useOpportunitiesStore } from '@/stores/opportunities'
+import { Button } from '@motork/component-library/future/primitives'
+import { Info, ExternalLink, Copy, Phone, Mail, Calendar } from 'lucide-vue-next'
 
 const props = defineProps({
   task: {
@@ -113,10 +114,38 @@ const props = defineProps({
 
 const toastStore = useToastStore()
 const router = useRouter()
+const leadsStore = useLeadsStore()
+const opportunitiesStore = useOpportunitiesStore()
 
 const negotiationsCount = computed(() => {
   // Check for negotiations in different possible fields
   return props.task.negotiations || props.task.activeNegotiations || 0
+})
+
+// Get related tasks from the same customer (limited to 3 most recent)
+const relatedTasks = computed(() => {
+  if (!props.task.customer) return []
+  
+  const customerEmail = props.task.customer.email
+  const customerPhone = props.task.customer.phone
+  const currentTaskId = props.task.compositeId
+  
+  // Combine all leads and opportunities
+  const allTasks = [
+    ...(leadsStore.leads || []).map(lead => ({ ...lead, type: 'lead', compositeId: `lead-${lead.id}` })),
+    ...(opportunitiesStore.opportunities || []).map(opp => ({ ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }))
+  ]
+  
+  // Filter by same customer (email or phone match) and exclude current task
+  return allTasks
+    .filter(task => {
+      if (task.compositeId === currentTaskId) return false
+      if (!task.customer) return false
+      
+      return task.customer.email === customerEmail || task.customer.phone === customerPhone
+    })
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .slice(0, 3) // Only show top 3 to save space
 })
 
 const copyToClipboard = async (text, field) => {
@@ -134,6 +163,55 @@ const openCustomerPage = () => {
   if (props.customerId) {
     router.push(`/customer/${props.customerId}`)
   }
+}
+
+const goToTask = (task) => {
+  const [type, id] = task.compositeId.split('-')
+  router.push({ 
+    path: `/tasks/${id}`, 
+    query: { type } 
+  })
+}
+
+const getTaskStage = (task) => {
+  return task.stage || task.currentStage || 'Unknown'
+}
+
+// Format date (e.g., Dec 10, 24)
+const formatTaskDate = (task) => {
+  const date = task.createdAt || task.nextActionDue || task.updatedAt
+  if (!date) return ''
+  
+  try {
+    const d = new Date(date)
+    return d.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: '2-digit' 
+    })
+  } catch {
+    return ''
+  }
+}
+
+// Vehicle display - super compact
+const getVehicleDisplay = (task) => {
+  const vehicle = task.requestedCar || task.vehicle
+  if (!vehicle) return 'No vehicle'
+  
+  const brand = vehicle.brand || ''
+  const model = vehicle.model || ''
+  const year = vehicle.year ? `(${vehicle.year})` : ''
+  return `${brand} ${model} ${year}`.trim() || 'Vehicle info N/A'
+}
+
+// Format currency (e.g., €45k)
+const formatCurrency = (amount) => {
+  if (!amount) return '€0'
+  if (amount >= 1000) {
+    return '€' + (amount / 1000).toFixed(0) + 'k'
+  }
+  return '€' + amount
 }
 </script>
 

@@ -218,18 +218,6 @@
         v-if="showTaskDrawer && viewMode === 'table'"
         class="fixed top-0 right-0 bottom-0 w-full lg:w-4/5 xl:w-3/4 bg-white z-50 overflow-y-auto shadow-xl"
       >
-        <!-- Drawer Header with close button -->
-        <div class="sticky top-0 bg-white border-b border-E5E7EB p-4 flex items-center justify-between z-10">
-          <h3 class="text-h3-card text-heading font-semibold">Task Details</h3>
-          <button 
-            @click="closeTaskDrawer"
-            class="w-8 h-8 flex items-center justify-center text-sub hover:text-body hover:bg-surfaceSecondary rounded transition-colors"
-            aria-label="Close task details"
-          >
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
-        </div>
-        
         <!-- TaskDetailView in Drawer -->
         <TaskDetailView
           v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
@@ -238,7 +226,9 @@
           :store-adapter="drawerStoreAdapter"
           :add-new-config="drawerAddNewConfig"
           :filtered-tasks="filteredTasks"
+          :is-drawer-view="true"
           @task-navigate="handleDrawerTaskNavigate"
+          @close="closeTaskDrawer"
         />
       </div>
     </transition>

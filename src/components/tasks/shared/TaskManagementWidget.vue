@@ -15,7 +15,7 @@
 
     <!-- Card Content -->
     <div
-      class="bg-white rounded-lg p-4 flex flex-col"
+      class="bg-white rounded-lg p-2 flex flex-col"
       :class="hideBorder ? 'shadow-none' : 'shadow-sm'"
       :style="hideBorder ? undefined : { boxShadow: 'var(--nsc-card-shadow)' }"
     >

@@ -184,22 +184,41 @@
         />
         
         <!-- Tab 1: Manage -->
-        <div v-if="gridMainTab === 'manage'" class="space-y-6">
-          <!-- Management Widget -->
-          <div v-if="managementWidget">
-          <component
-            :is="managementWidget"
-            :lead="type === 'lead' ? task : undefined"
-            :opportunity="type === 'opportunity' ? task : undefined"
-            :contact="type === 'contact' ? task : undefined"
-            :activities="allActivities"
-            @car-added="$emit('car-added', $event)"
-            @convert-to-lead="$emit('convert-to-lead')"
-            @convert-to-opportunity="$emit('convert-to-opportunity')"
-            @vehicle-selected="handleVehicleSelected"
-            @create-offer="handleCreateOffer"
-            @view-history="handleViewHistory"
-          />
+        <div v-if="gridMainTab === 'manage'" class="grid grid-cols-1 lg:grid-cols-[80%_20%] gap-6 items-start">
+          <!-- Left Column: Lead Qualification Tasks -->
+          <div class="space-y-6">
+            <div v-if="managementWidget">
+              <component
+                :is="managementWidget"
+                :lead="type === 'lead' ? task : undefined"
+                :opportunity="type === 'opportunity' ? task : undefined"
+                :contact="type === 'contact' ? task : undefined"
+                :activities="allActivities"
+                @car-added="$emit('car-added', $event)"
+                @convert-to-lead="$emit('convert-to-lead')"
+                @convert-to-opportunity="$emit('convert-to-opportunity')"
+                @vehicle-selected="handleVehicleSelected"
+                @create-offer="handleCreateOffer"
+                @view-history="handleViewHistory"
+              />
+            </div>
+          </div>
+
+          <!-- Right Column: Requested Card, Customer Car, and Other Tasks -->
+          <div v-if="type !== 'contact'" class="lg:col-span-1 space-y-6">
+            <!-- Requested Car Card -->
+            <TaskRequestOverviewTab
+              :task="task"
+              :entity-type="type"
+              :activities="task.activities || []"
+              @reassign="handleReassign"
+            />
+
+            <!-- Other Tasks for This Customer -->
+            <CustomerRelatedTasksWidget
+              :task="task"
+              :entity-type="type"
+            />
           </div>
         </div>
 
@@ -348,10 +367,9 @@
         </div>
 
         <!-- Tab 4: Contact -->
+        <!--
         <div v-if="gridMainTab === 'contact'" class="space-y-6">
-          <!-- Communicate -->
           <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-            <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-comments text-heading"></i>
@@ -359,7 +377,6 @@
               </div>
             </div>
             
-            <!-- Card Content -->
             <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
               <CommunicationWidget
                 type="call"
@@ -371,7 +388,6 @@
                 @cancel="showCommunicationWidget = false"
               />
               
-              <!-- Communications List -->
               <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
                 <div class="space-y-2 max-h-52 overflow-y-auto">
                   <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
@@ -386,6 +402,7 @@
             </div>
           </div>
         </div>
+        -->
 
         </div>
       </div>
@@ -520,8 +537,8 @@ const gridMainTab = ref('manage')
 const gridMainTabs = [
   { key: 'manage', label: 'Manage' },
   { key: 'request', label: 'Request' },
-  { key: 'data', label: 'Enrich' },
-  { key: 'contact', label: 'Contact' }
+  { key: 'data', label: 'Enrich' }
+  // { key: 'contact', label: 'Contact' }
 ]
 
 // Grid view communication state (kept for cancel handler)

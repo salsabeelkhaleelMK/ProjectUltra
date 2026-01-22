@@ -1,11 +1,32 @@
 <template>
   <div class="border-b border-black/5 bg-white px-6 h-16 min-h-16 shrink-0">
     <div class="flex items-center justify-between gap-4 w-full h-full">
-      <div class="flex flex-col gap-0.5 min-w-0">
-        <h2 class="text-fluid-lg font-medium text-greys-900">
-          {{ getTaskTitle(task) }}
-        </h2>
-        <p v-if="task" class="text-fluid-sm text-greys-500 truncate">
+      <div class="flex flex-col min-w-0">
+        <!-- Task Title & Badges Row -->
+        <div class="flex items-center gap-2 min-w-0">
+          <h2 v-if="task" class="text-fluid-lg font-medium text-greys-900 truncate">
+            {{ getTaskTitle(task) }}
+          </h2>
+          <h2 v-else class="text-fluid-lg font-medium text-greys-900">
+            No task selected
+          </h2>
+
+          <!-- Compact Badges -->
+          <div v-if="task" class="flex items-center gap-1.5 shrink-0">
+            <span 
+              class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border border-transparent"
+              :class="getStageColor(task)"
+            >
+              {{ getDisplayStage(task) }}
+            </span>
+            <span class="px-1.5 py-0.5 rounded bg-greys-100 text-greys-600 text-[10px] font-bold uppercase border border-E5E7EB">
+              {{ task.source || 'N/A' }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Task Subtitle -->
+        <p v-if="task" class="text-[11px] text-greys-500 truncate leading-none mt-0.5">
           {{ getTaskSubtitle(task) }}
         </p>
         <p v-else class="text-fluid-sm text-greys-500">
@@ -20,7 +41,7 @@
           @click="$emit('previous')" 
           :disabled="!hasPrevious"
         >
-          <ChevronLeft :size="16" />
+          <ChevronLeft :size="16" class="text-greys-700" />
         </Button>
         <Button 
           variant="secondary" 
@@ -28,7 +49,18 @@
           @click="$emit('next')" 
           :disabled="!hasNext"
         >
-          <ChevronRight :size="16" />
+          <ChevronRight :size="16" class="text-greys-700" />
+        </Button>
+        
+        <!-- Close button (only shown in drawer view) -->
+        <Button 
+          v-if="isDrawerView"
+          variant="secondary" 
+          size="icon" 
+          @click="$emit('close')"
+          class="ml-1"
+        >
+          <X :size="16" class="text-greys-700" />
         </Button>
       </div>
     </div>
@@ -38,7 +70,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
 
 const props = defineProps({
   task: { 
@@ -48,10 +80,14 @@ const props = defineProps({
   filteredTasks: { 
     type: Array, 
     default: () => [] 
+  },
+  isDrawerView: {
+    type: Boolean,
+    default: false
   }
 })
 
-defineEmits(['previous', 'next'])
+defineEmits(['previous', 'next', 'close'])
 
 const hasPrevious = computed(() => {
   if (!props.task || !props.filteredTasks.length) return false
@@ -75,9 +111,9 @@ const hasNext = computed(() => {
 })
 
 const getTaskTitle = (task) => {
-  if (!task) return ''
+  if (!task) return 'No task selected'
   
-  // Different titles based on task type and stage
+  // Different titles based on task type
   if (task.type === 'lead') {
     return 'Lead Qualification Task'
   } else if (task.type === 'opportunity') {
@@ -102,11 +138,6 @@ const getTaskSubtitle = (task) => {
     }
   }
   
-  // Source
-  if (task.source) {
-    parts.push(task.source)
-  }
-  
   // Customer name
   if (task.customer?.name) {
     parts.push(task.customer.name)
@@ -115,6 +146,20 @@ const getTaskSubtitle = (task) => {
   }
   
   return parts.join(' • ')
+}
+
+const getDisplayStage = (task) => {
+  if (!task) return ''
+  return task.stage || task.currentStage || 'New'
+}
+
+const getStageColor = (task) => {
+  const stage = getDisplayStage(task).toLowerCase()
+  if (stage.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
+  if (stage.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
+  if (stage.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
+  if (stage.includes('close')) return 'bg-greys-100 text-greys-600 border-greys-300'
+  return 'bg-blue-50 text-blue-600 border-blue-200'
 }
 </script>
 

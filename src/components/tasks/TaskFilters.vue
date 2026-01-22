@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div v-if="!buttonOnly && !chipsOnly" class="flex flex-col gap-2">
     <!-- Filter Dropdown and Chips Row -->
     <div class="flex items-center gap-2 flex-wrap">
       <!-- Filter Dropdown (Icon only, matching old sort style) -->
@@ -45,6 +45,48 @@
       </div>
     </div>
   </div>
+  
+  <!-- Button Only Mode -->
+  <div v-else-if="buttonOnly" class="relative" ref="filterContainer">
+    <button
+      @click.stop="toggleFilterMenu"
+      class="relative w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-900"
+    >
+      <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
+      <span 
+        v-if="activeFilters.length > 0 || (sortOption && sortOption !== 'recent-first')"
+        class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-black"
+      ></span>
+    </button>
+    
+    <transition name="dropdown">
+      <div 
+        v-if="showFilterMenu"
+        class="absolute right-0 mt-2 z-50 filter-dropdown-wrapper"
+        v-click-outside="() => showFilterMenu = false"
+      >
+        <DropdownMenu :items="combinedMenuItems" className="w-56" />
+      </div>
+    </transition>
+  </div>
+  
+  <!-- Chips Only Mode -->
+  <div v-else-if="chipsOnly && activeFilters.length > 0" class="flex items-center gap-2 flex-wrap">
+    <div
+      v-for="filterKey in activeFilters"
+      :key="filterKey"
+      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-xs font-medium text-heading border border-E5E7EB"
+    >
+      <span>{{ getFilterLabel(filterKey) }}</span>
+      <button
+        @click="removeFilter(filterKey)"
+        class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 transition-colors text-sub hover:text-heading"
+        aria-label="Remove filter"
+      >
+        <i class="fa-solid fa-xmark text-xs"></i>
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -54,7 +96,9 @@ import { DropdownMenu } from '@motork/component-library'
 const props = defineProps({
   activeFilters: { type: Array, default: () => [] },
   sortOption: { type: String, default: 'recent-first' },
-  showClosed: { type: Boolean, default: false }
+  showClosed: { type: Boolean, default: false },
+  buttonOnly: { type: Boolean, default: false },
+  chipsOnly: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['filter-change', 'sort-change', 'toggle-closed'])
