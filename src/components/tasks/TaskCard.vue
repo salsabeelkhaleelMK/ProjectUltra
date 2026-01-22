@@ -9,9 +9,9 @@
     <button 
       v-if="showMenu"
       @click.stop="$emit('menu-click', item.id)"
-      class="absolute top-2 right-2 pr-1 text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+      class="absolute top-2 right-2 pr-1 text-gray-300 hover:text-gray-600 z-10"
     >
-      <i class="fa-solid fa-ellipsis-vertical"></i>
+      <i class="fa-solid fa-ellipsis"></i>
     </button>
 
     <!-- Card Menu Dropdown -->
@@ -55,7 +55,7 @@
       </div>
     </div>
     
-    <div v-if="deadline" class="shrink-0 ml-auto self-start mt-1">
+    <div v-if="deadline" class="shrink-0 ml-auto self-start mt-3">
       <span 
         class="px-3 py-1 rounded-lg text-[11px] font-bold border whitespace-nowrap"
         :class="[deadline.status.bgClass, deadline.status.textClass, deadline.status.borderClass]"

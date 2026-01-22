@@ -72,7 +72,8 @@
           }"
           :globalFilterOptions="{
             debounce: 300,
-            placeholder: 'Q Search or ask a question'
+            placeholder: 'Q Search or ask a question',
+            show: false
           }"
         >
           <template #empty-state>
@@ -88,10 +89,10 @@
 </template>
 
 <script setup>
-import { ref, computed, h } from 'vue'
+import { ref, computed, h, watch } from 'vue'
 import { Table, LayoutGrid } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
-import { formatCurrency, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
 import { useTasksTableFilters } from '@/composables/useTasksTableFilters'
@@ -115,6 +116,14 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
+const handleFilterChange = (filters) => {
+  emit('filter-change', filters)
+}
+
+const handleSortChange = (sort) => {
+  emit('sort-change', sort)
+}
+
 const settingsStore = useSettingsStore()
 const searchQuery = ref('')
 
@@ -126,9 +135,47 @@ const pagination = ref({
 
 const globalFilter = ref('')
 const sorting = ref([])
-// Start with empty filters - let users add filters via the UI
-const columnFilters = ref([])
+// Initialize with default Type filter based on activeFilters
+const getInitialColumnFilters = () => {
+  const filters = []
+  // If activeFilters has a type filter, apply it to columnFilters
+  const typeFilter = props.activeFilters.find(f => f === 'lead' || f === 'opportunity')
+  if (typeFilter) {
+    filters.push({
+      id: 'type',
+      value: typeFilter,
+      operator: 'eq'
+    })
+  }
+  return filters
+}
+
+const columnFilters = ref(getInitialColumnFilters())
 const columnVisibility = ref({})
+
+// Watch activeFilters to sync with columnFilters
+watch(() => props.activeFilters, (newFilters) => {
+  const typeFilter = newFilters.find(f => f === 'lead' || f === 'opportunity')
+  const existingTypeFilter = columnFilters.value.find(f => f.id === 'type')
+  
+  if (typeFilter) {
+    if (existingTypeFilter) {
+      existingTypeFilter.value = typeFilter
+    } else {
+      columnFilters.value.push({
+        id: 'type',
+        value: typeFilter,
+        operator: 'eq'
+      })
+    }
+  } else {
+    // Remove type filter if no type filter in activeFilters
+    const index = columnFilters.value.findIndex(f => f.id === 'type')
+    if (index > -1) {
+      columnFilters.value.splice(index, 1)
+    }
+  }
+}, { immediate: true })
 
 // Use filter definitions composable
 // Extract type filters from activeFilters for backward compatibility
@@ -235,53 +282,61 @@ const columns = computed(() => [
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
           h('div', { class: 'text-content font-semibold text-heading truncate max-w-32 md:max-w-none' }, task.customer.name),
-          h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.email)
+          h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.phone || 'N/A')
         ])
       ])
     }
   },
   {
-    accessorKey: 'car',
-    header: 'Car',
+    accessorKey: 'carInfo',
+    header: 'Car Info',
     meta: {
-      title: 'Car'
+      title: 'Car Info'
     },
     cell: ({ row }) => {
       const task = row.original
       const vehicleInfo = getVehicleInfo(task)
+      const carStatus = getCarStatus(task)
+      const requestType = getRequestType(task)
+      
+      // Get vehicle object to access condition and kilometers
+      const vehicle = task.type === 'lead' ? task.requestedCar : (task.vehicle || task.requestedCar)
+      
       if (vehicleInfo === 'No vehicle specified') {
         return h('span', { class: 'text-meta' }, 'N/A')
       }
-      return h('div', { class: 'flex items-center gap-2' }, [
-        h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
-        h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
+      
+      // Get condition (Used/New)
+      const condition = vehicle?.condition ? vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1).toLowerCase() : null
+      // Get mileage
+      const mileage = vehicle?.kilometers ? `${vehicle.kilometers.toLocaleString()} km` : null
+      
+      // Get quotation number if available
+      const quotationNumber = task.quotationNumber || task.quotation || null
+      
+      // Only show requestType if it's not "Quotation" or if quotation number exists
+      const shouldShowRequestType = requestType && requestType !== 'N/A' && (requestType !== 'Quotation' || quotationNumber)
+      
+      return h('div', { class: 'flex flex-col gap-1' }, [
+        h('div', { class: 'flex items-center gap-2' }, [
+          h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
+          h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
+        ]),
+        h('div', { class: 'flex items-center gap-2 flex-wrap' }, [
+          // Stock info first
+          h('span', {
+            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}`
+          }, carStatus.status),
+          // Condition (Used/New)
+          condition && h('span', {
+            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700'
+          }, condition),
+          // Mileage
+          mileage && h('span', { class: 'text-meta text-xs' }, mileage),
+          // Request type (only show if not "Quotation" or if quotation number exists)
+          shouldShowRequestType && h('span', { class: 'text-meta text-xs' }, requestType)
+        ])
       ])
-    }
-  },
-  {
-    accessorKey: 'carStatus',
-    header: 'Car status',
-    meta: {
-      title: 'Car status'
-    },
-    cell: ({ row }) => {
-      const task = row.original
-      const carStatus = getCarStatus(task)
-      return h('span', {
-        class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}`
-      }, carStatus.status)
-    }
-  },
-  {
-    accessorKey: 'requestType',
-    header: 'Request type',
-    meta: {
-      title: 'Request type'
-    },
-    cell: ({ row }) => {
-      const task = row.original
-      const requestType = getRequestType(task)
-      return h('span', { class: 'text-meta' }, requestType)
     }
   },
   {
@@ -312,6 +367,30 @@ const columns = computed(() => [
         }, owner.initials),
         h('span', { class: 'text-meta truncate max-w-20' }, owner.name)
       ])
+    }
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Creation Date',
+    meta: {
+      title: 'Creation Date'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      if (!task.createdAt) return h('span', { class: 'text-meta' }, 'N/A')
+      return h('span', { class: 'text-meta' }, formatDate(task.createdAt))
+    }
+  },
+  {
+    accessorKey: 'contactAttempts',
+    header: 'Contact Attempts',
+    meta: {
+      title: 'Contact Attempts'
+    },
+    cell: ({ row }) => {
+      const task = row.original
+      const attempts = task.contactAttempts?.length || 0
+      return h('span', { class: 'text-content font-medium text-heading' }, attempts)
     }
   },
   {
@@ -360,26 +439,7 @@ const columns = computed(() => [
         h('span', {}, urgencyLevel)
       ])
     }
-  }] : []),
-  {
-    id: 'actions',
-    header: '',
-    meta: {
-      title: 'Actions'
-    },
-    cell: ({ row }) => {
-      const task = row.original
-      return h('button', {
-        class: 'text-sub hover:text-body',
-        onClick: (e) => {
-          e.stopPropagation()
-          emit('menu-click', task.id)
-        }
-      }, [
-        h('i', { class: 'fa-solid fa-ellipsis-vertical' })
-      ])
-    }
-  }
+  }] : [])
 ])
 
 const handleRowClick = (record) => {
