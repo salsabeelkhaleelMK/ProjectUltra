@@ -7,8 +7,6 @@ import { ref, computed } from 'vue'
 export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contactAttemptsRef, maxContactAttemptsRef, currentUserRef) {
   const showOutcomeSelection = ref(false)
   const selectedOutcome = ref(null)
-  const appointmentScheduled = ref(false)
-  const scheduledAppointmentData = ref(null)
   const showNoteModal = ref(false)
   const showScheduleAppointmentModal = ref(false)
   
@@ -52,6 +50,85 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const surveyCompleted = ref(false)
   const surveyResponses = ref(null)
   const showSurvey = ref(true) // Show by default when Interested selected
+
+  // Success state (post qualify/disqualify/no-answer)
+  const successState = ref(null) // { kind: 'qualified'|'no-answer'|'not-interested', statusText, meeting? }
+  const successPerformedAt = ref(null) // Date
+
+  // Qualification method (Assign only | Assign and schedule) and schedule state
+  const qualificationMethod = ref('assign-only')
+  const qualificationEventType = ref('')
+  const qualificationDurationMinutes = ref(null) // 30 | 60 | null
+  const qualificationCustomDuration = ref('')
+  const qualificationCalendarMonth = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+  const qualificationSelectedDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()))
+  const qualificationSelectedSlot = ref('')
+
+  const qualificationCalendarMonthLabel = computed(() => {
+    const m = qualificationCalendarMonth.value
+    if (!m || !(m instanceof Date)) return ''
+    return m.toLocaleString(undefined, { month: 'long', year: 'numeric' })
+  })
+
+  const qualificationCalendarDayCells = computed(() => {
+    const m = qualificationCalendarMonth.value
+    if (!m || !(m instanceof Date)) return []
+    const year = m.getFullYear()
+    const month = m.getMonth()
+    const first = new Date(year, month, 1)
+    const offset = first.getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const cells = []
+    for (let i = 0; i < offset; i++) cells.push(null)
+    for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
+    while (cells.length < 42) cells.push(null)
+    return cells
+  })
+
+  const qualificationSelectedDayLabel = computed(() => {
+    const d = qualificationSelectedDate.value
+    if (!d || !(d instanceof Date)) return 'Select a date'
+    return d.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'short' })
+  })
+
+  const qualificationScheduleSlotOptions = computed(() => {
+    const slots = []
+    for (let m = 9 * 60; m <= 18 * 60; m += 30) {
+      const h = String(Math.floor(m / 60)).padStart(2, '0')
+      const min = String(m % 60).padStart(2, '0')
+      slots.push(`${h}:${min}`)
+    }
+    return slots
+  })
+
+  const qualificationGoPrevMonth = () => {
+    const m = qualificationCalendarMonth.value
+    if (!m) return
+    qualificationCalendarMonth.value = new Date(m.getFullYear(), m.getMonth() - 1, 1)
+  }
+
+  const qualificationGoNextMonth = () => {
+    const m = qualificationCalendarMonth.value
+    if (!m) return
+    qualificationCalendarMonth.value = new Date(m.getFullYear(), m.getMonth() + 1, 1)
+  }
+
+  const qualificationIsSameDay = (a, b) => {
+    if (!a || !b) return false
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+  }
+
+  const qualificationSelectDate = (cellDate) => {
+    if (!cellDate) return
+    qualificationSelectedDate.value = cellDate
+    qualificationSelectedSlot.value = ''
+  }
+
+  const qualificationDurationValue = computed(() => {
+    if (qualificationDurationMinutes.value != null) return qualificationDurationMinutes.value
+    const n = parseInt(qualificationCustomDuration.value, 10)
+    return Number.isFinite(n) && n > 0 ? n : null
+  })
 
   const messageTemplates = computed(() => {
     const customerName = lead.value?.customer?.name?.split(' ')[0] || ''
@@ -185,16 +262,12 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const cancelOutcome = () => {
     selectedOutcome.value = null
     showOutcomeSelection.value = false
-    appointmentScheduled.value = false
-    scheduledAppointmentData.value = null
     showCallLogForm.value = false
   }
 
   const resetOutcomeState = () => {
     selectedOutcome.value = null
     showOutcomeSelection.value = false
-    appointmentScheduled.value = false
-    scheduledAppointmentData.value = null
     followupChannel.value = 'whatsapp'
     selectedTemplate.value = 'followup-1'
     rescheduleTime.value = null
@@ -209,6 +282,21 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     showCallLogForm.value = false
     callLogDateTime.value = ''
     callLogAssignee.value = null
+    successState.value = null
+    successPerformedAt.value = null
+    qualificationMethod.value = 'assign-only'
+    qualificationEventType.value = ''
+    qualificationDurationMinutes.value = null
+    qualificationCustomDuration.value = ''
+    qualificationSelectedSlot.value = ''
+    const now = new Date()
+    qualificationCalendarMonth.value = new Date(now.getFullYear(), now.getMonth(), 1)
+    qualificationSelectedDate.value = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  }
+
+  const clearSuccessState = () => {
+    successState.value = null
+    successPerformedAt.value = null
   }
   
   // Initialize call log form with current datetime and auto-assign to current user
@@ -231,7 +319,6 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   }
   
   const confirmCallLogForm = () => {
-    showCallLogForm.value = false
     showOutcomeSelection.value = true
   }
   
@@ -245,8 +332,6 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     // State
     showOutcomeSelection,
     selectedOutcome,
-    appointmentScheduled,
-    scheduledAppointmentData,
     showNoteModal,
     showScheduleAppointmentModal,
     followupChannels,
@@ -280,7 +365,26 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     resetOutcomeState,
     initCallLogForm,
     confirmCallLogForm,
-    cancelCallLogForm
+    cancelCallLogForm,
+    clearSuccessState,
+    successState,
+    successPerformedAt,
+    qualificationMethod,
+    qualificationEventType,
+    qualificationDurationMinutes,
+    qualificationCustomDuration,
+    qualificationCalendarMonth,
+    qualificationSelectedDate,
+    qualificationSelectedSlot,
+    qualificationCalendarMonthLabel,
+    qualificationCalendarDayCells,
+    qualificationSelectedDayLabel,
+    qualificationScheduleSlotOptions,
+    qualificationDurationValue,
+    qualificationGoPrevMonth,
+    qualificationGoNextMonth,
+    qualificationIsSameDay,
+    qualificationSelectDate
   }
 }
 

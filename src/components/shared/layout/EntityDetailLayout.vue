@@ -226,6 +226,13 @@
             />
           </div>
 
+          <!-- Customer Related Tasks Widget -->
+          <CustomerRelatedTasksWidget
+            v-if="type !== 'contact'"
+            :task="task"
+            :entity-type="type"
+          />
+
           <!-- Activity Summary Card -->
           <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
             <!-- Title Section -->
@@ -464,6 +471,7 @@ import Tabs from '@/components/customer/widgets/Tabs.vue'
 import Request from '@/components/shared/Request.vue'
 import TaskRequestOverviewTab from '@/components/tasks/TaskRequestOverviewTab.vue'
 import TaskContactCard from '@/components/tasks/TaskContactCard.vue'
+import CustomerRelatedTasksWidget from '@/components/tasks/CustomerRelatedTasksWidget.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
 import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummarySidebar.vue'

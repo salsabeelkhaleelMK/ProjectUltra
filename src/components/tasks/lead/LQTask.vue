@@ -1,63 +1,127 @@
 <template>
-  <div class="bg-surfaceSecondary/50 rounded-lg p-6 relative transition-all duration-300">
-    <div class="flex justify-between items-start mb-3">
-      <div>
-        <h4 class="font-bold text-heading text-fluid-sm">{{ dynamicTitle }}</h4>
-        <p class="text-fluid-xs mt-0.5">
-          {{ dynamicDescription }}
-        </p>
-      </div>
-      <div 
-        class="flex items-center gap-2 px-2 py-1 rounded text-xs font-semibold"
-        :class="statusBadge.class"
+  <div
+    class="bg-greys-100 rounded-xl p-1 flex flex-col"
+    style="background-color: var(--base-muted, #f5f5f5)"
+  >
+    <!-- Success state (post qualify / disqualify / no-answer) -->
+    <template v-if="successState">
+      <div
+        class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
+        style="box-shadow: var(--nsc-card-shadow)"
       >
-        {{ statusBadge.text }}
-      </div>
-    </div>
-
-    <!-- Display scheduled follow-up if exists -->
-    <div v-if="hasScheduledFollowUp" class="mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-      <div class="flex items-center gap-2 mb-1">
-        <i class="fa-solid fa-phone text-blue-600 text-xs"></i>
-        <span class="text-fluid-xs font-semibold text-blue-900">Scheduled Follow-up Call</span>
-      </div>
-      <p class="text-fluid-xs text-blue-700">
-        {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
-      </p>
-    </div>
-
-    <!-- Contact Attempt Counter -->
-    <div v-if="contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-phone text-body text-xs"></i>
-          <span class="text-fluid-xs font-semibold text-body">Contact Attempts:</span>
-          <span class="text-fluid-xs font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
+        <div class="flex items-center gap-3">
+          <div class="size-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+            <Check :size="16" class="text-green-600" />
+          </div>
+          <p class="text-fluid-sm font-medium text-heading flex-1 pr-10">
+            {{ successState.statusText }}
+          </p>
         </div>
-        <div 
-          v-if="contactAttempts >= maxContactAttempts - 1"
-          class="text-fluid-xs text-orange-600 font-medium flex items-center gap-1"
+        <div
+          v-if="successState.meeting"
+          class="mt-4 bg-white rounded-lg border border-E5E7EB overflow-hidden shadow-sm"
         >
-          <i class="fa-solid fa-exclamation-triangle"></i>
-          One more attempt before auto-disqualification
+          <div class="grid grid-cols-2 gap-3 p-4 text-fluid-sm">
+            <div>
+              <span class="text-body">Date:</span>
+              <span class="ml-2 font-medium text-heading">{{ successState.meeting.date }}</span>
+            </div>
+            <div>
+              <span class="text-body">Time:</span>
+              <span class="ml-2 font-medium text-heading">{{ successState.meeting.time }}</span>
+            </div>
+            <div>
+              <span class="text-body">Type:</span>
+              <span class="ml-2 font-medium text-heading capitalize">{{ successState.meeting.title }}</span>
+            </div>
+            <div>
+              <span class="text-body">Assigned to:</span>
+              <span class="ml-2 font-medium text-heading">{{ successState.meeting.location }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end mt-4">
+          <Button
+            variant="outline"
+            size="small"
+            class="flex items-center gap-2"
+            @click="handleReopen"
+          >
+            <RotateCcw :size="14" />
+            Re-open
+          </Button>
         </div>
       </div>
-    </div>
+      <div class="px-4 py-2 flex items-center justify-between text-fluid-sm text-sub">
+        <span>Updated by {{ successState.actorName || 'Unknown' }}</span>
+        <span class="tabular-nums">{{ successPerformedAtLabel }}</span>
+      </div>
+    </template>
 
-    <!-- Phone Number Row -->
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-fluid-sm text-body font-medium">{{ lead.customer.phone }}</span>
-      <button
-        @click="copyNumber"
-        class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
-        title="Copy phone number"
+    <template v-else>
+      <!-- Contact block: white card -->
+      <div
+        class="bg-white rounded-lg p-4 shadow-nsc-card"
+        style="box-shadow: var(--nsc-card-shadow)"
       >
-        <i class="fa-regular fa-copy text-xs"></i>
-      </button>
-    </div>
-    
-    <!-- Call Interface Component -->
-    <CallInterface
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-heading text-fluid-sm">{{ dynamicTitle }}</h4>
+            <p class="text-fluid-xs text-body mt-0.5">
+              {{ dynamicDescription }}
+            </p>
+          </div>
+          <div
+            class="flex items-center gap-2 px-2 py-1 rounded-btn text-fluid-xs font-semibold"
+            :class="statusBadge.class"
+          >
+            {{ statusBadge.text }}
+          </div>
+        </div>
+
+        <!-- Display scheduled follow-up if exists -->
+        <div v-if="hasScheduledFollowUp" class="mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-phone text-blue-600 text-fluid-xs"></i>
+            <span class="text-fluid-xs font-semibold text-blue-900">Scheduled Follow-up Call</span>
+          </div>
+          <p class="text-fluid-xs text-blue-700">
+            {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
+          </p>
+        </div>
+
+        <!-- Contact Attempt Counter -->
+        <div v-if="contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-phone text-body text-fluid-xs"></i>
+              <span class="text-fluid-xs font-semibold text-body">Contact Attempts:</span>
+              <span class="text-fluid-xs font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
+            </div>
+            <div
+              v-if="contactAttempts >= maxContactAttempts - 1"
+              class="text-fluid-xs text-orange-600 font-medium flex items-center gap-1"
+            >
+              <i class="fa-solid fa-exclamation-triangle"></i>
+              One more attempt before auto-disqualification
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Number Row -->
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-fluid-sm text-body font-medium">{{ lead.customer.phone }}</span>
+          <button
+            @click="copyNumber"
+            class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
+            title="Copy phone number"
+          >
+            <i class="fa-regular fa-copy text-fluid-xs"></i>
+          </button>
+        </div>
+
+        <!-- Call Interface Component -->
+        <CallInterface
       :is-call-active="isCallActive"
       :call-ended="callEnded"
       :call-duration="callDuration"
@@ -74,454 +138,560 @@
       @extract-information="extractInformationFromComposable"
       @update:call-notes="updateCallNotes"
       @copy-number="copyNumber"
-    />
+        />
+      </div>
 
-    <!-- Call Log Form (shows datetime and assignee before outcome selection) -->
-    <div v-if="showCallLogForm && !showOutcomeSelection" class="mt-4 space-y-4 border-t border-E5E7EB pt-4">
-      <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-        <h4 class="font-semibold text-heading mb-4 text-fluid-sm">Log Call Details</h4>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- DateTime Input -->
-          <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1.5">Call Date & Time</label>
-            <input 
-              type="datetime-local" 
-              v-model="callLogDateTime"
-              class="input w-full"
-            >
-          </div>
-          
-          <!-- Assigned To -->
-          <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1.5">Assigned To</label>
-            <div class="flex items-center gap-3 p-3 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-              <div 
-                class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs"
-                :class="getRoleAvatarClass(callLogAssignee?.role)"
-              >
-                {{ getInitials(callLogAssignee?.name) }}
+      <!-- Grey outcome area: call log form + outcome selection -->
+      <div class="px-4 py-4 space-y-3">
+        <!-- Call Log Form (shows datetime and assignee; stays visible when outcome selection appears below) -->
+        <div v-if="showCallLogForm" class="space-y-4">
+          <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+            <h4 class="font-semibold text-heading mb-4 text-fluid-sm">Log Call Details</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-fluid-xs font-medium text-body mb-1.5">Call Date & Time</label>
+                <input
+                  type="datetime-local"
+                  v-model="callLogDateTime"
+                  class="input w-full"
+                >
               </div>
-              <div class="flex-1">
-                <p class="font-medium text-fluid-sm text-heading">{{ callLogAssignee?.name || 'Unknown' }}</p>
-                <p class="text-fluid-xs text-sub capitalize">{{ callLogAssignee?.role || 'User' }}</p>
+              <div>
+                <label class="block text-fluid-xs font-medium text-body mb-1.5">Assigned To</label>
+                <div class="flex items-center gap-3 p-3 bg-surfaceSecondary rounded-lg border border-E5E7EB">
+                  <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs"
+                    :class="getRoleAvatarClass(callLogAssignee?.role)"
+                  >
+                    {{ getInitials(callLogAssignee?.name) }}
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-fluid-sm text-heading">{{ callLogAssignee?.name || 'Unknown' }}</p>
+                    <p class="text-fluid-xs text-sub capitalize">{{ callLogAssignee?.role || 'User' }}</p>
+                  </div>
+                  <span class="text-fluid-xs text-green-600 font-medium">Auto-assigned</span>
+                </div>
               </div>
-              <span class="text-fluid-xs text-green-600 font-medium">Auto-assigned</span>
+            </div>
+            <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-E5E7EB">
+              <Button
+                label="Cancel"
+                variant="outline"
+                size="small"
+                @click="cancelCallLogForm"
+              />
+              <Button
+                label="Continue"
+                variant="primary"
+                size="small"
+                @click="confirmCallLogForm"
+                class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+              />
             </div>
           </div>
         </div>
-        
-        <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-E5E7EB">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="cancelCallLogForm"
-          />
-          <Button
-            label="Continue"
-            variant="primary"
-            size="small"
-            @click="confirmCallLogForm"
-            class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-          />
-        </div>
-      </div>
-    </div>
 
-    <!-- Inline Outcome Selection (replaces modal) -->
-    <div v-if="showOutcomeSelection" class="mt-4 space-y-4 border-t border-E5E7EB pt-4">
-      <div>
-        <h4 class="font-semibold text-heading mb-2 text-fluid-sm">What's the outcome?</h4>
-        <div class="grid grid-cols-3 gap-2">
-          <button 
-            @click="selectOutcome('no-answer')"
-            class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'no-answer' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
-          >
-            <i class="fa-solid fa-phone-slash text-sm"></i>
-            <span>No answer</span>
-          </button>
-          
-          <button 
-            @click="selectOutcome('not-valid')"
-            class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'not-valid' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
-          >
-            <i class="fa-solid fa-ban text-sm"></i>
-            <span>Not valid</span>
-          </button>
-          
-          <button 
-            @click="selectOutcome('interested')"
-            class="bg-surface border-2 rounded-lg py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-fluid-xs font-medium text-body transition-all"
-            :class="selectedOutcome === 'interested' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
-          >
-            <i class="fa-solid fa-check-circle text-sm"></i>
-            <span>Interested</span>
-          </button>
-        </div>
-      </div>
+        <!-- Inline Outcome Selection -->
+        <div v-if="showOutcomeSelection" class="space-y-4">
+          <div>
+            <p class="text-fluid-sm font-medium text-heading leading-6 mb-3">What's the outcome?</p>
+            <div class="flex flex-wrap gap-3">
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
+                :class="
+                  selectedOutcome === 'no-answer'
+                    ? 'border-brand-blue text-heading'
+                    : 'border-E5E7EB text-body hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
+                "
+                @click="selectOutcome('no-answer')"
+              >
+                <PhoneOff :size="18" class="shrink-0" />
+                <span>No answer</span>
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
+                :class="
+                  selectedOutcome === 'not-valid'
+                    ? 'border-brand-blue text-heading'
+                    : 'border-E5E7EB text-body hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
+                "
+                @click="selectOutcome('not-valid')"
+              >
+                <ThumbsDown :size="18" class="shrink-0" />
+                <span>Not valid</span>
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
+                :class="
+                  selectedOutcome === 'interested'
+                    ? 'border-brand-blue text-heading'
+                    : 'border-E5E7EB text-body hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
+                "
+                @click="selectOutcome('interested')"
+              >
+                <Check :size="18" class="shrink-0" />
+                <span>Interested</span>
+              </button>
+            </div>
+          </div>
 
-      <!-- No Answer Follow-up (Inline) -->
-      <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
-        <!-- Communication Selector Component (with its own border) -->
-        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <CommunicationSelector
+          <!-- No Answer Follow-up (Inline) -->
+          <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <CommunicationSelector
             title="Send follow-up message"
             :show-email="true"
             :show-sms="true"
             :show-whatsapp="true"
             :show-dont-send="true"
             @send="handleFollowupSend"
-            @dont-send="() => { followupChannel.value = 'dont-send' }"
-            @cancel="() => { selectedOutcome.value = null }"
-          />
-        </div>
-        
-        <!-- Next call attempt (in its own bordered card) -->
-        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <h5 class="font-semibold text-heading text-fluid-sm mb-2">Next call attempt</h5>
-          <div class="grid grid-cols-3 gap-2">
-            <button 
-              @click="rescheduleTime = 'tomorrow-9am'"
-              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-              :class="rescheduleTime === 'tomorrow-9am' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
-            >
-              Tomorrow 9:00 AM
-            </button>
-            <button 
-              @click="handleAISuggestionClick"
-              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-              :class="rescheduleTime === 'monday' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
-            >
-              AI suggestion
-            </button>
-            <button 
-              @click="rescheduleTime = 'custom'"
-              class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-              :class="rescheduleTime === 'custom' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
-            >
-              Select time
-            </button>
-          </div>
-          
-          <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-fluid-xs font-semibold mb-1.5">Date</label>
-              <input 
-                type="date" 
-                v-model="customDate"
-                class="input"
-              >
+                @dont-send="() => { followupChannel.value = 'dont-send' }"
+                @cancel="() => { selectedOutcome.value = null }"
+              />
             </div>
-            <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1.5">Time</label>
-              <input 
-                type="time" 
-                v-model="customTime"
-                class="input"
-              >
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <h5 class="font-semibold text-heading text-fluid-sm mb-2">Next call attempt</h5>
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  @click="rescheduleTime = 'tomorrow-9am'"
+                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+                  :class="rescheduleTime === 'tomorrow-9am' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
+                >
+                  Tomorrow 9:00 AM
+                </button>
+                <button
+                  @click="handleAISuggestionClick"
+                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+                  :class="rescheduleTime === 'monday' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
+                >
+                  AI suggestion
+                </button>
+                <button
+                  @click="rescheduleTime = 'custom'"
+                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
+                  :class="rescheduleTime === 'custom' ? 'border-primary-700 bg-primary-700 text-white' : 'border-E5E7EB hover:border-primary-300 hover:bg-brand-gray'"
+                >
+                  Select time
+                </button>
+              </div>
+              <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-fluid-xs font-semibold mb-1.5">Date</label>
+                  <input type="date" v-model="customDate" class="input">
+                </div>
+                <div>
+                  <label class="block text-fluid-xs font-medium text-body mb-1.5">Time</label>
+                  <input type="time" v-model="customTime" class="input">
+                </div>
+              </div>
+              <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p class="text-fluid-xs text-body">
+                  <span class="font-semibold text-heading">AI Suggestion:</span>
+                  {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}. {{ aiSuggestionData.reason }}
+                </p>
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
+              <Button
+                label="Cancel"
+                variant="outline"
+                size="small"
+                @click="cancelOutcome"
+              />
+              <Button
+                label="Send and reschedule"
+                variant="primary"
+                size="small"
+                @click="handleNoAnswerConfirm"
+                class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+              />
             </div>
           </div>
-          
-          <!-- AI Suggestion Explanation -->
-          <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-fluid-xs text-body">
-              <span class="font-semibold text-heading">AI Suggestion:</span> 
-              {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}. {{ aiSuggestionData.reason }}
-            </p>
-          </div>
-        </div>
-        
-        <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="cancelOutcome"
-          />
-          <Button
-            label="Send and reschedule"
-            variant="primary"
-            size="small"
-            @click="handleNoAnswerConfirm"
-            class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-          />
-        </div>
-      </div>
 
-      <!-- Not Valid (Inline) -->
-      <div v-if="selectedOutcome === 'not-valid'" class="space-y-4 bg-surface border border-E5E7EB rounded-lg p-6">
-        <div>
-          <label class="block text-fluid-xs font-semibold mb-2">Category</label>
-          <div class="flex gap-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input 
-                type="radio" 
-                v-model="disqualifyCategory"
-                value="Not Valid"
-                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-              >
-              <span class="text-fluid-sm text-body">Not Valid</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input 
-                type="radio" 
-                v-model="disqualifyCategory"
-                value="Not Interested"
-                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-              >
-              <span class="text-fluid-sm text-body">Not Interested</span>
-            </label>
+          <!-- Not Valid (Inline) -->
+          <div v-if="selectedOutcome === 'not-valid'" class="space-y-4">
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <div>
+                <label class="block text-fluid-xs font-semibold mb-2">Category</label>
+                <div class="flex gap-4">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      v-model="disqualifyCategory"
+                      value="Not Valid"
+                      class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
+                    >
+                    <span class="text-fluid-sm text-body">Not Valid</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      v-model="disqualifyCategory"
+                      value="Not Interested"
+                      class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
+                    >
+                    <span class="text-fluid-sm text-body">Not Interested</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block text-fluid-xs font-medium text-body mb-2">Failure Reason</label>
+                <select v-model="disqualifyReason" class="input">
+                  <option value="">Select a reason...</option>
+                  <option value="Data cleanup">Data cleanup</option>
+                  <option value="Unreachable">Unreachable</option>
+                  <option value="Purchase postponed">Purchase postponed</option>
+                  <option value="Vehicle sold">Vehicle sold</option>
+                  <option value="Out of budget">Out of budget</option>
+                  <option value="Financing rejected">Financing rejected</option>
+                  <option value="Duplicate">Duplicate</option>
+                  <option value="Bought elsewhere">Bought elsewhere</option>
+                </select>
+              </div>
+              <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
+                <Button
+                  label="Cancel"
+                  variant="outline"
+                  size="small"
+                  @click="cancelOutcome"
+                />
+                <Button
+                  label="Confirm Disqualification"
+                  variant="primary"
+                  size="small"
+                  :disabled="!disqualifyCategory || !disqualifyReason"
+                  @click="handleNotValidConfirm"
+                  class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <label class="block text-fluid-xs font-medium text-body mb-2">Failure Reason</label>
-          <select 
-            v-model="disqualifyReason"
-            class="input"
-          >
-            <option value="">Select a reason...</option>
-            <option value="Data cleanup">Data cleanup</option>
-            <option value="Unreachable">Unreachable</option>
-            <option value="Purchase postponed">Purchase postponed</option>
-            <option value="Vehicle sold">Vehicle sold</option>
-            <option value="Out of budget">Out of budget</option>
-            <option value="Financing rejected">Financing rejected</option>
-            <option value="Duplicate">Duplicate</option>
-            <option value="Bought elsewhere">Bought elsewhere</option>
-          </select>
-        </div>
-        
-        <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="cancelOutcome"
-          />
-          <Button
-            label="Confirm Disqualification"
-            variant="primary"
-            size="small"
-            :disabled="!disqualifyCategory || !disqualifyReason"
-            @click="handleNotValidConfirm"
-            class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
-          />
-        </div>
-      </div>
 
       <!-- Interested (Inline) -->
-      <div v-if="selectedOutcome === 'interested'" class="space-y-4">
-        <!-- Customer Data Section (full width, first step) -->
-        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer data</h5>
-          
-          <!-- Trade-in, Financing, Vehicle, and Note Buttons -->
-          <div class="flex gap-2 flex-wrap">
-            <Button
-              label="+ Add vehicle"
-              variant="primary"
-              size="small"
-              @click="showVehicleModal = true"
-              class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-            />
-            <Button
-              label="+ Add financing"
-              variant="primary"
-              size="small"
-              @click="showFinancingModal = true"
-              class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-            />
-            <Button
-              label="+ Add note"
-              variant="primary"
-              size="small"
-              @click="showNoteModal = true"
-              class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-            />
-          </div>
-        </div>
+          <div v-if="selectedOutcome === 'interested'" class="space-y-4">
+            <!-- Customer Data Section -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer data</h5>
+              <div class="flex gap-2 flex-wrap">
+                <Button
+                  label="+ Add vehicle"
+                  variant="primary"
+                  size="small"
+                  @click="showVehicleModal = true"
+                  class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+                />
+                <Button
+                  label="+ Add financing"
+                  variant="primary"
+                  size="small"
+                  @click="showFinancingModal = true"
+                  class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+                />
+                <Button
+                  label="+ Add note"
+                  variant="primary"
+                  size="small"
+                  @click="showNoteModal = true"
+                  class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+                />
+              </div>
+            </div>
 
-        <!-- Survey Section -->
-        <div v-if="showSurvey && !surveyCompleted" class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <SurveyWidget
-            :questions="leadQualificationSurveyQuestions"
-            :initial-expanded="false"
-            @survey-completed="handleSurveyCompleted"
-            @survey-refused="handleSurveyRefused"
-            @not-responding="handleNotResponding"
-          />
-        </div>
+            <!-- Survey Section -->
+            <div v-if="showSurvey && !surveyCompleted" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <SurveyWidget
+                :questions="leadQualificationSurveyQuestions"
+                :initial-expanded="false"
+                @survey-completed="handleSurveyCompleted"
+                @survey-refused="handleSurveyRefused"
+                @not-responding="handleNotResponding"
+              />
+            </div>
 
-        <!-- Survey Completed Indicator -->
-        <div v-if="surveyCompleted" class="bg-green-50 border border-green-200 rounded-lg p-3">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-check-circle text-green-600 text-sm"></i>
-            <span class="text-fluid-xs font-semibold text-green-900">Survey completed</span>
-          </div>
-        </div>
+            <!-- Survey Completed Indicator -->
+            <div v-if="surveyCompleted" class="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-check-circle text-green-600 text-fluid-sm"></i>
+                <span class="text-fluid-xs font-semibold text-green-900">Survey completed</span>
+              </div>
+            </div>
 
-        <!-- Assignment Section (second step, after preferences) -->
-        <div class="bg-surface border border-E5E7EB rounded-lg p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h5 class="font-semibold text-heading text-fluid-sm">Assign to salesman</h5>
-            <Button
-              label="Change"
-              variant="outline"
-              size="small"
-              class="text-fluid-xs"
-              @click="showAssignmentModal = true"
-            />
-          </div>
-          
-          <!-- Current Assignment Display -->
-          <div v-if="assignment.assignee" class="flex items-center gap-3 p-3 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-            <div 
-              class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-fluid-sm"
-              :class="assignment.assignee.type === 'team' ? 'bg-green-100 text-green-700' : getRoleAvatarClass(assignment.assignee.role)"
+            <!-- Assign to salesman: 3 suggested people (first selected) + availability -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <div class="flex items-center justify-between mb-4">
+                <h5 class="font-semibold text-heading text-fluid-sm">Assign to salesman</h5>
+                <Button
+                  label="Change"
+                  variant="outline"
+                  size="small"
+                  class="text-fluid-xs"
+                  @click="showAssignmentModal = true"
+                />
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button
+                  v-for="person in suggestedAssignees"
+                  :key="person.id"
+                  type="button"
+                  class="flex flex-col items-start gap-2 p-3 rounded-lg border-2 transition-all text-left"
+                  :class="
+                    assignment.assignee && assignment.assignee.id === person.id
+                      ? 'border-brand-blue bg-surfaceSecondary'
+                      : 'border-E5E7EB hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
+                  "
+                  @click="assignment.assignee = person"
+                >
+                  <div class="flex items-center gap-3 w-full">
+                    <div
+                      class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-fluid-sm shrink-0"
+                      :class="getRoleAvatarClass(person.role)"
+                    >
+                      {{ person.initials }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-medium text-fluid-sm text-heading truncate">{{ person.name }}</p>
+                      <p class="text-fluid-xs text-sub capitalize truncate">{{ person.role }}</p>
+                    </div>
+                  </div>
+                  <p class="text-fluid-xs text-sub">Mon–Fri 9:00–17:00</p>
+                </button>
+              </div>
+              <p v-if="suggestedAssignees.length === 0" class="text-fluid-xs text-sub">No assignable users. Use Change to assign.</p>
+            </div>
+
+            <!-- Qualification method -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Qualification method</h5>
+              <div class="space-y-2">
+                <label
+                  class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
+                  :class="
+                    qualificationMethod === 'assign-only'
+                      ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
+                      : 'border border-E5E7EB hover:bg-surfaceSecondary/50'
+                  "
+                >
+                  <input v-model="qualificationMethod" type="radio" value="assign-only" class="shrink-0" />
+                  <span class="text-fluid-sm text-heading">Assign only</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
+                  :class="
+                    qualificationMethod === 'assign-and-schedule'
+                      ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
+                      : 'border border-E5E7EB hover:bg-surfaceSecondary/50'
+                  "
+                >
+                  <input v-model="qualificationMethod" type="radio" value="assign-and-schedule" class="shrink-0" />
+                  <span class="text-fluid-sm text-heading">Assign and schedule</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Schedule (only when Assign and schedule) -->
+            <div
+              v-if="qualificationMethod === 'assign-and-schedule'"
+              class="bg-white rounded-lg p-4 shadow-nsc-card"
+              style="box-shadow: var(--nsc-card-shadow)"
             >
-              <i v-if="assignment.assignee.type === 'team'" class="fa-solid fa-users text-fluid-sm"></i>
-              <span v-else>{{ getInitials(assignment.assignee.name) }}</span>
+              <h5 class="font-semibold text-heading text-fluid-sm mb-4">Schedule</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="block text-fluid-xs font-medium text-body mb-1.5">Event type</label>
+                  <select
+                    v-model="qualificationEventType"
+                    class="input w-full"
+                  >
+                    <option value="" disabled>Select event type</option>
+                    <option
+                      v-for="opt in qualificationEventTypeOptions"
+                      :key="opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-fluid-xs font-medium text-body mb-1.5">Duration</label>
+                  <div class="flex gap-2 items-center flex-wrap">
+                    <button
+                      type="button"
+                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                      :class="
+                        qualificationDurationMinutes === 30
+                          ? 'border-brand-blue bg-surfaceSecondary text-heading'
+                          : 'border-E5E7EB text-body hover:border-brand-blue/30'
+                      "
+                      @click="handleQualificationDurationSelect(30)"
+                    >
+                      30min
+                    </button>
+                    <button
+                      type="button"
+                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                      :class="
+                        qualificationDurationMinutes === 60
+                          ? 'border-brand-blue bg-surfaceSecondary text-heading'
+                          : 'border-E5E7EB text-body hover:border-brand-blue/30'
+                      "
+                      @click="handleQualificationDurationSelect(60)"
+                    >
+                      60min
+                    </button>
+                    <input
+                      v-model="qualificationCustomDuration"
+                      type="number"
+                      min="1"
+                      placeholder="Custom"
+                      class="input w-24"
+                      @input="qualificationDurationMinutes = null"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="border border-E5E7EB rounded-lg overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                  <div class="p-3">
+                    <div class="flex items-center justify-between mb-3">
+                      <p class="text-fluid-sm font-medium text-heading">{{ qualificationCalendarMonthLabel }}</p>
+                      <div class="flex items-center gap-1">
+                        <button
+                          type="button"
+                          class="p-1.5 rounded-lg hover:bg-surfaceSecondary transition-colors"
+                          aria-label="Previous month"
+                          @click="qualificationGoPrevMonth"
+                        >
+                          <ChevronLeft :size="16" class="text-body" />
+                        </button>
+                        <button
+                          type="button"
+                          class="p-1.5 rounded-lg hover:bg-surfaceSecondary transition-colors"
+                          aria-label="Next month"
+                          @click="qualificationGoNextMonth"
+                        >
+                          <ChevronRight :size="16" class="text-body" />
+                        </button>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 mb-1">
+                      <div
+                        v-for="day in ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']"
+                        :key="day"
+                        class="text-center text-fluid-xs font-medium text-sub py-1"
+                      >
+                        {{ day }}
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1">
+                      <button
+                        v-for="(cellDate, idx) in qualificationCalendarDayCells"
+                        :key="`${idx}-${cellDate?.getTime?.() ?? 'e'}`"
+                        type="button"
+                        class="h-10 w-full rounded-lg text-fluid-sm flex items-center justify-center transition-colors"
+                        :class="
+                          !cellDate
+                            ? 'pointer-events-none invisible'
+                            : qualificationIsSameDay(cellDate, qualificationSelectedDate)
+                              ? 'bg-brand-blue text-white'
+                              : 'hover:bg-surfaceSecondary text-heading'
+                        "
+                        @click="qualificationSelectDate(cellDate)"
+                      >
+                        {{ cellDate ? cellDate.getDate() : '' }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="p-3 border-t border-E5E7EB lg:border-t-0 lg:border-l lg:border-E5E7EB">
+                    <p class="text-fluid-sm font-medium text-heading mb-3">{{ qualificationSelectedDayLabel }}</p>
+                    <div class="space-y-2 max-h-64 overflow-auto pr-1">
+                      <button
+                        v-for="slot in qualificationScheduleSlotOptions"
+                        :key="slot"
+                        type="button"
+                        class="w-full py-2.5 px-4 rounded-lg border-2 text-fluid-sm font-medium text-center transition-all"
+                        :class="
+                          qualificationSelectedSlot === slot
+                            ? 'border-brand-blue bg-surfaceSecondary text-heading'
+                            : 'border-E5E7EB text-body hover:border-brand-blue/30'
+                        "
+                        @click="qualificationSelectedSlot = slot"
+                      >
+                        {{ slot }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="flex-1">
-              <p class="font-medium text-fluid-sm text-heading">{{ assignment.assignee.name }}</p>
-              <p class="text-fluid-xs text-sub capitalize">
-                {{ assignment.assignee.type === 'team' ? 'Team' : assignment.assignee.role }}
-              </p>
-            </div>
-          </div>
-          
-          <!-- No Assignment Yet -->
-          <button 
-            v-else 
-            @click="showAssignmentModal = true"
-            class="w-full p-4 border-2 border-dashed border-E5E7EB rounded-lg hover:border-brand-red hover:bg-red-50/50 transition-colors text-center"
-          >
-            <i class="fa-solid fa-user-plus text-2xl text-sub mb-2"></i>
-            <p class="text-fluid-sm font-medium text-body">Click to assign to salesman</p>
-          </button>
-        </div>
 
-        <!-- Existing Appointment (if lead already has one) -->
-        <div v-if="hasExistingAppointment && !appointmentScheduled" class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-blue-600"></i>
-              <h5 class="heading-sub">Existing Appointment</h5>
+            <!-- Existing Appointment (if lead already has one) -->
+            <div v-if="hasExistingAppointment && qualificationMethod === 'assign-only'" class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-calendar-check text-blue-600"></i>
+                  <h5 class="font-semibold text-heading text-fluid-sm">Existing Appointment</h5>
+                </div>
+                <span class="text-fluid-xs font-semibold text-blue-600 uppercase">Scheduled</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-fluid-sm mb-3">
+                <div>
+                  <span class="text-body">Date:</span>
+                  <span class="ml-2 font-medium text-heading">{{ formatDate(lead.scheduledAppointment.start) }}</span>
+                </div>
+                <div>
+                  <span class="text-body">Time:</span>
+                  <span class="ml-2 font-medium text-heading">{{ formatTime(lead.scheduledAppointment.start) }}</span>
+                </div>
+                <div>
+                  <span class="text-body">Type:</span>
+                  <span class="ml-2 font-medium text-heading capitalize">{{ lead.scheduledAppointment.type }}</span>
+                </div>
+                <div>
+                  <span class="text-body">Assigned to:</span>
+                  <span class="ml-2 font-medium text-heading">{{ lead.scheduledAppointment.assignee }}</span>
+                </div>
+              </div>
+              <Button
+                label="Reschedule Appointment"
+                variant="outline"
+                size="small"
+                @click="showScheduleAppointmentModal = true"
+              />
             </div>
-            <span class="text-xs font-semibold text-blue-600 uppercase">Scheduled</span>
-          </div>
-          <div class="grid grid-cols-2 gap-3 text-sm mb-3">
-            <div>
-              <span class="text-body">Date:</span>
-              <span class="ml-2 font-medium text-heading">{{ formatDate(lead.scheduledAppointment.start) }}</span>
-            </div>
-            <div>
-              <span class="text-body">Time:</span>
-              <span class="ml-2 font-medium text-heading">{{ formatTime(lead.scheduledAppointment.start) }}</span>
-            </div>
-            <div>
-              <span class="text-body">Type:</span>
-              <span class="ml-2 font-medium text-heading capitalize">{{ lead.scheduledAppointment.type }}</span>
-            </div>
-            <div>
-              <span class="text-body">Assigned to:</span>
-              <span class="ml-2 font-medium text-heading">{{ lead.scheduledAppointment.assignee }}</span>
-            </div>
-          </div>
-          <Button
-            label="Reschedule Appointment"
-            variant="outline"
-            size="small"
-            @click="showScheduleAppointmentModal = true"
-          />
-        </div>
 
-        <!-- Schedule Appointment Section (only show if no existing appointment) -->
-        <div v-if="!hasExistingAppointment && !showInlineAppointmentBooking && !appointmentScheduled">
-          <button
-            @click="showInlineAppointmentBooking = true"
-            class="w-full p-4 border-2 border-dashed border-E5E7EB rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition-colors text-center"
-          >
-            <i class="fa-solid fa-calendar-plus text-2xl text-blue-600 mb-2"></i>
-            <p class="text-fluid-sm font-medium text-heading">Schedule Appointment</p>
-            <p class="text-fluid-xs text-sub mt-1">Book a meeting or test drive (optional)</p>
-          </button>
-        </div>
-        
-        <!-- Inline Appointment Booking -->
-        <ScheduleAppointmentInline
-          v-if="showInlineAppointmentBooking && !appointmentScheduled"
-          :preselected-assignee="assignment.assignee"
-          :can-cancel="true"
-          @confirm="handleScheduleAppointmentConfirm"
-          @cancel="showInlineAppointmentBooking = false"
-        />
-        
-        <!-- Appointment Summary (after scheduling) -->
-        <div v-if="appointmentScheduled" class="bg-green-50 border border-green-200 rounded-lg p-6">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-green-600"></i>
-              <h5 class="font-semibold text-heading text-fluid-sm">Appointment Scheduled</h5>
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center pt-3 border-t border-E5E7EB">
+              <Button
+                label="Cancel"
+                variant="outline"
+                size="small"
+                @click="cancelOutcome"
+              />
+              <div class="flex gap-2">
+                <Button
+                  label="Disqualify"
+                  variant="outline"
+                  size="small"
+                  @click="handleDisqualifyFromInterested"
+                />
+                <Button
+                  label="Qualify"
+                  variant="primary"
+                  size="small"
+                  :disabled="!canQualify"
+                  @click="handleQualify"
+                  class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+              </div>
             </div>
-            <button
-              @click="() => { showInlineAppointmentBooking = true; appointmentScheduled = false; }"
-              class="text-fluid-xs text-green-700 hover:underline font-medium"
-            >
-              Reschedule
-            </button>
-          </div>
-          <div class="grid grid-cols-2 gap-3 text-fluid-sm">
-            <div>
-              <span class="text-body">Date:</span>
-              <span class="ml-2 font-medium text-heading">{{ formatDate(scheduledAppointmentData.datetime) }}</span>
-            </div>
-            <div>
-              <span class="text-body">Time:</span>
-              <span class="ml-2 font-medium text-heading">{{ scheduledAppointmentData.time }}</span>
-            </div>
-            <div>
-              <span class="text-body">Type:</span>
-              <span class="ml-2 font-medium text-heading capitalize">{{ scheduledAppointmentData.type }}</span>
-            </div>
-            <div>
-              <span class="text-body">Assigned to:</span>
-              <span class="ml-2 font-medium text-heading">{{ scheduledAppointmentData.assignee }}</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Action Buttons -->
-        <div class="flex justify-between items-center pt-3 border-t border-E5E7EB">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="cancelOutcome"
-          />
-          
-          <div class="flex gap-2">
-            <Button
-              label="Disqualify"
-              variant="outline"
-              size="small"
-              @click="handleDisqualifyFromInterested"
-            />
-            <Button
-              label="Qualify"
-              variant="primary"
-              size="small"
-              @click="handleQualify"
-              class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600"
-            />
           </div>
         </div>
       </div>
-    </div>
+    </template>
 
     <!-- Note Modal -->
     <Dialog :open="showNoteModal" @update:open="handleNoteModalOpenChange">
@@ -608,7 +778,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, toRef } from 'vue'
+import { ref, computed, toRef, watch } from 'vue'
 import { Button } from '@motork/component-library'
 import {
   Dialog,
@@ -619,15 +789,14 @@ import {
   DialogPortal,
   DialogTitle
 } from '@motork/component-library/future/primitives'
+import { Check, PhoneOff, ThumbsDown, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
-import ScheduleAppointmentInline from '@/components/tasks/shared/ScheduleAppointmentInline.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
 import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import SurveyWidget from '@/components/customer/SurveyWidget.vue'
-import InlineFormContainer from '@/components/customer/InlineFormContainer.vue'
 import CommunicationSelector from '@/components/shared/communication/CommunicationSelector.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
@@ -688,7 +857,6 @@ const {
 // State that stays in component
 const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
-const showInlineAppointmentBooking = ref(false)
 const showFinancingModal = ref(false)
 const showVehicleModal = ref(false)
 
@@ -787,8 +955,6 @@ const outcomeState = useLQWidgetOutcomes(
 const {
   showOutcomeSelection,
   selectedOutcome,
-  appointmentScheduled,
-  scheduledAppointmentData,
   showNoteModal,
   showScheduleAppointmentModal,
   followupChannels,
@@ -812,19 +978,75 @@ const {
   showSurvey,
   aiSuggestionData,
   handleAISuggestionClick,
-  // Call log form state
   showCallLogForm,
   callLogDateTime,
   callLogAssignee,
   confirmCallLogForm,
-  cancelCallLogForm
+  cancelCallLogForm,
+  successState,
+  successPerformedAt,
+  qualificationMethod,
+  qualificationEventType,
+  qualificationDurationMinutes,
+  qualificationCustomDuration,
+  qualificationCalendarMonth,
+  qualificationSelectedDate,
+  qualificationSelectedSlot,
+  qualificationCalendarMonthLabel,
+  qualificationCalendarDayCells,
+  qualificationSelectedDayLabel,
+  qualificationScheduleSlotOptions,
+  qualificationDurationValue,
+  qualificationGoPrevMonth,
+  qualificationGoNextMonth,
+  qualificationIsSameDay,
+  qualificationSelectDate
 } = outcomeState
 
 const existingNotes = computed(() => {
   return props.activities.filter(activity => activity.type === 'note')
 })
 
-// Use handlers composable
+// Three suggested assignees (first 3 from assignable users), first selected by default
+const suggestedAssignees = computed(() => {
+  const users = assignableUsers.value || []
+  return users.slice(0, 3).map((u) => ({
+    ...u,
+    type: 'user',
+    initials: getInitials(u.name)
+  }))
+})
+
+// Set first suggested as assignee when entering "interested" flow with no assignee
+watch(selectedOutcome, (outcome) => {
+  if (outcome === 'interested' && !assignment.value?.assignee && suggestedAssignees.value.length > 0) {
+    assignment.value = { ...assignment.value, assignee: suggestedAssignees.value[0] }
+  }
+})
+
+const qualificationEventTypeOptions = [
+  { value: 'test-drive', label: 'Test drive' },
+  { value: 'video-call', label: 'Video call' },
+  { value: 'phone-call', label: 'Phone call' },
+  { value: 'in-store-visit', label: 'In-store visit' }
+]
+
+const handleQualificationDurationSelect = (minutes) => {
+  qualificationDurationMinutes.value = minutes
+  qualificationCustomDuration.value = ''
+}
+
+const canQualify = computed(() => {
+  if (!assignment.value?.assignee) return false
+  if (qualificationMethod.value !== 'assign-and-schedule') return true
+  return Boolean(
+    qualificationEventType.value &&
+    qualificationDurationValue.value &&
+    qualificationSelectedDate.value &&
+    qualificationSelectedSlot.value
+  )
+})
+
 const handlers = useLQWidgetHandlers(
   emit,
   callState,
@@ -832,7 +1054,8 @@ const handlers = useLQWidgetHandlers(
   toRef(props, 'lead'),
   contactAttempts,
   maxContactAttempts,
-  leadsStore
+  leadsStore,
+  currentUser
 )
 
 const {
@@ -845,8 +1068,20 @@ const {
   handleNoteSave,
   handleSurveyCompleted,
   handleSurveyRefused,
-  handleNotResponding
+  handleNotResponding,
+  handleReopen
 } = handlers
+
+const successPerformedAtLabel = computed(() => {
+  if (!successPerformedAt.value) return ''
+  const d = successPerformedAt.value
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = String(d.getFullYear())
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}`
+})
 
 // Define survey questions
 const leadQualificationSurveyQuestions = [

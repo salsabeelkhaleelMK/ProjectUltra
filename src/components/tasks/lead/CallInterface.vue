@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- Call Action Buttons Row (Always visible, allow switching) -->
-    <div v-if="!showOutcomeSelection && !showCallLogForm" class="flex gap-2 items-center mb-4">
+    <!-- Call Action Buttons Row (always visible; next steps show below) -->
+    <div class="flex gap-2 items-center mb-4">
       <!-- Primary: Call Button -->
       <button
         @click="$emit('start-call')"

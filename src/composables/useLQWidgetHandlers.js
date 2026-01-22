@@ -1,14 +1,13 @@
 /**
  * Composable for LQWidget handler functions
  * Coordinates between call and outcome composables
+ * @param {Object} currentUserRef - optional ref to current user for "Updated by" in success state
  */
-export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef, leadsStore) {
+export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef, leadsStore, currentUserRef) {
   const { callData, extractedData, isCallActive, callEnded } = callState
   const {
     showOutcomeSelection,
     selectedOutcome,
-    appointmentScheduled,
-    scheduledAppointmentData,
     assignment,
     preferences,
     cancelOutcome,
@@ -19,8 +18,33 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     showSurvey,
     initCallLogForm,
     callLogDateTime,
-    callLogAssignee
+    callLogAssignee,
+    successState,
+    successPerformedAt,
+    rescheduleTime,
+    aiSuggestionData,
+    customDate,
+    customTime,
+    qualificationMethod,
+    qualificationEventType,
+    qualificationDurationValue,
+    qualificationSelectedDate,
+    qualificationSelectedSlot
   } = outcomeState
+
+  const actorName = () => (currentUserRef?.value?.name) || 'Unknown'
+
+  const getNextCallLabel = () => {
+    if (rescheduleTime.value === 'tomorrow-9am') return 'Tomorrow 9:00 AM'
+    if (rescheduleTime.value === 'monday' && aiSuggestionData.value) {
+      return `${aiSuggestionData.value.formattedDate} at ${aiSuggestionData.value.time}`
+    }
+    if (rescheduleTime.value === 'monday') return 'Monday'
+    if (rescheduleTime.value === 'custom' && customDate.value && customTime.value) {
+      return `${customDate.value} ${customTime.value}`
+    }
+    return 'selected time'
+  }
 
   const logManualCall = () => {
     callData.value = {
@@ -33,12 +57,7 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
   }
 
   const handleScheduleAppointmentConfirm = async (appointmentData) => {
-    // Store appointment data for qualify button
-    scheduledAppointmentData.value = appointmentData
-    appointmentScheduled.value = true
     showScheduleAppointmentModal.value = false
-    
-    // Emit event to create the appointment immediately
     emit('appointment-scheduled', appointmentData)
   }
 
@@ -50,17 +69,52 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       notes: callData.value?.notes || '',
       transcription: callData.value?.transcription || null
     }
-    
+
     emit('call-attempt-logged', attempt)
     emit('validated', { scheduleFollowUp: false })
+
+    const assigneeName = assignment.value?.assignee?.name || 'Unassigned'
+    let meeting = null
+    let scheduleAppointment = false
+    let appointmentData = null
+
+    if (qualificationMethod.value === 'assign-and-schedule' && qualificationSelectedDate.value && qualificationSelectedSlot.value) {
+      const d = qualificationSelectedDate.value
+      const dateStr = d.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })
+      const eventTypeLabel = { 'test-drive': 'Test drive', 'video-call': 'Video call', 'phone-call': 'Phone call', 'in-store-visit': 'In-store visit' }[qualificationEventType.value] || qualificationEventType.value
+      scheduleAppointment = true
+      appointmentData = {
+        datetime: d,
+        time: qualificationSelectedSlot.value,
+        type: eventTypeLabel,
+        assignee: assigneeName,
+        duration: qualificationDurationValue.value
+      }
+      meeting = {
+        date: dateStr,
+        time: qualificationSelectedSlot.value,
+        title: eventTypeLabel,
+        name: lead.value?.customer?.name || '',
+        location: assigneeName
+      }
+      emit('appointment-scheduled', appointmentData)
+    }
+
     emit('qualified', {
       assignment: assignment.value,
       preferences: preferences.value,
-      scheduleAppointment: appointmentScheduled.value,
-      appointmentData: scheduledAppointmentData.value,
+      scheduleAppointment,
+      appointmentData,
       surveyData: surveyCompleted.value ? surveyResponses.value : null
     })
-    
+
+    let statusText = `Qualified - Assigned to ${assigneeName}`
+    if (meeting) {
+      statusText = `Qualified - Assigned to ${assigneeName}, meeting on ${meeting.date} ${meeting.time}`
+    }
+
+    successState.value = { kind: 'qualified', statusText, meeting, actorName: actorName() }
+    successPerformedAt.value = new Date()
     cancelOutcome()
   }
 
@@ -152,12 +206,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     
     emit('call-attempt-logged', attempt)
     
-    // Create appointment and calendar event
     const nextCallDate = calculateNextCallDate()
     const appointmentDate = nextCallDate.split('T')[0]
     const appointmentTime = new Date(nextCallDate).toTimeString().slice(0, 5)
     
-    // Set lead to "to be called back" status by updating nextActionDue
     if (leadsStore && lead.value?.id) {
       try {
         await leadsStore.updateLead(lead.value.id, {
@@ -181,7 +233,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
         reason: 'Unreachable'
       })
     }
-    
+
+    const nextLabel = getNextCallLabel()
+    successState.value = { kind: 'no-answer', statusText: `Message sent - Rescheduled to ${nextLabel}`, actorName: actorName() }
+    successPerformedAt.value = new Date()
     cancelOutcome()
   }
 
@@ -199,13 +254,20 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       category: outcomeState.disqualifyCategory.value,
       reason: outcomeState.disqualifyReason.value
     })
-    
+
+    successState.value = { kind: 'not-interested', statusText: 'Closed - Not interested', actorName: actorName() }
+    successPerformedAt.value = new Date()
     cancelOutcome()
   }
 
   const handleNoteSave = (noteData) => {
     outcomeState.showNoteModal.value = false
     emit('note-saved', noteData)
+  }
+
+  const handleReopen = () => {
+    outcomeState.clearSuccessState()
+    outcomeState.resetOutcomeState()
   }
 
   return {
@@ -218,7 +280,8 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     handleNoteSave,
     handleSurveyCompleted,
     handleSurveyRefused,
-    handleNotResponding
+    handleNotResponding,
+    handleReopen
   }
 }
 

@@ -41,14 +41,14 @@
 
     <template #closed-state>
       <!-- Closed States -->
-      <div 
+      <div
         v-if="leadState.isClosed.value"
-        class="bg-gray-50/50 border border-gray-100 rounded-card p-4"
+        class="bg-surfaceSecondary/50 border border-E5E7EB rounded-card p-4"
       >
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-gray-900 text-fluid-sm">Lead Closed</h4>
-            <p class="text-fluid-xs text-gray-500 mt-0.5">
+            <h4 class="font-bold text-heading text-fluid-sm">Lead Closed</h4>
+            <p class="text-fluid-xs text-body mt-0.5">
               Status: {{ leadState.displayStage.value }}
               <span v-if="lead.disqualifyReason"> - {{ lead.disqualifyReason }}</span>
             </p>
