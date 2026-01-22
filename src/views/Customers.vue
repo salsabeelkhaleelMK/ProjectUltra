@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container relative">
     <!-- Header -->
     <PageHeader title="Customers">
       <template #actions>
@@ -39,6 +39,7 @@
         <component 
           :is="tabComponent" 
           :key="activeTab"
+          @row-click="handleRowClick"
         />
         <template #fallback>
           <div class="flex items-center justify-center py-12">
@@ -50,6 +51,43 @@
         </template>
       </Suspense>
     </div>
+    
+    <!-- Drawer Backdrop -->
+    <transition name="fade">
+      <div 
+        v-if="showDrawer"
+        class="fixed inset-0 bg-black/50 z-40"
+        @click="closeDrawer"
+      ></div>
+    </transition>
+    
+    <!-- Drawer -->
+    <transition name="slide-right">
+      <div 
+        v-if="showDrawer"
+        class="fixed top-0 right-0 bottom-0 w-full lg:w-4/5 xl:w-3/4 bg-white z-50 overflow-y-auto shadow-xl"
+      >
+        <!-- Customer Detail View -->
+        <CustomerDetailDrawer
+          v-if="drawerEntity && drawerEntity.type === 'customer'"
+          :customer-id="drawerEntity.id"
+          @close="closeDrawer"
+        />
+        
+        <!-- Task Detail View -->
+        <TaskDetailView
+          v-else-if="drawerEntity && drawerEntity.type === 'task' && drawerTask && drawerManagementWidget && drawerStoreAdapter"
+          :task="drawerTask"
+          :management-widget="drawerManagementWidget"
+          :store-adapter="drawerStoreAdapter"
+          :add-new-config="drawerAddNewConfig"
+          :filtered-tasks="filteredTasks"
+          :is-drawer-view="true"
+          @task-navigate="handleDrawerTaskNavigate"
+          @close="closeDrawer"
+        />
+      </div>
+    </transition>
     
     <!-- Add Customer Modal -->
     <AddCustomerModal
@@ -63,15 +101,19 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
+import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
+import CustomerDetailDrawer from '@/components/customers/CustomerDetailDrawer.vue'
 import { Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
+import { useTaskShell } from '@/composables/useTaskShell'
+import { useTaskFilters } from '@/composables/useTaskFilters'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -121,6 +163,41 @@ const newItem = ref({
   value: '',
   reason: ''
 })
+
+// Drawer state
+const showDrawer = ref(false)
+const drawerEntity = ref(null) // { type: 'customer' | 'task', id: number }
+const drawerTask = ref(null)
+
+// Use task filters composable for drawer navigation
+const { allTasks } = useTaskFilters(ref(false))
+
+// Filtered tasks for drawer navigation
+const filteredTasks = computed(() => {
+  return allTasks.value
+})
+
+// Computed ref for drawer task (for useTaskShell)
+const drawerTaskRef = computed(() => drawerTask.value)
+
+// Get task shell props for drawer task
+const drawerTaskShellPropsRaw = useTaskShell(drawerTaskRef)
+
+// Unwrap the computed refs for use in template
+const drawerManagementWidget = computed(() => drawerTaskShellPropsRaw.managementWidget.value)
+const drawerStoreAdapter = computed(() => drawerTaskShellPropsRaw.storeAdapter.value)
+const drawerAddNewConfig = computed(() => drawerTaskShellPropsRaw.addNewConfig.value)
+
+// Watch for drawer task changes to load activities
+watch(drawerTask, (task) => {
+  if (task) {
+    if (task.type === 'lead') {
+      leadsStore.fetchLeadById(task.id)
+    } else {
+      opportunitiesStore.fetchOpportunityById(task.id)
+    }
+  }
+}, { immediate: true })
 
 // Lazy load tab components
 const tabComponents = {
@@ -243,6 +320,95 @@ const getBadgeTheme = (tabKey, isActive) => {
   return validThemes.includes(theme) ? theme : 'gray'
 }
 
+// Handle row click from tab components
+const handleRowClick = (row) => {
+  // Determine entity type from row ID
+  if (row.id.startsWith('customer-')) {
+    // Customer/Contact - use customerId from row if available, otherwise parse from id
+    const customerId = row.customerId || parseInt(row.id.replace('customer-', ''))
+    drawerEntity.value = { type: 'customer', id: customerId }
+    drawerTask.value = null
+    showDrawer.value = true
+  } else if (row.id.startsWith('lead-')) {
+    // Lead task
+    const idMatch = row.id.match(/-(\d+)$/)
+    const leadId = idMatch ? parseInt(idMatch[1]) : parseInt(row.id.replace('lead-', ''))
+    const task = allTasks.value.find(t => t.type === 'lead' && t.id === leadId)
+    if (task) {
+      drawerTask.value = task
+      drawerEntity.value = { type: 'task', id: leadId }
+      showDrawer.value = true
+      leadsStore.fetchLeadById(leadId)
+    }
+  } else if (row.id.startsWith('opp-')) {
+    // Opportunity task
+    const idMatch = row.id.match(/-(\d+)$/)
+    const oppId = idMatch ? parseInt(idMatch[1]) : parseInt(row.id.replace('opp-', ''))
+    const task = allTasks.value.find(t => t.type === 'opportunity' && t.id === oppId)
+    if (task) {
+      drawerTask.value = task
+      drawerEntity.value = { type: 'task', id: oppId }
+      showDrawer.value = true
+      opportunitiesStore.fetchOpportunityById(oppId)
+    }
+  }
+}
+
+// Close drawer
+const closeDrawer = () => {
+  showDrawer.value = false
+  drawerEntity.value = null
+  drawerTask.value = null
+}
+
+// Handle drawer task navigation
+const handleDrawerTaskNavigate = (direction) => {
+  if (!drawerTask.value) return
+  
+  const index = filteredTasks.value.findIndex(t => {
+    const currentCompositeId = drawerTask.value.compositeId || `${drawerTask.value.type}-${drawerTask.value.id}`
+    const taskCompositeId = t.compositeId || `${t.type}-${t.id}`
+    return taskCompositeId === currentCompositeId
+  })
+  
+  if (index === -1) return
+  
+  if (direction === 'previous' && index > 0) {
+    const prevTask = filteredTasks.value[index - 1]
+    handleRowClick({ id: `${prevTask.type}-${prevTask.id}` })
+  } else if (direction === 'next' && index < filteredTasks.value.length - 1) {
+    const nextTask = filteredTasks.value[index + 1]
+    handleRowClick({ id: `${nextTask.type}-${nextTask.id}` })
+  }
+}
+
 // Load initial stats on mount (for tab counts)
 // Individual tabs will load their own data when mounted
+onMounted(async () => {
+  await leadsStore.fetchLeads()
+  await opportunitiesStore.fetchOpportunities()
+})
 </script>
+
+<style scoped>
+/* Drawer Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+</style>

@@ -31,13 +31,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { DataTable } from '@motork/component-library/future/components'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { useCustomersTable } from '@/composables/useCustomersTable'
 
-const router = useRouter()
 const opportunitiesStore = useOpportunitiesStore()
 
 // DataTable state management
@@ -86,11 +84,11 @@ const rows = computed(() => {
     })
 })
 
+const emit = defineEmits(['row-click'])
+
 const handleRowClick = (row) => {
   if (row.id.startsWith('opp-')) {
-    const idMatch = row.id.match(/-(\d+)$/)
-    const oppId = idMatch ? idMatch[1] : row.id.replace('opp-', '')
-    router.push({ path: `/tasks/${oppId}`, query: { type: 'opportunity' } })
+    emit('row-click', row)
   }
 }
 

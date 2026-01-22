@@ -31,13 +31,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { DataTable } from '@motork/component-library/future/components'
 import { useLeadsStore } from '@/stores/leads'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { useCustomersTable } from '@/composables/useCustomersTable'
 
-const router = useRouter()
 const leadsStore = useLeadsStore()
 
 const showDisqualified = ref(false)
@@ -101,11 +99,11 @@ const rows = computed(() => {
   }))
 })
 
+const emit = defineEmits(['row-click'])
+
 const handleRowClick = (row) => {
   if (row.id.startsWith('lead-')) {
-    const idMatch = row.id.match(/-(\d+)$/)
-    const leadId = idMatch ? idMatch[1] : row.id.replace('lead-', '')
-    router.push({ path: `/tasks/${leadId}`, query: { type: 'lead' } })
+    emit('row-click', row)
   }
 }
 

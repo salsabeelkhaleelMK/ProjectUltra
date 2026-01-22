@@ -31,13 +31,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { DataTable } from '@motork/component-library/future/components'
 import { useCustomersStore } from '@/stores/customers'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersTable } from '@/composables/useCustomersTable'
 
-const router = useRouter()
 const customersStore = useCustomersStore()
 const opportunitiesStore = useOpportunitiesStore()
 
@@ -106,10 +104,11 @@ const rows = computed(() => {
   }))
 })
 
+const emit = defineEmits(['row-click'])
+
 const handleRowClick = (row) => {
   if (row.stageKey === 'contacts') {
-    const customerId = row.customerId || row.id.split('-')[1]
-    router.push({ path: `/customer/${customerId}` })
+    emit('row-click', row)
   }
 }
 
