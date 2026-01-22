@@ -29,7 +29,10 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     qualificationEventType,
     qualificationDurationValue,
     qualificationSelectedDate,
-    qualificationSelectedSlot
+    qualificationSelectedSlot,
+    qualificationSelectedTeam,
+    qualificationSelectedSalesman,
+    communicationPreferences
   } = outcomeState
 
   const actorName = () => (currentUserRef?.value?.name) || 'Unknown'
@@ -61,7 +64,7 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     emit('appointment-scheduled', appointmentData)
   }
 
-  const handleQualify = () => {
+  const handleQualify = async () => {
     const attempt = {
       timestamp: new Date().toISOString(),
       outcome: 'interested',
@@ -73,7 +76,18 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     emit('call-attempt-logged', attempt)
     emit('validated', { scheduleFollowUp: false })
 
-    const assigneeName = assignment.value?.assignee?.name || 'Unassigned'
+    // Determine assignee name based on method
+    let assigneeName = 'Unassigned'
+    if (qualificationMethod.value === 'assign-and-schedule') {
+      if (qualificationSelectedSalesman.value) {
+        assigneeName = qualificationSelectedSalesman.value.name
+      } else if (qualificationSelectedTeam.value) {
+        assigneeName = qualificationSelectedTeam.value.name
+      }
+    } else {
+      assigneeName = assignment.value?.assignee?.name || 'Unassigned'
+    }
+
     let meeting = null
     let scheduleAppointment = false
     let appointmentData = null
@@ -81,14 +95,28 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     if (qualificationMethod.value === 'assign-and-schedule' && qualificationSelectedDate.value && qualificationSelectedSlot.value) {
       const d = qualificationSelectedDate.value
       const dateStr = d.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })
-      const eventTypeLabel = { 'test-drive': 'Test drive', 'video-call': 'Video call', 'phone-call': 'Phone call', 'in-store-visit': 'In-store visit' }[qualificationEventType.value] || qualificationEventType.value
+      const eventTypeLabel = { 'test-drive': 'Test Drive', 'in-store-visit': 'In-Store Visit' }[qualificationEventType.value] || qualificationEventType.value
       scheduleAppointment = true
+      
+      // Format date as YYYY-MM-DD for appointmentData
+      const year = d.getFullYear()
+      const month = String(d.getMonth() + 1).padStart(2, '0')
+      const day = String(d.getDate()).padStart(2, '0')
+      const dateFormatted = `${year}-${month}-${day}`
+      
       appointmentData = {
         datetime: d,
+        date: dateFormatted,
         time: qualificationSelectedSlot.value,
         type: eventTypeLabel,
         assignee: assigneeName,
-        duration: qualificationDurationValue.value
+        assigneeId: qualificationSelectedSalesman.value?.id || qualificationSelectedTeam.value?.id || null,
+        assigneeType: qualificationSelectedSalesman.value ? 'user' : 'team',
+        duration: qualificationDurationValue.value,
+        team: qualificationSelectedTeam.value?.name || null,
+        teamId: qualificationSelectedTeam.value?.id || null,
+        salesperson: qualificationSelectedSalesman.value?.name || null,
+        salespersonId: qualificationSelectedSalesman.value?.id || null
       }
       meeting = {
         date: dateStr,
@@ -98,10 +126,114 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
         location: assigneeName
       }
       emit('appointment-scheduled', appointmentData)
+
+      // Send communications if enabled
+      if (communicationPreferences.value) {
+        const comms = communicationPreferences.value
+        
+        // Send immediate confirmations
+        if (comms.immediateConfirmation?.enabled && comms.immediateConfirmation?.channels?.length > 0) {
+          for (const channel of comms.immediateConfirmation.channels) {
+            // Create activity for each communication sent
+            if (leadsStore && lead.value?.id) {
+              try {
+                await leadsStore.addActivity(lead.value.id, {
+                  type: channel,
+                  user: actorName(),
+                  action: `sent ${channel} confirmation`,
+                  content: `Appointment confirmed: ${eventTypeLabel} on ${dateStr} at ${qualificationSelectedSlot.value}`,
+                  timestamp: new Date().toISOString()
+                })
+              } catch (error) {
+                console.error(`Failed to log ${channel} confirmation:`, error)
+              }
+            }
+          }
+        }
+
+        // Schedule reminder (day before)
+        if (comms.reminder?.enabled && comms.reminder?.channels?.length > 0) {
+          const appointmentDate = new Date(d)
+          appointmentDate.setDate(appointmentDate.getDate() - 1)
+          const reminderDateStr = appointmentDate.toISOString().split('T')[0]
+          
+          // In a real implementation, this would schedule the reminder
+          // For now, we'll just log it as an activity
+          if (leadsStore && lead.value?.id) {
+            try {
+              await leadsStore.addActivity(lead.value.id, {
+                type: 'reminder-scheduled',
+                user: actorName(),
+                action: 'scheduled reminder',
+                content: `Reminder scheduled for ${reminderDateStr} via ${comms.reminder.channels.join(', ')}`,
+                timestamp: new Date().toISOString(),
+                data: {
+                  reminderDate: reminderDateStr,
+                  channels: comms.reminder.channels
+                }
+              })
+            } catch (error) {
+              console.error('Failed to schedule reminder:', error)
+            }
+          }
+        }
+
+        // Send salesperson/team notification
+        if (comms.salespersonNotification?.enabled) {
+          const notifyTarget = qualificationSelectedSalesman.value?.name || qualificationSelectedTeam.value?.name || 'Team'
+          if (leadsStore && lead.value?.id) {
+            try {
+              await leadsStore.addActivity(lead.value.id, {
+                type: 'notification',
+                user: actorName(),
+                action: 'sent notification',
+                content: `Notification sent to ${notifyTarget} about appointment`,
+                timestamp: new Date().toISOString()
+              })
+            } catch (error) {
+              console.error('Failed to send notification:', error)
+            }
+          }
+        }
+      }
     }
 
+    // Update assignment.value for assign-and-schedule method
+    if (qualificationMethod.value === 'assign-and-schedule') {
+      // Set assignment to selected salesperson if available, otherwise to team
+      if (qualificationSelectedSalesman.value) {
+        assignment.value = {
+          ...assignment.value,
+          assignee: {
+            ...qualificationSelectedSalesman.value,
+            type: 'user'
+          },
+          assigneeId: qualificationSelectedSalesman.value.id,
+          salesperson: qualificationSelectedSalesman.value
+        }
+      } else if (qualificationSelectedTeam.value) {
+        assignment.value = {
+          ...assignment.value,
+          assignee: {
+            ...qualificationSelectedTeam.value,
+            type: 'team'
+          },
+          team: qualificationSelectedTeam.value
+        }
+      }
+    }
+
+    // Prepare assignment data for qualified event
+    const assignmentData = qualificationMethod.value === 'assign-and-schedule' 
+      ? {
+          assignee: qualificationSelectedSalesman.value || qualificationSelectedTeam.value,
+          salesperson: qualificationSelectedSalesman.value || null,
+          team: qualificationSelectedTeam.value || null
+        }
+      : assignment.value
+
     emit('qualified', {
-      assignment: assignment.value,
+      assignment: assignmentData,
       preferences: preferences.value,
       scheduleAppointment,
       appointmentData,

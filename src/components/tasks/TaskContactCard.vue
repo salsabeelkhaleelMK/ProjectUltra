@@ -49,38 +49,32 @@
       <!-- Other Tasks from Same Customer (Ultra-Compact) -->
       <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-black/5">
         <h4 class="text-[11px] font-bold uppercase tracking-wider text-greys-500 mb-2">Other customer requests</h4>
-        <div class="space-y-1.5">
+        <div class="space-y-0.5">
           <div
             v-for="relatedTask in relatedTasks"
             :key="relatedTask.compositeId"
             @click="goToTask(relatedTask)"
-            class="group p-2 rounded-lg border border-transparent hover:border-brand-blue/30 hover:bg-blue-50/20 transition-all cursor-pointer flex flex-col"
+            class="group px-2 py-1 rounded-lg border border-transparent hover:border-brand-blue/30 hover:bg-blue-50/20 transition-all cursor-pointer flex items-center gap-2"
           >
-            <!-- Top Line: Type + Stage + Date -->
-            <div class="flex items-center gap-2 mb-0.5">
-              <span 
-                class="text-[9px] font-bold uppercase px-1 py-0.5 rounded leading-none"
-                :class="relatedTask.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
-              >
-                {{ relatedTask.type === 'lead' ? 'Lead' : 'Opp' }}
-              </span>
-              <span class="text-[10px] font-medium text-greys-900 truncate flex-1">
-                {{ getTaskStage(relatedTask) }}
-              </span>
-              <span class="text-[10px] text-greys-400 shrink-0">
-                {{ formatTaskDate(relatedTask) }}
-              </span>
-            </div>
-            
-            <!-- Bottom Line: Vehicle + Price -->
-            <div class="flex items-center justify-between gap-2">
-              <p class="text-[11px] text-greys-600 truncate flex-1">
-                {{ getVehicleDisplay(relatedTask) }}
-              </p>
-              <p v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-[11px] font-bold text-greys-900 shrink-0">
-                {{ formatCurrency(relatedTask.estimatedValue) }}
-              </p>
-            </div>
+            <!-- Single Line: Type + Stage + Vehicle + Price + Date -->
+            <span 
+              class="text-[9px] font-bold uppercase px-1 py-0.5 rounded leading-none shrink-0"
+              :class="relatedTask.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
+            >
+              {{ relatedTask.type === 'lead' ? 'Lead' : 'Opp' }}
+            </span>
+            <span class="text-[10px] font-medium text-greys-900 truncate shrink-0 min-w-0">
+              {{ getTaskStage(relatedTask) }}
+            </span>
+            <span class="text-[10px] text-greys-600 truncate flex-1 min-w-0">
+              {{ getVehicleDisplay(relatedTask) }}
+            </span>
+            <span v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-[10px] font-bold text-greys-900 shrink-0">
+              {{ formatCurrency(relatedTask.estimatedValue) }}
+            </span>
+            <span class="text-[10px] text-greys-400 shrink-0">
+              {{ formatTaskDate(relatedTask) }}
+            </span>
           </div>
         </div>
       </div>

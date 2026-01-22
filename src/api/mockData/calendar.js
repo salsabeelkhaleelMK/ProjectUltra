@@ -24,13 +24,13 @@ export const calendarDealerships = [
 ]
 
 export const calendarTeams = [
-  { id: 1, name: 'BDC' },
-  { id: 2, name: 'Call Center' },
-  { id: 3, name: 'General' },
-  { id: 4, name: 'Service' },
-  { id: 5, name: 'Sales (New)' },
-  { id: 6, name: 'Sales (Rent)' },
-  { id: 7, name: 'Sales (Used)' }
+  { id: 1, name: 'BDC', dealershipId: 3, dealership: 'Milano' },
+  { id: 2, name: 'Call Center', dealershipId: 3, dealership: 'Milano' },
+  { id: 3, name: 'General', dealershipId: 3, dealership: 'Milano' },
+  { id: 4, name: 'Service', dealershipId: 2, dealership: 'Firenze' },
+  { id: 5, name: 'Sales (New)', dealershipId: 3, dealership: 'Milano' },
+  { id: 6, name: 'Sales (Rent)', dealershipId: 2, dealership: 'Firenze' },
+  { id: 7, name: 'Sales (Used)', dealershipId: 2, dealership: 'Firenze' }
 ]
 
 export const mockCalendarEvents = [

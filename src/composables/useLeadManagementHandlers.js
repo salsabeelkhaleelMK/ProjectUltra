@@ -134,11 +134,48 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
     }
   }
 
-  async function handleQualified() {
+  async function handleQualified(data) {
     const lead = getLead()
     if (!lead) return
 
     try {
+      // Update lead with assignment before converting to opportunity
+      if (data?.assignment?.assignee) {
+        const assignee = data.assignment.assignee
+        const updates = {
+          assignee: assignee.name || assignee.label || null,
+          assigneeId: assignee.id || null,
+          assigneeType: assignee.type || 'user'
+        }
+        
+        // If it's a team assignment, also set team fields
+        if (assignee.type === 'team') {
+          updates.teamId = assignee.id || null
+          updates.team = assignee.name || null
+        }
+        
+        // If there's a salesperson in the assignment, set that too
+        if (data.assignment.salesperson) {
+          updates.assignee = data.assignment.salesperson.name || data.assignment.salesperson
+          updates.assigneeId = data.assignment.salesperson.id || null
+          updates.assigneeType = 'user'
+          updates.teamId = assignee.id || null
+          updates.team = assignee.name || null
+        }
+        
+        await leadsStore.updateLead(lead.id, updates)
+        
+        // Log assignment activity
+        const assigneeName = data.assignment.salesperson?.name || assignee.name || 'Unassigned'
+        await leadsStore.addActivity(lead.id, {
+          type: 'note',
+          user: userStore.currentUser?.name || 'You',
+          action: 'assigned lead',
+          content: `Lead assigned to ${assigneeName}${data.assignment.salesperson && assignee.name ? ` (${assignee.name} team)` : ''}`,
+          timestamp: new Date().toISOString()
+        })
+      }
+      
       const opportunityId = await leadsStore.convertLeadToOpportunity(lead.id)
       
       if (userStore.canAccessOpportunities()) {
@@ -214,11 +251,15 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
     if (!lead) return
 
     try {
-      const appointmentDateTime = `${appointmentData.date}T${appointmentData.time}:00`
+      const appointmentDateTime = appointmentData.datetime 
+        ? new Date(appointmentData.datetime).toISOString().split('T')[0] + 'T' + appointmentData.time + ':00'
+        : `${appointmentData.date}T${appointmentData.time}:00`
       const endTime = new Date(appointmentDateTime)
-      endTime.setHours(endTime.getHours() + 1)
+      const duration = appointmentData.duration || 60 // Default to 60 minutes
+      endTime.setMinutes(endTime.getMinutes() + duration)
       
-      await leadsStore.updateLead(lead.id, {
+      // Update lead assignment if provided
+      const updates = {
         scheduledAppointment: {
           id: Date.now(),
           title: `${appointmentData.type} - ${lead.customer.name}`,
@@ -226,23 +267,44 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
           end: endTime.toISOString(),
           type: appointmentData.type,
           assignee: appointmentData.assignee,
-          assigneeId: appointmentData.assigneeId,
+          assigneeId: appointmentData.assigneeId || appointmentData.salespersonId || appointmentData.teamId,
+          assigneeType: appointmentData.assigneeType || (appointmentData.salespersonId ? 'user' : 'team'),
+          teamId: appointmentData.teamId || null,
+          team: appointmentData.team || null,
+          salesperson: appointmentData.salesperson || null,
+          salespersonId: appointmentData.salespersonId || null,
           status: 'scheduled',
           location: appointmentData.location || '',
           notes: appointmentData.notes || ''
         }
-      })
+      }
+      
+      // Also update lead assignee fields if not already set
+      if (appointmentData.assigneeId || appointmentData.salespersonId || appointmentData.teamId) {
+        updates.assignee = appointmentData.assignee || appointmentData.salesperson || appointmentData.team
+        updates.assigneeId = appointmentData.assigneeId || appointmentData.salespersonId || appointmentData.teamId
+        updates.assigneeType = appointmentData.assigneeType || (appointmentData.salespersonId ? 'user' : 'team')
+        if (appointmentData.teamId) {
+          updates.teamId = appointmentData.teamId
+          updates.team = appointmentData.team
+        }
+      }
+      
+      await leadsStore.updateLead(lead.id, updates)
       
       await leadsStore.addActivity(lead.id, {
         type: 'appointment',
         user: userStore.currentUser?.name || 'You',
         action: 'scheduled an appointment',
-        content: `${appointmentData.type} scheduled for ${appointmentData.date} at ${appointmentData.time}`,
+        content: `${appointmentData.type} scheduled for ${formatDate(new Date(appointmentDateTime))} at ${appointmentData.time}`,
         data: {
           type: appointmentData.type,
-          date: appointmentData.date,
+          date: appointmentData.date || formatDate(new Date(appointmentDateTime)),
           time: appointmentData.time,
-          assignee: appointmentData.assignee
+          assignee: appointmentData.assignee,
+          assigneeId: appointmentData.assigneeId,
+          team: appointmentData.team,
+          salesperson: appointmentData.salesperson
         }
       })
       

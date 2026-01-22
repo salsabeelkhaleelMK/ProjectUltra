@@ -40,6 +40,41 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     assigneeId: currentUserRef?.value?.id || null
   })
 
+  // Team selection state (for scheduling flow)
+  const qualificationSelectedTeam = ref(null)
+  const qualificationSelectedSalesman = ref(null)
+  
+  // Communication preferences state
+  const communicationPreferences = ref({
+    immediateConfirmation: {
+      enabled: true,
+      channels: ['email']
+    },
+    reminder: {
+      enabled: true,
+      channels: ['email']
+    },
+    salespersonNotification: {
+      enabled: true
+    }
+  })
+  
+  // Suggested team based on vehicle
+  const suggestedTeam = computed(() => {
+    if (!lead.value?.requestedCar) return null
+    
+    const condition = lead.value.requestedCar.condition?.toLowerCase()
+    // Map vehicle condition to team
+    // Used vehicles → Sales (Used) team (id: 7)
+    // New vehicles → Sales (New) team (id: 5)
+    if (condition === 'used') {
+      return { id: 7, name: 'Sales (Used)', dealershipId: 2, dealership: 'Firenze' }
+    } else if (condition === 'new') {
+      return { id: 5, name: 'Sales (New)', dealershipId: 3, dealership: 'Milano' }
+    }
+    return null
+  })
+
   const preferences = ref({
     tradeIn: false,
     financing: false,
@@ -60,36 +95,13 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const qualificationEventType = ref('')
   const qualificationDurationMinutes = ref(null) // 30 | 60 | null
   const qualificationCustomDuration = ref('')
-  const qualificationCalendarMonth = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-  const qualificationSelectedDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()))
+  
+  // Date range selection
+  const qualificationDateRange = ref(null) // 'this-week', 'tomorrow', 'custom'
+  const qualificationCustomDateStart = ref('')
+  const qualificationCustomDateEnd = ref('')
+  const qualificationSelectedDate = ref(null) // Will be set based on range
   const qualificationSelectedSlot = ref('')
-
-  const qualificationCalendarMonthLabel = computed(() => {
-    const m = qualificationCalendarMonth.value
-    if (!m || !(m instanceof Date)) return ''
-    return m.toLocaleString(undefined, { month: 'long', year: 'numeric' })
-  })
-
-  const qualificationCalendarDayCells = computed(() => {
-    const m = qualificationCalendarMonth.value
-    if (!m || !(m instanceof Date)) return []
-    const year = m.getFullYear()
-    const month = m.getMonth()
-    const first = new Date(year, month, 1)
-    const offset = first.getDay()
-    const daysInMonth = new Date(year, month + 1, 0).getDate()
-    const cells = []
-    for (let i = 0; i < offset; i++) cells.push(null)
-    for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
-    while (cells.length < 42) cells.push(null)
-    return cells
-  })
-
-  const qualificationSelectedDayLabel = computed(() => {
-    const d = qualificationSelectedDate.value
-    if (!d || !(d instanceof Date)) return 'Select a date'
-    return d.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'short' })
-  })
 
   const qualificationScheduleSlotOptions = computed(() => {
     const slots = []
@@ -101,33 +113,55 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     return slots
   })
 
-  const qualificationGoPrevMonth = () => {
-    const m = qualificationCalendarMonth.value
-    if (!m) return
-    qualificationCalendarMonth.value = new Date(m.getFullYear(), m.getMonth() - 1, 1)
-  }
-
-  const qualificationGoNextMonth = () => {
-    const m = qualificationCalendarMonth.value
-    if (!m) return
-    qualificationCalendarMonth.value = new Date(m.getFullYear(), m.getMonth() + 1, 1)
-  }
-
-  const qualificationIsSameDay = (a, b) => {
-    if (!a || !b) return false
-    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
-  }
-
-  const qualificationSelectDate = (cellDate) => {
-    if (!cellDate) return
-    qualificationSelectedDate.value = cellDate
-    qualificationSelectedSlot.value = ''
-  }
-
   const qualificationDurationValue = computed(() => {
     if (qualificationDurationMinutes.value != null) return qualificationDurationMinutes.value
     const n = parseInt(qualificationCustomDuration.value, 10)
     return Number.isFinite(n) && n > 0 ? n : null
+  })
+  
+  // Available dates for selected range
+  const availableDatesForRange = computed(() => {
+    if (!qualificationDateRange.value) return []
+    
+    const dates = []
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (qualificationDateRange.value === 'tomorrow') {
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      // Only add if it's a weekday (Mon-Fri)
+      if (tomorrow.getDay() !== 0 && tomorrow.getDay() !== 6) {
+        dates.push(tomorrow)
+      }
+    } else if (qualificationDateRange.value === 'this-week') {
+      // Get Monday of this week
+      const dayOfWeek = today.getDay()
+      const monday = new Date(today)
+      monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1))
+      
+      // Add all weekdays (Mon-Fri) of this week
+      for (let i = 0; i < 5; i++) {
+        const date = new Date(monday)
+        date.setDate(monday.getDate() + i)
+        if (date >= today) {
+          dates.push(date)
+        }
+      }
+    } else if (qualificationDateRange.value === 'custom' && qualificationCustomDateStart.value && qualificationCustomDateEnd.value) {
+      const start = new Date(qualificationCustomDateStart.value)
+      const end = new Date(qualificationCustomDateEnd.value)
+      const current = new Date(start)
+      while (current <= end) {
+        // Only add weekdays
+        if (current.getDay() !== 0 && current.getDay() !== 6) {
+          dates.push(new Date(current))
+        }
+        current.setDate(current.getDate() + 1)
+      }
+    }
+    
+    return dates
   })
 
   const messageTemplates = computed(() => {
@@ -302,12 +336,15 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     successPerformedAt.value = null
     qualificationMethod.value = 'assign-only'
     qualificationEventType.value = ''
+    qualificationDateRange.value = null
+    qualificationCustomDateStart.value = ''
+    qualificationCustomDateEnd.value = ''
+    qualificationSelectedDate.value = null
+    qualificationSelectedSlot.value = ''
+    qualificationSelectedTeam.value = null
+    qualificationSelectedSalesman.value = null
     qualificationDurationMinutes.value = null
     qualificationCustomDuration.value = ''
-    qualificationSelectedSlot.value = ''
-    const now = new Date()
-    qualificationCalendarMonth.value = new Date(now.getFullYear(), now.getMonth(), 1)
-    qualificationSelectedDate.value = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   }
 
   const clearSuccessState = () => {
@@ -372,6 +409,12 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     showCallLogForm,
     callLogDateTime,
     callLogAssignee,
+    // Team selection state
+    qualificationSelectedTeam,
+    qualificationSelectedSalesman,
+    suggestedTeam,
+    // Communication preferences
+    communicationPreferences,
     // Computed
     messageTemplates,
     messagePreview,
@@ -393,18 +436,14 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     qualificationEventType,
     qualificationDurationMinutes,
     qualificationCustomDuration,
-    qualificationCalendarMonth,
+    qualificationDateRange,
+    qualificationCustomDateStart,
+    qualificationCustomDateEnd,
+    availableDatesForRange,
     qualificationSelectedDate,
     qualificationSelectedSlot,
-    qualificationCalendarMonthLabel,
-    qualificationCalendarDayCells,
-    qualificationSelectedDayLabel,
     qualificationScheduleSlotOptions,
-    qualificationDurationValue,
-    qualificationGoPrevMonth,
-    qualificationGoNextMonth,
-    qualificationIsSameDay,
-    qualificationSelectDate
+    qualificationDurationValue
   }
 }
 

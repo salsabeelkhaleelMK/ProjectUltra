@@ -79,6 +79,27 @@
             <div class="font-bold text-heading text-fluid-sm">€ {{ formatCurrency(carPrice) }}</div>
           </div>
         </div>
+        <div class="flex justify-end pt-2">
+          <Button
+            :label="task.requestedCar ? '+ Add or update' : '+ Add or update'"
+            variant="outline"
+            size="small"
+            @click="$emit('add-requested-car')"
+            class="text-fluid-xs"
+          />
+        </div>
+      </div>
+      
+      <!-- No car message with add button -->
+      <div v-else class="flex flex-col items-center justify-center py-8 text-center">
+        <i class="fa-solid fa-car text-4xl text-sub mb-3"></i>
+        <p class="text-fluid-sm text-body mb-4">No requested car added yet</p>
+        <Button
+          label="+ Add or update"
+          variant="outline"
+          size="small"
+          @click="$emit('add-requested-car')"
+        />
       </div>
 
       <!-- Request Details (condensed) -->
@@ -104,7 +125,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Badge } from '@motork/component-library'
+import { Badge, Button } from '@motork/component-library'
 import { getStageColor } from '@/utils/stageMapper'
 
 const props = defineProps({
@@ -122,7 +143,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['reassign'])
+defineEmits(['reassign', 'add-requested-car'])
 
 // Computed properties for car data
 const hasCar = computed(() => {

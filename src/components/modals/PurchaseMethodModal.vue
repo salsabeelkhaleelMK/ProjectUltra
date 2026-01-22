@@ -46,7 +46,7 @@
               {{ getTypeLabel(formData.type) }} Details
             </h3>
 
-            <!-- Common Fields -->
+            <!-- Common Fields: Monthly Instalment and Down Payment -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block label-upper mb-2">
@@ -69,6 +69,7 @@
                 <p v-if="errors.monthlyInstalment" class="text-xs text-red-600 mt-1">
                   {{ errors.monthlyInstalment }}
                 </p>
+                <p class="text-xs text-sub mt-1">Customer's desired monthly payment amount</p>
               </div>
 
               <div>
@@ -92,209 +93,56 @@
                 <p v-if="errors.downPayment" class="text-xs text-red-600 mt-1">
                   {{ errors.downPayment }}
                 </p>
+                <p class="text-xs text-sub mt-1">Amount at contract signing</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block label-upper mb-2">
-                  Duration (months) <span class="text-brand-red">*</span>
-                </label>
-                <select
-                  v-model.number="formData.fields.duration"
-                  class="input"
-                  :class="{ 'border-red-500': errors.duration }"
-                  @change="clearError('duration')"
-                >
-                  <option value="">Select duration...</option>
-                  <option
-                    v-for="month in getDurationOptions(formData.type)"
-                    :key="month"
-                    :value="month"
+            <!-- LTR-specific: Duration and Unlock Kilometers -->
+            <template v-if="formData.type === 'LTR'">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block label-upper mb-2">
+                    Duration (months) <span class="text-brand-red">*</span>
+                  </label>
+                  <select
+                    v-model.number="formData.fields.duration"
+                    class="input"
+                    :class="{ 'border-red-500': errors.duration }"
+                    @change="clearError('duration')"
                   >
-                    {{ month }} months
-                  </option>
-                </select>
-                <p v-if="errors.duration" class="text-xs text-red-600 mt-1">
-                  {{ errors.duration }}
-                </p>
-              </div>
+                    <option value="">Select duration...</option>
+                    <option
+                      v-for="month in getDurationOptions(formData.type)"
+                      :key="month"
+                      :value="month"
+                    >
+                      {{ month }} months
+                    </option>
+                  </select>
+                  <p v-if="errors.duration" class="text-xs text-red-600 mt-1">
+                    {{ errors.duration }}
+                  </p>
+                </div>
 
-              <!-- FIN-specific: Interest Rate -->
-              <div v-if="formData.type === 'FIN'">
-                <label class="block label-upper mb-2">Interest Rate / APR (%)</label>
-                <div class="relative">
+                <div>
+                  <label class="block label-upper mb-2">Unlock Kilometers</label>
                   <input
-                    v-model.number="formData.fields.interestRate"
+                    v-model.number="formData.fields.mileageLimit"
                     type="number"
-                    step="0.01"
                     min="0"
-                    max="99.99"
-                    placeholder="0.00"
-                    class="input pr-8"
-                    :class="{ 'border-red-500': errors.interestRate }"
-                    @input="clearError('interestRate')"
+                    placeholder="0"
+                    class="input"
+                    :class="{ 'border-red-500': errors.mileageLimit }"
+                    @input="clearError('mileageLimit')"
                   />
-                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-body">%</span>
-                </div>
-                <p v-if="errors.interestRate" class="text-xs text-red-600 mt-1">
-                  {{ errors.interestRate }}
-                </p>
-              </div>
-
-              <!-- LEA/LTR: Mileage Limit -->
-              <div v-if="formData.type === 'LEA' || formData.type === 'LTR'">
-                <label class="block label-upper mb-2">Mileage Limit (annual km)</label>
-                <input
-                  v-model.number="formData.fields.mileageLimit"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  class="input"
-                  :class="{ 'border-red-500': errors.mileageLimit }"
-                  @input="clearError('mileageLimit')"
-                />
-                <p v-if="errors.mileageLimit" class="text-xs text-red-600 mt-1">
-                  {{ errors.mileageLimit }}
-                </p>
-              </div>
-            </div>
-
-            <!-- FIN-specific Fields -->
-            <template v-if="formData.type === 'FIN'">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block label-upper mb-2">Effective Interest Rate / TAEG (%)</label>
-                  <div class="relative">
-                    <input
-                      v-model.number="formData.fields.effectiveInterestRate"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="99.99"
-                      placeholder="0.00"
-                      class="input pr-8"
-                      :class="{ 'border-red-500': errors.effectiveInterestRate }"
-                      @input="clearError('effectiveInterestRate')"
-                    />
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-body">%</span>
-                  </div>
-                  <p v-if="errors.effectiveInterestRate" class="text-xs text-red-600 mt-1">
-                    {{ errors.effectiveInterestRate }}
+                  <p v-if="errors.mileageLimit" class="text-xs text-red-600 mt-1">
+                    {{ errors.mileageLimit }}
                   </p>
-                </div>
-
-                <div>
-                  <label class="block label-upper mb-2">Guaranteed Future Value / GFV (€)</label>
-                  <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
-                    <input
-                      v-model.number="formData.fields.gfv"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      class="input pl-8"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="fin-insurance"
-                  v-model="formData.fields.insuranceIncluded"
-                  class="w-4 h-4 rounded border-D1D5DB"
-                />
-                <label for="fin-insurance" class="text-sm text-body cursor-pointer">
-                  Insurance Included
-                </label>
-              </div>
-            </template>
-
-            <!-- LEA-specific Fields -->
-            <template v-if="formData.type === 'LEA'">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block label-upper mb-2">Interest Rate / APR (%)</label>
-                  <div class="relative">
-                    <input
-                      v-model.number="formData.fields.interestRate"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="99.99"
-                      placeholder="0.00"
-                      class="input pr-8"
-                      :class="{ 'border-red-500': errors.interestRate }"
-                      @input="clearError('interestRate')"
-                    />
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-body">%</span>
-                  </div>
-                  <p v-if="errors.interestRate" class="text-xs text-red-600 mt-1">
-                    {{ errors.interestRate }}
-                  </p>
-                </div>
-
-                <div>
-                  <label class="block label-upper mb-2">Final Instalment (€)</label>
-                  <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
-                    <input
-                      v-model.number="formData.fields.finalInstalment"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      class="input pl-8"
-                      :class="{ 'border-red-500': errors.finalInstalment }"
-                      @input="clearError('finalInstalment')"
-                    />
-                  </div>
-                  <p v-if="errors.finalInstalment" class="text-xs text-red-600 mt-1">
-                    {{ errors.finalInstalment }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Calculated Total Leasing Amount -->
-              <div class="bg-surfaceSecondary p-4 rounded-card border border-E5E7EB">
-                <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-body">Total Leasing Amount:</span>
-                  <span class="text-lg font-bold text-heading">€ {{ formatCurrency(totalLeasingAmount) }}</span>
-                </div>
-                <p class="text-xs text-sub mt-1">
-                  (Monthly × Duration + Down Payment + Final Instalment)
-                </p>
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="lea-insurance"
-                    v-model="formData.fields.insuranceIncluded"
-                    class="w-4 h-4 rounded border-D1D5DB"
-                  />
-                  <label for="lea-insurance" class="text-sm text-body cursor-pointer">
-                    Insurance Included
-                  </label>
-                </div>
-                <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="lea-maintenance"
-                    v-model="formData.fields.maintenanceIncluded"
-                    class="w-4 h-4 rounded border-D1D5DB"
-                  />
-                  <label for="lea-maintenance" class="text-sm text-body cursor-pointer">
-                    Maintenance Included
-                  </label>
                 </div>
               </div>
             </template>
 
+            <!-- FIN and LEA: Only Monthly Instalment and Down Payment (no additional fields) -->
             <!-- LTR-specific Fields -->
             <template v-if="formData.type === 'LTR'">
               <div>
@@ -563,7 +411,8 @@ const validateField = (fieldName) => {
       }
       break
     case 'duration':
-      if (!value || value < 12 || value > 60) {
+      // Duration is only required for LTR
+      if (formData.value.type === 'LTR' && (!value || value < 12 || value > 60)) {
         errors.value.duration = 'Duration must be between 12 and 60 months'
       } else {
         delete errors.value.duration
@@ -615,7 +464,8 @@ const isFormValid = computed(() => {
   if (!formData.value.type) return false
   if (!formData.value.fields.monthlyInstalment || formData.value.fields.monthlyInstalment <= 0) return false
   if (formData.value.fields.downPayment === null || formData.value.fields.downPayment === undefined || formData.value.fields.downPayment < 0) return false
-  if (!formData.value.fields.duration || formData.value.fields.duration < 12 || formData.value.fields.duration > 60) return false
+  // Duration is only required for LTR
+  if (formData.value.type === 'LTR' && (!formData.value.fields.duration || formData.value.fields.duration < 12 || formData.value.fields.duration > 60)) return false
   if (formData.value.type === 'LTR' && !formData.value.fields.customerType) return false
   return Object.keys(errors.value).length === 0
 })

@@ -212,6 +212,7 @@
               :entity-type="type"
               :activities="task.activities || []"
               @reassign="handleReassign"
+              @add-requested-car="handleAddRequestedCar"
             />
 
             <!-- Other Tasks for This Customer -->
@@ -233,6 +234,7 @@
               :entity-type="type"
               :activities="task.activities || []"
               @reassign="handleReassign"
+              @add-requested-car="handleAddRequestedCar"
             />
 
             <!-- Contact Info Card -->
@@ -459,6 +461,16 @@
       @confirm="handleReassignConfirm"
     />
     
+    <!-- Add Requested Car Modal -->
+    <AddRequestedCarModal
+      :show="showAddRequestedCarModal"
+      :task="task"
+      :task-type="type"
+      :task-id="task.id"
+      @close="showAddRequestedCarModal = false"
+      @save="handleAddRequestedCarSave"
+    />
+    
     <!-- Create Appointment Modal -->
     <CreateEventModal
       v-if="showCreateAppointmentModal"
@@ -501,6 +513,7 @@ import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
 import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
 import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
+import AddRequestedCarModal from '@/components/modals/AddRequestedCarModal.vue'
 import OfferModal from '@/components/modals/OfferModal.vue'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
@@ -791,12 +804,30 @@ const handleReassignConfirm = async (assignee) => {
   showReassignModal.value = false
 }
 
+const handleAddRequestedCar = () => {
+  showAddRequestedCarModal.value = true
+}
+
+const handleAddRequestedCarSave = async (carData) => {
+  try {
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { requestedCar: carData })
+    } else if (props.type === 'opportunity') {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { requestedCar: carData })
+    }
+    showAddRequestedCarModal.value = false
+  } catch (error) {
+    console.error('Error saving requested car:', error)
+  }
+}
+
 // Modal state for overview actions (financing, tradein, purchase)
 const showOverviewModal = ref(false)
 const overviewModalType = ref(null)
 const showCreateAppointmentModal = ref(false)
 const showReassignModal = ref(false)
 const showAddTagModal = ref(false)
+const showAddRequestedCarModal = ref(false)
 
 const {
   activeTab,

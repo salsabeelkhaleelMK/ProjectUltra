@@ -11,6 +11,7 @@
         </DialogHeader>
 
         <!-- Vehicle Type Selection (only when mode is 'vehicle' and no item is being edited) -->
+        <!-- Skip selection screen when mode is 'tradein' - go directly to form -->
         <div v-if="mode === 'vehicle' && !item && !selectedVehicleType" class="space-y-4 py-4">
           <p class="text-body text-sm mb-4">Select the type of vehicle you want to add:</p>
           <div class="grid grid-cols-1 gap-3">
@@ -39,64 +40,83 @@
         </div>
 
         <form v-else @submit.prevent="handleSubmit" class="space-y-4">
-          <!-- Vehicle Information -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block label-upper mb-2">Brand</label>
-              <input 
-                v-model="vehicleData.brand"
-                type="text" 
-                placeholder="e.g., Volkswagen" 
-                class="input"
-                required
-              >
+          <!-- Trade-In Fields (simplified) -->
+          <template v-if="isTradeIn">
+            <!-- Brand and Model in same row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block label-upper mb-2">Brand *</label>
+                <input 
+                  v-model="vehicleData.brand"
+                  type="text" 
+                  placeholder="e.g., Volkswagen" 
+                  class="input"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Model *</label>
+                <input 
+                  v-model="vehicleData.model"
+                  type="text" 
+                  placeholder="e.g., ID.4" 
+                  class="input"
+                  required
+                >
+              </div>
             </div>
-            <div>
-              <label class="block label-upper mb-2">Model</label>
-              <input 
-                v-model="vehicleData.model"
-                type="text" 
-                placeholder="e.g., ID.4" 
-                class="input"
-                required
-              >
-            </div>
-            <div>
-              <label class="block label-upper mb-2">Year</label>
-              <input 
-                v-model="vehicleData.year"
-                type="number" 
-                placeholder="e.g., 2024" 
-                class="input"
-                min="1900"
-                :max="new Date().getFullYear() + 1"
-                required
-              >
-            </div>
-          </div>
 
-          <!-- Version/Trim (for trade-ins) -->
-          <div v-if="isTradeIn">
-            <label class="block label-upper mb-2">Version/Trim</label>
-            <input 
-              v-model="vehicleData.version"
-              type="text" 
-              placeholder="e.g., Premium Plus" 
-              class="input"
-            >
-          </div>
-
-          <!-- Identification -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block label-upper mb-2">VIN</label>
-              <input 
-                v-model="vehicleData.vin"
-                type="text" 
-                placeholder="Vehicle Identification Number" 
-                class="input"
-              >
+            <!-- Year and Kilometers in same row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block label-upper mb-2">Year (or registration year) *</label>
+                <input 
+                  v-model="vehicleData.year"
+                  type="number" 
+                  placeholder="e.g., 2024" 
+                  class="input"
+                  min="1900"
+                  :max="new Date().getFullYear() + 1"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Kilometers</label>
+                <input 
+                  v-model.number="vehicleData.kilometers"
+                  type="number" 
+                  placeholder="0" 
+                  class="input"
+                  min="0"
+                >
+              </div>
             </div>
+
+            <!-- Fuel Type and Gear Type in same row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block label-upper mb-2">Fuel Type</label>
+                <select v-model="vehicleData.fuelType" class="input">
+                  <option value="">Select fuel type...</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+                </select>
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Gear Type</label>
+                <select v-model="vehicleData.gearType" class="input">
+                  <option value="">Select gear type...</option>
+                  <option value="Manual">Manual</option>
+                  <option value="Automatic">Automatic</option>
+                  <option value="CVT">CVT</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Plates -->
             <div>
               <label class="block label-upper mb-2">Plates</label>
               <input 
@@ -105,56 +125,138 @@
                 placeholder="License plate number" 
                 class="input"
               >
+              <p class="text-xs text-sub mt-1">These can be relevant for automatically retrieving other information.</p>
             </div>
-          </div>
 
-          <!-- Vehicle Details -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Note field -->
             <div>
-              <label class="block label-upper mb-2">Fuel Type</label>
-              <select v-model="vehicleData.fuelType" class="input">
-                <option value="">Select fuel type...</option>
-                <option value="Petrol">Petrol</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Electric">Electric</option>
-                <option value="Hybrid">Hybrid</option>
-                <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-              </select>
+              <label class="block label-upper mb-2">Note</label>
+              <textarea 
+                v-model="vehicleData.note"
+                rows="4"
+                placeholder="Add unquantifiable requests, such as the customer's desired value for the car..." 
+                class="input resize-none"
+              ></textarea>
             </div>
-            <div>
-              <label class="block label-upper mb-2">Gear Type</label>
-              <select v-model="vehicleData.gearType" class="input">
-                <option value="">Select gear type...</option>
-                <option value="Manual">Manual</option>
-                <option value="Automatic">Automatic</option>
-                <option value="CVT">CVT</option>
-              </select>
+          </template>
+
+          <!-- Regular Vehicle Fields (for non-trade-in mode) -->
+          <template v-else>
+            <!-- Vehicle Information -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block label-upper mb-2">Brand</label>
+                <input 
+                  v-model="vehicleData.brand"
+                  type="text" 
+                  placeholder="e.g., Volkswagen" 
+                  class="input"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Model</label>
+                <input 
+                  v-model="vehicleData.model"
+                  type="text" 
+                  placeholder="e.g., ID.4" 
+                  class="input"
+                  required
+                >
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Year</label>
+                <input 
+                  v-model="vehicleData.year"
+                  type="number" 
+                  placeholder="e.g., 2024" 
+                  class="input"
+                  min="1900"
+                  :max="new Date().getFullYear() + 1"
+                  required
+                >
+              </div>
             </div>
+
+            <!-- Version/Trim -->
             <div>
-              <label class="block label-upper mb-2">Mileage (km)</label>
+              <label class="block label-upper mb-2">Version/Trim</label>
               <input 
-                v-model.number="vehicleData.kilometers"
-                type="number" 
-                placeholder="0" 
+                v-model="vehicleData.version"
+                type="text" 
+                placeholder="e.g., Premium Plus" 
                 class="input"
-                min="0"
               >
             </div>
-          </div>
 
-          <!-- Registration -->
-          <div>
-            <label class="block label-upper mb-2">Registration Year/Month</label>
-            <input 
-              v-model="vehicleData.registration"
-              type="text" 
-              placeholder="MM/YYYY (e.g., 01/2024)" 
-              class="input"
-            >
-          </div>
+            <!-- Identification -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block label-upper mb-2">VIN</label>
+                <input 
+                  v-model="vehicleData.vin"
+                  type="text" 
+                  placeholder="Vehicle Identification Number" 
+                  class="input"
+                >
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Plates</label>
+                <input 
+                  v-model="vehicleData.plates"
+                  type="text" 
+                  placeholder="License plate number" 
+                  class="input"
+                >
+              </div>
+            </div>
 
-          <!-- Owner Information (only for drove/requested vehicles, not trade-ins) -->
-          <template v-if="mode === 'vehicle' && selectedVehicleType !== 'tradein'">
+            <!-- Vehicle Details -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block label-upper mb-2">Fuel Type</label>
+                <select v-model="vehicleData.fuelType" class="input">
+                  <option value="">Select fuel type...</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+                </select>
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Gear Type</label>
+                <select v-model="vehicleData.gearType" class="input">
+                  <option value="">Select gear type...</option>
+                  <option value="Manual">Manual</option>
+                  <option value="Automatic">Automatic</option>
+                  <option value="CVT">CVT</option>
+                </select>
+              </div>
+              <div>
+                <label class="block label-upper mb-2">Mileage (km)</label>
+                <input 
+                  v-model.number="vehicleData.kilometers"
+                  type="number" 
+                  placeholder="0" 
+                  class="input"
+                  min="0"
+                >
+              </div>
+            </div>
+
+            <!-- Registration -->
+            <div>
+              <label class="block label-upper mb-2">Registration Year/Month</label>
+              <input 
+                v-model="vehicleData.registration"
+                type="text" 
+                placeholder="MM/YYYY (e.g., 01/2024)" 
+                class="input"
+              >
+            </div>
+
+            <!-- Owner Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block label-upper mb-2">Owned Since</label>
@@ -199,151 +301,6 @@
               ></textarea>
             </div>
           </template>
-
-          <!-- Valuation Card (collapsed, only for trade-in mode) -->
-          <div v-if="isTradeIn" class="border border-E5E7EB rounded-card bg-surfaceSecondary">
-            <button
-              type="button"
-              @click="showValuation = !showValuation"
-              class="w-full flex items-center justify-between p-4 text-left hover:bg-surface transition-colors"
-            >
-              <h3 class="text-fluid-sm font-medium text-heading">Valuation Information</h3>
-              <i 
-                :class="[
-                  'fa-solid transition-transform duration-200 text-sub',
-                  showValuation ? 'fa-chevron-up' : 'fa-chevron-down'
-                ]"
-              ></i>
-            </button>
-            
-            <div v-if="showValuation" class="px-4 pb-4 space-y-4 border-t border-E5E7EB pt-4">
-              <!-- Trade-In Price -->
-              <div>
-                <label class="block label-upper mb-2">Trade-In Price (€)</label>
-                <input 
-                  v-model.number="valuationData.tradeInPrice"
-                  type="number" 
-                  placeholder="0.00" 
-                  class="input"
-                  min="0"
-                  step="0.01"
-                >
-              </div>
-
-              <!-- Evaluation Range -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block label-upper mb-2">Evaluation Range - Low (€)</label>
-                  <input 
-                    v-model.number="valuationData.evaluationRangeLow"
-                    type="number" 
-                    placeholder="0.00" 
-                    class="input"
-                    min="0"
-                    step="0.01"
-                  >
-                </div>
-                <div>
-                  <label class="block label-upper mb-2">Evaluation Range - High (€)</label>
-                  <input 
-                    v-model.number="valuationData.evaluationRangeHigh"
-                    type="number" 
-                    placeholder="0.00" 
-                    class="input"
-                    min="0"
-                    step="0.01"
-                  >
-                </div>
-              </div>
-
-              <!-- Provider and Evaluation Date -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block label-upper mb-2">Provider</label>
-                  <select v-model="valuationData.provider" class="input">
-                    <option value="">Select provider...</option>
-                    <option value="Eurotax">Eurotax</option>
-                    <option value="Infocar">Infocar</option>
-                    <option value="Manual">Manual</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block label-upper mb-2">Evaluation Date</label>
-                  <input 
-                    v-model="valuationData.evaluationDate"
-                    type="date" 
-                    class="input"
-                  >
-                </div>
-              </div>
-
-              <!-- Optional Advanced Fields -->
-              <div class="pt-2 border-t border-E5E7EB">
-                <h4 class="text-fluid-xs font-medium text-heading mb-3">Optional Advanced Fields</h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block label-upper mb-2">Price to Buy (€)</label>
-                    <input 
-                      v-model.number="valuationData.priceToBuy"
-                      type="number" 
-                      placeholder="0.00" 
-                      class="input"
-                      min="0"
-                      step="0.01"
-                    >
-                  </div>
-                  <div>
-                    <label class="block label-upper mb-2">Price to Sell (€)</label>
-                    <input 
-                      v-model.number="valuationData.priceToSell"
-                      type="number" 
-                      placeholder="0.00" 
-                      class="input"
-                      min="0"
-                      step="0.01"
-                    >
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <label class="block label-upper mb-2">Price of Vehicle (€)</label>
-                    <input 
-                      v-model.number="valuationData.priceOfVehicle"
-                      type="number" 
-                      placeholder="0.00" 
-                      class="input"
-                      min="0"
-                      step="0.01"
-                    >
-                  </div>
-                  <div>
-                    <label class="block label-upper mb-2">Price of Optionals (€)</label>
-                    <input 
-                      v-model.number="valuationData.priceOfOptionals"
-                      type="number" 
-                      placeholder="0.00" 
-                      class="input"
-                      min="0"
-                      step="0.01"
-                    >
-                  </div>
-                </div>
-
-                <div class="mt-4">
-                  <label class="block label-upper mb-2">List of Optionals</label>
-                  <textarea 
-                    v-model="valuationData.listOfOptionals"
-                    rows="3"
-                    placeholder="List of equipment/features..." 
-                    class="input"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
         </form>
 
         <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
@@ -408,8 +365,17 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save'])
 
-const selectedVehicleType = ref(null) // 'drove', 'requested', 'tradein', or null
-const showValuation = ref(false)
+// Auto-set to 'tradein' when mode is 'tradein', otherwise null
+const selectedVehicleType = ref(props.mode === 'tradein' ? 'tradein' : null) // 'drove', 'requested', 'tradein', or null
+
+// Watch for mode changes to auto-set vehicle type
+watch(() => props.mode, (newMode) => {
+  if (newMode === 'tradein') {
+    selectedVehicleType.value = 'tradein'
+  } else if (!props.item) {
+    selectedVehicleType.value = null
+  }
+})
 
 // Computed to determine if we're in trade-in mode
 const isTradeIn = computed(() => {
@@ -454,21 +420,10 @@ const vehicleData = ref({
   ownershipType: '',
   ownedSince: '',
   warrantyInfo: '',
+  note: '',
   stockDays: null
 })
 
-const valuationData = ref({
-  tradeInPrice: null,
-  evaluationRangeLow: null,
-  evaluationRangeHigh: null,
-  provider: '',
-  evaluationDate: '',
-  priceToBuy: null,
-  priceToSell: null,
-  priceOfVehicle: null,
-  priceOfOptionals: null,
-  listOfOptionals: ''
-})
 
 // Load existing item data if editing
 onMounted(() => {
@@ -490,25 +445,10 @@ onMounted(() => {
         ownershipType: props.item.data.ownershipType || '',
         ownedSince: props.item.data.ownedSince || '',
         warrantyInfo: props.item.data.warrantyInfo || '',
+        note: props.item.data.note || '',
         stockDays: null
       }
 
-      // Load valuation data if exists
-      if (props.item.data.tradeInPrice !== undefined) {
-        valuationData.value = {
-          tradeInPrice: props.item.data.tradeInPrice || null,
-          evaluationRangeLow: props.item.data.evaluationRangeLow || null,
-          evaluationRangeHigh: props.item.data.evaluationRangeHigh || null,
-          provider: props.item.data.provider || '',
-          evaluationDate: props.item.data.evaluationDate || '',
-          priceToBuy: props.item.data.priceToBuy || null,
-          priceToSell: props.item.data.priceToSell || null,
-          priceOfVehicle: props.item.data.priceOfVehicle || null,
-          priceOfOptionals: props.item.data.priceOfOptionals || null,
-          listOfOptionals: props.item.data.listOfOptionals || ''
-        }
-        showValuation.value = true
-      }
     }
   }
 })
@@ -532,21 +472,9 @@ watch(() => props.show, (isOpen) => {
       ownershipType: '',
       ownedSince: '',
       warrantyInfo: '',
+      note: '',
       stockDays: null
     }
-    valuationData.value = {
-      tradeInPrice: null,
-      evaluationRangeLow: null,
-      evaluationRangeHigh: null,
-      provider: '',
-      evaluationDate: '',
-      priceToBuy: null,
-      priceToSell: null,
-      priceOfVehicle: null,
-      priceOfOptionals: null,
-      listOfOptionals: ''
-    }
-    showValuation.value = false
   }
 })
 
@@ -579,6 +507,7 @@ const handleSubmit = () => {
       ownershipType: vehicleData.value.ownershipType || null,
       ownedSince: vehicleData.value.ownedSince || null,
       warrantyInfo: vehicleData.value.warrantyInfo || null,
+      note: vehicleData.value.note || null,
       stockDays: null,
       status: 'Available'
     }
@@ -589,21 +518,7 @@ const handleSubmit = () => {
     data.vehicleType = selectedVehicleType.value
   }
 
-  // Add valuation data for trade-ins
-  if (isTradeIn.value) {
-    data.valuation = {
-      tradeInPrice: valuationData.value.tradeInPrice,
-      evaluationRangeLow: valuationData.value.evaluationRangeLow,
-      evaluationRangeHigh: valuationData.value.evaluationRangeHigh,
-      provider: valuationData.value.provider || null,
-      evaluationDate: valuationData.value.evaluationDate || null,
-      priceToBuy: valuationData.value.priceToBuy,
-      priceToSell: valuationData.value.priceToSell,
-      priceOfVehicle: valuationData.value.priceOfVehicle,
-      priceOfOptionals: valuationData.value.priceOfOptionals,
-      listOfOptionals: valuationData.value.listOfOptionals || null
-    }
-  }
+  // For trade-ins, note is stored in vehicle data (no separate valuation section)
 
   if (props.item) {
     data.id = props.item.id
