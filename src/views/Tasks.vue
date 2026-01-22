@@ -203,35 +203,25 @@
       />
     </div>
     
-    <!-- Task Drawer Backdrop (outside table container) -->
-    <transition name="fade">
-      <div 
-        v-if="showTaskDrawer && viewMode === 'table'"
-        class="fixed inset-0 bg-black/50 z-40"
-        @click="closeTaskDrawer"
-      ></div>
-    </transition>
-    
-    <!-- Task Drawer (outside table container) -->
-    <transition name="slide-right">
-      <div 
-        v-if="showTaskDrawer && viewMode === 'table'"
-        class="fixed top-0 right-0 bottom-0 w-full lg:w-4/5 xl:w-3/4 bg-white z-50 overflow-y-auto shadow-xl"
-      >
-        <!-- TaskDetailView in Drawer -->
-        <TaskDetailView
-          v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
-          :task="drawerTask"
-          :management-widget="drawerManagementWidget"
-          :store-adapter="drawerStoreAdapter"
-          :add-new-config="drawerAddNewConfig"
-          :filtered-tasks="filteredTasks"
-          :is-drawer-view="true"
-          @task-navigate="handleDrawerTaskNavigate"
-          @close="closeTaskDrawer"
-        />
-      </div>
-    </transition>
+    <!-- Task Drawer Container -->
+    <DrawerContainer 
+      v-if="viewMode === 'table'"
+      :show="showTaskDrawer" 
+      @close="closeTaskDrawer"
+    >
+      <!-- TaskDetailView in Drawer -->
+      <TaskDetailView
+        v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
+        :task="drawerTask"
+        :management-widget="drawerManagementWidget"
+        :store-adapter="drawerStoreAdapter"
+        :add-new-config="drawerAddNewConfig"
+        :filtered-tasks="filteredTasks"
+        :is-drawer-view="true"
+        @task-navigate="handleDrawerTaskNavigate"
+        @close="closeTaskDrawer"
+      />
+    </DrawerContainer>
     
     <!-- Reassign Modal -->
     <ReassignUserModal
@@ -254,6 +244,7 @@ import EntityListSidebar from '@/components/tasks/TasksList.vue'
 import TasksTableView from '@/components/tasks/TasksTableView.vue'
 import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
 import MobileDetailHeader from '@/components/shared/layout/MobileDetailHeader.vue'
+import DrawerContainer from '@/components/shared/DrawerContainer.vue'
 import { useTaskShell } from '@/composables/useTaskShell'
 import { useTaskHelpers } from '@/composables/useTaskHelpers'
 import { useTaskFilters } from '@/composables/useTaskFilters'
@@ -764,24 +755,4 @@ const getTaskMenuItems = (task) => {
   transform: translateX(20px);
 }
 
-/* Task Drawer Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.slide-right-enter-from,
-.slide-right-leave-to {
-  transform: translateX(100%);
-}
 </style>

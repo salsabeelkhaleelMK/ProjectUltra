@@ -5,7 +5,7 @@
     style="background-color: var(--base-muted, #f5f5f5)"
   >
     <!-- Title Section - matches TaskManagementWidget -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+    <div class="px-3 py-3 md:px-4 md:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-lightbulb text-heading"></i>
         <h2 class="text-fluid-sm font-medium text-heading leading-5">Suggested Next Action</h2>
@@ -13,43 +13,42 @@
     </div>
 
     <!-- Card Content - matches TaskManagementWidget inner (hideBorder style) -->
-    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-      <div class="space-y-6">
-        <!-- Conversational one-line display -->
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm text-body leading-relaxed">
-              <template v-for="(action, index) in suggestedActions" :key="action.id">
-                <template v-if="index > 0">
-                  <span class="text-sub"> or </span>
-                </template>
-                <span class="font-medium text-heading">{{ action.title }}</span>
-                <span class="text-xs text-sub ml-1">
-                  ({{ action.type === 'lead' ? 'Lead' : 'Opp' }} #{{ action.entityId }})
-                </span>
+    <div class="bg-white rounded-card p-3 md:p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+      <div class="space-y-4">
+        <!-- Text row - always full width, on its own row -->
+        <div class="w-full">
+          <p class="text-sm text-body leading-relaxed break-words">
+            <template v-for="(action, index) in suggestedActions" :key="action.id">
+              <template v-if="index > 0">
+                <span class="text-sub"> or </span>
               </template>
-            </p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <!-- Show primary action button (first/highest priority) -->
-            <button
-              v-if="suggestedActions.length > 0"
-              @click="handleAction(suggestedActions[0])"
-              class="flex items-center gap-2 px-4 py-2 bg-brand-red hover:brightness-90 hover:-translate-y-px text-white rounded-btn font-medium text-sm transition-all"
-            >
-              <i :class="suggestedActions[0].icon" class="text-sm"></i>
-              <span>{{ suggestedActions[0].label }}</span>
-            </button>
-            <!-- Show secondary action button if there are multiple actions -->
-            <button
-              v-if="suggestedActions.length > 1"
-              @click="handleAction(suggestedActions[1])"
-              class="flex items-center gap-2 px-3 py-2 bg-white border border-D1D5DB hover:bg-surfaceSecondary text-heading rounded-btn font-medium text-sm transition-colors"
-            >
-              <i :class="suggestedActions[1].icon" class="text-sm"></i>
-              <span>{{ suggestedActions[1].label }}</span>
-            </button>
-          </div>
+              <span class="font-medium text-heading">{{ action.title }}</span>
+              <span class="text-xs text-sub ml-1">
+                ({{ action.type === 'lead' ? 'Lead' : 'Opp' }} #{{ action.entityId }})
+              </span>
+            </template>
+          </p>
+        </div>
+        <!-- Buttons row - always on second row, stack vertically on narrow screens -->
+        <div class="flex flex-col xl:flex-row items-stretch xl:items-center gap-2 w-full">
+          <!-- Show primary action button (first/highest priority) -->
+          <button
+            v-if="suggestedActions.length > 0"
+            @click="handleAction(suggestedActions[0])"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-brand-red hover:brightness-90 hover:-translate-y-px text-white rounded-btn font-medium text-sm transition-all w-full xl:w-auto xl:shrink-0"
+          >
+            <i :class="suggestedActions[0].icon" class="text-sm"></i>
+            <span>{{ suggestedActions[0].label }}</span>
+          </button>
+          <!-- Show secondary action button if there are multiple actions -->
+          <button
+            v-if="suggestedActions.length > 1"
+            @click="handleAction(suggestedActions[1])"
+            class="flex items-center justify-center gap-2 px-3 py-2 bg-white border border-D1D5DB hover:bg-surfaceSecondary text-heading rounded-btn font-medium text-sm transition-colors w-full xl:w-auto xl:shrink-0"
+          >
+            <i :class="suggestedActions[1].icon" class="text-sm"></i>
+            <span>{{ suggestedActions[1].label }}</span>
+          </button>
         </div>
       </div>
     </div>

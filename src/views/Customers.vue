@@ -52,42 +52,31 @@
       </Suspense>
     </div>
     
-    <!-- Drawer Backdrop -->
-    <transition name="fade">
-      <div 
-        v-if="showDrawer"
-        class="fixed inset-0 bg-black/50 z-40"
-        @click="closeDrawer"
-      ></div>
-    </transition>
-    
-    <!-- Drawer -->
-    <transition name="slide-right">
-      <div 
-        v-if="showDrawer"
-        class="fixed top-0 right-0 bottom-0 w-full lg:w-4/5 xl:w-3/4 bg-white z-50 overflow-y-auto shadow-xl"
-      >
-        <!-- Customer Detail View -->
-        <CustomerDetailDrawer
-          v-if="drawerEntity && drawerEntity.type === 'customer'"
-          :customer-id="drawerEntity.id"
-          @close="closeDrawer"
-        />
-        
-        <!-- Task Detail View -->
-        <TaskDetailView
-          v-else-if="drawerEntity && drawerEntity.type === 'task' && drawerTask && drawerManagementWidget && drawerStoreAdapter"
-          :task="drawerTask"
-          :management-widget="drawerManagementWidget"
-          :store-adapter="drawerStoreAdapter"
-          :add-new-config="drawerAddNewConfig"
-          :filtered-tasks="filteredTasks"
-          :is-drawer-view="true"
-          @task-navigate="handleDrawerTaskNavigate"
-          @close="closeDrawer"
-        />
-      </div>
-    </transition>
+    <!-- Drawer Container -->
+    <DrawerContainer :show="showDrawer" @close="closeDrawer">
+      <!-- Customer Detail View -->
+      <CustomerProfile
+        v-if="drawerEntity && drawerEntity.type === 'customer'"
+        :customer-id="drawerEntity.id"
+        :customer-type="'contact'"
+        :show-close-button="true"
+        :close-on-convert="true"
+        @close="closeDrawer"
+      />
+      
+      <!-- Task Detail View -->
+      <TaskDetailView
+        v-else-if="drawerEntity && drawerEntity.type === 'task' && drawerTask && drawerManagementWidget && drawerStoreAdapter"
+        :task="drawerTask"
+        :management-widget="drawerManagementWidget"
+        :store-adapter="drawerStoreAdapter"
+        :add-new-config="drawerAddNewConfig"
+        :filtered-tasks="filteredTasks"
+        :is-drawer-view="true"
+        @task-navigate="handleDrawerTaskNavigate"
+        @close="closeDrawer"
+      />
+    </DrawerContainer>
     
     <!-- Add Customer Modal -->
     <AddCustomerModal
@@ -106,7 +95,8 @@ import { useRouter } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
 import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
-import CustomerDetailDrawer from '@/components/customers/CustomerDetailDrawer.vue'
+import DrawerContainer from '@/components/shared/DrawerContainer.vue'
+import CustomerProfile from '@/components/customer/CustomerProfile.vue'
 import { Badge } from '@motork/component-library'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
@@ -390,25 +380,3 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-/* Drawer Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.slide-right-enter-from,
-.slide-right-leave-to {
-  transform: translateX(100%);
-}
-</style>

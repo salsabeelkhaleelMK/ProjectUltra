@@ -13,7 +13,7 @@
       :management-widget="managementWidget"
       :store-adapter="storeAdapter"
       :add-new-config="addNewConfig"
-      :show-close-button="true"
+      :show-close-button="showCloseButton"
       @close="$emit('close')"
       @car-added="handleContactCarAdded"
       @convert-to-lead="handleConvertToLead"
@@ -107,6 +107,19 @@ const props = defineProps({
   customerId: {
     type: Number,
     required: true
+  },
+  customerType: {
+    type: String,
+    default: 'contact', // 'contact' or 'account'
+    validator: (value) => ['contact', 'account'].includes(value)
+  },
+  showCloseButton: {
+    type: Boolean,
+    default: false
+  },
+  closeOnConvert: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -171,7 +184,7 @@ const nextAppointment = computed(() => {
   return future.length > 0 ? future[0] : null
 })
 
-// Management widget should NEVER appear on customer route
+// Management widget should NEVER appear on customer profile
 const managementWidget = computed(() => null)
 
 // Store adapter for contacts only
@@ -196,7 +209,7 @@ const loadCustomerData = async () => {
     loading.value = true
     // Fetch customer data, leads, opportunities, tasks, and cars
     const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
-      customersStore.fetchCustomerById(props.customerId),
+      customersStore.fetchCustomerById(props.customerId, props.customerType),
       fetchLeadsByCustomerId(props.customerId),
       fetchOpportunitiesByCustomerId(props.customerId),
       fetchTasksByCustomerId(props.customerId),
@@ -260,8 +273,10 @@ const handleConvertToLead = async () => {
   try {
     loading.value = true
     const newLead = await customersStore.convertToLead(props.customerId)
-    // Close drawer and navigate to tasks view for the new lead
-    emit('close')
+    // Close drawer if needed, then navigate
+    if (props.closeOnConvert) {
+      emit('close')
+    }
     router.push({ path: `/tasks/${newLead.id}`, query: { type: 'lead' } })
   } catch (err) {
     console.error('Error converting to lead:', err)
@@ -275,8 +290,10 @@ const handleConvertToOpportunity = async () => {
   try {
     loading.value = true
     const newOpp = await customersStore.convertToOpportunity(props.customerId)
-    // Close drawer and navigate to tasks view for the new opportunity
-    emit('close')
+    // Close drawer if needed, then navigate
+    if (props.closeOnConvert) {
+      emit('close')
+    }
     router.push({ path: `/tasks/${newOpp.id}`, query: { type: 'opportunity' } })
   } catch (err) {
     console.error('Error converting to opportunity:', err)
