@@ -1,61 +1,47 @@
 <template>
   <div 
     v-if="shouldShow"
-    class="mb-2 px-4 py-3 rounded-lg border flex items-center justify-between"
+    class="flex items-center justify-between px-4 py-2 border-b transition-all duration-200"
     :class="[deadlineStatus.bgClass, deadlineStatus.borderClass]"
   >
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5 min-w-0">
       <div 
-        class="w-9 h-9 rounded-lg flex items-center justify-center"
-        :class="[deadlineStatus.bgClass, deadlineStatus.borderClass, 'border']"
+        class="flex items-center justify-center rounded-full w-5 h-5 shrink-0"
+        :class="deadlineStatus.type === 'overdue' ? 'bg-red-100' : 'bg-orange-100'"
       >
-        <i 
-          class="text-sm"
-          :class="[`fa-solid ${deadlineStatus.icon}`, deadlineStatus.textClass]"
-        ></i>
-      </div>
-      <div class="flex-1">
-        <div class="text-fluid-xs font-medium text-gray-600 mb-0.5">Next Action Due</div>
-        <div 
-          class="text-fluid-sm font-bold"
+        <component 
+          :is="statusIcon" 
+          :size="12" 
           :class="deadlineStatus.textClass"
-        >
-          {{ formatDeadlineFull(nextActionDue) }}
-          <span v-if="deadlineStatus.type !== 'overdue'" class="text-fluid-xs font-normal opacity-75">
-            ({{ formatDueDate(nextActionDue) }})
-          </span>
-        </div>
+        />
       </div>
-      <div 
-        v-if="deadlineStatus.type === 'overdue'"
-        class="text-fluid-xs font-bold uppercase px-2.5 py-1 rounded-md"
-        :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
-      >
-        <i class="fa-solid fa-exclamation-circle mr-1"></i>
-        Overdue
-      </div>
-      <div 
-        v-else-if="deadlineStatus.type === 'urgent'"
-        class="text-fluid-xs font-bold uppercase px-2.5 py-1 rounded-md"
-        :class="[deadlineStatus.bgClass, deadlineStatus.textClass, deadlineStatus.borderClass, 'border']"
-      >
-        <i class="fa-solid fa-bolt mr-1"></i>
-        Urgent
+      
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="text-[10px] font-bold uppercase tracking-wider" :class="deadlineStatus.textClass">
+          {{ deadlineStatus.type === 'overdue' ? 'Overdue' : 'Urgent' }}
+        </span>
+        <span class="text-fluid-xs text-sub opacity-30">•</span>
+        <span class="text-fluid-xs font-medium truncate" :class="deadlineStatus.textClass">
+          Next Action: {{ formatDeadlineFull(nextActionDue) }}
+        </span>
       </div>
     </div>
+
     <button
       @click="dismiss"
-      class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors ml-2 shrink-0"
+      class="p-1 rounded-md transition-colors shrink-0"
+      :class="[deadlineStatus.textClass, 'hover:bg-black/5']"
       title="Dismiss"
     >
-      <i class="fa-solid fa-xmark text-xs"></i>
+      <X :size="14" />
     </button>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
+import { AlertCircle, Zap, X } from 'lucide-vue-next'
+import { formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 
 const props = defineProps({
   nextActionDue: {
@@ -85,6 +71,12 @@ const deadlineStatus = computed(() => {
   return getDeadlineStatus(props.nextActionDue)
 })
 
+const statusIcon = computed(() => {
+  if (deadlineStatus.value.type === 'overdue') return AlertCircle
+  if (deadlineStatus.value.type === 'urgent') return Zap
+  return AlertCircle
+})
+
 const shouldShow = computed(() => {
   if (props.isClosed) return false
   if (!props.showDeadlineBanner) return false
@@ -98,4 +90,3 @@ const dismiss = () => {
   emit('dismissed')
 }
 </script>
-

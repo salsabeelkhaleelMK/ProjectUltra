@@ -7,13 +7,13 @@
     <template #actions>
       <button
         @click="handleReschedule"
-        class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-calendar-plus"></i> Book Another Appointment
       </button>
       <button
         @click="handleContactCustomer"
-        class="bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-slate-700 font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors"
+        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
       >
         <i class="fa-solid fa-phone"></i> Contact Customer
       </button>

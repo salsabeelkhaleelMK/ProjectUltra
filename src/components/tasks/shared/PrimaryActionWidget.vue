@@ -13,7 +13,7 @@
       <button
         @click="$emit('action-clicked')"
         :class="action.buttonClass"
-        class="font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
         <i :class="action.icon"></i>
         {{ action.label }}

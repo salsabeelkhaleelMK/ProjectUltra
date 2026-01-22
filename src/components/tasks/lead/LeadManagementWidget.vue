@@ -2,13 +2,13 @@
   <TaskManagementWidget :task="lead" hide-title hide-border>
     <template #deadline-banner>
       <DeadlineBanner
+        v-if="!leadState.isClosed.value"
         :next-action-due="lead.nextActionDue"
-        :is-closed="leadState.isClosed.value"
         :show-deadline-banner="leadState.showDeadlineBanner.value"
         :task-id="lead.id"
       />
     </template>
-
+    
     <template #primary-action>
       <!-- NEW: TaskAssignee Component (shows first, extremely compact) -->
       <TaskAssignee
@@ -24,6 +24,7 @@
         v-if="!leadState.isClosed.value && leadState.showLQWidget.value" 
         :key="lead.id"
         :lead="lead"
+        :show-deadline-banner="leadState.showDeadlineBanner.value"
         @postponed="handlePostponed"
         @validated="handleValidated"
         @qualified="handleQualified"
@@ -87,9 +88,9 @@ import { useLeadManagementHandlers } from '@/composables/useLeadManagementHandle
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
 import PrimaryActionWidget from '@/components/tasks/shared/PrimaryActionWidget.vue'
-import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import TaskAssignee from '@/components/tasks/TaskAssignee.vue'
 import LQTask from '@/components/tasks/lead/LQTask.vue'
+import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 
 const props = defineProps({
   lead: {

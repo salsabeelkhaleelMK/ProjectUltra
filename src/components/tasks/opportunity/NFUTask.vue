@@ -7,7 +7,7 @@
     <template #actions>
       <button
         @click="handleScheduleClosing"
-        class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
       >
         Schedule Closing Meeting
       </button>

@@ -7,13 +7,13 @@
     <template #actions>
       <button
         @click="handlePrepareDelivery"
-        class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
+        class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
       >
         Prepare for Delivery
       </button>
       <button
         @click="handlePreDeliveryChecklist"
-        class="bg-surface border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
+        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
       >
         Pre-Delivery Checklist
       </button>

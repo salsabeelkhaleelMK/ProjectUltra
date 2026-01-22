@@ -61,10 +61,16 @@
     <template v-else>
       <!-- Contact block: white card -->
       <div
-        class="bg-white rounded-lg p-4 shadow-nsc-card"
+        class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
         style="box-shadow: var(--nsc-card-shadow)"
       >
-        <div class="flex justify-between items-start mb-3">
+        <DeadlineBanner
+          :next-action-due="lead.nextActionDue"
+          :show-deadline-banner="showDeadlineBanner"
+          :task-id="lead.id"
+        />
+        <div class="p-4">
+          <div class="flex justify-between items-start mb-3">
           <div>
             <h4 class="font-bold text-heading text-fluid-sm">{{ dynamicTitle }}</h4>
             <p class="text-fluid-xs text-body mt-0.5">
@@ -122,23 +128,24 @@
 
         <!-- Call Interface Component -->
         <CallInterface
-      :is-call-active="isCallActive"
-      :call-ended="callEnded"
-      :call-duration="callDuration"
-      :call-notes="callNotes"
-      :formatted-call-duration="formattedCallDuration"
-      :mock-transcription="mockTranscription"
-      :show-outcome-selection="showOutcomeSelection"
-      :show-call-log-form="showCallLogForm"
-      :contact-attempts="contactAttempts"
-      :max-contact-attempts="maxContactAttempts"
-      @start-call="startCall"
-      @end-call="endCallFromComposable"
-      @log-manual-call="logManualCall"
-      @extract-information="extractInformationFromComposable"
-      @update:call-notes="updateCallNotes"
-      @copy-number="copyNumber"
+          :is-call-active="isCallActive"
+          :call-ended="callEnded"
+          :call-duration="callDuration"
+          :call-notes="callNotes"
+          :formatted-call-duration="formattedCallDuration"
+          :mock-transcription="mockTranscription"
+          :show-outcome-selection="showOutcomeSelection"
+          :show-call-log-form="showCallLogForm"
+          :contact-attempts="contactAttempts"
+          :max-contact-attempts="maxContactAttempts"
+          @start-call="startCall"
+          @end-call="endCallFromComposable"
+          @log-manual-call="logManualCall"
+          @extract-information="extractInformationFromComposable"
+          @update:call-notes="updateCallNotes"
+          @copy-number="copyNumber"
         />
+        </div>
       </div>
 
       <!-- Grey outcome area: call log form + outcome selection -->
@@ -826,6 +833,7 @@ import { useLQWidgetOutcomes } from '@/composables/useLQWidgetOutcomes'
 import { useLQWidgetHandlers } from '@/composables/useLQWidgetHandlers'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
 import AIButton from '@/components/shared/AIButton.vue'
+import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import { getAvailabilityForAssignee } from '@/services/availabilityService'
 
 const props = defineProps({
@@ -836,6 +844,10 @@ const props = defineProps({
   activities: {
     type: Array,
     default: () => []
+  },
+  showDeadlineBanner: {
+    type: Boolean,
+    default: true
   }
 })
 

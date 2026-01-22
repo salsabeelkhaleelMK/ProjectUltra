@@ -145,14 +145,29 @@ watch(() => props.initialSearchQuery, (newVal) => {
   searchQuery.value = newVal
 })
 
-// Filter items based on search query
+// Filter items based on search query and active filters
 const filteredItems = computed(() => {
+  let items = props.items
+  
+  // Apply type filters (lead/opportunity) if present
+  const typeFilters = props.activeFilters.filter(f => f === 'lead' || f === 'opportunity')
+  if (typeFilters.length > 0) {
+    items = items.filter(item => {
+      // Check if item has type property and matches filter
+      if (item.type && typeFilters.includes(item.type)) {
+        return true
+      }
+      return false
+    })
+  }
+  
+  // Apply search query filter
   if (!searchQuery.value.trim()) {
-    return props.items
+    return items
   }
   
   const query = searchQuery.value.toLowerCase().trim()
-  return props.items.filter(item => {
+  return items.filter(item => {
     const name = props.getName(item).toLowerCase()
     const vehicleInfo = props.getVehicleInfo(item).toLowerCase()
     return name.includes(query) || vehicleInfo.includes(query)

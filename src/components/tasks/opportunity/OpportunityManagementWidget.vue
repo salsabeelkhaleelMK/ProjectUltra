@@ -1,66 +1,44 @@
 <template>
-  <TaskManagementWidget
-    :task="opportunity"
-    container-class="mb-8"
-    hide-title
-    hide-border
-  >
-    <template #closed-state>
-      <div 
-        v-if="isClosed && !activeTaskWidget"
-        class="bg-green-50/50 border border-green-100 rounded-card p-4"
-      >
-        <div class="flex justify-between items-start mb-3">
-          <div>
-            <h4 class="font-bold text-heading text-fluid-sm">Opportunity Closed</h4>
-            <p class="text-fluid-xs text-gray-500 mt-0.5">
-              This opportunity has been closed. Reopen it to restart the management process, or requalify as a lead.
-            </p>
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <Button
-            variant="primary"
-            size="small"
-            @click="handleReopen"
-            class="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-          >
-            <span>Reopen</span>
-            <i class="fa-solid fa-rotate-left"></i>
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            @click="showRequalifyModal = true"
-            class="flex items-center gap-2 bg-white hover:bg-yellow-50 text-yellow-700 border-yellow-300"
-          >
-            <span>Requalify as Lead</span>
-            <i class="fa-solid fa-arrow-left"></i>
-          </Button>
-        </div>
-      </div>
+  <TaskManagementWidget :task="opportunity" hide-title hide-border>
+    <template #deadline-banner>
+      <DeadlineBanner
+        v-if="!opportunityState.isClosed.value"
+        :next-action-due="opportunity.nextActionDue"
+        :show-deadline-banner="opportunityState.showDeadlineBanner.value"
+        :task-id="opportunity.id"
+      />
     </template>
-
+    
     <template #primary-action>
+      <!-- NEW: TaskAssignee Component (shows first, extremely compact) -->
+      <TaskAssignee
+        v-if="!opportunityState.isClosed.value"
+        :task="opportunity"
+        task-type="opportunity"
+        @reassigned="handleOwnerReassigned"
+        class="mb-3"
+      />
+      
+      <!-- Primary action -->
       <PrimaryActionWidget
-        v-if="!isClosed && primaryAction"
-        :action="primaryAction"
-        :color-scheme="primaryAction.colorScheme"
-        @action-clicked="primaryAction.handler()"
+        v-if="!opportunityState.isClosed.value && opportunityState.primaryAction.value"
+        :action="opportunityState.primaryAction.value"
+        :color-scheme="opportunityState.primaryAction.value.colorScheme"
+        @action-clicked="opportunityState.primaryAction.value.handler"
       />
     </template>
 
     <template #task-widgets>
-      <div v-if="activeTaskWidget && activeTaskWidget.component" class="space-y-3">
+      <div v-if="opportunityState.activeTaskWidget.value && opportunityState.activeTaskWidget.value.component" class="space-y-3">
         <!-- Task Title Header -->
         <div class="flex items-center gap-2 pb-2 border-b border">
           <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-          <h5 class="font-semibold text-heading text-fluid-sm">{{ taskWidgetTitle }}</h5>
+          <h5 class="font-semibold text-heading text-fluid-sm">{{ opportunityState.taskWidgetTitle.value }}</h5>
         </div>
         
         <component
-          :is="activeTaskWidget.component"
-          v-bind="activeTaskWidget.props"
+          :is="opportunityState.activeTaskWidget.value.component"
+          v-bind="opportunityState.activeTaskWidget.value.props"
           @close="handleTaskWidgetClose"
           @set-callback="handleSetCallback"
           @auto-close-lost="handleAutoCloseLost"
@@ -68,12 +46,30 @@
       </div>
     </template>
 
-    <template #secondary-actions>
-      <div v-if="secondaryActions.length > 0" class="flex justify-end">
-        <SecondaryActionsDropdown
-          :actions="secondaryActions"
-          @action-selected="handleSecondaryAction"
-        />
+    <template #closed-state>
+      <!-- Closed States -->
+      <div
+        v-if="opportunityState.isClosed.value"
+        class="bg-surfaceSecondary/50 border border-E5E7EB rounded-card p-4"
+      >
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h4 class="font-bold text-heading text-fluid-sm">Opportunity Closed</h4>
+            <p class="text-fluid-xs text-body mt-0.5">
+              Status: {{ opportunityState.displayStage.value }}
+              <span v-if="opportunity.lossReason"> - {{ opportunity.lossReason }}</span>
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="primary"
+          size="small"
+          @click="handleReopen"
+          class="flex items-center gap-2"
+        >
+          <span>Reopen Opportunity</span>
+          <i class="fa-solid fa-rotate-left"></i>
+        </Button>
       </div>
     </template>
   </TaskManagementWidget>
@@ -166,13 +162,14 @@ import { useRouter } from 'vue-router'
 import { Button } from '@motork/component-library'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { fetchVehicles } from '@/api/vehicles'
-import { getStageColor } from '@/utils/stageMapper'
+import { getDisplayStage } from '@/utils/stageMapper'
 import { useOpportunityActions } from '@/composables/useOpportunityActions'
 
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
 import PrimaryActionWidget from '@/components/tasks/shared/PrimaryActionWidget.vue'
-import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
+import TaskAssignee from '@/components/tasks/TaskAssignee.vue'
+import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
 import VehicleSelectionModal from '@/components/modals/VehicleSelectionModal.vue'
@@ -204,6 +201,12 @@ const emit = defineEmits(['vehicle-selected', 'offer-created', 'appointment-sche
 const router = useRouter()
 const opportunitiesStore = useOpportunitiesStore()
 
+// Helper to get current opportunity (try store first, fallback to props)
+const getCurrentOpportunity = () => {
+  const storeOpportunity = opportunitiesStore.currentOpportunity
+  return (storeOpportunity && storeOpportunity.id === props.opportunity?.id) ? storeOpportunity : props.opportunity
+}
+
 // Modal states
 const showCreateAppointment = ref(false)
 const showOfferModal = ref(false)
@@ -216,13 +219,6 @@ const showComingSoonModal = ref(false)
 const showViewAppointment = ref(false)
 const showEditAppointment = ref(false)
 const recommendedCars = ref([])
-
-// Computed properties
-const displayStage = computed(() => props.opportunity?.displayStage || props.opportunity?.stage || 'Qualified')
-
-const stageColorClass = computed(() => {
-  return getStageColor(displayStage.value, 'opportunity')
-})
 
 // Helper function for formatting date/time
 function formatDateTime(dateString) {
@@ -277,14 +273,29 @@ const actionHandlers = {
   'requalify': () => { showRequalifyModal.value = true }
 }
 
-// Use the opportunity actions composable
-const { primaryAction, secondaryActions, activeTaskWidget, taskWidgetTitle, isClosed } = useOpportunityActions(
+// Use the opportunity actions composable - matches lead pattern
+const opportunityActions = useOpportunityActions(
   toRef(props, 'opportunity'),
   toRef(props, 'scheduledAppointment'),
   toRef(props, 'activities'),
   actionHandlers,
   formatDateTime
 )
+
+// Create opportunityState wrapper to match leadState pattern
+const opportunityState = {
+  isClosed: opportunityActions.isClosed,
+  primaryAction: opportunityActions.primaryAction,
+  activeTaskWidget: opportunityActions.activeTaskWidget,
+  taskWidgetTitle: opportunityActions.taskWidgetTitle,
+  displayStage: computed(() => {
+    return getDisplayStage(props.opportunity, 'opportunity') || 'Qualified'
+  }),
+  showDeadlineBanner: computed(() => {
+    // Show deadline banner if opportunity has nextActionDue and is not closed
+    return !opportunityActions.isClosed.value && !!props.opportunity?.nextActionDue
+  })
+}
 
 // Helper function (kept for backward compatibility)
 function calculateDaysSince(dateString) {
@@ -297,9 +308,12 @@ function calculateDaysSince(dateString) {
 }
 
 
-// Event handlers
-function handleSecondaryAction(action) {
-  // Action handler is already called by the action definition
+// Handle owner reassignment from TaskAssignee component
+const handleOwnerReassigned = async (assignee) => {
+  // Reload the opportunity to get updated assignee data
+  if (props.opportunity?.id) {
+    await opportunitiesStore.fetchOpportunityById(props.opportunity.id)
+  }
 }
 
 function handleTaskWidgetClose() {

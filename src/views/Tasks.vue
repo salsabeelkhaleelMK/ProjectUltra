@@ -342,7 +342,7 @@ const handleViewChange = (newViewMode, searchQuery = '') => {
 }
 
 
-const activeFilters = ref([]) // Array of active filter keys: ['lead', 'due-in-24h', etc.]
+const activeFilters = ref(['lead']) // Array of active filter keys: ['lead', 'due-in-24h', etc.] - default to leads only
 const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
 const showClosed = ref(false) // Toggle to show/hide closed (disqualified) leads
 const openCardMenu = ref(null)
