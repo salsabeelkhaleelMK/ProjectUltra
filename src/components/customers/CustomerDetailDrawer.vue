@@ -1,17 +1,24 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden bg-surface">
     <!-- Drawer Header with Close Button -->
-    <div class="border-b border-black/5 bg-white px-6 h-16 min-h-16 shrink-0 flex items-center justify-between">
-      <h2 class="text-fluid-lg font-medium text-greys-900">
-        {{ customer?.name || 'Customer Details' }}
-      </h2>
-      <button
-        @click="$emit('close')"
-        class="w-8 h-8 flex items-center justify-center text-greys-600 hover:text-greys-900 hover:bg-greys-100 rounded-lg transition-colors"
-        aria-label="Close drawer"
-      >
-        <i class="fa-solid fa-times"></i>
-      </button>
+    <div class="border-b border-black/5 bg-white px-6 h-16 min-h-16 shrink-0">
+      <div class="flex items-center justify-between gap-4 w-full h-full">
+        <div class="flex flex-col min-w-0">
+          <h2 class="text-fluid-lg font-medium text-greys-900 truncate">
+            {{ customer?.name || 'Customer Details' }}
+          </h2>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Close button -->
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            @click="$emit('close')"
+          >
+            <X :size="16" class="text-greys-700" />
+          </Button>
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -31,6 +38,7 @@
       @convert-to-lead="handleConvertToLead"
       @convert-to-opportunity="handleConvertToOpportunity"
       @tag-updated="handleTagUpdated"
+      @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
         <!-- Customer Summary Widget -->
@@ -51,8 +59,9 @@
         
         <!-- Customer Cars Carousel - All cars from leads/opportunities -->
         <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
-        
-        <!-- Customer Overview Widgets -->
+      </template>
+
+      <template #tab-negotiations>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <CustomerLeadsWidget 
             :leads="customerLeads" 
@@ -66,6 +75,10 @@
             @add-opportunity="openAddModal('opportunity')"
           />
         </div>
+      </template>
+
+      <template #tab-appointments>
+        <CustomerAppointmentsWidget :appointments="customerAppointments" />
       </template>
     </EntityDetailLayout>
 
@@ -84,12 +97,15 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { Button } from '@motork/component-library/future/primitives'
+import { X } from 'lucide-vue-next'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
 import EntityDetailLayout from '@/components/shared/layout/EntityDetailLayout.vue'
 import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'
 import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportunitiesWidget.vue'
+import CustomerAppointmentsWidget from '@/components/customer/CustomerAppointmentsWidget.vue'
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
@@ -97,6 +113,7 @@ import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { fetchLeadActivities } from '@/api/leads'
 import { fetchOpportunityActivities, fetchAppointmentByCustomerId } from '@/api/opportunities'
+import { fetchAppointmentsByCustomerId } from '@/api/calendar'
 
 const props = defineProps({
   customerId: {
@@ -122,6 +139,7 @@ const customerOpportunities = ref([])
 const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
+const customerAppointments = ref([])
 const nextAppointment = ref(null)
 
 const taskType = computed(() => 'contact')
@@ -214,12 +232,18 @@ const loadCustomerData = async () => {
     }
     customerActivities.value = allActivities
     
-    // Fetch next appointment
+    // Fetch next appointment and all appointments
     try {
       nextAppointment.value = await fetchAppointmentByCustomerId(props.customerId)
     } catch (err) {
       console.error('Failed to load next appointment:', err)
       nextAppointment.value = null
+    }
+    try {
+      customerAppointments.value = await fetchAppointmentsByCustomerId(props.customerId)
+    } catch (err) {
+      console.error('Failed to load appointments:', err)
+      customerAppointments.value = []
     }
   } catch (err) {
     console.error('Error loading customer data:', err)
@@ -323,6 +347,11 @@ const handleAddModalSave = async (data) => {
 
 // Handle tag updates - reload customer data to reflect changes
 const handleTagUpdated = async () => {
+  await loadCustomerData()
+}
+
+// Handle appointment created (from modal or inline form) - refresh appointments list
+const handleAppointmentCreated = async () => {
   await loadCustomerData()
 }
 

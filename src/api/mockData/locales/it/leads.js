@@ -151,8 +151,8 @@ export const mockLeads = [
     source: 'Facebook',
     fiscalEntity: '',
     sourceDetails: '',
-    assignee: 'Salsabeel Khaleel', // Assign to manager
-    assigneeInitials: 'SK',
+    assignee: null, // Unassigned – for testing assign flow
+    assigneeInitials: null,
     createdAt: (() => {
       const date = new Date()
       date.setDate(date.getDate() - 2)
@@ -226,8 +226,8 @@ export const mockLeads = [
     source: 'Google Ads',
     fiscalEntity: '',
     sourceDetails: '',
-    assignee: 'Sarah Jenkins',
-    assigneeInitials: 'SJ',
+    assignee: null, // Unassigned – for testing assign flow
+    assigneeInitials: null,
     createdAt: (() => {
       const date = new Date()
       date.setDate(date.getDate() - 15)
@@ -273,8 +273,8 @@ export const mockLeads = [
     source: 'Google Ads',
     fiscalEntity: '',
     sourceDetails: '',
-    assignee: 'David Miller',
-    assigneeInitials: 'DM',
+    assignee: null, // Unassigned – for testing assign flow
+    assigneeInitials: null,
     createdAt: (() => {
       const date = new Date()
       date.setDate(date.getDate() - 8)

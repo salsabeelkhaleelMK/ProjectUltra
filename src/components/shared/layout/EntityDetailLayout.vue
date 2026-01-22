@@ -102,73 +102,130 @@
             </div>
           </div>
           
-          <!-- Other tab content (Notes, Communication, Attachments) -->
+          <!-- Other tab content (Notes, Communication, Attachments, Negotiations, Appointments) -->
           <div v-else>
-            <!-- Add New (non-overview tabs) -->
-            <AddNewButton
-              :actions="addNewConfig.tabActions"
-              :active-tab="activeTab"
-              @action="handleAddNewAction"
-            />
-
-            <!-- Inline widgets -->
-            <div>
-              <CommunicationWidget
-                v-if="showInlineWidget === 'communication'"
-                :type="communicationType"
-                :task-type="type"
-                :task-id="task.id"
-                :phone-number="task.customer?.phone || ''"
-                :item="editingItem"
-                @save="handleWidgetSave"
-                @cancel="handleWidgetCancel"
-              />
-
-              <NoteWidget
-                v-if="activeTab === 'data' && showInlineWidget === 'note'"
-                :item="editingItem"
-                :task-type="type"
-                :task-id="task.id"
-                @save="handleWidgetSave"
-                @cancel="handleWidgetCancel"
-              />
-
-              <AttachmentWidget
-                v-if="showInlineWidget === 'attachment'"
-                :item="editingItem"
-                :task-type="type"
-                :task-id="task.id"
-                @save="handleWidgetSave"
-                @cancel="handleWidgetCancel"
-              />
+            <!-- Customer-only: Negotiations tab (Leads + Opportunities) -->
+            <div v-if="type === 'contact' && activeTab === 'negotiations'">
+              <slot name="tab-negotiations" />
             </div>
+            <!-- Customer-only: Appointments tab -->
+            <div v-else-if="type === 'contact' && activeTab === 'appointments'">
+              <!-- + Add appointment row (same pattern as AddNewButton on other tabs) -->
+              <div class="relative flex items-center py-1 mb-4">
+                <div class="flex-grow border-t border"></div>
+                <div class="relative mx-4">
+                  <button
+                    v-if="!showInlineAppointmentForm"
+                    @click.stop="showInlineAppointmentForm = true"
+                    class="bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center px-4 py-2 h-9 border border-E5E7EB"
+                  >
+                    <i class="fa-solid fa-plus text-xs text-body"></i>
+                    <span class="ml-1.5 text-body">add appointment</span>
+                  </button>
+                </div>
+                <div class="flex-grow border-t border"></div>
+              </div>
 
-            <!-- Feed -->
-            <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
-              <FeedItemCard
-                v-for="item in filteredInlineContent"
-                :key="item.id"
-                :item="item"
-                :task-type="type"
-                :customer-initials="'SK'"
-                @edit="handleEditItem"
-                @delete="handleDeleteItem"
-              />
+              <!-- Inline Add Appointment form (same form as modal, inline wrapper like NoteWidget) -->
+              <div
+                v-if="showInlineAppointmentForm"
+                class="animate-fade-in relative bg-surface border border-E5E7EB rounded-xl p-5 shadow-sm mb-6"
+              >
+                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
+                <div class="flex justify-between items-center mb-4">
+                  <h5 class="text-fluid-sm font-semibold text-heading">Add Appointment</h5>
+                  <button
+                    type="button"
+                    @click="showInlineAppointmentForm = false"
+                    class="text-sub hover:text-body"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <CreateEventForm
+                  :key="'inline-appointment'"
+                  :customer="task.customer"
+                  :assignee="task.assignee"
+                  :disabled-fields="['customer']"
+                  :initial-date="initialDateToday"
+                  :dealerships="dealerships"
+                  :show-actions="true"
+                  :reset-trigger="showInlineAppointmentForm"
+                  @create="handleAppointmentCreated"
+                  @cancel="showInlineAppointmentForm = false"
+                />
+              </div>
+
+              <slot name="tab-appointments" />
             </div>
+            <!-- Enrich / Communication / Attachments -->
+            <template v-else>
+              <!-- Add New (non-overview tabs) -->
+              <AddNewButton
+                :actions="addNewConfig.tabActions"
+                :active-tab="activeTab"
+                @action="handleAddNewAction"
+              />
+
+              <!-- Inline widgets -->
+              <div>
+                <CommunicationWidget
+                  v-if="showInlineWidget === 'communication'"
+                  :type="communicationType"
+                  :task-type="type"
+                  :task-id="task.id"
+                  :phone-number="task.customer?.phone || ''"
+                  :item="editingItem"
+                  @save="handleWidgetSave"
+                  @cancel="handleWidgetCancel"
+                />
+
+                <NoteWidget
+                  v-if="activeTab === 'data' && showInlineWidget === 'note'"
+                  :item="editingItem"
+                  :task-type="type"
+                  :task-id="task.id"
+                  @save="handleWidgetSave"
+                  @cancel="handleWidgetCancel"
+                />
+
+                <AttachmentWidget
+                  v-if="showInlineWidget === 'attachment'"
+                  :item="editingItem"
+                  :task-type="type"
+                  :task-id="task.id"
+                  @save="handleWidgetSave"
+                  @cancel="handleWidgetCancel"
+                />
+              </div>
+
+              <!-- Feed -->
+              <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
+                <FeedItemCard
+                  v-for="item in filteredInlineContent"
+                  :key="item.id"
+                  :item="item"
+                  :task-type="type"
+                  :customer-initials="'SK'"
+                  @edit="handleEditItem"
+                  @delete="handleDeleteItem"
+                />
+              </div>
+            </template>
           </div>
         </main>
       </div>
 
       <!-- Right: Activity Timeline (collapsed by default) -->
-      <ActivitySummarySidebar
-        :title="'Activity summary'"
-        :activities="allActivities"
-        :collapsed="activitySidebarCollapsed"
-        :show-collapse="true"
-        :show="true"
-        class="hidden lg:flex"
-        @toggle-collapse="activitySidebarCollapsed = !activitySidebarCollapsed"
-      />
+      <div class="hidden lg:flex flex-col overflow-hidden border-l border-black/5 shrink-0 w-80 h-full">
+        <TaskActivityCard
+          :activities="allActivities"
+          :expanded-summaries="expandedSummaries"
+          @activity-click="handleActivityClick"
+          @toggle-summary-expanded="toggleSummaryExpanded"
+          @add-activity="handleAddActivityFromSidebar"
+        />
+      </div>
     </div>
 
     <!-- GRID VIEW: Tabbed layout (only for tasks) -->
@@ -471,13 +528,51 @@
       @save="handleAddRequestedCarSave"
     />
     
-    <!-- Create Appointment Modal -->
+    <!-- Activity Modals -->
+    <NoteWidget
+      modal
+      :show="showNoteModal"
+      :task-type="type"
+      :task-id="task.id"
+      @save="handleNoteSave"
+      @close="showNoteModal = false"
+    />
+    
+    <AttachmentWidget
+      modal
+      :show="showAttachmentModal"
+      :task-type="type"
+      :task-id="task.id"
+      @save="handleAttachmentSave"
+      @close="showAttachmentModal = false"
+    />
+    
+    <AddWhatsAppModal
+      :show="showWhatsAppModal"
+      @save="handleWhatsAppSave"
+      @close="showWhatsAppModal = false"
+    />
+    
+    <AddSMSModal
+      :show="showSMSModal"
+      @save="handleSMSSave"
+      @close="showSMSModal = false"
+    />
+    
+    <AddEmailModal
+      :show="showEmailModal"
+      @save="handleEmailSave"
+      @close="showEmailModal = false"
+    />
+    
+    <!-- Create Appointment Modal (contact card + button) -->
     <CreateEventModal
       v-if="showCreateAppointmentModal"
       :show="showCreateAppointmentModal"
       :customer="task.customer"
       :assignee="task.assignee"
       :disabled-fields="['customer']"
+      :dealerships="dealerships"
       @create="handleAppointmentCreated"
       @cancel="showCreateAppointmentModal = false"
     />
@@ -493,7 +588,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import CustomerContactHeader from '@/components/customer/widgets/CustomerContactHeader.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
@@ -503,7 +598,7 @@ import TaskContactCard from '@/components/tasks/TaskContactCard.vue'
 import CustomerRelatedTasksWidget from '@/components/tasks/CustomerRelatedTasksWidget.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
-import ActivitySummarySidebar from '@/components/customer/widgets/ActivitySummarySidebar.vue'
+import TaskActivityCard from '@/components/tasks/TaskActivityCard.vue'
 import CommunicationWidget from '@/components/shared/communication/CommunicationWidget.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
@@ -516,10 +611,16 @@ import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import AddRequestedCarModal from '@/components/modals/AddRequestedCarModal.vue'
 import OfferModal from '@/components/modals/OfferModal.vue'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
+import AddWhatsAppModal from '@/components/modals/AddWhatsAppModal.vue'
+import AddSMSModal from '@/components/modals/AddSMSModal.vue'
+import AddEmailModal from '@/components/modals/AddEmailModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
 import { useCustomersStore } from '@/stores/customers'
+import { useUsersStore } from '@/stores/users'
+import CreateEventForm from '@/components/shared/forms/CreateEventForm.vue'
+import { createCalendarEvent, fetchCalendarFilterOptions } from '@/api/calendar'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -532,11 +633,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity', 'tag-updated'])
+const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity', 'tag-updated', 'appointment-created'])
 
 const route = useRoute()
 const router = useRouter()
 const customersStore = useCustomersStore()
+const usersStore = useUsersStore()
 
 const taskId = computed(() => props.task.id)
 
@@ -550,7 +652,7 @@ const gridMainTab = ref('manage')
 const gridMainTabs = [
   { key: 'manage', label: 'Manage' },
   { key: 'request', label: 'Request' },
-  { key: 'data', label: 'Enrich' }
+  { key: 'data', label: 'Note' }
   // { key: 'contact', label: 'Contact' }
 ]
 
@@ -773,11 +875,64 @@ const openCustomerPage = () => {
   })
 }
 
-// Handle reassign from Request component
-function handleAppointmentCreated(eventData) {
+// Build calendar event payload from CreateEventForm data; create via API; close modal/inline; emit.
+async function handleAppointmentCreated(eventData) {
+  const customerId = props.task.customer?.id ?? props.task.id
+  const time = eventData.time || '10:00'
+  const timeNorm = time.length === 5 ? `${time}:00` : time
+  const startStr = `${eventData.date}T${timeNorm}`
+  const [h, m] = time.split(':').map(Number)
+  const endH = h + 1
+  const endStr = `${eventData.date}T${String(endH).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}:00`
+
+  let assigneeId = null
+  let assigneeType = 'user'
+  let teamId = null
+  let assigneeName = ''
+  let teamName = null
+  if (eventData.assignee) {
+    if (eventData.assignee.startsWith('user-')) {
+      const id = parseInt(eventData.assignee.replace('user-', ''), 10)
+      const u = usersStore.getUserById(id)
+      assigneeId = id
+      assigneeType = 'user'
+      assigneeName = u?.name || ''
+    } else if (eventData.assignee.startsWith('team-')) {
+      const id = parseInt(eventData.assignee.replace('team-', ''), 10)
+      const t = usersStore.getTeamById(id)
+      teamId = id
+      assigneeType = 'team'
+      teamName = t?.name || ''
+      assigneeName = teamName
+    }
+  }
+
+  const payload = {
+    type: eventData.type,
+    title: eventData.title || `${eventData.type} - ${eventData.customer || 'Customer'}`,
+    customer: eventData.customer || props.task.customer?.name || '',
+    customerId,
+    start: startStr,
+    end: endStr,
+    assignee: assigneeName,
+    assigneeId,
+    assigneeType,
+    teamId,
+    team: teamName,
+    dealership: eventData.dealership || '',
+    status: 'confirmed'
+  }
+
+  try {
+    await createCalendarEvent(payload)
+  } catch (err) {
+    console.error('Failed to create appointment:', err)
+    return
+  }
+
   showCreateAppointmentModal.value = false
-  // Emit event to parent or handle appointment creation
-  // TODO: Integrate with calendar API
+  showInlineAppointmentForm.value = false
+  emit('appointment-created')
 }
 
 const handleReassign = () => {
@@ -825,9 +980,21 @@ const handleAddRequestedCarSave = async (carData) => {
 const showOverviewModal = ref(false)
 const overviewModalType = ref(null)
 const showCreateAppointmentModal = ref(false)
+const showInlineAppointmentForm = ref(false)
 const showReassignModal = ref(false)
 const showAddTagModal = ref(false)
 const showAddRequestedCarModal = ref(false)
+const dealerships = ref([])
+
+// Activity modals
+const showNoteModal = ref(false)
+const showAttachmentModal = ref(false)
+const showWhatsAppModal = ref(false)
+const showSMSModal = ref(false)
+const showEmailModal = ref(false)
+
+// Activity card state
+const expandedSummaries = ref({})
 
 const {
   activeTab,
@@ -852,6 +1019,30 @@ const {
 // Watch for task changes and reset to overview tab
 watch(() => props.task.id, () => {
   activeTab.value = 'overview'
+})
+
+// Clear inline appointment form when switching away from Appointments tab
+watch(activeTab, (tab) => {
+  if (tab !== 'appointments') {
+    showInlineAppointmentForm.value = false
+  }
+})
+
+// Today in YYYY-MM-DD for inline appointment form initial date
+const initialDateToday = computed(() => {
+  const d = new Date()
+  return d.toISOString().slice(0, 10)
+})
+
+onMounted(async () => {
+  if (!isTasksView.value) {
+    try {
+      const opts = await fetchCalendarFilterOptions()
+      dealerships.value = opts.dealerships || []
+    } catch (err) {
+      console.error('Failed to fetch calendar filter options:', err)
+    }
+  }
 })
 
 // Handle view history - switch to Request tab (for tasks view)
@@ -883,13 +1074,30 @@ const handleContactInfoAction = (action) => {
     return
   }
   
-  // Map actions to tabs
+  // Open modals for activity types
+  if (action === 'note') {
+    showNoteModal.value = true
+    return
+  }
+  if (action === 'attachment') {
+    showAttachmentModal.value = true
+    return
+  }
+  if (action === 'whatsapp') {
+    showWhatsAppModal.value = true
+    return
+  }
+  if (action === 'sms') {
+    showSMSModal.value = true
+    return
+  }
+  if (action === 'email') {
+    showEmailModal.value = true
+    return
+  }
+  
+  // Map actions to tabs (for call and other actions)
   const actionToTab = {
-    'note': 'data',
-    'attachment': 'attachment',
-    'email': 'communication',
-    'whatsapp': 'communication',
-    'sms': 'communication',
     'call': 'communication',
     'appointment': 'overview'
   }
@@ -985,13 +1193,113 @@ const handleOverviewModalSave = async (data) => {
   }
 }
 
+// Activity modal save handlers
+const handleNoteSave = async (noteData) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'note',
+      content: noteData.content || noteData.message,
+      message: noteData.content || noteData.message,
+      timestamp: new Date().toISOString()
+    })
+    showNoteModal.value = false
+  } catch (error) {
+    console.error('Error saving note:', error)
+  }
+}
+
+const handleAttachmentSave = async (attachmentData) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'attachment',
+      fileName: attachmentData.fileName,
+      file: attachmentData.file,
+      content: `Attachment: ${attachmentData.fileName}`,
+      timestamp: new Date().toISOString()
+    })
+    showAttachmentModal.value = false
+  } catch (error) {
+    console.error('Error saving attachment:', error)
+  }
+}
+
+const handleWhatsAppSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'whatsapp',
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showWhatsAppModal.value = false
+  } catch (error) {
+    console.error('Error saving WhatsApp:', error)
+  }
+}
+
+const handleSMSSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'sms',
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showSMSModal.value = false
+  } catch (error) {
+    console.error('Error saving SMS:', error)
+  }
+}
+
+const handleEmailSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'email',
+      subject: data.subject,
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showEmailModal.value = false
+  } catch (error) {
+    console.error('Error saving email:', error)
+  }
+}
+
+// Activity card handlers
+const handleActivityClick = (activity) => {
+  // Could open a modal here for detailed view
+  console.log('Activity clicked:', activity)
+}
+
+const toggleSummaryExpanded = (activityId) => {
+  expandedSummaries.value[activityId] = !expandedSummaries.value[activityId]
+}
+
+const handleAddActivityFromSidebar = (activityType) => {
+  // Use the same handler as the main add activity
+  handleContactInfoAction(activityType)
+}
+
 const tabs = computed(() => {
-  return [
+  const base = [
     { key: 'overview', label: 'Overview' },
-    { key: 'data', label: 'Enrich' },
+    { key: 'data', label: 'Note' },
     { key: 'communication', label: 'Communication' },
     { key: 'attachment', label: 'Attachments' }
   ]
+  if (props.type === 'contact') {
+    return [
+      { key: 'overview', label: 'Overview' },
+      { key: 'negotiations', label: 'Negotiations' },
+      ...base.slice(1),
+      { key: 'appointments', label: 'Appointments' }
+    ]
+  }
+  return base
 })
 
 const allActivities = computed(() => [

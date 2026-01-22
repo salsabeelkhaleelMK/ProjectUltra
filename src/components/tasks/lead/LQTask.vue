@@ -85,31 +85,32 @@
           </div>
         </div>
 
-        <!-- Display scheduled follow-up if exists -->
-        <div v-if="hasScheduledFollowUp" class="mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <div class="flex items-center gap-2 mb-1">
-            <i class="fa-solid fa-phone text-blue-600 text-fluid-xs"></i>
-            <span class="text-fluid-xs font-semibold text-blue-900">Scheduled Follow-up Call</span>
-          </div>
-          <p class="text-fluid-xs text-blue-700">
-            {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
-          </p>
-        </div>
-
-        <!-- Contact Attempt Counter -->
-        <div v-if="contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
+        <!-- Combined Follow-up and Contact Attempts Banner -->
+        <div v-if="hasScheduledFollowUp || contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <!-- Scheduled Follow-up Call -->
+            <div v-if="hasScheduledFollowUp" class="flex items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-blue-600 text-fluid-xs"></i>
+              <div class="flex items-center gap-2">
+                <span class="text-fluid-xs font-semibold text-heading">Scheduled Follow-up Call:</span>
+                <span class="text-fluid-xs text-body">
+                  {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Contact Attempts -->
+            <div v-if="contactAttempts > 0" class="flex items-center gap-2">
               <i class="fa-solid fa-phone text-body text-fluid-xs"></i>
               <span class="text-fluid-xs font-semibold text-body">Contact Attempts:</span>
               <span class="text-fluid-xs font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
-            </div>
-            <div
-              v-if="contactAttempts >= maxContactAttempts - 1"
-              class="text-fluid-xs text-orange-600 font-medium flex items-center gap-1"
-            >
-              <i class="fa-solid fa-exclamation-triangle"></i>
-              One more attempt before auto-disqualification
+              <div
+                v-if="contactAttempts >= maxContactAttempts - 1"
+                class="text-fluid-xs text-orange-600 font-medium flex items-center gap-1 ml-2"
+              >
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <span>One more attempt before auto-disqualification</span>
+              </div>
             </div>
           </div>
         </div>
@@ -777,48 +778,17 @@
     </template>
 
     <!-- Note Modal -->
-    <Dialog :open="showNoteModal" @update:open="handleNoteModalOpenChange">
-      <DialogPortal>
-        <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-        <DialogContent class="w-full sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Add Note</DialogTitle>
-          </DialogHeader>
-
-          <NoteWidget
-            ref="noteWidgetRef"
-            :item="null"
-            :task-type="'lead'"
-            :task-id="lead.id"
-            :borderless="false"
-            :hide-actions="true"
-            :hide-header="true"
-            @save="handleNoteSave"
-            @cancel="showNoteModal = false"
-          />
-
-          <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
-            <Button
-              variant="outline"
-              size="small"
-              class="rounded-sm w-full sm:w-auto"
-              @click="showNoteModal = false"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="small"
-              class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-              :disabled="!noteWidgetRef?.canSubmit()"
-              @click="noteWidgetRef?.submit"
-            >
-              Save Note
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
+    <NoteWidget
+      ref="noteWidgetRef"
+      modal
+      :show="showNoteModal"
+      :item="null"
+      :task-type="'lead'"
+      :task-id="lead.id"
+      @save="handleNoteSave"
+      @close="showNoteModal = false"
+      @cancel="showNoteModal = false"
+    />
 
     <!-- Schedule Appointment Modal -->
     <ScheduleAppointmentModal
@@ -913,11 +883,6 @@ const props = defineProps({
   }
 })
 
-const handleNoteModalOpenChange = (isOpen) => {
-  if (!isOpen) {
-    showNoteModal.value = false
-  }
-}
 
 const emit = defineEmits(['postponed', 'validated', 'qualified', 'disqualified', 'call-attempt-logged', 'note-saved', 'open-purchase-method', 'appointment-scheduled', 'survey-completed', 'survey-refused', 'not-responding'])
 

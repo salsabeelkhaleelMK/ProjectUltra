@@ -2,30 +2,32 @@
   <div class="w-full card-container p-3 md:px-8 md:py-3.5">
     <!-- Main Content Row -->
     <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-2 flex-1 min-w-0">
-        <!-- Simple Back Button -->
-        <button
-          @click="router.push('/customers')"
-          class="w-7 h-7 flex items-center justify-center text-sub hover:text-brand-dark transition-colors shrink-0 -ml-1"
-          aria-label="Back to customers"
-        >
-          <i class="fa-solid fa-arrow-left text-xs"></i>
-        </button>
-
+      <div class="flex flex-col gap-2 flex-1 min-w-0">
         <!-- Identity and Info Section -->
-        <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="flex items-start gap-3 min-w-0 flex-1">
           <!-- Avatar -->
           <button
             @click.stop="handleAvatarClick"
-            class="w-20 h-20 rounded-lg bg-black text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0 shadow-sm"
+            class="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity shrink-0 shadow-sm"
             :class="{ 'cursor-pointer': customerId }"
           >
-            <i class="fa-solid fa-user text-3xl text-white"></i>
+            <i class="fa-solid fa-user text-xl text-white"></i>
           </button>
 
           <!-- Information Stack -->
           <div class="min-w-0 flex-1">
-            <h1 class="text-fluid-base font-bold uppercase text-brand-dark truncate leading-tight">{{ name }}</h1>
+            <div class="flex items-center gap-2">
+              <h1 class="text-fluid-base font-bold uppercase text-brand-dark truncate leading-tight">{{ name }}</h1>
+              <button
+                v-if="customerId"
+                @click.stop="handleOpenCustomerPage"
+                class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+                title="Open in new page"
+                aria-label="Open customer page"
+              >
+                <i class="fa-solid fa-external-link text-xs"></i>
+              </button>
+            </div>
             
             <div class="flex flex-col gap-1.5 mt-1">
               <!-- Compact Contact Details -->
@@ -48,26 +50,26 @@
                   <span class="text-xs text-heading font-medium truncate max-w-36 lg:max-w-none">{{ thirdFieldValue }}</span>
                 </div>
               </div>
-
-              <!-- Tags Section (moved from TaskContactCard) -->
-              <div class="flex flex-wrap items-center gap-1.5">
-                <span 
-                  v-for="tag in tags" 
-                  :key="tag"
-                  class="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 font-semibold rounded"
-                >
-                  {{ tag }}
-                </span>
-                <button
-                  @click.stop="handleAddTag"
-                  class="text-xs text-sub hover:text-brand-dark font-medium hover:underline flex items-center gap-1 transition-colors"
-                >
-                  <i class="fa-solid fa-plus text-xs"></i>
-                  <span>add tag</span>
-                </button>
-              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Tags Section - Full Row Below Avatar -->
+        <div class="flex flex-wrap items-center gap-1.5 ml-16">
+          <span 
+            v-for="tag in tags" 
+            :key="tag"
+            class="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 font-semibold rounded"
+          >
+            {{ tag }}
+          </span>
+          <button
+            @click.stop="handleAddTag"
+            class="text-xs text-sub hover:text-brand-dark font-medium hover:underline flex items-center gap-1 transition-colors"
+          >
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>add tag</span>
+          </button>
         </div>
       </div>
       
@@ -84,10 +86,97 @@
           
           <div 
             v-if="showQuickActionMenu"
-            class="absolute top-full right-0 mt-2 z-50 shadow-xl"
+            class="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-black/10 py-1 z-50"
             v-click-outside="() => showQuickActionMenu = false"
+            @click.stop
           >
-            <DropdownMenu :items="quickActionItems" className="w-48" />
+            <!-- Communication Group -->
+            <button
+              @click="handleAction('email')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-envelope text-sm" style="color: #2563eb;"></i>
+              Email
+            </button>
+            <button
+              @click="handleAction('sms')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-comment text-sm" style="color: #9333ea;"></i>
+              SMS
+            </button>
+            <button
+              @click="handleAction('whatsapp')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-brands fa-whatsapp text-sm" style="color: #16a34a;"></i>
+              WhatsApp
+            </button>
+            <button
+              @click="handleAction('call')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-phone text-sm" style="color: #16a34a;"></i>
+              Call
+            </button>
+
+            <!-- Separator -->
+            <div class="border-t border-black/10 my-1"></div>
+
+            <!-- Activities Group -->
+            <button
+              @click="handleAction('note')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-sticky-note text-sm" style="color: #ea580c;"></i>
+              Note
+            </button>
+            <button
+              @click="handleAction('attachment')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-paperclip text-sm" style="color: #6b7280;"></i>
+              Attachment
+            </button>
+
+            <!-- Separator -->
+            <div class="border-t border-black/10 my-1"></div>
+
+            <!-- Business Group -->
+            <button
+              @click="handleAction('financing')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-file-invoice-dollar text-sm" style="color: #4f46e5;"></i>
+              Financing
+            </button>
+            <button
+              @click="handleAction('tradein')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrow-right-arrow-left text-sm" style="color: #2563eb;"></i>
+              Trade-in
+            </button>
+            <button
+              @click="handleAction('purchase')"
+              class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-handshake text-sm" style="color: #4f46e5;"></i>
+              Offer
+            </button>
+
+            <!-- Appointment (conditional) -->
+            <template v-if="props.taskType === 'opportunity' || props.taskType === 'contact'">
+              <!-- Separator -->
+              <div class="border-t border-black/10 my-1"></div>
+              <button
+                @click="handleAction('appointment')"
+                class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+              >
+                <i class="fa-regular fa-calendar text-sm" style="color: #9333ea;"></i>
+                Appointment
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -96,9 +185,8 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { DropdownMenu } from '@motork/component-library'
 import { useToastStore } from '@/stores/toast'
 
 const props = defineProps({
@@ -124,22 +212,6 @@ const showQuickActionMenu = ref(false)
 const toastStore = useToastStore()
 const router = useRouter()
 
-const quickActionItems = computed(() => {
-  const base = [
-    { key: 'note', label: 'Note' },
-    { key: 'financing', label: 'Financing' },
-    { key: 'tradein', label: 'Trade-in' },
-    { key: 'purchase', label: 'Purchase' },
-    { key: 'attachment', label: 'Attachment' },
-    { key: 'whatsapp', label: 'WhatsApp msg' },
-    { key: 'email', label: 'Email' },
-    { key: 'sms', label: 'SMS' },
-    { key: 'call', label: 'Call' },
-    ...(props.taskType === 'opportunity' ? [{ key: 'appointment', label: 'Appointment' }] : [])
-  ]
-  return base.map(item => ({ ...item, onClick: () => handleAction(item.key) }))
-})
-
 const handleAction = (action) => {
   showQuickActionMenu.value = false
   emit('action', action)
@@ -157,5 +229,12 @@ const copyToClipboard = async (text, field) => {
 const handleAddTag = () => emit('add-tag')
 const handleAvatarClick = () => {
   if (props.customerId) router.push(`/customer/${props.customerId}`)
+}
+
+const handleOpenCustomerPage = () => {
+  if (props.customerId) {
+    const url = router.resolve(`/customer/${props.customerId}`).href
+    window.open(url, '_blank')
+  }
 }
 </script>

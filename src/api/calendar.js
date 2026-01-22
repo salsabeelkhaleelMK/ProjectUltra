@@ -68,6 +68,24 @@ export const fetchUpcomingAppointments = async (days = 7) => {
   })
 }
 
+/** Customer-facing appointment types (appointment, test-drive, meeting, call, delivery). */
+const APPOINTMENT_TYPES = ['appointment', 'test-drive', 'meeting', 'call', 'delivery', 'offsite', 'workshop']
+
+/**
+ * Fetch all appointments (calendar events) for a customer.
+ * @param {number} customerId
+ * @returns {Promise<Array>} Sorted by start date descending (newest first).
+ */
+export const fetchAppointmentsByCustomerId = async (customerId) => {
+  await delay()
+  return mockCalendarEvents
+    .filter(
+      (e) =>
+        e.customerId === parseInt(customerId) && APPOINTMENT_TYPES.includes(e.type)
+    )
+    .sort((a, b) => new Date(b.start) - new Date(a.start))
+}
+
 export const fetchCalendarFilterOptions = async () => {
   await delay()
   

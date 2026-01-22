@@ -17,6 +17,7 @@
       @convert-to-lead="handleConvertToLead"
       @convert-to-opportunity="handleConvertToOpportunity"
       @tag-updated="handleTagUpdated"
+      @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
         <!-- Customer Summary Widget -->
@@ -37,8 +38,9 @@
         
         <!-- Customer Cars Carousel - All cars from leads/opportunities -->
         <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
-        
-        <!-- Customer Overview Widgets -->
+      </template>
+
+      <template #tab-negotiations>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <CustomerLeadsWidget 
             :leads="customerLeads" 
@@ -52,6 +54,10 @@
             @add-opportunity="openAddModal('opportunity')"
           />
         </div>
+      </template>
+
+      <template #tab-appointments>
+        <CustomerAppointmentsWidget :appointments="customerAppointments" />
       </template>
     </EntityDetailLayout>
 
@@ -76,6 +82,7 @@ import { useCustomersStore } from '@/stores/customers'
 import EntityDetailLayout from '@/components/shared/layout/EntityDetailLayout.vue'
 import CustomerLeadsWidget from '@/components/customer/CustomerLeadsWidget.vue'
 import CustomerOpportunitiesWidget from '@/components/customer/CustomerOpportunitiesWidget.vue'
+import CustomerAppointmentsWidget from '@/components/customer/CustomerAppointmentsWidget.vue'
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
@@ -83,6 +90,7 @@ import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { fetchLeadActivities } from '@/api/leads'
 import { fetchOpportunityActivities, fetchAppointmentByCustomerId } from '@/api/opportunities'
+import { fetchAppointmentsByCustomerId } from '@/api/calendar'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,6 +108,7 @@ const customerOpportunities = ref([])
 const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
+const customerAppointments = ref([])
 const nextAppointment = ref(null)
 
 // Get task ID from route - customer page always shows contact view
@@ -194,12 +203,18 @@ const loadCustomerData = async (explicitId = null) => {
     }
     customerActivities.value = allActivities
     
-    // Fetch next appointment
+    // Fetch next appointment and all appointments
     try {
       nextAppointment.value = await fetchAppointmentByCustomerId(customerId)
     } catch (err) {
       console.error('Failed to load next appointment:', err)
       nextAppointment.value = null
+    }
+    try {
+      customerAppointments.value = await fetchAppointmentsByCustomerId(customerId)
+    } catch (err) {
+      console.error('Failed to load appointments:', err)
+      customerAppointments.value = []
     }
   } catch (err) {
     console.error('Error loading customer data:', err)
@@ -330,6 +345,11 @@ onMounted(async () => {
 
 // Handle tag updates - reload customer data to reflect changes
 const handleTagUpdated = async () => {
+  await loadCustomerData()
+}
+
+// Handle appointment created (from modal or inline form) - refresh appointments list
+const handleAppointmentCreated = async () => {
   await loadCustomerData()
 }
 

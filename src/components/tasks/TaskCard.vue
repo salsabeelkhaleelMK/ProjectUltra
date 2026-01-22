@@ -11,7 +11,7 @@
       @click.stop="$emit('menu-click', item.id)"
       class="absolute top-2 right-2 pr-1 text-gray-300 hover:text-gray-600 z-10"
     >
-      <i class="fa-solid fa-ellipsis"></i>
+      <i class="fa-solid fa-ellipsis-vertical"></i>
     </button>
 
     <!-- Card Menu Dropdown -->
@@ -23,14 +23,27 @@
       <DropdownMenu v-if="menuItems && menuItems.length > 0" :items="menuItems" className="w-40 text-xs" />
     </div>
 
-    <div class="flex flex-col min-w-0 pr-4">
-      <h3 class="font-bold text-heading text-fluid-base truncate mb-0.5">{{ actionTitle }}</h3>
+    <div class="flex flex-col min-w-0 flex-1 pr-4">
+      <div class="flex items-center gap-1 mb-0.5">
+        <h3 class="font-bold text-heading text-fluid-base truncate">{{ actionTitle }}</h3>
+        <span 
+          v-if="deadline"
+          class="flex items-center gap-1 text-[10px] font-bold uppercase leading-none shrink-0"
+          :class="deadline.status.textClass"
+        >
+          <span 
+            class="w-1.5 h-1.5 rounded-full"
+            :class="deadlineDotClass"
+          ></span>
+          {{ deadline.text }}
+        </span>
+      </div>
       <div class="flex items-center gap-2 overflow-hidden">
         <span class="text-sub text-fluid-sm truncate">{{ getName(item) }}</span>
       </div>
       
       <!-- Badges -->
-      <div class="flex flex-wrap gap-2 mt-2">
+      <div class="flex flex-wrap items-center gap-2 mt-2">
         <span 
           class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
           :class="item.type === 'lead' 
@@ -53,15 +66,6 @@
           Hot
         </span>
       </div>
-    </div>
-    
-    <div v-if="deadline" class="shrink-0 ml-auto self-start mt-3">
-      <span 
-        class="px-3 py-1 rounded-lg text-[11px] font-bold border whitespace-nowrap"
-        :class="[deadline.status.bgClass, deadline.status.textClass, deadline.status.borderClass]"
-      >
-        {{ deadline.text }}
-      </span>
     </div>
   </div>
 </template>
@@ -150,6 +154,12 @@ const deadline = computed(() => {
     text: formatDueDate(date),
     status
   }
+})
+
+const deadlineDotClass = computed(() => {
+  if (!deadline.value) return ''
+  // Convert text color class to background color class (e.g., text-red-700 -> bg-red-700)
+  return deadline.value.status.textClass.replace('text-', 'bg-')
 })
 
 const cardRef = ref(null)

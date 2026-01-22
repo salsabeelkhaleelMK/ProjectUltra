@@ -81,12 +81,13 @@
             </div>
             
             <!-- Activity Tab -->
-            <div v-if="sidebarTab === 'activity'" class="p-2">
+            <div v-if="sidebarTab === 'activity'" class="p-2 flex-1 overflow-hidden h-full flex flex-col">
               <TaskActivityCard
                 :activities="allActivities"
                 :expanded-summaries="expandedSummaries"
                 @activity-click="handleActivityClick"
                 @toggle-summary-expanded="toggleSummaryExpanded"
+                @add-activity="handleAddActivity"
               />
             </div>
           </div>
@@ -104,6 +105,43 @@
         <p class="text-fluid-sm text-sub">Select a task from the list to view its details and manage activities</p>
       </div>
     </div>
+    
+    <!-- Activity Modals -->
+    <NoteWidget
+      modal
+      :show="showNoteModal"
+      :task-type="task?.type || 'lead'"
+      :task-id="task?.id"
+      @save="handleNoteSave"
+      @close="showNoteModal = false"
+    />
+    
+    <AttachmentWidget
+      modal
+      :show="showAttachmentModal"
+      :task-type="task?.type || 'lead'"
+      :task-id="task?.id"
+      @save="handleAttachmentSave"
+      @close="showAttachmentModal = false"
+    />
+    
+    <AddWhatsAppModal
+      :show="showWhatsAppModal"
+      @save="handleWhatsAppSave"
+      @close="showWhatsAppModal = false"
+    />
+    
+    <AddSMSModal
+      :show="showSMSModal"
+      @save="handleSMSSave"
+      @close="showSMSModal = false"
+    />
+    
+    <AddEmailModal
+      :show="showEmailModal"
+      @save="handleEmailSave"
+      @close="showEmailModal = false"
+    />
   </div>
 </template>
 
@@ -114,6 +152,11 @@ import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'
 import VehicleRequestCard from './VehicleRequestCard.vue'
 import TaskActivityCard from './TaskActivityCard.vue'
+import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
+import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
+import AddWhatsAppModal from '@/components/modals/AddWhatsAppModal.vue'
+import AddSMSModal from '@/components/modals/AddSMSModal.vue'
+import AddEmailModal from '@/components/modals/AddEmailModal.vue'
 
 const props = defineProps({
   task: { 
@@ -149,6 +192,13 @@ const sidebarTab = ref('request')
 
 // Expanded summaries state for activity details
 const expandedSummaries = ref({})
+
+// Activity modals
+const showNoteModal = ref(false)
+const showAttachmentModal = ref(false)
+const showWhatsAppModal = ref(false)
+const showSMSModal = ref(false)
+const showEmailModal = ref(false)
 
 // Activities
 const allActivities = computed(() => {
@@ -195,26 +245,117 @@ const handleMoreActions = () => {
 const handleContactAction = (action) => {
   console.log('Contact action:', action)
 }
+
+// Handle add activity from TaskActivityCard
+const handleAddActivity = (activityType) => {
+  if (activityType === 'note') {
+    showNoteModal.value = true
+  } else if (activityType === 'attachment') {
+    showAttachmentModal.value = true
+  } else if (activityType === 'whatsapp') {
+    showWhatsAppModal.value = true
+  } else if (activityType === 'sms') {
+    showSMSModal.value = true
+  } else if (activityType === 'email') {
+    showEmailModal.value = true
+  }
+}
+
+// Activity modal save handlers
+const handleNoteSave = async (noteData) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'note',
+      content: noteData.content || noteData.message,
+      message: noteData.content || noteData.message,
+      timestamp: new Date().toISOString()
+    })
+    showNoteModal.value = false
+  } catch (error) {
+    console.error('Error saving note:', error)
+  }
+}
+
+const handleAttachmentSave = async (attachmentData) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'attachment',
+      fileName: attachmentData.fileName,
+      file: attachmentData.file,
+      content: `Attachment: ${attachmentData.fileName}`,
+      timestamp: new Date().toISOString()
+    })
+    showAttachmentModal.value = false
+  } catch (error) {
+    console.error('Error saving attachment:', error)
+  }
+}
+
+const handleWhatsAppSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'whatsapp',
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showWhatsAppModal.value = false
+  } catch (error) {
+    console.error('Error saving WhatsApp:', error)
+  }
+}
+
+const handleSMSSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'sms',
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showSMSModal.value = false
+  } catch (error) {
+    console.error('Error saving SMS:', error)
+  }
+}
+
+const handleEmailSave = async (data) => {
+  try {
+    await props.storeAdapter.addActivity(props.task.id, {
+      type: 'email',
+      subject: data.subject,
+      message: data.message,
+      content: data.message,
+      template: data.template,
+      timestamp: new Date().toISOString()
+    })
+    showEmailModal.value = false
+  } catch (error) {
+    console.error('Error saving email:', error)
+  }
+}
 </script>
 
 <style scoped>
 /* Right sidebar responsive widths */
 .right-sidebar {
-  width: 360px;
-  min-width: 360px;
+  width: 320px;
+  min-width: 320px;
 }
 
 @media (min-width: 1440px) {
   .right-sidebar {
-    width: 400px;
-    min-width: 400px;
+    width: 360px;
+    min-width: 360px;
   }
 }
 
 @media (min-width: 1600px) {
   .right-sidebar {
-    width: 480px;
-    min-width: 480px;
+    width: 420px;
+    min-width: 420px;
   }
 }
 </style>

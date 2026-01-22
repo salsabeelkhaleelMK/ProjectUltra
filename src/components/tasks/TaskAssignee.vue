@@ -8,19 +8,19 @@
         <!-- Avatar + Comprehensive Info (single line) -->
         <div class="flex items-center gap-2 min-w-0 flex-1">
           <div 
-            class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0"
+            class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
             :class="getRoleAvatarClass(ownerInfo.role)"
           >
             {{ getInitials(ownerInfo.name) }}
           </div>
           <div class="min-w-0 flex-1">
             <!-- Name + Team in one line -->
-            <p class="text-xs font-semibold text-greys-900 truncate leading-tight">
+            <p class="text-sm font-semibold text-greys-900 truncate leading-tight">
               {{ ownerInfo.name }}
               <span class="font-normal text-greys-500">• {{ ownerInfo.team }}</span>
             </p>
             <!-- Dealership (tiny, subtle) -->
-            <p class="text-[10px] text-greys-500 truncate leading-tight">
+            <p class="text-xs text-greys-500 truncate leading-tight">
               {{ ownerInfo.dealership }}
             </p>
           </div>
@@ -31,38 +31,48 @@
           variant="ghost" 
           size="sm"
           @click="showReassignModal = true"
-          class="shrink-0 text-[11px] px-2 py-1"
+          class="shrink-0 text-xs px-2 py-1"
         >
           Change
         </Button>
       </div>
       
-      <!-- UNASSIGNED STATE: Assignment options -->
+      <!-- UNASSIGNED STATE: Assignment CTAs -->
       <div v-else class="space-y-2">
-        <div class="flex items-center justify-between">
-          <p class="text-xs text-greys-500 font-medium">Unassigned</p>
-          <Button 
-            variant="primary"
-            size="sm"
-            @click="assignToSelf"
-            class="!bg-brand-red text-xs px-3 py-1"
-          >
-            Assign to me
-          </Button>
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <p class="text-sm text-greys-500 font-medium">Unassigned</p>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <Button
+              variant="primary"
+              size="sm"
+              @click="assignToSelf"
+              class="!bg-brand-red text-sm px-3 py-1"
+            >
+              Assign to me
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              @click="showReassignModal = true"
+              class="text-sm px-3 py-1 border-D1D5DB"
+            >
+              Assign to someone
+            </Button>
+          </div>
         </div>
-        
+
         <!-- Suggested Teams (compact pills) -->
         <div v-if="suggestedTeams.length > 0" class="flex gap-1.5 flex-wrap">
           <button
             v-for="team in suggestedTeams"
             :key="team.id"
-            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-medium transition-all"
-            :class="selectedTeam?.id === team.id 
-              ? 'border-brand-blue bg-blue-50 text-brand-blue' 
+            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-xs font-medium transition-all"
+            :class="selectedTeam?.id === team.id
+              ? 'border-brand-blue bg-blue-50 text-brand-blue'
               : 'border-E5E7EB hover:border-brand-blue/30 text-greys-600'"
             @click="handleTeamSelect(team)"
           >
-            <i class="fa-solid fa-users text-[9px]"></i>
+            <i class="fa-solid fa-users text-xs"></i>
             {{ team.name }}
           </button>
         </div>
@@ -70,11 +80,11 @@
     </div>
   </div>
   
-  <!-- Reassign Modal -->
+  <!-- Assign / Reassign Modal -->
   <ReassignUserModal
     :show="showReassignModal"
-    title="Reassign task"
-    confirm-label="Reassign"
+    :title="isAssigned ? 'Reassign task' : 'Assign task'"
+    :confirm-label="isAssigned ? 'Reassign' : 'Assign'"
     @close="showReassignModal = false"
     @confirm="handleReassign"
   />
