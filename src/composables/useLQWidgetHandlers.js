@@ -52,8 +52,8 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       notes: '',
       transcription: null
     }
-    // Show the call log form first with datetime and assignee
-    initCallLogForm()
+    // Show the call log form first with datetime and assignee, and show outcome selection immediately
+    initCallLogForm(true)
   }
 
   const handleScheduleAppointmentConfirm = async (appointmentData) => {

@@ -300,7 +300,10 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   }
   
   // Initialize call log form with current datetime and auto-assign to current user
-  const initCallLogForm = () => {
+  const initCallLogForm = (showOutcomeImmediately = false) => {
+    // Don't reinitialize if there's already a success state
+    if (successState.value) return
+    
     // Set current datetime in local timezone format for datetime-local input
     const now = new Date()
     const year = now.getFullYear()
@@ -316,6 +319,10 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     }
     
     showCallLogForm.value = true
+    // Show outcome selection immediately if requested (e.g., when "Log Call Outcome" is clicked)
+    if (showOutcomeImmediately) {
+      showOutcomeSelection.value = true
+    }
   }
   
   const confirmCallLogForm = () => {

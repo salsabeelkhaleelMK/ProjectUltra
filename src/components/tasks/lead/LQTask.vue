@@ -143,49 +143,40 @@
 
       <!-- Grey outcome area: call log form + outcome selection -->
       <div class="px-4 py-4 space-y-3">
-        <!-- Call Log Form (shows datetime and assignee; stays visible when outcome selection appears below) -->
-        <div v-if="showCallLogForm" class="space-y-4">
-          <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-            <h4 class="font-semibold text-heading mb-4 text-fluid-sm">Log Call Details</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-fluid-xs font-medium text-body mb-1.5">Call Date & Time</label>
-                <input
-                  type="datetime-local"
-                  v-model="callLogDateTime"
-                  class="input w-full"
-                >
+        <!-- Compact Call Log Assignment (one-line display) -->
+        <div v-if="showCallLogForm" class="bg-white rounded-lg p-3 shadow-nsc-card border border-E5E7EB" style="box-shadow: var(--nsc-card-shadow)">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs shrink-0"
+                :class="getRoleAvatarClass(callLogAssignee?.role)"
+              >
+                {{ getInitials(callLogAssignee?.name) }}
               </div>
-              <div>
-                <label class="block text-fluid-xs font-medium text-body mb-1.5">Assigned To</label>
-                <div class="flex items-center gap-3 p-3 bg-surfaceSecondary rounded-lg border border-E5E7EB">
-                  <div
-                    class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs"
-                    :class="getRoleAvatarClass(callLogAssignee?.role)"
-                  >
-                    {{ getInitials(callLogAssignee?.name) }}
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-medium text-fluid-sm text-heading">{{ callLogAssignee?.name || 'Unknown' }}</p>
-                    <p class="text-fluid-xs text-sub capitalize">{{ callLogAssignee?.role || 'User' }}</p>
-                  </div>
-                  <span class="text-fluid-xs text-green-600 font-medium">Auto-assigned</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-fluid-sm font-medium text-heading">{{ callLogAssignee?.name || 'Unknown' }}</span>
+                  <span class="text-fluid-xs text-sub">•</span>
+                  <span class="text-fluid-xs text-sub">{{ formatCallLogDateTime }}</span>
+                  <span v-if="currentTaskOutcome" class="text-fluid-xs text-sub">•</span>
+                  <span v-if="currentTaskOutcome" class="text-fluid-xs font-medium text-blue-600">{{ currentTaskOutcome }}</span>
                 </div>
               </div>
             </div>
-            <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-E5E7EB">
+            <div class="flex items-center gap-2 shrink-0">
               <Button
-                label="Cancel"
+                label="Reassign"
                 variant="outline"
                 size="small"
-                @click="cancelCallLogForm"
+                class="text-fluid-xs"
+                @click="showReassignModal = true"
               />
               <Button
-                label="Continue"
-                variant="primary"
+                label="Remove"
+                variant="outline"
                 size="small"
-                @click="confirmCallLogForm"
-                class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+                class="text-fluid-xs"
+                @click="removeAssignment"
               />
             </div>
           </div>
@@ -800,6 +791,15 @@
       @close="showAssignmentModal = false"
     />
 
+    <!-- Reassign Modal for Call Log -->
+    <ReassignUserModal
+      :show="showReassignModal"
+      title="Reassign task"
+      confirm-label="Reassign"
+      @confirm="handleReassignConfirm"
+      @close="showReassignModal = false"
+    />
+
     <!-- Purchase Method Modal -->
     <PurchaseMethodModal
       :show="showFinancingModal"
@@ -907,6 +907,7 @@ const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
 const showFinancingModal = ref(false)
 const showVehicleModal = ref(false)
+const showReassignModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -947,6 +948,50 @@ const handleAssignmentConfirm = (assignee) => {
   }
   showAssignmentModal.value = false
 }
+
+const handleReassignConfirm = (assignee) => {
+  callLogAssignee.value = assignee
+  showReassignModal.value = false
+}
+
+const removeAssignment = () => {
+  callLogAssignee.value = null
+  callLogDateTime.value = ''
+  showCallLogForm.value = false
+  showOutcomeSelection.value = false
+  selectedOutcome.value = null
+}
+
+// Format call log datetime for display
+const formatCallLogDateTime = computed(() => {
+  if (!callLogDateTime.value) return ''
+  const date = new Date(callLogDateTime.value)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}`
+})
+
+// Check if task is already assigned and show outcome
+const isTaskAssigned = computed(() => {
+  return !!callLogAssignee.value
+})
+
+const currentTaskOutcome = computed(() => {
+  if (successState.value) {
+    return successState.value.statusText
+  }
+  // Check if there's a recent activity with outcome
+  const recentActivity = props.activities
+    .filter(a => a.type === 'call' || a.type === 'outcome')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0]
+  if (recentActivity) {
+    return recentActivity.outcome || recentActivity.content || 'Outcome logged'
+  }
+  return null
+})
 
 // Handle inline note save
 const handleInlineNoteSave = async () => {
@@ -989,7 +1034,21 @@ const handleExtractWithAI = async () => {
 // Wrapper functions for coordination
 const startCall = () => {
   startCallFromComposable()
+  // Auto-assign and auto-fill time when initiating call (don't show outcome selection yet)
+  initCallLogForm(false)
 }
+
+// Watch for call ending to show outcome selection
+watch(callEnded, (ended) => {
+  if (ended && !showOutcomeSelection.value && !successState.value) {
+    // Ensure assignment and time are set
+    if (!callLogAssignee.value) {
+      initCallLogForm(false)
+    }
+    // Show outcome selection when call ends
+    showOutcomeSelection.value = true
+  }
+})
 
 const copyNumber = () => {
   copyNumberFromComposable(props.lead.customer.phone)
@@ -1080,6 +1139,7 @@ const {
   callLogAssignee,
   confirmCallLogForm,
   cancelCallLogForm,
+  initCallLogForm,
   successState,
   successPerformedAt,
   qualificationMethod,
