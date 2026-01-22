@@ -100,9 +100,8 @@ const props = defineProps({
   tasks: { type: Array, required: true },
   currentTaskId: { type: String, default: null },
   highlightId: { type: String, default: null },
-  typeFilter: { type: String, default: 'all' },
+  activeFilters: { type: Array, default: () => [] },
   sortOption: { type: String, default: 'recent-first' },
-  showTypeFilter: { type: Boolean, default: true },
   showClosed: { type: Boolean, default: false },
   showMobileClose: { type: Boolean, default: false },
   openMenuId: { type: [Number, String], default: null },
@@ -132,9 +131,16 @@ const columnFilters = ref([])
 const columnVisibility = ref({})
 
 // Use filter definitions composable
+// Extract type filters from activeFilters for backward compatibility
+const typeFilters = computed(() => {
+  return props.activeFilters.filter(f => f === 'lead' || f === 'opportunity')
+})
 const { filterDefinitions } = useTasksTableFilters({
-  typeFilter: computed(() => props.typeFilter),
-  showTypeFilter: computed(() => props.showTypeFilter),
+  typeFilter: computed(() => {
+    // Return first type filter or 'all' if none
+    return typeFilters.value.length > 0 ? typeFilters.value[0] : 'all'
+  }),
+  showTypeFilter: computed(() => typeFilters.value.length > 0 || props.activeFilters.length === 0),
   tasks: computed(() => props.tasks)
 })
 
@@ -324,7 +330,7 @@ const columns = computed(() => [
     }
   },
   // Urgency level column (only show for leads when urgency is enabled)
-  ...(props.typeFilter === 'lead' && settingsStore.getSetting('urgencyEnabled') !== false ? [{
+  ...(typeFilters.value.includes('lead') && settingsStore.getSetting('urgencyEnabled') !== false ? [{
     id: 'urgencyLevel',
     accessorKey: 'urgencyLevel',
     header: 'Urgency',

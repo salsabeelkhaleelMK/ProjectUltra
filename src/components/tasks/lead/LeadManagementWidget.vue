@@ -1,5 +1,5 @@
 <template>
-  <TaskManagementWidget :task="lead">
+  <TaskManagementWidget :task="lead" hide-title hide-border>
     <template #deadline-banner>
       <DeadlineBanner
         :next-action-due="lead.nextActionDue"

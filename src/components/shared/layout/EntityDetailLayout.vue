@@ -204,9 +204,9 @@
         </div>
 
         <!-- Tab 2: Request -->
-        <div v-if="gridMainTab === 'request'" class="space-y-6">
+        <div v-if="gridMainTab === 'request'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <!-- Request Card + Contact Info Card -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:col-span-2">
             <!-- Request Card -->
             <TaskRequestOverviewTab
               v-if="type !== 'contact'"
@@ -244,9 +244,9 @@
             </div>
             
             <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1 min-h-0" style="box-shadow: var(--nsc-card-shadow);">
               <!-- Timeline -->
-              <div class="relative">
+              <div class="relative flex-1 min-h-0">
                 <div v-if="allActivities.length > 0" class="absolute left-5 top-0 bottom-0 w-0.5 bg-border z-0"></div>
                 
                 <div v-if="allActivities.length === 0" class="text-center py-6 text-sub">
@@ -254,7 +254,7 @@
                   <p class="text-fluid-sm">No activities yet</p>
                 </div>
                 
-                <div v-else class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                <div v-else class="space-y-6 h-full overflow-y-auto pr-2">
                   <div v-for="activity in allActivities" :key="activity.id" class="flex gap-4 relative">
                     <div 
                       class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"

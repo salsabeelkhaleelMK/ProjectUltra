@@ -102,12 +102,10 @@
             <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
           </div>
           <div class="flex gap-2">
-            <Button
+            <AIButton
               label="Extract information"
-              variant="primary"
               size="small"
               @click="$emit('extract-information')"
-              class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             />
             <Button
               label="Log outcome"
@@ -124,6 +122,7 @@
 
 <script setup>
 import { Button } from '@motork/component-library'
+import AIButton from '@/components/shared/AIButton.vue'
 
 defineProps({
   isCallActive: {

@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
     <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+    <div class="px-4 py-2.5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-list text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Other Tasks for This Customer</h2>
+        <i class="fa-solid fa-list text-heading text-xs"></i>
+        <h2 class="text-fluid-xs font-medium text-heading">Other Tasks for This Customer</h2>
         <span v-if="relatedTasks.length > 0" class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded-full">
           {{ relatedTasks.length }}
         </span>
@@ -12,69 +12,73 @@
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-      <div v-if="loading" class="text-center py-8 text-sub">
-        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+    <div class="bg-white rounded-lg p-3 shadow-sm flex flex-col flex-1 min-h-0" style="box-shadow: var(--nsc-card-shadow);">
+      <div v-if="loading" class="text-center py-6 text-sub">
+        <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
         <p class="text-xs">Loading related tasks...</p>
       </div>
       
-      <div v-else-if="relatedTasks.length > 0" class="space-y-3">
+      <div v-else-if="relatedTasks.length > 0" class="space-y-2 overflow-y-auto flex-1">
         <div
           v-for="task in relatedTasks"
           :key="`${task.type}-${task.id}`"
-          class="flex flex-col p-3 border border-E5E7EB rounded-lg hover:bg-surfaceSecondary transition-colors cursor-pointer group"
+          class="flex flex-col p-2 border border-E5E7EB rounded-lg hover:bg-surfaceSecondary transition-colors cursor-pointer group"
           @click="handleTaskClick(task)"
         >
-          <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start justify-between gap-2">
             <div class="flex-1 min-w-0">
-              <!-- Type and Status Chips -->
-              <div class="flex items-center gap-2 mb-2 flex-wrap">
+              <!-- Type, Status and Details in a compact layout -->
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <span 
-                  class="px-2 py-1 rounded text-xs font-medium border"
+                  class="px-1 py-0.5 rounded text-xs font-bold border leading-none uppercase"
                   :class="task.type === 'lead' 
                     ? 'bg-blue-50 text-blue-700 border-blue-200' 
                     : 'bg-purple-50 text-purple-700 border-purple-200'"
                 >
-                  {{ task.type === 'lead' ? 'Lead' : 'Opportunity' }}
+                  {{ task.type === 'lead' ? 'Lead' : 'Opp' }}
                 </span>
                 <span 
-                  class="px-2 py-1 rounded text-xs font-medium border"
+                  class="px-1 py-0.5 rounded text-xs font-bold border leading-none uppercase"
                   :class="getStageColor(task.displayStage || task.stage, task.type)"
                 >
                   {{ task.displayStage || task.stage }}
                 </span>
-              </div>
-              
-              <!-- Details Grid -->
-              <div class="space-y-1.5">
-                <!-- Creation Date -->
-                <div v-if="task.createdAt" class="flex items-center gap-2 text-xs text-sub">
-                  <i class="fa-solid fa-calendar text-xs w-4"></i>
+                
+                <div v-if="task.createdAt" class="hidden sm:flex items-center gap-1 text-xs text-sub">
                   <span>{{ formatDate(task.createdAt) }}</span>
                 </div>
-                
+              </div>
+              
+              <!-- Details Row -->
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                <!-- Mobile only creation date -->
+                <div v-if="task.createdAt" class="flex sm:hidden items-center gap-1 text-xs text-sub">
+                  <i class="fa-solid fa-calendar opacity-70"></i>
+                  <span>{{ formatDate(task.createdAt) }}</span>
+                </div>
+
                 <!-- Assignee -->
-                <div v-if="task.assignee" class="flex items-center gap-2 text-xs text-sub">
-                  <i class="fa-solid fa-user text-xs w-4"></i>
+                <div v-if="task.assignee" class="flex items-center gap-1 text-xs text-sub">
+                  <i class="fa-solid fa-user opacity-70"></i>
                   <span>{{ task.assignee }}</span>
                 </div>
                 
                 <!-- Car Requested -->
-                <div v-if="getCarName(task)" class="flex items-center gap-2 text-xs text-sub">
-                  <i class="fa-solid fa-car text-xs w-4"></i>
-                  <span>{{ getCarName(task) }}</span>
+                <div v-if="getCarName(task)" class="flex items-center gap-1 text-xs text-sub">
+                  <i class="fa-solid fa-car opacity-70"></i>
+                  <span class="truncate max-w-[150px]">{{ getCarName(task) }}</span>
                 </div>
                 
                 <!-- Value (only for opportunities) -->
-                <div v-if="task.type === 'opportunity' && task.value" class="flex items-center gap-2 text-xs">
-                  <i class="fa-solid fa-tag text-xs w-4 text-sub"></i>
-                  <span class="font-semibold text-heading">€ {{ formatCurrency(task.value) }}</span>
+                <div v-if="task.type === 'opportunity' && task.value" class="flex items-center gap-1 text-xs">
+                  <i class="fa-solid fa-tag text-sub opacity-70"></i>
+                  <span class="font-bold text-heading">€ {{ formatCurrency(task.value) }}</span>
                 </div>
               </div>
             </div>
             
-            <!-- External Link Icon -->
-            <div class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0">
+            <!-- Compact External Link Icon -->
+            <div class="w-6 h-6 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0 self-center">
               <i class="fa-solid fa-external-link text-xs"></i>
             </div>
           </div>

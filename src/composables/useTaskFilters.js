@@ -68,10 +68,87 @@ export function useTaskFilters(showClosed) {
     return tasks
   })
 
-  // Filter tasks by type
-  const filterByType = (tasks, typeFilter) => {
-    if (typeFilter === 'all') return tasks
-    return tasks.filter(task => task.type === typeFilter)
+  // Filter tasks by type (supports array of types)
+  const filterByType = (tasks, typeFilters) => {
+    if (!typeFilters || typeFilters.length === 0) return tasks
+    if (Array.isArray(typeFilters)) {
+      return tasks.filter(task => typeFilters.includes(task.type))
+    }
+    // Legacy support for single string filter
+    if (typeFilters === 'all') return tasks
+    return tasks.filter(task => task.type === typeFilters)
+  }
+
+  // Filter tasks due in 24 hours
+  const filterByDueIn24Hours = (tasks) => {
+    const now = new Date()
+    const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+    
+    return tasks.filter(task => {
+      if (!task.nextActionDue) return false
+      const dueDate = new Date(task.nextActionDue)
+      return dueDate >= now && dueDate <= in24Hours
+    })
+  }
+
+  // Filter tasks that need to be called again (have nextActionDue set)
+  const filterByToBeCalled = (tasks) => {
+    return tasks.filter(task => task.nextActionDue != null)
+  }
+
+  // Filter leads created within the last hour
+  const filterByLeadsCreated1Hour = (tasks) => {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    
+    return tasks.filter(task => {
+      if (task.type !== 'lead') return false
+      if (!task.createdAt) return false
+      const createdAt = new Date(task.createdAt)
+      return createdAt >= oneHourAgo
+    })
+  }
+
+  // Filter tasks assigned to current user
+  const filterByAssignedToMe = (tasks) => {
+    const currentUserName = userStore.currentUser?.name
+    if (!currentUserName) return []
+    
+    return tasks.filter(task => task.assignee === currentUserName)
+  }
+
+  // Apply all active filters to tasks
+  const applyFilters = (tasks, activeFilters) => {
+    if (!activeFilters || activeFilters.length === 0) {
+      return tasks
+    }
+
+    let filtered = [...tasks]
+
+    // Extract type filters
+    const typeFilters = activeFilters.filter(f => f === 'lead' || f === 'opportunity')
+    if (typeFilters.length > 0) {
+      filtered = filterByType(filtered, typeFilters)
+    }
+
+    // Apply other filters
+    activeFilters.forEach(filter => {
+      switch (filter) {
+        case 'due-in-24h':
+          filtered = filterByDueIn24Hours(filtered)
+          break
+        case 'to-be-called':
+          filtered = filterByToBeCalled(filtered)
+          break
+        case 'leads-1h':
+          filtered = filterByLeadsCreated1Hour(filtered)
+          break
+        case 'assigned-to-me':
+          filtered = filterByAssignedToMe(filtered)
+          break
+      }
+    })
+
+    return filtered
   }
 
   // Check if user has both leads and opportunities (only show filter if they have both types)
@@ -84,6 +161,11 @@ export function useTaskFilters(showClosed) {
   return {
     allTasks,
     filterByType,
+    filterByDueIn24Hours,
+    filterByToBeCalled,
+    filterByLeadsCreated1Hour,
+    filterByAssignedToMe,
+    applyFilters,
     shouldShowTypeFilter
   }
 }

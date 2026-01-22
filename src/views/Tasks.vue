@@ -18,7 +18,6 @@
           title="Tasks"
           :items="filteredTasks"
           :selected-id="currentTask?.compositeId"
-          :type-filter="typeFilter"
           :view-mode="viewMode"
           :initial-search-query="cardSearchQuery"
           @view-change="handleViewChange"
@@ -82,8 +81,8 @@
           @menu-click="toggleCardMenu"
           @menu-close="openCardMenu = null"
           @close="handleBackToTaskList"
-          :show-type-filter="shouldShowTypeFilter"
-          @filter-change="typeFilter = $event"
+          :active-filters="activeFilters"
+          @filter-change="activeFilters = $event"
           @sort-change="handleSortChange"
         >
           <template #badges="{ item: task }">
@@ -181,9 +180,8 @@
         :tasks="filteredTasks"
         :current-task-id="drawerTask?.compositeId"
         :highlight-id="highlightId"
-        :type-filter="typeFilter"
+        :active-filters="activeFilters"
         :sort-option="sortOption"
-        :show-type-filter="shouldShowTypeFilter"
         :show-closed="showClosed"
         :show-mobile-close="false"
         :open-menu-id="openCardMenu"
@@ -195,7 +193,7 @@
         @select="selectTask"
         @menu-click="toggleCardMenu"
         @menu-close="openCardMenu = null"
-        @filter-change="typeFilter = $event"
+        @filter-change="activeFilters = $event"
         @sort-change="handleSortChange"
         @toggle-closed="showClosed = $event"
         @reassign="reassignTask"
@@ -354,7 +352,7 @@ const handleViewChange = (newViewMode, searchQuery = '') => {
 }
 
 
-const typeFilter = ref('all') // 'all', 'lead', 'opportunity'
+const activeFilters = ref([]) // Array of active filter keys: ['lead', 'due-in-24h', etc.]
 const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
 const showClosed = ref(false) // Toggle to show/hide closed (disqualified) leads
 const openCardMenu = ref(null)
@@ -365,15 +363,15 @@ const showTaskDrawer = ref(false) // Control drawer visibility in table view
 const drawerTask = ref(null) // Task displayed in drawer
 
 // Use task filters composable
-const { allTasks, filterByType, shouldShowTypeFilter } = useTaskFilters(showClosed)
+const { allTasks, applyFilters, shouldShowTypeFilter } = useTaskFilters(showClosed)
 
 // Use task sorting composable
 const { sortTasks } = useTaskSorting()
 
 // Filter and sort tasks
 const filteredTasks = computed(() => {
-  // Apply type filter
-  let tasks = filterByType(allTasks.value, typeFilter.value)
+  // Apply all active filters
+  let tasks = applyFilters(allTasks.value, activeFilters.value)
   
   // Apply sort
   tasks = sortTasks(tasks, sortOption.value)
@@ -403,8 +401,9 @@ const currentTask = computed(() => {
   }
   
   // If no type specified, try to find by compositeId in filtered list first
-  const filtered = typeFilter.value !== 'all' 
-    ? allTasks.value.filter(t => t.type === typeFilter.value)
+  const typeFilters = activeFilters.value.filter(f => f === 'lead' || f === 'opportunity')
+  const filtered = typeFilters.length > 0
+    ? allTasks.value.filter(t => typeFilters.includes(t.type))
     : allTasks.value
   
   // Try both lead and opportunity compositeIds

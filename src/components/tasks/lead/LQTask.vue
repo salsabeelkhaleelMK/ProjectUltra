@@ -372,6 +372,34 @@
 
       <!-- Interested (Inline) -->
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
+            <!-- Add Note Card -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Add Note</h5>
+              <div>
+                <label class="block text-fluid-xs font-medium text-body mb-1.5">Note</label>
+                <textarea 
+                  v-model="inlineNoteText"
+                  rows="4" 
+                  class="input w-full"
+                  placeholder="Enter your note..."
+                ></textarea>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <Button
+                  label="Save"
+                  variant="primary"
+                  size="small"
+                  @click="handleInlineNoteSave"
+                  class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+                />
+                <AIButton
+                  label="Extract with AI"
+                  size="small"
+                  @click="handleExtractWithAI"
+                />
+              </div>
+            </div>
+
             <!-- Customer Data Section -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer data</h5>
@@ -388,13 +416,6 @@
                   variant="primary"
                   size="small"
                   @click="showFinancingModal = true"
-                  class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-                />
-                <Button
-                  label="+ Add note"
-                  variant="primary"
-                  size="small"
-                  @click="showNoteModal = true"
                   class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
                 />
               </div>
@@ -419,10 +440,10 @@
               </div>
             </div>
 
-            <!-- Assign to salesman: 3 suggested people (first selected) + availability -->
+            <!-- Select team -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <div class="flex items-center justify-between mb-4">
-                <h5 class="font-semibold text-heading text-fluid-sm">Assign to salesman</h5>
+                <h5 class="font-semibold text-heading text-fluid-sm">Select team</h5>
                 <Button
                   label="Change"
                   variant="outline"
@@ -433,33 +454,24 @@
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
-                  v-for="person in suggestedAssignees"
-                  :key="person.id"
+                  v-for="team in suggestedTeams"
+                  :key="team.id"
                   type="button"
-                  class="flex flex-col items-start gap-2 p-3 rounded-lg border-2 transition-all text-left"
+                  class="flex items-center gap-2 p-2 rounded-lg border-2 transition-all text-left"
                   :class="
-                    assignment.assignee && assignment.assignee.id === person.id
+                    assignment.assignee && assignment.assignee.type === 'team' && assignment.assignee.id === team.id
                       ? 'border-brand-blue bg-surfaceSecondary'
                       : 'border-E5E7EB hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
                   "
-                  @click="assignment.assignee = person"
+                  @click="assignment.assignee = { ...team, type: 'team' }"
                 >
-                  <div class="flex items-center gap-3 w-full">
-                    <div
-                      class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-fluid-sm shrink-0"
-                      :class="getRoleAvatarClass(person.role)"
-                    >
-                      {{ person.initials }}
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="font-medium text-fluid-sm text-heading truncate">{{ person.name }}</p>
-                      <p class="text-fluid-xs text-sub capitalize truncate">{{ person.role }}</p>
-                    </div>
+                  <div class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-users text-fluid-xs"></i>
                   </div>
-                  <p class="text-fluid-xs text-sub">Mon–Fri 9:00–17:00</p>
+                  <p class="font-medium text-fluid-sm text-heading">{{ team.name }}</p>
                 </button>
               </div>
-              <p v-if="suggestedAssignees.length === 0" class="text-fluid-xs text-sub">No assignable users. Use Change to assign.</p>
+              <p v-if="suggestedTeams.length === 0" class="text-fluid-xs text-sub">No teams available. Use Change to assign.</p>
             </div>
 
             <!-- Qualification method -->
@@ -553,6 +565,37 @@
                   </div>
                 </div>
               </div>
+              
+              <!-- Select Salesman (only when team is selected) -->
+              <div v-if="assignment.assignee?.type === 'team'" class="mb-4">
+                <label class="block text-fluid-xs font-medium text-body mb-1.5">Select salesman from {{ assignment.assignee?.name }}</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  <button
+                    v-for="user in assignableUsers"
+                    :key="user.id"
+                    type="button"
+                    class="flex items-center gap-2 p-2 rounded-lg border-2 transition-all text-left"
+                    :class="
+                      qualificationSelectedSalesman && qualificationSelectedSalesman.id === user.id
+                        ? 'border-brand-blue bg-surfaceSecondary'
+                        : 'border-E5E7EB hover:border-brand-blue/30 hover:bg-surfaceSecondary/50'
+                    "
+                    @click="qualificationSelectedSalesman = user"
+                  >
+                    <div
+                      class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs shrink-0"
+                      :class="getRoleAvatarClass(user.role)"
+                    >
+                      {{ getInitials(user.name) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-medium text-fluid-xs text-heading truncate">{{ user.name }}</p>
+                      <p class="text-fluid-xs text-sub capitalize truncate">{{ user.role }}</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+              
               <div class="border border-E5E7EB rounded-lg overflow-hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2">
                   <div class="p-3">
@@ -609,7 +652,7 @@
                     <p class="text-fluid-sm font-medium text-heading mb-3">{{ qualificationSelectedDayLabel }}</p>
                     <div class="space-y-2 max-h-64 overflow-auto pr-1">
                       <button
-                        v-for="slot in qualificationScheduleSlotOptions"
+                        v-for="slot in availableScheduleSlots"
                         :key="slot"
                         type="button"
                         class="w-full py-2.5 px-4 rounded-lg border-2 text-fluid-sm font-medium text-center transition-all"
@@ -622,6 +665,9 @@
                       >
                         {{ slot }}
                       </button>
+                      <p v-if="availableScheduleSlots.length === 0 && qualificationSelectedSalesman" class="text-fluid-xs text-sub text-center py-4">
+                        No available slots for {{ qualificationSelectedSalesman.name }} on this date
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -809,6 +855,8 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useLQWidgetOutcomes } from '@/composables/useLQWidgetOutcomes'
 import { useLQWidgetHandlers } from '@/composables/useLQWidgetHandlers'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
+import AIButton from '@/components/shared/AIButton.vue'
+import { getAvailabilityForAssignee } from '@/services/availabilityService'
 
 const props = defineProps({
   lead: {
@@ -862,7 +910,14 @@ const showVehicleModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
+const assignableTeams = computed(() => usersStore.assignableTeams)
 const currentUser = computed(() => userStore.currentUser)
+
+// Inline note state
+const inlineNoteText = ref('')
+
+// Qualification salesman selection state
+const qualificationSelectedSalesman = ref(null)
 
 // Helper functions
 const getInitials = (name) => {
@@ -886,7 +941,49 @@ const getRoleAvatarClass = (role) => {
 
 const handleAssignmentConfirm = (assignee) => {
   assignment.value.assignee = assignee
+  // Reset salesman selection if team changed
+  if (assignee.type === 'team') {
+    qualificationSelectedSalesman.value = null
+  }
   showAssignmentModal.value = false
+}
+
+// Handle inline note save
+const handleInlineNoteSave = async () => {
+  if (!inlineNoteText.value.trim()) return
+  
+  try {
+    await leadsStore.addActivity(props.lead.id, {
+      type: 'note',
+      user: currentUser.value?.name || 'You',
+      action: 'added a note',
+      content: inlineNoteText.value,
+      timestamp: new Date().toISOString()
+    })
+    
+    emit('note-saved', {
+      type: 'note',
+      content: inlineNoteText.value,
+      timestamp: new Date().toISOString()
+    })
+    
+    // Clear note text
+    inlineNoteText.value = ''
+  } catch (error) {
+    console.error('Error saving note:', error)
+  }
+}
+
+// Handle extract with AI
+const handleExtractWithAI = async () => {
+  if (!inlineNoteText.value.trim()) {
+    // TODO: Show error or placeholder
+    return
+  }
+  
+  // TODO: Implement AI extraction logic
+  // For now, this is a placeholder
+  console.log('Extracting information with AI from:', inlineNoteText.value)
 }
 
 // Wrapper functions for coordination
@@ -1003,25 +1100,56 @@ const {
   qualificationSelectDate
 } = outcomeState
 
+// Filter schedule slots based on selected salesman availability
+const availableScheduleSlots = computed(() => {
+  if (!qualificationSelectedSalesman.value || !qualificationSelectedDate.value) {
+    return qualificationScheduleSlotOptions.value
+  }
+  
+  // Format date as YYYY-MM-DD
+  const dateStr = qualificationSelectedDate.value.toISOString().split('T')[0]
+  const availableSlots = getAvailabilityForAssignee(`user-${qualificationSelectedSalesman.value.id}`, dateStr)
+  
+  // Filter qualificationScheduleSlotOptions to only show available slots
+  return qualificationScheduleSlotOptions.value.filter(slot => {
+    // Extract time from slot (format: "HH:MM")
+    const slotTime = slot
+    return availableSlots.includes(slotTime)
+  })
+})
+
 const existingNotes = computed(() => {
   return props.activities.filter(activity => activity.type === 'note')
 })
 
-// Three suggested assignees (first 3 from assignable users), first selected by default
-const suggestedAssignees = computed(() => {
-  const users = assignableUsers.value || []
-  return users.slice(0, 3).map((u) => ({
-    ...u,
-    type: 'user',
-    initials: getInitials(u.name)
-  }))
+// Three suggested teams (first 3 from assignable teams), first selected by default
+const suggestedTeams = computed(() => {
+  const teams = assignableTeams.value || []
+  return teams.slice(0, 3)
 })
 
-// Set first suggested as assignee when entering "interested" flow with no assignee
+// Set first suggested team as assignee when entering "interested" flow with no assignee
 watch(selectedOutcome, (outcome) => {
-  if (outcome === 'interested' && !assignment.value?.assignee && suggestedAssignees.value.length > 0) {
-    assignment.value = { ...assignment.value, assignee: suggestedAssignees.value[0] }
+  if (outcome === 'interested' && !assignment.value?.assignee && suggestedTeams.value.length > 0) {
+    assignment.value = { ...assignment.value, assignee: { ...suggestedTeams.value[0], type: 'team' } }
   }
+})
+
+// Watch for team selection to reset salesman selection
+watch(() => assignment.value?.assignee, (newAssignee) => {
+  if (newAssignee?.type !== 'team') {
+    qualificationSelectedSalesman.value = null
+  }
+})
+
+// Watch for date changes to reset slot selection
+watch(qualificationSelectedDate, () => {
+  qualificationSelectedSlot.value = ''
+})
+
+// Watch for salesman changes to reset slot selection
+watch(qualificationSelectedSalesman, () => {
+  qualificationSelectedSlot.value = ''
 })
 
 const qualificationEventTypeOptions = [
@@ -1039,6 +1167,12 @@ const handleQualificationDurationSelect = (minutes) => {
 const canQualify = computed(() => {
   if (!assignment.value?.assignee) return false
   if (qualificationMethod.value !== 'assign-and-schedule') return true
+  
+  // If team is selected, require salesman selection
+  if (assignment.value.assignee.type === 'team' && !qualificationSelectedSalesman.value) {
+    return false
+  }
+  
   return Boolean(
     qualificationEventType.value &&
     qualificationDurationValue.value &&

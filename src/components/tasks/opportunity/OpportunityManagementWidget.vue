@@ -2,6 +2,8 @@
   <TaskManagementWidget
     :task="opportunity"
     container-class="mb-8"
+    hide-title
+    hide-border
   >
     <template #closed-state>
       <div 

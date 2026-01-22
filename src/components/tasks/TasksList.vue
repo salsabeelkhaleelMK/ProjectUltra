@@ -58,11 +58,10 @@
     </div>
     
     <!-- Filters (Card View Only) -->
-    <div v-if="showTypeFilter" class="px-5 pb-3">
+    <div class="px-5 pb-3">
       <TaskFilters
-        :type-filter="typeFilter"
+        :active-filters="activeFilters"
         :sort-option="currentSort"
-        :show-type-filter="true"
         @filter-change="$emit('filter-change', $event)"
         @sort-change="selectSort"
       />
@@ -112,7 +111,7 @@ const props = defineProps({
   title: { type: String, default: 'Tasks' },
   items: { type: Array, default: () => [] },
   selectedId: { type: [String, Number], default: null },
-  typeFilter: { type: String, default: 'all' },
+  activeFilters: { type: Array, default: () => [] },
   initialSearchQuery: { type: String, default: '' },
   selectedClass: { type: [String, Function], default: '' },
   unselectedClass: { type: [String, Function], default: '' },
@@ -121,7 +120,6 @@ const props = defineProps({
   getVehicleInfo: { type: Function, default: () => 'No vehicle specified' },
   getMenuItems: { type: Function, default: null },
   showMenu: { type: Boolean, default: true },
-  showTypeFilter: { type: Boolean, default: true },
   searchPlaceholder: { type: String, default: 'Search tasks...' },
   viewMode: { type: String, default: 'card' }
 })
