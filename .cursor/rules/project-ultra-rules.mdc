@@ -1,72 +1,39 @@
 ---
 alwaysApply: true
 ---
-# ProjectUltra – Cursor Project Rules
+# ProjectUltra – Cursor Rules
 
 ## 1. Architecture & Data
 
-- Use **mock data layer** only for sample data in `src/api/mockData.js`
-- When adding features: `mockData` → API wrapper (`src/api/*.js`) → Pinia store (`src/stores/*.js`) → components
+- **Mock data** only in `src/api/mockData`; **repositories** (`src/repositories/`) use it. Never import mockData from components, views, stores, or composables.
+- Data flow: `mockData` → repositories → services → API wrappers (`src/api/*.js`) → Pinia stores (`src/stores/*.js`) → components.
 
 ## 2. Components & Reuse
 
-- Always **reuse shared widgets**, never fork duplicates
-- Check for existing components before creating new ones
+- Reuse shared widgets; check existing components before creating new ones.
+- Prefer **Motork** (`@motork/component-library`) for UI; use existing primitives over custom wrappers.
 
 ## 3. Styling & Layout
 
-- **Responsive**: Tables remove columns (no horizontal scroll); filters above content; buttons aligned right
-- **Tailwind**: 
-  - NO arbitrary values (`w-[350px]`, `text-[14px]`) - use semantic classes only
-  - Use semantic tokens: `text-primary`, `bg-surface`, `border-border` (from `tailwind.config.js`)
-  - Mobile-first: `class="flex flex-col md:flex-row"` (not `max-md:`)
-  - Use Flexbox/Grid for layout, avoid floats/hardcoded heights
+- **Tailwind**: Use semantic tokens from `tailwind.config.js` (`text-primary`, `bg-surface`, `border-border`, `text-heading`, etc.). No arbitrary values (`w-[350px]`, `text-[14px]`), no hardcoded hex, no inline styles for static values.
+- **Responsive**: Mobile-first (`flex flex-col md:flex-row`); tables drop columns (no horizontal scroll); filters above content; Flexbox/Grid, no floats/hardcoded heights.
 
 ## 4. Build & Deploy
 
-- Run `npm run build` before pushing
-- Never commit `dist/`
-- Netlify builds from source via `netlify.toml`
+- Run `npm run build` before pushing. Never commit `dist/`. Netlify builds from source via `netlify.toml`.
 
 ## 5. Clean Code
 
-- Remove unused components immediately
-- No `console.log` in stores/widgets/shared components (debug only, then delete)
-- Delete old files + imports + routes when refactoring
-- No commented-out code
+- Remove unused components/files immediately. No `console.log` in stores/widgets/shared (debug only, then delete). Delete old files, imports, and routes when refactoring. No commented-out code. Remove duplicate or obsolete re-exports.
 
-## 6. Component Style (Vue 3)
+## 6. Vue 3 & State
 
-- Use `<script setup>` for all components
-- Naming: Components `PascalCase.vue`, composables `useSomething.js`, stores `useXStore`
-- Prefer alias imports: `@/components/...`, `@/stores/...`
-- All shared state through Pinia stores only
+- `<script setup>` for all components. Naming: `PascalCase.vue`, `useSomething.js`, `useXStore`. Prefer `@/` alias imports. All shared state via Pinia only.
 
 ## 7. Refactoring
 
-- Files >200 lines with mixed responsibilities → extract subcomponents or composables
-- Prefer composition over adding to large files
+- Files >200 lines or mixed responsibilities → extract subcomponents or composables. Prefer composition over extending large files.
 
-## 8. Modals & Placeholders
+## 8. Modals
 
-- **Always wrap modals** with `ModalShell.vue` from `@/components/shared/ModalShell.vue`
-- **Unimplemented features**: Open `ComingSoonModal` from `@/components/shared/ComingSoonModal.vue`
-
-Example:
-```vue
-<template>
-  <ModalShell :show="show" @close="$emit('close')" title="Title">
-    <!-- content -->
-  </ModalShell>
-  <!-- For unimplemented: -->
-  <ComingSoonModal :show="showComingSoon" @close="showComingSoon = false" />
-</template>
-
-<script setup>
-import { ref } from 'vue'
-import ModalShell from '@/components/shared/ModalShell.vue'
-import ComingSoonModal from '@/components/shared/ComingSoonModal.vue'
-
-const showComingSoon = ref(false)
-</script>
-```
+- Use **Motork Dialog** primitives (`@motork/component-library/future/primitives`: Dialog, DialogContent, DialogHeader, etc.); no custom modal wrappers. Use **ComingSoonModal** (`@/components/modals/ComingSoonModal.vue`) for unimplemented features.

@@ -228,12 +228,51 @@ No changes needed in components or stores - they already use the API layer.
 
 ## Troubleshooting
 
+### If `npm install` fails with CodeArtifact errors:
+
+**Error: `npm ERR! code E401` or `npm ERR! Unable to authenticate`**
+
+This means AWS CodeArtifact authentication is required. Follow these steps:
+
+1. **Install AWS CLI** (if not installed):
+   ```bash
+   # macOS
+   brew install awscli
+   
+   # Linux/Windows: See https://aws.amazon.com/cli/
+   ```
+
+2. **Configure AWS credentials**:
+   ```bash
+   aws configure
+   # Enter your AWS Access Key ID, Secret Access Key, and region (eu-west-1)
+   ```
+   
+   Or set environment variables:
+   ```bash
+   export AWS_ACCESS_KEY_ID=your-key
+   export AWS_SECRET_ACCESS_KEY=your-secret
+   export AWS_DEFAULT_REGION=eu-west-1
+   ```
+
+3. **Run setup script**:
+   ```bash
+   npm run setup
+   ```
+
+4. **Then install dependencies**:
+   ```bash
+   npm install
+   ```
+
+**Note**: The `preinstall` hook will automatically attempt authentication if `.npmrc` doesn't exist, but you still need AWS CLI and credentials configured.
+
 ### If server isn't running:
 ```bash
 npm run dev
 ```
 
-### If you see errors:
+### If you see other errors:
 ```bash
 npm install
 npm run dev
@@ -241,7 +280,8 @@ npm run dev
 
 ### To rebuild from scratch:
 ```bash
-rm -rf node_modules
+rm -rf node_modules .npmrc
+npm run setup
 npm install
 npm run dev
 ```
