@@ -15,20 +15,6 @@
         <i class="fa-solid fa-phone text-xs"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
       </button>
-      
-      <!-- Secondary: Log Manual Call -->
-      <button
-        @click="$emit('log-manual-call')"
-        :class="[
-          'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
-          callEnded && !isCallActive
-            ? 'bg-blue-50 border-blue-200 text-blue-700'
-            : 'bg-surface hover:bg-surfaceSecondary border-E5E7EB text-body'
-        ]"
-      >
-        <i class="fa-solid fa-clipboard-check text-xs"></i>
-        Log Call Outcome
-      </button>
     </div>
 
     <!-- Inline Call Interface (shows when call is active or ended) -->
@@ -99,19 +85,13 @@
         <div class="flex items-center justify-between">
           <div>
             <h4 class="font-bold text-heading mb-1 text-sm">Call Ended</h4>
-            <p class="text-xs text-gray-600">Extract information from the transcription or log the outcome</p>
+            <p class="text-xs text-gray-600">Extract information from the transcription</p>
           </div>
           <div class="flex gap-2">
             <AIButton
               label="Extract information"
               size="small"
               @click="$emit('extract-information')"
-            />
-            <Button
-              label="Log outcome"
-              variant="outline"
-              size="small"
-              @click="$emit('log-manual-call')"
             />
           </div>
         </div>
@@ -148,14 +128,6 @@ defineProps({
   mockTranscription: {
     type: Object,
     required: true
-  },
-  showOutcomeSelection: {
-    type: Boolean,
-    required: true
-  },
-  showCallLogForm: {
-    type: Boolean,
-    default: false
   },
   contactAttempts: {
     type: Number,

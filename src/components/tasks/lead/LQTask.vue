@@ -134,8 +134,6 @@
           :call-notes="callNotes"
           :formatted-call-duration="formattedCallDuration"
           :mock-transcription="mockTranscription"
-          :show-outcome-selection="showOutcomeSelection"
-          :show-call-log-form="showCallLogForm"
           :contact-attempts="contactAttempts"
           :max-contact-attempts="maxContactAttempts"
           @start-call="startCall"
@@ -148,51 +146,12 @@
         </div>
       </div>
 
-      <!-- Grey outcome area: call log form + outcome selection -->
+      <!-- Grey outcome area: outcome selection -->
       <div class="px-4 py-4 space-y-3">
-        <!-- Compact Call Log Assignment (one-line display) -->
-        <div v-if="showCallLogForm" class="bg-white rounded-lg p-3 shadow-nsc-card border border-E5E7EB" style="box-shadow: var(--nsc-card-shadow)">
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-              <div
-                class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-fluid-xs shrink-0"
-                :class="getRoleAvatarClass(callLogAssignee?.role)"
-              >
-                {{ getInitials(callLogAssignee?.name) }}
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-fluid-sm font-medium text-heading">{{ callLogAssignee?.name || 'Unknown' }}</span>
-                  <span class="text-fluid-xs text-sub">•</span>
-                  <span class="text-fluid-xs text-sub">{{ formatCallLogDateTime }}</span>
-                  <span v-if="currentTaskOutcome" class="text-fluid-xs text-sub">•</span>
-                  <span v-if="currentTaskOutcome" class="text-fluid-xs font-medium text-blue-600">{{ currentTaskOutcome }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <Button
-                label="Reassign"
-                variant="outline"
-                size="small"
-                class="text-fluid-xs"
-                @click="showReassignModal = true"
-              />
-              <Button
-                label="Remove"
-                variant="outline"
-                size="small"
-                class="text-fluid-xs"
-                @click="removeAssignment"
-              />
-            </div>
-          </div>
-        </div>
-
         <!-- Inline Outcome Selection -->
-        <div v-if="showOutcomeSelection" class="space-y-4">
+        <div v-if="!successState" class="space-y-4">
           <div>
-            <p class="text-fluid-sm font-medium text-heading leading-6 mb-3">What's the outcome?</p>
+            <p class="text-fluid-sm font-medium text-heading leading-6 mb-3">Log what is happening?</p>
             <div class="flex flex-wrap gap-3">
               <button
                 type="button"
@@ -238,6 +197,15 @@
 
           <!-- No Answer Follow-up (Inline) -->
           <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
+            <!-- When did you call field -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
+              <input
+                type="datetime-local"
+                v-model="callLogDateTime"
+                class="input w-full"
+              />
+            </div>
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <CommunicationSelector
             title="Send follow-up message"
@@ -311,6 +279,15 @@
 
           <!-- Not Valid (Inline) -->
           <div v-if="selectedOutcome === 'not-valid'" class="space-y-4">
+            <!-- When did you call field -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
+              <input
+                type="datetime-local"
+                v-model="callLogDateTime"
+                class="input w-full"
+              />
+            </div>
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <div>
                 <label class="block text-fluid-xs font-semibold mb-2">Category</label>
@@ -370,6 +347,15 @@
 
       <!-- Interested (Inline) -->
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
+            <!-- When did you call field -->
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
+              <input
+                type="datetime-local"
+                v-model="callLogDateTime"
+                class="input w-full"
+              />
+            </div>
             <!-- Add Note Card -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <h5 class="font-semibold text-heading text-fluid-sm mb-3">Add Note</h5>
@@ -768,14 +754,6 @@
       @close="showAssignmentModal = false"
     />
 
-    <!-- Reassign Modal for Call Log -->
-    <ReassignUserModal
-      :show="showReassignModal"
-      title="Reassign task"
-      confirm-label="Reassign"
-      @confirm="handleReassignConfirm"
-      @close="showReassignModal = false"
-    />
 
     <!-- Purchase Method Modal -->
     <PurchaseMethodModal
@@ -889,7 +867,6 @@ const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
 const showFinancingModal = ref(false)
 const showVehicleModal = ref(false)
-const showReassignModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -931,30 +908,6 @@ const handleAssignmentConfirm = (assignee) => {
   showAssignmentModal.value = false
 }
 
-const handleReassignConfirm = (assignee) => {
-  callLogAssignee.value = assignee
-  showReassignModal.value = false
-}
-
-const removeAssignment = () => {
-  callLogAssignee.value = null
-  callLogDateTime.value = ''
-  showCallLogForm.value = false
-  showOutcomeSelection.value = false
-  selectedOutcome.value = null
-}
-
-// Format call log datetime for display
-const formatCallLogDateTime = computed(() => {
-  if (!callLogDateTime.value) return ''
-  const date = new Date(callLogDateTime.value)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  return `${day}/${month}/${year} ${hours}:${minutes}`
-})
 
 // Check if task is already assigned and show outcome
 const isTaskAssigned = computed(() => {
@@ -1104,7 +1057,6 @@ const {
   showSurvey,
   aiSuggestionData,
   handleAISuggestionClick,
-  showCallLogForm,
   callLogDateTime,
   callLogAssignee,
   confirmCallLogForm,
@@ -1195,15 +1147,11 @@ watch(qualificationSelectedSalesman, () => {
   qualificationSelectedSlot.value = ''
 })
 
-// Watch for call ending to show outcome selection
+// Watch for call ending to initialize datetime and assignee
 watch(callEnded, (ended) => {
-  if (ended && !showOutcomeSelection.value && !successState.value) {
-    // Ensure assignment and time are set
-    if (!callLogAssignee.value) {
-      initCallLogForm(false)
-    }
-    // Show outcome selection when call ends
-    showOutcomeSelection.value = true
+  if (ended && !successState.value) {
+    // Initialize datetime and assignee when call ends
+    initCallLogForm(false)
   }
 })
 

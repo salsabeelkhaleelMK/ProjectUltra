@@ -5,7 +5,7 @@ import { ref, computed } from 'vue'
  * Manages outcome selection state, assignment, preferences, and related handlers
  */
 export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contactAttemptsRef, maxContactAttemptsRef, currentUserRef) {
-  const showOutcomeSelection = ref(false)
+  const showOutcomeSelection = ref(true)
   const selectedOutcome = ref(null)
   const showNoteModal = ref(false)
   const showScheduleAppointmentModal = ref(false)
@@ -239,6 +239,23 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
 
   const selectOutcome = (outcome) => {
     selectedOutcome.value = outcome
+    
+    // Initialize datetime to "now" when an outcome is selected
+    if (!callLogDateTime.value) {
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = String(now.getMonth() + 1).padStart(2, '0')
+      const day = String(now.getDate()).padStart(2, '0')
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      callLogDateTime.value = `${year}-${month}-${day}T${hours}:${minutes}`
+    }
+    
+    // Auto-assign to current user if not already assigned
+    if (!callLogAssignee.value && currentUserRef?.value) {
+      callLogAssignee.value = currentUserRef.value
+    }
+    
     if (outcome === 'interested') {
       // Reset survey state when selecting interested outcome
       surveyCompleted.value = false
@@ -261,13 +278,12 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
 
   const cancelOutcome = () => {
     selectedOutcome.value = null
-    showOutcomeSelection.value = false
     showCallLogForm.value = false
   }
 
   const resetOutcomeState = () => {
     selectedOutcome.value = null
-    showOutcomeSelection.value = false
+    showOutcomeSelection.value = true
     followupChannel.value = 'whatsapp'
     selectedTemplate.value = 'followup-1'
     rescheduleTime.value = null
@@ -319,14 +335,11 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     }
     
     showCallLogForm.value = true
-    // Show outcome selection immediately if requested (e.g., when "Log Call Outcome" is clicked)
-    if (showOutcomeImmediately) {
-      showOutcomeSelection.value = true
-    }
+    // Outcome selection is always visible now, no need to set it
   }
   
   const confirmCallLogForm = () => {
-    showOutcomeSelection.value = true
+    // Outcome selection is always visible now, no need to set it
   }
   
   const cancelCallLogForm = () => {
