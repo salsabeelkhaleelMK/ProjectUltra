@@ -26,6 +26,14 @@
         :color-scheme="opportunityState.primaryAction.value.colorScheme"
         @action-clicked="opportunityState.primaryAction.value.handler"
       />
+      
+      <!-- Secondary actions dropdown (below primary action) -->
+      <SecondaryActionsDropdown
+        v-if="!opportunityState.isClosed.value && opportunityState.secondaryActions.value && opportunityState.secondaryActions.value.length > 0"
+        :actions="opportunityState.secondaryActions.value"
+        @action-selected="handleSecondaryAction"
+        class="mt-3"
+      />
     </template>
 
     <template #task-widgets>
@@ -168,6 +176,7 @@ import { useOpportunityActions } from '@/composables/useOpportunityActions'
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
 import PrimaryActionWidget from '@/components/tasks/shared/PrimaryActionWidget.vue'
+import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
 import TaskAssignee from '@/components/tasks/TaskAssignee.vue'
 import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
@@ -286,6 +295,7 @@ const opportunityActions = useOpportunityActions(
 const opportunityState = {
   isClosed: opportunityActions.isClosed,
   primaryAction: opportunityActions.primaryAction,
+  secondaryActions: opportunityActions.secondaryActions,
   activeTaskWidget: opportunityActions.activeTaskWidget,
   taskWidgetTitle: opportunityActions.taskWidgetTitle,
   displayStage: computed(() => {
@@ -419,6 +429,11 @@ function handleAutoCloseLost(data) {
     stage: 'Closed Lost',
     lossReason: data.reason || 'Multiple no-shows (NS3)'
   })
+}
+
+function handleSecondaryAction(action) {
+  // Handler is already called by SecondaryActionsDropdown component
+  // This is just for any additional logic if needed
 }
 
 // Load recommended cars on mount

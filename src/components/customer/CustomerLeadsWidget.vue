@@ -19,7 +19,7 @@
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
       <div v-if="leads.length > 0" class="divide-y divide-gray-100">
         <div
           v-for="lead in leads"

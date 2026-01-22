@@ -238,7 +238,15 @@ export function getPrimaryAction(stage, context) {
     return null
   }
   
-  const action = stageConfig.primaryAction
+  let action = stageConfig.primaryAction
+  
+  // Handle case where primaryAction is a function (e.g., Closed Won stage)
+  if (typeof action === 'function') {
+    action = action(context)
+    if (!action) {
+      return null
+    }
+  }
   
   // Evaluate dynamic properties (functions)
   return {

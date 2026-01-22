@@ -14,11 +14,13 @@
           :task-type="type"
           :customer-id="task.customer?.id || task.customerId || task.id"
           :tags="task.tags || []"
+          :show-close-button="showCloseButton"
           email-label="Email"
           phone-label="Phone"
           third-field-label="Address"
           @action="handleContactInfoAction"
           @add-tag="showAddTagModal = true"
+          @close="$emit('close')"
         >
           <template #name-action>
             <button
@@ -630,10 +632,14 @@ const props = defineProps({
   addNewConfig: {
     type: Object,
     required: true // { overviewActions: [], tabActions: [] }
+  },
+  showCloseButton: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity', 'tag-updated', 'appointment-created'])
+const emit = defineEmits(['car-added', 'convert-to-lead', 'convert-to-opportunity', 'tag-updated', 'appointment-created', 'close'])
 
 const route = useRoute()
 const router = useRouter()

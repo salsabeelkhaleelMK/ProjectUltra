@@ -20,21 +20,29 @@
       @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
-        <!-- Customer Summary Widget -->
-        <CustomerSummaryWidget 
-          :summary="task.summary || customerData?.summary"
-          :preferences="task.preferences || customerData?.preferences"
-          :customer-data="customerData"
-        />
-        
-        <!-- Recent Activities Widget -->
-        <RecentActivitiesWidget
-          :next-appointment="nextAppointment"
-          :activities="customerActivities"
-          :leads="customerLeads"
-          :opportunities="customerOpportunities"
-          :customer-id="taskId"
-        />
+        <!-- Customer Insights + Recent Activities (one row) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CustomerSummaryWidget 
+            :summary="task.summary || customerData?.summary"
+            :preferences="task.preferences || customerData?.preferences"
+            :customer-data="customerData"
+          />
+          <div class="flex flex-col gap-6">
+            <!-- Suggested Next Action Widget -->
+            <SuggestedNextAction 
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :activities="customerActivities"
+            />
+            <RecentActivitiesWidget
+              :next-appointment="nextAppointment"
+              :activities="customerActivities"
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :customer-id="taskId"
+            />
+          </div>
+        </div>
         
         <!-- Customer Cars Carousel - All cars from leads/opportunities -->
         <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
@@ -86,10 +94,11 @@ import CustomerAppointmentsWidget from '@/components/customer/CustomerAppointmen
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
+import SuggestedNextAction from '@/components/customer/SuggestedNextAction.vue'
 import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { fetchLeadActivities } from '@/api/leads'
-import { fetchOpportunityActivities, fetchAppointmentByCustomerId } from '@/api/opportunities'
+import { fetchOpportunityActivities } from '@/api/opportunities'
 import { fetchAppointmentsByCustomerId } from '@/api/calendar'
 
 const route = useRoute()
@@ -109,7 +118,6 @@ const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
 const customerAppointments = ref([])
-const nextAppointment = ref(null)
 
 // Get task ID from route - customer page always shows contact view
 const taskId = computed(() => parseInt(route.params.id))
@@ -141,6 +149,16 @@ const task = computed(() => {
   }
 })
 
+// Next upcoming appointment (first future one by start time)
+const nextAppointment = computed(() => {
+  const now = new Date()
+  const future = (customerAppointments.value || []).filter(
+    (apt) => apt?.start && new Date(apt.start) >= now
+  )
+  future.sort((a, b) => new Date(a.start) - new Date(b.start))
+  return future.length > 0 ? future[0] : null
+})
+
 // Management widget should NEVER appear on customer route
 // Customer route is only for viewing customer/contact information
 // Leads and opportunities should be viewed via /tasks/:id?type=lead|opportunity
@@ -148,7 +166,7 @@ const managementWidget = computed(() => null)
 
 // Store adapter for contacts only (customer route only handles contacts)
 const storeAdapter = computed(() => ({
-  currentActivities: computed(() => []),
+  currentActivities: computed(() => customerActivities.value),
   addActivity: async () => {},
   updateActivity: async () => {},
   deleteActivity: async () => {}
@@ -203,13 +221,7 @@ const loadCustomerData = async (explicitId = null) => {
     }
     customerActivities.value = allActivities
     
-    // Fetch next appointment and all appointments
-    try {
-      nextAppointment.value = await fetchAppointmentByCustomerId(customerId)
-    } catch (err) {
-      console.error('Failed to load next appointment:', err)
-      nextAppointment.value = null
-    }
+    // Fetch all appointments
     try {
       customerAppointments.value = await fetchAppointmentsByCustomerId(customerId)
     } catch (err) {

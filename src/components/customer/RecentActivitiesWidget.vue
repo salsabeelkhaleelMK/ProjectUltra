@@ -9,7 +9,7 @@
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
       <div class="divide-y divide-gray-100">
         <!-- Next Appointment -->
         <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">

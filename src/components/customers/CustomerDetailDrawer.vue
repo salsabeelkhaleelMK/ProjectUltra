@@ -1,26 +1,5 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden bg-surface">
-    <!-- Drawer Header with Close Button -->
-    <div class="border-b border-black/5 bg-white px-6 h-16 min-h-16 shrink-0">
-      <div class="flex items-center justify-between gap-4 w-full h-full">
-        <div class="flex flex-col min-w-0">
-          <h2 class="text-fluid-lg font-medium text-greys-900 truncate">
-            {{ customer?.name || 'Customer Details' }}
-          </h2>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <!-- Close button -->
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            @click="$emit('close')"
-          >
-            <X :size="16" class="text-greys-700" />
-          </Button>
-        </div>
-      </div>
-    </div>
-
     <!-- Loading State -->
     <div v-if="loading || !customer" class="flex-1 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -34,6 +13,8 @@
       :management-widget="managementWidget"
       :store-adapter="storeAdapter"
       :add-new-config="addNewConfig"
+      :show-close-button="true"
+      @close="$emit('close')"
       @car-added="handleContactCarAdded"
       @convert-to-lead="handleConvertToLead"
       @convert-to-opportunity="handleConvertToOpportunity"
@@ -41,21 +22,29 @@
       @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
-        <!-- Customer Summary Widget -->
-        <CustomerSummaryWidget 
-          :summary="task.summary || customerData?.summary"
-          :preferences="task.preferences || customerData?.preferences"
-          :customer-data="customerData"
-        />
-        
-        <!-- Recent Activities Widget -->
-        <RecentActivitiesWidget
-          :next-appointment="nextAppointment"
-          :activities="customerActivities"
-          :leads="customerLeads"
-          :opportunities="customerOpportunities"
-          :customer-id="customerId"
-        />
+        <!-- Customer Insights + Recent Activities (one row) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CustomerSummaryWidget 
+            :summary="task.summary || customerData?.summary"
+            :preferences="task.preferences || customerData?.preferences"
+            :customer-data="customerData"
+          />
+          <div class="flex flex-col gap-6">
+            <!-- Suggested Next Action Widget -->
+            <SuggestedNextAction 
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :activities="customerActivities"
+            />
+            <RecentActivitiesWidget
+              :next-appointment="nextAppointment"
+              :activities="customerActivities"
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :customer-id="customerId"
+            />
+          </div>
+        </div>
         
         <!-- Customer Cars Carousel - All cars from leads/opportunities -->
         <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
@@ -97,8 +86,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Button } from '@motork/component-library/future/primitives'
-import { X } from 'lucide-vue-next'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersStore } from '@/stores/customers'
@@ -109,10 +96,11 @@ import CustomerAppointmentsWidget from '@/components/customer/CustomerAppointmen
 import VehiclesCarousel from '@/components/shared/vehicles/VehiclesCarousel.vue'
 import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal.vue'
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
+import SuggestedNextAction from '@/components/customer/SuggestedNextAction.vue'
 import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget.vue'
 import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
 import { fetchLeadActivities } from '@/api/leads'
-import { fetchOpportunityActivities, fetchAppointmentByCustomerId } from '@/api/opportunities'
+import { fetchOpportunityActivities } from '@/api/opportunities'
 import { fetchAppointmentsByCustomerId } from '@/api/calendar'
 
 const props = defineProps({
@@ -140,7 +128,6 @@ const customerTasks = ref([])
 const customerCars = ref([])
 const customerActivities = ref([])
 const customerAppointments = ref([])
-const nextAppointment = ref(null)
 
 const taskType = computed(() => 'contact')
 
@@ -174,12 +161,22 @@ const task = computed(() => {
   }
 })
 
+// Next upcoming appointment (first future one by start time)
+const nextAppointment = computed(() => {
+  const now = new Date()
+  const future = (customerAppointments.value || []).filter(
+    (apt) => apt?.start && new Date(apt.start) >= now
+  )
+  future.sort((a, b) => new Date(a.start) - new Date(b.start))
+  return future.length > 0 ? future[0] : null
+})
+
 // Management widget should NEVER appear on customer route
 const managementWidget = computed(() => null)
 
 // Store adapter for contacts only
 const storeAdapter = computed(() => ({
-  currentActivities: computed(() => []),
+  currentActivities: computed(() => customerActivities.value),
   addActivity: async () => {},
   updateActivity: async () => {},
   deleteActivity: async () => {}
@@ -232,13 +229,7 @@ const loadCustomerData = async () => {
     }
     customerActivities.value = allActivities
     
-    // Fetch next appointment and all appointments
-    try {
-      nextAppointment.value = await fetchAppointmentByCustomerId(props.customerId)
-    } catch (err) {
-      console.error('Failed to load next appointment:', err)
-      nextAppointment.value = null
-    }
+    // Fetch all appointments
     try {
       customerAppointments.value = await fetchAppointmentsByCustomerId(props.customerId)
     } catch (err) {

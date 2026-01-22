@@ -73,8 +73,9 @@
         </div>
       </div>
       
-      <!-- Plus Button at the very end -->
-      <div class="shrink-0">
+      <!-- Action Buttons (Plus + Close) at the very end -->
+      <div class="shrink-0 flex items-center gap-2">
+        <!-- Plus Button -->
         <div class="relative">
           <button 
             @click.stop="showQuickActionMenu = !showQuickActionMenu"
@@ -179,6 +180,16 @@
             </template>
           </div>
         </div>
+        
+        <!-- Close Button (only shown when showCloseButton is true) -->
+        <Button 
+          v-if="showCloseButton"
+          variant="secondary" 
+          size="icon" 
+          @click.stop="$emit('close')"
+        >
+          <X :size="16" class="text-greys-700" />
+        </Button>
       </div>
     </div>
   </div>
@@ -188,6 +199,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToastStore } from '@/stores/toast'
+import { Button } from '@motork/component-library/future/primitives'
+import { X } from 'lucide-vue-next'
 
 const props = defineProps({
   initials: { type: String, required: true },
@@ -204,10 +217,14 @@ const props = defineProps({
   tags: {
     type: Array,
     default: () => []
+  },
+  showCloseButton: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['action', 'add-tag'])
+const emit = defineEmits(['action', 'add-tag', 'close'])
 const showQuickActionMenu = ref(false)
 const toastStore = useToastStore()
 const router = useRouter()

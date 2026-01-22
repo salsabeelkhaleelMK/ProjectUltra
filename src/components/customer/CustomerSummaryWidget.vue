@@ -9,7 +9,7 @@
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
       <div class="divide-y divide-gray-100">
         <!-- Summary Section -->
         <div class="p-3">
