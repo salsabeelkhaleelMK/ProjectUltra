@@ -1,8 +1,6 @@
 <template>
-  <div class="w-full mb-6">
-    <div class="bg-surface border border-black/5 rounded-xl shadow-mk-dashboard-card overflow-hidden">
-      <!-- Header section with Title and Stage, Owner integrated -->
-      <div class="px-4 md:px-6 py-3 border-b border-black/5">
+  <Card class="w-full mb-6 shadow-mk-dashboard-card">
+    <CardHeader class="px-4 md:px-6 py-3 border-b border-black/5">
         <div class="flex flex-row items-center justify-between gap-2 md:gap-4">
           <!-- Left: Request title with chips (when request data exists) -->
           <div v-if="showRequestSection" class="flex items-center gap-2 shrink-0 flex-wrap">
@@ -44,18 +42,20 @@
           <!-- Right: Owner -->
           <div class="flex items-center gap-2">
             <span class="hidden md:inline text-fluid-xs text-sub font-medium">Owner</span>
-            <button 
+            <Button
               @click="$emit('reassign')"
-              class="text-fluid-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
+              variant="link"
+              size="small"
+              class="text-fluid-xs font-bold"
             >
               {{ owner }}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+    </CardHeader>
 
-      <!-- Request Details Section (shown when request data exists) -->
-      <div v-if="showRequestSection" class="p-4 md:p-6">
+    <!-- Request Details Section (shown when request data exists) -->
+    <CardContent v-if="showRequestSection" class="p-4 md:p-6">
         <!-- Car details (if car exists) -->
         <div v-if="hasCar" class="space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -113,7 +113,6 @@
             <p class="text-fluid-sm text-body leading-relaxed">{{ requestMessage }}</p>
           </div>
         </div>
-      </div>
       
       <!-- Separator and toggle button (only show if there are expandable details) -->
       <div v-if="hasExpandableDetails" class="border-t border-black/5">
@@ -214,20 +213,24 @@
               </div>
             </div>
             <div v-if="showTechnicalSpecs" class="mt-6 flex justify-end">
-              <button class="bg-surface border border-E5E7EB text-body hover:text-blue-600 hover:border-blue-200 font-medium px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 group">
-                <i class="fa-solid fa-list-check text-sub group-hover:text-blue-500"></i> View technical specs
-              </button>
+              <Button
+                variant="outline"
+                size="small"
+                class="flex items-center gap-2"
+              >
+                <i class="fa-solid fa-list-check text-xs"></i> View technical specs
+              </Button>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Badge } from '@motork/component-library'
+import { Badge, Button, Card, CardHeader, CardContent } from '@motork/component-library/future/primitives'
 import { getDeliverySubstatusColor, getStageColor } from '@/utils/stageMapper'
 
 const props = defineProps({

@@ -40,7 +40,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,

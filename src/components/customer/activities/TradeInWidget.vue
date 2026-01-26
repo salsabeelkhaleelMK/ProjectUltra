@@ -225,7 +225,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   item: {

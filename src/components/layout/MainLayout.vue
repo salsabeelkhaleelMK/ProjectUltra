@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex bg-surface">
+  <div class="app-main-container">
     <!-- Left Icon Sidebar (Desktop Only) -->
     <IconSidebar />
     
@@ -9,7 +9,7 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden main-content-area">
       <!-- Mobile Header (Mobile Only) -->
-      <header class="md:hidden h-16 bg-surface border-b border flex items-center px-4 shrink-0 z-50">
+      <header class="mobile-header md:hidden h-16 border-b flex items-center px-4 shrink-0 z-50">
         <Transition name="fade-button">
           <button 
             v-if="!isMobileSidebarOpen"

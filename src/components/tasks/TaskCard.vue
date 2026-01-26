@@ -72,7 +72,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { DropdownMenu } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library/future/primitives'
 import { formatDueDate, getDeadlineStatus } from '@/utils/formatters'
 import { getStageColor } from '@/utils/stageMapper'
 import { getTaskActionTitle } from '@/utils/taskActionTitle'

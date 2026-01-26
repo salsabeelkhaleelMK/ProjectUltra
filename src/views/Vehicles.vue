@@ -3,13 +3,15 @@
     <!-- Header -->
     <PageHeader title="Vehicles Inventory">
       <template #actions>
-        <button 
-          @click="showAddModal = true" 
-          class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+        <Button
+          @click="showAddModal = true"
+          variant="outline"
+          size="small"
+          class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
+          <i class="fa-solid fa-plus text-sm"></i>
           <span class="hidden sm:inline">Add new</span>
-        </button>
+        </Button>
       </template>
     </PageHeader>
     
@@ -52,149 +54,151 @@
         <!-- Vehicle Information -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block label-upper mb-2">Brand</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Brand</Label>
+            <Input
               v-model="newVehicle.brand"
-              type="text" 
-              placeholder="e.g., Volkswagen" 
-              class="input"
+              type="text"
+              placeholder="e.g., Volkswagen"
               required
-            >
+            />
           </div>
           <div>
-            <label class="block label-upper mb-2">Model</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Model</Label>
+            <Input
               v-model="newVehicle.model"
-              type="text" 
-              placeholder="e.g., ID.4" 
-              class="input"
+              type="text"
+              placeholder="e.g., ID.4"
               required
-            >
+            />
           </div>
           <div>
-            <label class="block label-upper mb-2">Year</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Year</Label>
+            <Input
               v-model="newVehicle.year"
-              type="number" 
-              placeholder="e.g., 2024" 
-              class="input"
-              min="1900"
+              type="number"
+              placeholder="e.g., 2024"
+              :min="1900"
               :max="new Date().getFullYear() + 1"
               required
-            >
+            />
           </div>
         </div>
 
         <!-- Identification -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block label-upper mb-2">VIN</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">VIN</Label>
+            <Input
               v-model="newVehicle.vin"
-              type="text" 
-              placeholder="Vehicle Identification Number" 
-              class="input"
-            >
+              type="text"
+              placeholder="Vehicle Identification Number"
+            />
           </div>
           <div>
-            <label class="block label-upper mb-2">Plates</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Plates</Label>
+            <Input
               v-model="newVehicle.plates"
-              type="text" 
-              placeholder="License plate number" 
-              class="input"
-            >
+              type="text"
+              placeholder="License plate number"
+            />
           </div>
         </div>
 
         <!-- Vehicle Details -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block label-upper mb-2">Fuel Type</label>
-            <select v-model="newVehicle.fuelType" class="input">
-              <option value="">Select fuel type...</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Electric">Electric</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-            </select>
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Fuel Type</Label>
+            <Select v-model="newVehicle.fuelType">
+              <SelectTrigger>
+                <SelectValue placeholder="Select fuel type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Petrol">Petrol</SelectItem>
+                <SelectItem value="Diesel">Diesel</SelectItem>
+                <SelectItem value="Electric">Electric</SelectItem>
+                <SelectItem value="Hybrid">Hybrid</SelectItem>
+                <SelectItem value="Plug-in Hybrid">Plug-in Hybrid</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label class="block label-upper mb-2">Gear Type</label>
-            <select v-model="newVehicle.gearType" class="input">
-              <option value="">Select gear type...</option>
-              <option value="Manual">Manual</option>
-              <option value="Automatic">Automatic</option>
-              <option value="CVT">CVT</option>
-            </select>
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Gear Type</Label>
+            <Select v-model="newVehicle.gearType">
+              <SelectTrigger>
+                <SelectValue placeholder="Select gear type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Manual">Manual</SelectItem>
+                <SelectItem value="Automatic">Automatic</SelectItem>
+                <SelectItem value="CVT">CVT</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label class="block label-upper mb-2">Mileage (km)</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Mileage (km)</Label>
+            <Input
               v-model.number="newVehicle.kilometers"
-              type="number" 
-              placeholder="0" 
-              class="input"
-              min="0"
-            >
+              type="number"
+              placeholder="0"
+              :min="0"
+            />
           </div>
         </div>
 
         <!-- Registration & Ownership -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block label-upper mb-2">Registered At</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Registered At</Label>
+            <Input
               v-model="newVehicle.registration"
-              type="text" 
-              placeholder="MM/YYYY (e.g., 01/2024)" 
-              class="input"
-            >
+              type="text"
+              placeholder="MM/YYYY (e.g., 01/2024)"
+            />
           </div>
           <div>
-            <label class="block label-upper mb-2">Owned Since</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Owned Since</Label>
+            <Input
               v-model="newVehicle.ownedSince"
-              type="text" 
-              placeholder="MM/YYYY (e.g., 01/2024)" 
-              class="input"
-            >
+              type="text"
+              placeholder="MM/YYYY (e.g., 01/2024)"
+            />
           </div>
         </div>
 
         <!-- Owner Information -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block label-upper mb-2">Owner</label>
-            <input 
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Owner</Label>
+            <Input
               v-model="newVehicle.owner"
-              type="text" 
-              placeholder="Owner name" 
-              class="input"
-            >
+              type="text"
+              placeholder="Owner name"
+            />
           </div>
           <div>
-            <label class="block label-upper mb-2">Ownership Type</label>
-            <select v-model="newVehicle.ownershipType" class="input">
-              <option value="">Select ownership type...</option>
-              <option value="Private">Private</option>
-              <option value="Company">Company</option>
-              <option value="Lease">Lease</option>
-              <option value="Fleet">Fleet</option>
-            </select>
+            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Ownership Type</Label>
+            <Select v-model="newVehicle.ownershipType">
+              <SelectTrigger>
+                <SelectValue placeholder="Select ownership type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Private">Private</SelectItem>
+                <SelectItem value="Company">Company</SelectItem>
+                <SelectItem value="Lease">Lease</SelectItem>
+                <SelectItem value="Fleet">Fleet</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <!-- Warranty -->
         <div>
-          <label class="block label-upper mb-2">Warranty Info</label>
-          <textarea 
+          <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Warranty Info</Label>
+          <Textarea
             v-model="newVehicle.warrantyInfo"
-            rows="3"
-            placeholder="Warranty information..." 
-            class="input"
-          ></textarea>
+            :rows="3"
+            placeholder="Warranty information..."
+          />
         </div>
           </form>
 
@@ -223,7 +227,7 @@ import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import { Button, Badge } from '@motork/component-library'
+import { Button, Badge } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
@@ -232,7 +236,15 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogPortal,
-  DialogTitle
+  DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Textarea
 } from '@motork/component-library/future/primitives'
 import VehicleFilters from '@/components/vehicles/VehicleFilters.vue'
 import VehicleGrid from '@/components/vehicles/VehicleGrid.vue'

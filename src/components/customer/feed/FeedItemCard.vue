@@ -151,7 +151,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library/future/primitives'
 import AppointmentWidget from '@/components/customer/activities/AppointmentWidget.vue'
 
 const props = defineProps({

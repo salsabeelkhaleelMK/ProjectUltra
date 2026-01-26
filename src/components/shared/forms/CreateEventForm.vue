@@ -105,7 +105,7 @@
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 

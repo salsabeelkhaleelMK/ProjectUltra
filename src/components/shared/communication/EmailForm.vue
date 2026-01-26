@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   initialTemplate: {

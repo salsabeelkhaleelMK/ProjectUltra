@@ -4,52 +4,60 @@
     <PageHeader title="Customers">
       <template #actions>
         <!-- Add New Button -->
-        <button 
+        <Button
           @click="router.push('/add-new')"
-          class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+          variant="secondary"
+          size="md"
+          class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-plus text-gray-400 group-hover:text-brand-red"></i>
+          <i class="fa-solid fa-plus text-sm"></i>
           <span class="hidden sm:inline">Add new</span>
-        </button>
+        </Button>
       </template>
     </PageHeader>
     
     <!-- Filters + Table -->
     <div class="p-4 md:p-8">
       <!-- Stage Tabs -->
-      <div class="flex items-center gap-3 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-        <button
-          v-for="tab in stageTabs"
-          :key="tab.key"
-          @click="setTab(tab.key)"
-          class="flex items-center justify-between gap-3 px-4 py-3 bg-surface border border-border rounded-lg cursor-pointer hover:shadow-sm transition-all shrink-0 min-w-40 border-t-4"
-          :class="activeTab === tab.key ? tab.borderColor : 'border-t-border'"
-        >
-          <span class="heading-tab whitespace-nowrap">{{ tab.label }}</span>
-          <Badge
-            :text="String(tab.count)"
-            size="small"
-            :theme="getBadgeTheme(tab.key, activeTab === tab.key)"
-          />
-        </button>
-      </div>
+      <Tabs v-model="activeTab">
+        <TabsList class="w-full justify-start border-b border-border bg-transparent mb-6 overflow-x-auto">
+          <TabsTrigger
+            v-for="tab in stageTabs"
+            :key="tab.key"
+            :value="tab.key"
+            class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-3 px-4 shrink-0"
+          >
+            <span class="text-fluid-sm font-medium whitespace-nowrap">{{ tab.label }}</span>
+            <Badge
+              :text="String(tab.count)"
+              size="small"
+              :theme="getBadgeTheme(tab.key, activeTab === tab.key)"
+            />
+          </TabsTrigger>
+        </TabsList>
 
-      <!-- Lazy Loaded Tab Content -->
-      <Suspense>
-        <component 
-          :is="tabComponent" 
-          :key="activeTab"
-          @row-click="handleRowClick"
-        />
-        <template #fallback>
-          <div class="flex items-center justify-center py-12">
-            <div class="text-center">
-              <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
-              <p class="text-meta">Loading...</p>
-            </div>
-          </div>
-        </template>
-      </Suspense>
+        <!-- Tab Content for each stage -->
+        <TabsContent
+          v-for="tab in stageTabs"
+          :key="`content-${tab.key}`"
+          :value="tab.key"
+        >
+          <Suspense>
+            <component 
+              :is="tabComponents[tab.key]" 
+              @row-click="handleRowClick"
+            />
+            <template #fallback>
+              <div class="flex items-center justify-center py-12">
+                <div class="text-center">
+                  <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+                  <p class="text-meta">Loading...</p>
+                </div>
+              </div>
+            </template>
+          </Suspense>
+        </TabsContent>
+      </Tabs>
     </div>
     
     <!-- Drawer Container -->
@@ -97,7 +105,7 @@ import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
 import TaskDetailView from '@/components/tasks/TaskDetailView.vue'
 import DrawerContainer from '@/components/shared/DrawerContainer.vue'
 import CustomerProfile from '@/components/customer/CustomerProfile.vue'
-import { Badge } from '@motork/component-library'
+import { Badge, Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
@@ -199,53 +207,37 @@ const tabComponents = {
   'lost': defineAsyncComponent(() => import('@/components/customers/LostTab.vue'))
 }
 
-const tabComponent = computed(() => {
-  return tabComponents[activeTab.value] || tabComponents['contacts']
-})
-
 const stageTabs = computed(() => {
   const allTabs = [
     { 
       key: 'contacts', 
       label: 'Customers', 
-      count: stats.value.contacts,
-      borderColor: 'border-t-purple-600',
-      badgeColor: 'bg-purple-600 text-white'
+      count: stats.value.contacts
     },
     { 
       key: 'open-leads', 
       label: 'Open leads', 
-      count: stats.value.openLeads,
-      borderColor: 'border-t-blue-600',
-      badgeColor: 'bg-blue-600 text-white'
+      count: stats.value.openLeads
     },
     { 
       key: 'open-opportunities', 
       label: 'Open opportunities', 
-      count: stats.value.openOpportunities,
-      borderColor: 'border-t-orange-500',
-      badgeColor: 'bg-orange-500 text-white'
+      count: stats.value.openOpportunities
     },
     { 
       key: 'in-negotiation', 
       label: 'In negotiation', 
-      count: stats.value.inNegotiation,
-      borderColor: 'border-t-blue-500',
-      badgeColor: 'bg-blue-500 text-white'
+      count: stats.value.inNegotiation
     },
     { 
       key: 'won', 
       label: 'Won', 
-      count: stats.value.won,
-      borderColor: 'border-t-green-500',
-      badgeColor: 'bg-green-500 text-white'
+      count: stats.value.won
     },
     { 
       key: 'lost', 
       label: 'Lost', 
-      count: stats.value.lost,
-      borderColor: 'border-t-red-500',
-      badgeColor: 'bg-red-500 text-white'
+      count: stats.value.lost
     }
   ]
   
@@ -262,18 +254,6 @@ const stageTabs = computed(() => {
   }
 })
 
-const getAddButtonLabel = () => {
-  const labels = {
-    'open-leads': 'Create a new lead',
-    'open-opportunities': 'Create a new opportunity',
-    'in-negotiation': 'Create a new opportunity',
-    'won': 'Add won deal',
-    'lost': 'Add lost deal'
-  }
-  return labels[activeTab.value] || 'Add new'
-}
-
-
 const handleAdd = () => {
   // For now we only reset the form and close the modal.
   // When a real backend/API exists, this handler should create
@@ -288,10 +268,6 @@ const handleAdd = () => {
     reason: ''
   }
   showAddModal.value = false
-}
-
-const setTab = (key) => {
-  activeTab.value = key
 }
 
 const getBadgeTheme = (tabKey, isActive) => {

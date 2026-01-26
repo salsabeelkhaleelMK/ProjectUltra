@@ -1,23 +1,19 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden bg-white">
+  <div class="page-container">
     <!-- Header -->
-    <div
-      class="border-b border-black/5 shrink-0"
-      style="background-color: var(--base-muted, #f5f5f5)"
-    >
-      <div class="flex items-center justify-between px-6 pt-5 pb-4">
-        <h1 class="text-fluid-xl font-medium text-greys-900">Reports</h1>
-        <select class="px-3 py-1.5 rounded-2xl border border-E5E7EB bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all cursor-pointer">
+    <PageHeader title="Reports">
+      <template #actions>
+        <select class="px-3 py-1.5 rounded-lg border border-black/5 bg-white text-fluid-sm font-medium text-body shadow-sm hover:bg-greys-50 transition-all cursor-pointer">
           <option>This month</option>
           <option>Last month</option>
           <option>This quarter</option>
           <option>This year</option>
         </select>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- Main Content Area -->
-    <div class="flex-1 overflow-y-auto px-6 py-6 2xl:px-48 min-h-0">
+    <div class="flex-1 overflow-y-auto p-4 md:p-8 min-h-0">
       <div class="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 max-w-screen-2xl mx-auto w-full">
         <!-- Left Section: Main Dashboard -->
         <div class="flex-1 flex flex-col gap-6 min-w-0">
@@ -45,6 +41,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { fetchDashboardKPIs, fetchSalesPipeline, fetchTeamPerformance, fetchTodaysEvents, fetchTasksDue } from '@/api/dashboard'
+import PageHeader from '@/components/layout/PageHeader.vue'
 import DashboardKPIs from '@/components/reports/DashboardKPIs.vue'
 import SalesPipelineChart from '@/components/reports/SalesPipelineChart.vue'
 import TeamPerformanceTable from '@/components/reports/TeamPerformanceTable.vue'

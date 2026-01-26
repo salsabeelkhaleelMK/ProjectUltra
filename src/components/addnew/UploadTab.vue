@@ -1,43 +1,45 @@
 <template>
   <div class="w-full space-y-4">
-    <!-- Entity Type Selection -->
-    <Card>
+    <!-- Source Selection -->
+    <Card class="border-border">
       <CardHeader>
-        <CardTitle>Select Entity Type</CardTitle>
+        <CardTitle>Select Source</CardTitle>
       </CardHeader>
-      <CardContent>
-        <p class="text-meta text-fluid-xs mb-3">
+      <CardContent class="space-y-6">
+        <p class="text-sub text-fluid-xs">
           Choose what type of data you want to import.
         </p>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Card
-            v-for="type in entityTypes"
-            :key="type.value"
-            @click="selectedEntityType = type.value"
-            class="cursor-pointer"
-            :class="selectedEntityType === type.value
-              ? 'border-brand-red bg-surfaceSecondary'
-              : 'border-border'"
-          >
-            <CardContent>
-              <div class="flex items-center gap-2 mb-1">
-                <i :class="[type.icon, 'text-xl', selectedEntityType === type.value ? 'text-brand-red' : 'text-sub']"></i>
-                <span class="font-bold text-heading text-fluid-xs">{{ type.label }}</span>
-              </div>
-              <p class="text-meta text-fluid-xs">{{ type.description }}</p>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <p v-if="!selectedEntityType" class="text-brand-red text-fluid-xs mt-3">
-          Please select an entity type to continue
-        </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <Card
+        v-for="type in sources"
+        :key="type.value"
+        @click="selectedSource = type.value"
+        class="cursor-pointer transition-all p-1"
+        :class="selectedSource === type.value
+          ? 'border-2 border-brand-primary bg-white shadow-md'
+          : 'border-border hover:border-brand-primary/30 bg-white'"
+      >
+        <CardContent class="p-4">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-10 h-10 rounded-lg bg-surfaceSecondary flex items-center justify-center border border-border shrink-0">
+              <i :class="[type.icon, 'text-lg', selectedSource === type.value ? 'text-brand-primary' : 'text-sub']"></i>
+            </div>
+            <div>
+              <span class="font-bold text-heading text-sm">{{ type.label }}</span>
+              <p class="text-sub text-fluid-xs">{{ type.description }}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Removed Source Selection Info Card -->
       </CardContent>
     </Card>
 
-    <!-- File Upload (shown after entity type selection) -->
-    <div v-if="selectedEntityType">
+    <!-- File Upload (shown after source selection) -->
+    <div v-if="selectedSource">
       <FileUploadForm
         ref="fileUploadRef"
         v-model="selectedFile"
@@ -46,10 +48,10 @@
     </div>
 
     <!-- Column Mapping (shown after file is parsed) -->
-    <div v-if="selectedEntityType && parsedData && parsedData.length > 0">
+    <div v-if="selectedSource && parsedData && parsedData.length > 0">
       <ColumnMappingForm
         ref="mappingFormRef"
-        :entity-type="selectedEntityType"
+        :entity-type="selectedSource"
         :file-columns="headers"
         :mapping="columnMapping"
         @update:mapping="columnMapping = $event"
@@ -57,7 +59,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div v-if="selectedEntityType && parsedData && parsedData.length > 0" class="flex items-center justify-end gap-3 pt-4 border-t border-border mt-4">
+    <div v-if="selectedSource && parsedData && parsedData.length > 0" class="flex items-center justify-end gap-3 pt-4 border-t border-border">
       <Button
         variant="outline"
         size="small"
@@ -67,41 +69,45 @@
         Cancel
       </Button>
       <Button
+        variant="primary"
         size="small"
         @click="handleImport"
         :disabled="!canImport || processing"
       >
         <span v-if="processing">Importing...</span>
-        <span v-else>Import {{ parsedData.length }} {{ selectedEntityType }}</span>
+        <span v-else>Import {{ parsedData.length }} {{ selectedSource }}</span>
       </Button>
     </div>
 
     <!-- Progress Indicator -->
-    <Card v-if="processing">
-      <CardContent>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-heading text-fluid-xs font-bold">Importing...</span>
-            <span class="text-meta text-fluid-xs">{{ processedCount }} / {{ totalCount }}</span>
-          </div>
-          <Progress :value="progressPercentage" class="h-1.5" />
-          <p v-if="importErrors.length > 0" class="text-brand-red text-fluid-xs">
-            {{ importErrors.length }} errors encountered
-          </p>
+    <Card v-if="processing" class="border-border">
+      <CardContent class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-heading text-fluid-xs font-bold">Importing...</span>
+          <span class="text-sub text-fluid-xs">{{ processedCount }} / {{ totalCount }}</span>
         </div>
+        <Progress :value="progressPercentage" class="h-1.5" />
+        <Card v-if="importErrors.length > 0" class="bg-orange-50 border-orange-200">
+          <CardContent class="flex items-start gap-2">
+            <i class="fa-solid fa-exclamation-triangle text-orange-600 mt-0.5 text-sm"></i>
+            <span class="text-fluid-xs text-orange-700">
+              {{ importErrors.length }} errors encountered
+            </span>
+          </CardContent>
+        </Card>
       </CardContent>
     </Card>
 
     <!-- Success Message -->
-    <Card v-if="importSuccess" class="bg-surfaceSecondary">
-      <CardContent>
-        <div class="flex items-center gap-2 mb-1.5">
-          <i class="fa-solid fa-check-circle text-success text-base"></i>
+    <Card v-if="importSuccess" class="bg-green-50 border-green-200">
+      <CardContent class="space-y-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-check-circle text-green-600 text-base"></i>
           <span class="font-bold text-heading text-fluid-xs">Import Successful</span>
         </div>
         <p class="text-body text-fluid-xs">
-          Successfully imported {{ successCount }} {{ selectedEntityType }}.
-          <span v-if="importErrors.length > 0">
+          Successfully imported {{ successCount }} {{ selectedSource }}.
+          <span v-if="importErrors.length > 0" class="text-orange-700 font-semibold">
             {{ importErrors.length }} rows had errors.
           </span>
         </p>
@@ -113,8 +119,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Button } from '@motork/component-library'
-import { Progress, Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
+import { Button, Progress, Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
 import FileUploadForm from '@/components/addnew/FileUploadForm.vue'
 import ColumnMappingForm from '@/components/addnew/ColumnMappingForm.vue'
 import { useColumnMapping, getEntityFields } from '@/composables/useColumnMapping'
@@ -130,7 +135,7 @@ const opportunitiesStore = useOpportunitiesStore()
 const fileUploadRef = ref(null)
 const mappingFormRef = ref(null)
 
-const selectedEntityType = ref(null)
+const selectedSource = ref('contacts')
 const selectedFile = ref(null)
 const parsedData = ref(null)
 const headers = ref([])
@@ -142,7 +147,7 @@ const successCount = ref(0)
 const importErrors = ref([])
 const importSuccess = ref(false)
 
-const entityTypes = [
+const sources = [
   {
     value: 'contacts',
     label: 'Contacts',
@@ -166,7 +171,7 @@ const entityTypes = [
 // Create a transform function that uses the columnMapping prop
 const transformRowData = (row) => {
   const transformed = {}
-  const fields = getEntityFields(selectedEntityType.value)
+  const fields = getEntityFields(selectedSource.value)
   const allFields = [...fields.required, ...fields.optional]
 
   allFields.forEach(field => {
@@ -199,8 +204,8 @@ const transformData = (data) => {
 
 // Validation
 const isMappingValid = computed(() => {
-  if (!selectedEntityType.value) return false
-  const fields = getEntityFields(selectedEntityType.value)
+  if (!selectedSource.value) return false
+  const fields = getEntityFields(selectedSource.value)
   const requiredFields = fields.required || []
   
   return requiredFields.every(field => {
@@ -210,7 +215,7 @@ const isMappingValid = computed(() => {
 })
 
 const canImport = computed(() => {
-  return selectedEntityType.value && 
+  return selectedSource.value && 
          parsedData.value && 
          parsedData.value.length > 0 &&
          isMappingValid.value
@@ -230,7 +235,7 @@ const handleFileParsed = (result) => {
 }
 
 const handleCancel = () => {
-  selectedEntityType.value = null
+  selectedSource.value = 'contacts'
   selectedFile.value = null
   parsedData.value = null
   headers.value = []
@@ -277,8 +282,8 @@ const handleImport = async () => {
 
     // Redirect after short delay
     setTimeout(() => {
-      const tab = selectedEntityType.value === 'contacts' ? 'contacts' :
-                   selectedEntityType.value === 'leads' ? 'open-leads' :
+      const tab = selectedSource.value === 'contacts' ? 'contacts' :
+                   selectedSource.value === 'leads' ? 'open-leads' :
                    'open-opportunities'
       router.push({
         path: '/customers',
@@ -311,7 +316,7 @@ const processRow = async (row) => {
 
   const contact = await customersStore.addCustomer(contactData)
 
-  if (selectedEntityType.value === 'contacts') {
+  if (selectedSource.value === 'contacts') {
     // Just create contact, done
     return
   }
@@ -334,7 +339,7 @@ const processRow = async (row) => {
     vehicleData.stockDays = row.stockDays || null
   }
 
-  if (selectedEntityType.value === 'leads') {
+  if (selectedSource.value === 'leads') {
     const leadData = {
       customer: {
         id: contact.id,
@@ -361,7 +366,7 @@ const processRow = async (row) => {
     }
 
     await leadsStore.createLead(leadData)
-  } else if (selectedEntityType.value === 'opportunities') {
+  } else if (selectedSource.value === 'opportunities') {
     const oppData = {
       customer: {
         id: contact.id,

@@ -328,7 +328,7 @@ import {
   Plus,
   Paperclip
 } from 'lucide-vue-next'
-import { DropdownMenu } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   activities: {

@@ -71,7 +71,7 @@
 
 <script setup>
 import { toRef } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import { useLeadsStore } from '@/stores/leads'
 import { useLeadActions } from '@/composables/useLeadActions'
 import { useLeadManagementHandlers } from '@/composables/useLeadManagementHandlers'

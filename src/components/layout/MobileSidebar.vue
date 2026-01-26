@@ -10,10 +10,9 @@
   
   <!-- Sidebar Drawer -->
   <transition name="slide">
-    <div 
+    <div
       v-if="isOpen"
-      class="mobile-sidebar-drawer fixed top-0 left-0 bottom-0 w-64 z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom flex flex-col"
-      :style="{ backgroundColor: 'var(--base-sidebar-foreground, #0a0a0a)' }"
+      class="mobile-sidebar-container mobile-sidebar-drawer fixed top-0 left-0 bottom-0 w-64 z-50 md:hidden overflow-y-auto safe-area-top safe-area-bottom flex flex-col"
     >
       <!-- Header -->
       <div class="p-3 sm:p-4 border-b border-white/10 flex items-center justify-between shrink-0">
@@ -217,8 +216,7 @@
             :class="{ 'mobile-sidebar-link-active': showUserMenu }"
           >
             <div 
-              class="user-avatar-mobile rounded-full flex items-center justify-center font-medium text-white shrink-0"
-              :style="{ backgroundColor: 'var(--brand-slate, #6B7280)' }"
+              class="user-avatar user-avatar-mobile rounded-full flex items-center justify-center font-medium text-white shrink-0"
             >
               {{ userInitials }}
             </div>

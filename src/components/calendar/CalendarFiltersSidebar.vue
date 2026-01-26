@@ -192,7 +192,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Checkbox, TextInput, Toggle } from '@motork/component-library'
+import { Checkbox, Input, Toggle } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   modelValue: {

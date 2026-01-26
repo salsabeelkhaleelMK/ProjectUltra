@@ -167,7 +167,7 @@
 <script setup>
 import { ref, computed, onMounted, toRef } from 'vue'
 import { useRouter } from 'vue-router'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { fetchVehicles } from '@/api/vehicles'
 import { getDisplayStage } from '@/utils/stageMapper'
