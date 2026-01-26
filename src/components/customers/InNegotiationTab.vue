@@ -1,34 +1,31 @@
 <template>
-  <div class="bg-greys-100 rounded-xl p-1 flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--mk-dashboard-card-shadow);">
-      <DataTable 
-        :data="rows" 
-        :columns="columns"
-        :meta="tableMeta"
-        @row-click="handleRowClick"
-        :columnFiltersOptions="{
-          filterDefs: filterDefinitions
-        }"
-        v-model:pagination="pagination"
-        v-model:globalFilter="globalFilter"
-        v-model:sorting="sorting"
-        v-model:columnFilters="columnFilters"
-        :paginationOptions="{
-          rowCount: rows.length
-        }"
-        :globalFilterOptions="{
-          debounce: 300
-        }"
-      >
-        <template #empty-state>
-          <div class="empty-state">
-            <i class="fa-solid fa-inbox empty-state-icon"></i>
-            <p class="empty-state-text">No records found</p>
-          </div>
-        </template>
-      </DataTable>
-    </div>
-  </div>
+  <DataTable 
+    :data="rows" 
+    :columns="columns"
+    :meta="tableMeta"
+    @row-click="handleRowClick"
+    :columnFiltersOptions="{
+      filterDefs: filterDefinitions
+    }"
+    v-model:pagination="pagination"
+    v-model:globalFilter="globalFilter"
+    v-model:sorting="sorting"
+    v-model:columnFilters="columnFilters"
+    :paginationOptions="{
+      rowCount: rows.length
+    }"
+    :globalFilterOptions="{
+      debounce: 300
+    }"
+    class="h-full"
+  >
+    <template #empty-state>
+      <div class="empty-state">
+        <i class="fa-solid fa-inbox empty-state-icon"></i>
+        <p class="empty-state-text">No records found</p>
+      </div>
+    </template>
+  </DataTable>
 </template>
 
 <script setup>

@@ -53,10 +53,7 @@
     
     <!-- Content -->
     <div class="flex-1 overflow-y-auto p-4 md:p-8">
-      <!-- Table Container -->
-      <div class="bg-greys-100 rounded-xl p-1 flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-        <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--mk-dashboard-card-shadow);">
-          <DataTable 
+      <DataTable 
             :data="filteredTasks" 
             :columns="columns"
             :meta="tableMeta"
@@ -76,6 +73,7 @@
               placeholder: 'Q Search or ask a question',
               show: false
             }"
+            class="h-full"
           >
             <template #empty-state>
               <div class="empty-state">
@@ -84,8 +82,6 @@
               </div>
             </template>
           </DataTable>
-        </div>
-      </div>
     </div>
   </div>
 </template>

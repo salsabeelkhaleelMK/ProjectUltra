@@ -1,0 +1,1688 @@
+/* ProjectUltra Main CSS - Aligned with Reference Project */
+
+/* ========================================
+   Core Imports
+   ======================================== */
+
+/* Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Animations */
+@import 'tw-animate-css';
+
+/* Motork Component Library - specify source for Tailwind v4 */
+@source '../../../node_modules/@motork/component-library/dist';
+
+/* Motork Theme */
+@import '@motork/component-library/theme';
+
+/* ========================================
+   Font Declarations
+   ======================================== */
+
+/* Note: Using Figtree variable font - adjust if using different fonts */
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/Figtree-VariableFont_wght.ttf') format('truetype');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ========================================
+   CSS Custom Properties
+   ======================================== */
+
+:root {
+  /* Font sizes using clamp() for fluid scaling */
+  --text-xs: clamp(10px, 0.625vw, 12px);
+  --text-sm: clamp(12px, 0.875vw, 14px);
+  --text-base: clamp(14px, 1vw, 16px);
+  --text-lg: clamp(16px, 1.125vw, 18px);
+  --text-xl: clamp(18px, 1.25vw, 20px);
+  --text-2xl: clamp(20px, 1.5vw, 24px);
+
+  /* Line heights */
+  --leading-4: clamp(16px, 1.25vw, 20px);
+  --leading-5: clamp(20px, 1.5625vw, 24px);
+  --leading-6: clamp(24px, 1.875vw, 28px);
+  --leading-7: clamp(28px, 2.1875vw, 32px);
+
+  /* Responsive widths - base at 1280px */
+  --sidebar-width: clamp(40px, 3.75vw, 48px);
+  --lead-list-width: clamp(240px, 23.125vw, 296px);
+  --activity-width: clamp(260px, 25vw, 320px);
+
+  /* Responsive spacing */
+  --spacing-1: clamp(4px, 0.3125vw, 6px);
+  --spacing-2: clamp(8px, 0.625vw, 10px);
+  --spacing-3: clamp(12px, 0.9375vw, 16px);
+  --spacing-4: clamp(16px, 1.25vw, 20px);
+  --spacing-6: clamp(24px, 1.875vw, 32px);
+
+  /* Responsive heights */
+  --header-height: clamp(48px, 3.75vw, 60px);
+  --topbar-height: clamp(40px, 3.125vw, 48px);
+
+  /* Chart color palette */
+  --chart-color-1: #3b82f6;
+  --chart-color-2: #14b8a6;
+  --chart-color-3: #0ea5e9;
+  --chart-color-4: #8b5cf6;
+  --chart-color-5: #ec4899;
+  --chart-color-6: #f97316;
+  --chart-color-7: #ef4444;
+  --chart-color-8: #10b981;
+  --chart-color-9: #eab308;
+  --chart-color-10: #84cc16;
+
+  /* Dashboard Card Shadow */
+  --mk-dashboard-card-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
+    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04),
+    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
+  
+  /* Alias for reference compatibility */
+  --nsc-card-shadow: var(--mk-dashboard-card-shadow);
+}
+
+/* Make leads list and activity 10% narrower on smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --lead-list-width: clamp(216px, 20.8125vw, 266px);
+    --activity-width: clamp(234px, 22.5vw, 288px);
+  }
+}
+
+/* ========================================
+   Theme Color Overrides - Match Reference Project
+   ======================================== */
+
+/* Override Motork theme variables to match reference project */
+:root {
+  /* Base colors */
+  --base-muted: #f5f5f5;
+  --base-background: #fff;
+  --base-card: #fff;
+  --base-surface: #fff;
+  --base-sidebar-foreground: #0a0a0a;
+  --base-primary: #0470e9;
+  
+  /* Border colors - Match reference subtle borders */
+  --base-border: rgba(0, 0, 0, 0.05);
+  --border-color: rgba(0, 0, 0, 0.05);
+  --border: rgba(0, 0, 0, 0.05);
+  
+  /* Additional border utilities */
+  --E5E7EB: rgba(0, 0, 0, 0.05);
+  --border-radius-rounded-lg: 10px;
+  
+  /* Text colors - Reference project */
+  --text-heading: #0a0a0a;
+  --text-body: #3f3f46;
+  --text-sub: #71717a;
+  --greys-900: #0a0a0a;
+  --greys-500: #71717a;
+  --greys-50: #f9fafb;
+  
+  /* Brand colors */
+  --brand-primary: #0470e9;
+  --brand-primary-600: #0470e9;
+  --brand-primary-700: #0359c0;
+}
+
+/* ========================================
+   Text Color Utilities - Match Reference
+   ======================================== */
+
+.text-heading {
+  color: var(--text-heading, #0a0a0a) !important;
+}
+
+.text-body {
+  color: var(--text-body, #3f3f46) !important;
+}
+
+.text-sub {
+  color: var(--text-sub, #71717a) !important;
+}
+
+.text-greys-900 {
+  color: var(--greys-900, #0a0a0a) !important;
+}
+
+.text-greys-500 {
+  color: var(--greys-500, #71717a) !important;
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+/* Fluid Typography Utilities */
+.text-fluid-xs { 
+  font-size: var(--text-xs); 
+  line-height: var(--leading-4); 
+}
+
+.text-fluid-sm { 
+  font-size: var(--text-sm); 
+  line-height: var(--leading-5); 
+}
+
+.text-fluid-base { 
+  font-size: var(--text-base); 
+  line-height: var(--leading-6); 
+}
+
+.text-fluid-lg { 
+  font-size: var(--text-lg); 
+  line-height: var(--leading-6); 
+}
+
+.text-fluid-xl { 
+  font-size: var(--text-xl); 
+  line-height: var(--leading-7); 
+}
+
+.text-fluid-2xl { 
+  font-size: var(--text-2xl); 
+  line-height: var(--leading-7); 
+}
+
+.w-\[--reka-popover-trigger-width\] {
+  width: var(--reka-popover-trigger-width) !important;
+}
+
+/* Dashboard Card Utility - Apply shadow to cards */
+.mk-dashboard-card {
+  box-shadow: var(--mk-dashboard-card-shadow);
+}
+
+/* ========================================
+   Border Utilities - Match Reference Project
+   ======================================== */
+
+/* CRITICAL: Override default Tailwind border color to match reference */
+/* Default border class should use subtle light border, not dark */
+.border,
+[class*="border-"]:not([class*="border-none"]):not([class*="border-0"]) {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Specific border utilities */
+.border-base {
+  border-color: var(--base-border, rgba(0, 0, 0, 0.05)) !important;
+}
+
+.border-black\/5 {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-black-5 {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Specific border sides */
+.border-r,
+.border-r-black\/5 {
+  border-right-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-l,
+.border-l-black\/5 {
+  border-left-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-t,
+.border-t-black\/5 {
+  border-top-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-b,
+.border-b-black\/5 {
+  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Border utility for E5E7EB color */
+.border-E5E7EB {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-border {
+  border-color: var(--border, rgba(0, 0, 0, 0.05)) !important;
+}
+
+/* Exception: borders that should be colored (badges, status, etc) */
+.border-blue-100,
+.border-blue-200,
+[class*="border-blue"] {
+  /* Blue borders keep their color */
+  border-color: #93c5fd !important; /* blue-200 */
+}
+
+.border-green-100,
+.border-green-200,
+[class*="border-green"] {
+  border-color: #86efac !important; /* green-200 */
+}
+
+.border-orange-100,
+.border-orange-200,
+[class*="border-orange"] {
+  border-color: #fed7aa !important; /* orange-200 */
+}
+
+.border-red-100,
+.border-red-200,
+[class*="border-red"] {
+  border-color: #fecaca !important; /* red-200 */
+}
+
+.border-purple-100,
+.border-purple-200,
+[class*="border-purple"] {
+  border-color: #e9d5ff !important; /* purple-200 */
+}
+
+.border-yellow-100,
+.border-yellow-200,
+[class*="border-yellow"] {
+  border-color: #fef08a !important; /* yellow-200 */
+}
+
+/* White backgrounds with borders (common pattern) */
+.bg-white-bordered {
+  background-color: var(--base-background, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bg-white-bordered-sm {
+  background-color: var(--base-background, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   Border Radius - Match Reference Project
+   ======================================== */
+
+/* Override Tailwind rounded classes to match reference exactly */
+.rounded-lg {
+  border-radius: 8px !important;
+}
+
+.rounded-xl {
+  border-radius: 12px !important;
+}
+
+.rounded-2xl {
+  border-radius: 16px !important;
+}
+
+/* Custom rounded utilities */
+.rounded-btn {
+  border-radius: 8px;
+}
+
+.rounded-card {
+  border-radius: 10px;
+}
+
+.rounded-xl-card {
+  border-radius: 12px;
+}
+
+/* Match reference project's card radius */
+.rounded-card-lg {
+  border-radius: var(--border-radius-rounded-lg, 10px);
+}
+
+/* ========================================
+   Background Utilities - Match Reference Project
+   ======================================== */
+
+/* Override background colors to match reference */
+.bg-base-muted {
+  background-color: var(--base-muted, #f5f5f5) !important;
+}
+
+.bg-base-card {
+  background-color: var(--base-card, #fff) !important;
+}
+
+.bg-base-surface {
+  background-color: var(--base-background, #fff) !important;
+}
+
+.bg-white {
+  background-color: var(--base-background, #fff) !important;
+}
+
+.bg-sidebar-dark {
+  background-color: var(--base-sidebar-foreground, #0a0a0a) !important;
+}
+
+.bg-avatar-slate {
+  background-color: var(--brand-slate, #6B7280) !important;
+}
+
+/* Hover backgrounds */
+.hover\:bg-greys-50:hover {
+  background-color: #f9fafb !important;
+}
+
+.hover\:bg-surfaceSecondary:hover {
+  background-color: var(--base-muted, #f5f5f5) !important;
+}
+
+/* Card component styling */
+[data-slot="card"],
+.card-container {
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: var(--mk-dashboard-card-shadow);
+  transition: all 0.2s ease;
+}
+
+[data-slot="card"]:hover,
+.card-container:hover {
+  box-shadow: 
+    0 0 0 1px rgba(14, 63, 126, 0.06),
+    0 2px 2px -1px rgba(42, 51, 69, 0.06),
+    0 4px 4px -2px rgba(42, 51, 70, 0.06),
+    0 8px 8px -4px rgba(42, 51, 70, 0.06),
+    0 16px 16px -8px rgba(14, 63, 126, 0.06),
+    0 32px 32px -16px rgba(14, 63, 126, 0.06);
+}
+
+/* ========================================
+   Shadow Utilities - Match Tailwind Reference
+   ======================================== */
+
+/* Override Tailwind shadows to match reference project */
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.shadow {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dashboard card shadow utility */
+.shadow-mk-dashboard-card {
+  box-shadow: var(--mk-dashboard-card-shadow) !important;
+}
+
+/* Selected card shadow (from reference) */
+.shadow-selected {
+  box-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.04),
+    0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
+    0 3px 3px -1.5px rgba(42, 51, 70, 0.04),
+    0 6px 6px -3px rgba(42, 51, 70, 0.04),
+    0 12px 12px -6px rgba(14, 63, 126, 0.04),
+    0 24px 24px -12px rgba(14, 63, 126, 0.04) !important;
+}
+
+/* ========================================
+   Page Layout Classes
+   ======================================== */
+
+/* Page Container - Full width and height */
+.page-container {
+  @apply w-full h-full;
+}
+
+/* Page with proper spacing */
+.page-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Page content area - scrollable */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--base-background, #fff);
+}
+
+/* Page with sidebar spacing */
+.page-with-sidebar {
+  padding-left: 0;
+}
+
+@media (min-width: 768px) {
+  .page-with-sidebar {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+/* ========================================
+   Page Header Styling - Match Reference
+   ======================================== */
+
+/* Main page header - white background with bottom border */
+.page-header-main {
+  background-color: var(--base-background, #fff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0 1.5rem;
+  height: 4rem; /* 64px / h-16 */
+  min-height: 4rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Page header with muted background (for side panels) */
+.page-header-muted {
+  padding: 0 1.5rem 0 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+/* Page header content wrapper */
+.page-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Page header title */
+.page-header-title {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--text-heading, #0a0a0a);
+  line-height: var(--leading-7);
+  margin: 0;
+}
+
+/* Page header title (smaller variant) */
+.page-header-title-sm {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--text-heading, #0a0a0a);
+  line-height: var(--leading-6);
+  margin: 0;
+}
+
+/* Page header actions container */
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Section header (inside pages) */
+.section-header {
+  padding: 1.5rem 0 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-header-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-heading, #0a0a0a);
+  margin: 0;
+}
+
+/* ========================================
+   Layout Component Classes
+   ======================================== */
+
+/* Main app container */
+.app-main-container {
+  height: 100vh;
+  display: flex;
+  background-color: var(--base-muted, #f5f5f5);
+}
+
+/* Sidebar container */
+.sidebar-container {
+  background-color: var(--base-sidebar-foreground, #0a0a0a);
+  width: var(--sidebar-width);
+  /* Note: fixed positioning is applied via Tailwind classes in component */
+}
+
+/* Main content area - offset for fixed sidebar */
+.main-content-area {
+  /* Add left margin to account for fixed sidebar on desktop */
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  .main-content-area {
+    margin-left: var(--sidebar-width);
+  }
+}
+
+/* Mobile sidebar */
+.mobile-sidebar-container {
+  background-color: var(--base-sidebar-foreground, #0a0a0a);
+}
+
+/* Mobile header */
+.mobile-header {
+  background-color: var(--base-background, #fff);
+  border-color: var(--base-border, rgba(0, 0, 0, 0.05));
+}
+
+/* User avatar */
+.user-avatar {
+  background-color: var(--brand-slate, #6B7280);
+}
+
+/* ========================================
+   Component Style Overrides
+   ======================================== */
+
+/* Primary Button Styling - Gradient and Shadows from Figma Spec */
+/* Based on Figma design: Blue gradient (lighter top-left to darker bottom-right) with layered shadows */
+
+/* Target primary buttons (variant="default" and variant="black") */
+/* Using multiple selectors to ensure we catch all button variants */
+button[data-variant="default"],
+button[data-variant="black"],
+button[class*="variant-default"],
+button[class*="variant-black"],
+button[class*="data-variant-default"],
+button[class*="data-variant-black"],
+/* Fallback: target buttons that have primary-like styling */
+button[class*="bg-brand-primary"],
+button[class*="bg-primary"] {
+  /* Exact Figma specs */
+  border-radius: 8px !important;
+  border: none !important;
+  background: #0470e9 !important;
+  font-weight: 500 !important;
+  box-shadow:
+    0 1px 3px 0 rgba(11, 19, 36, 0.08),
+    0 -1px 0 0 rgba(0, 0, 0, 0.1) inset !important;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.1s ease !important;
+}
+
+/* Hover state - Enhanced shadows for elevation */
+button[data-variant='default']:hover:not(:disabled),
+button[data-variant='black']:hover:not(:disabled),
+button[class*='variant-default']:hover:not(:disabled),
+button[class*='variant-black']:hover:not(:disabled),
+button[class*='data-variant-default']:hover:not(:disabled),
+button[class*='data-variant-black']:hover:not(:disabled),
+button[class*='bg-brand-primary']:hover:not(:disabled),
+button[class*='bg-primary']:hover:not(:disabled) {
+  box-shadow:
+    0 2px 4px 0 rgba(11, 19, 36, 0.12),
+    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Active/pressed state - Reduced shadows for pressed effect */
+button[data-variant='default']:active:not(:disabled),
+button[data-variant='black']:active:not(:disabled),
+button[class*='variant-default']:active:not(:disabled),
+button[class*='variant-black']:active:not(:disabled),
+button[class*='data-variant-default']:active:not(:disabled),
+button[class*='data-variant-black']:active:not(:disabled),
+button[class*='bg-brand-primary']:active:not(:disabled),
+button[class*='bg-primary']:active:not(:disabled) {
+  box-shadow:
+    0 1px 2px 0 rgba(11, 19, 36, 0.1),
+    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset !important;
+  transform: translateY(0px) !important;
+}
+
+/* Disabled state */
+button[data-variant='default']:disabled,
+button[data-variant='black']:disabled,
+button[class*='variant-default']:disabled,
+button[class*='variant-black']:disabled,
+button[class*='data-variant-default']:disabled,
+button[class*='data-variant-black']:disabled,
+button[class*='bg-brand-primary']:disabled,
+button[class*='bg-primary']:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #4b5563 100%) !important;
+  box-shadow:
+    0px 2px 4px 0px rgba(0, 0, 0, 0.08),
+    0px 0px 0px 1px rgba(255, 255, 255, 0.05) inset !important;
+  opacity: 0.6 !important;
+}
+
+/* ========================================
+   Secondary/Outline Button Styling
+   ======================================== */
+
+/* Secondary buttons - white background with border */
+button[data-variant="secondary"],
+button[data-variant="outline"],
+button[class*="variant-secondary"],
+button[class*="variant-outline"] {
+  border-radius: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  background: var(--base-background, #fff) !important;
+  color: var(--text-heading, #0a0a0a) !important;
+  font-weight: 500 !important;
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  transition:
+    all 0.2s ease !important;
+}
+
+/* Secondary button hover state */
+button[data-variant="secondary"]:hover:not(:disabled),
+button[data-variant="outline"]:hover:not(:disabled),
+button[class*="variant-secondary"]:hover:not(:disabled),
+button[class*="variant-outline"]:hover:not(:disabled) {
+  background: var(--base-muted, #f5f5f5) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Secondary button active state */
+button[data-variant="secondary"]:active:not(:disabled),
+button[data-variant="outline"]:active:not(:disabled),
+button[class*="variant-secondary"]:active:not(:disabled),
+button[class*="variant-outline"]:active:not(:disabled) {
+  background: var(--base-muted, #f5f5f5) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  box-shadow:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    inset 0 1px 2px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Secondary button disabled state */
+button[data-variant="secondary"]:disabled,
+button[data-variant="outline"]:disabled,
+button[class*="variant-secondary"]:disabled,
+button[class*="variant-outline"]:disabled {
+  background: var(--base-muted, #f5f5f5) !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
+  opacity: 0.6 !important;
+}
+
+/* ========================================
+   Ghost Button Styling
+   ======================================== */
+
+/* Ghost buttons - transparent background, no border */
+button[data-variant="ghost"],
+button[class*="variant-ghost"] {
+  border-radius: 8px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-heading, #0a0a0a) !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  transition:
+    all 0.2s ease !important;
+}
+
+/* Ghost button hover state */
+button[data-variant="ghost"]:hover:not(:disabled),
+button[class*="variant-ghost"]:hover:not(:disabled) {
+  background: var(--base-muted, #f5f5f5) !important;
+}
+
+/* Ghost button active state */
+button[data-variant="ghost"]:active:not(:disabled),
+button[class*="variant-ghost"]:active:not(:disabled) {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ghost button disabled state */
+button[data-variant="ghost"]:disabled,
+button[class*="variant-ghost"]:disabled {
+  background: transparent !important;
+  color: rgba(0, 0, 0, 0.3) !important;
+  opacity: 0.6 !important;
+}
+
+/* ========================================
+   Link Button Styling
+   ======================================== */
+
+/* Link buttons - no background, no border, just text with hover */
+button[data-variant="link"],
+button[class*="variant-link"] {
+  border-radius: 8px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #0470e9 !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition:
+    all 0.2s ease !important;
+}
+
+/* Link button hover state */
+button[data-variant="link"]:hover:not(:disabled),
+button[class*="variant-link"]:hover:not(:disabled) {
+  color: #0359c0 !important;
+  text-decoration: underline !important;
+}
+
+/* Link button active state */
+button[data-variant="link"]:active:not(:disabled),
+button[class*="variant-link"]:active:not(:disabled) {
+  color: #024a9f !important;
+}
+
+/* Link button disabled state */
+button[data-variant="link"]:disabled,
+button[class*="variant-link"]:disabled {
+  background: transparent !important;
+  color: rgba(4, 112, 233, 0.4) !important;
+  opacity: 0.6 !important;
+  text-decoration: none !important;
+}
+
+/* ========================================
+   Button Size Variants
+   ======================================== */
+
+/* Small buttons */
+button[data-size="sm"],
+button[data-size="small"],
+button[class*="size-sm"],
+button[class*="size-small"] {
+  padding: 0.375rem 0.75rem !important;
+  font-size: var(--text-sm) !important;
+  line-height: 1.25rem !important;
+  height: auto !important;
+  min-height: 2rem !important;
+}
+
+/* Medium/default buttons */
+button[data-size="md"],
+button[data-size="medium"],
+button:not([data-size]):not([class*="size-"]) {
+  padding: 0.5rem 1rem !important;
+  font-size: var(--text-sm) !important;
+  line-height: 1.25rem !important;
+  height: auto !important;
+  min-height: 2.5rem !important;
+}
+
+/* Large buttons */
+button[data-size="lg"],
+button[data-size="large"],
+button[class*="size-lg"],
+button[class*="size-large"] {
+  padding: 0.625rem 1.25rem !important;
+  font-size: var(--text-base) !important;
+  line-height: 1.5rem !important;
+  height: auto !important;
+  min-height: 2.75rem !important;
+}
+
+/* Icon-only buttons */
+button[data-size="icon-sm"],
+button[class*="size-icon-sm"] {
+  padding: 0.375rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+button[data-size="icon"],
+button[class*="size-icon"]:not([class*="icon-sm"]):not([class*="icon-lg"]) {
+  padding: 0.5rem !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  min-width: 2.5rem !important;
+  min-height: 2.5rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+button[data-size="icon-lg"],
+button[class*="size-icon-lg"] {
+  padding: 0.625rem !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  min-width: 2.75rem !important;
+  min-height: 2.75rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ========================================
+   Button Icon Spacing
+   ======================================== */
+
+/* Buttons with icons and text */
+button > svg:not(:only-child),
+button > i:not(:only-child) {
+  margin-right: 0.5rem;
+}
+
+button > svg:last-child:not(:only-child),
+button > i:last-child:not(:only-child) {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+/* Icon-only buttons should not have margin */
+button[data-size*="icon"] > svg,
+button[data-size*="icon"] > i,
+button[class*="size-icon"] > svg,
+button[class*="size-icon"] > i {
+  margin: 0 !important;
+}
+
+/* ========================================
+   Tabs Styling - Match Reference Project Exactly
+   ======================================== */
+
+/* Tab list container - from reference */
+[role="tablist"],
+.tabs-container {
+  display: flex;
+  align-items: stretch;
+  height: 3rem; /* 48px / h-12 */
+  gap: 1rem; /* gap-4 */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  background: transparent !important;
+}
+
+/* Individual tab triggers - from reference */
+[role="tab"],
+.tab-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* gap-1.5 */
+  padding: 0;
+  height: 100%;
+  border-radius: 0 !important;
+  background: transparent !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any focus rings or borders from tab triggers */
+[role="tab"]:focus,
+[role="tab"]:focus-visible,
+.tab-trigger:focus,
+.tab-trigger:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Tab label text - always same color */
+[role="tab"] > span:first-child,
+.tab-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--greys-900, #0a0a0a) !important;
+  line-height: var(--leading-5);
+}
+
+/* Tab count badge - inactive state */
+[role="tab"]:not([data-state="active"]) .tab-count,
+[role="tab"]:not([data-state="active"]) [class*="badge"],
+.tab-count {
+  padding: 0.125rem 0.5rem; /* px-2 py-0.5 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-size: var(--text-sm);
+  font-weight: 500;
+  background-color: var(--base-muted, #f5f5f5);
+  color: var(--greys-900, #0a0a0a);
+  line-height: var(--leading-5);
+}
+
+/* Tab count badge - active state (BLUE) */
+[role="tab"][data-state="active"] .tab-count,
+[role="tab"][data-state="active"] [class*="badge"],
+.tab-count-active {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: var(--text-sm);
+  font-weight: 700 !important; /* font-bold */
+  background-color: #dbeafe !important; /* bg-blue-50 */
+  color: #2563eb !important; /* text-blue-600 */
+  line-height: var(--leading-5);
+}
+
+/* Active tab indicator - BLUE underline (2px high) */
+[role="tab"][data-state="active"]::after,
+.tab-trigger-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px; /* h-0.5 */
+  background-color: #2563eb; /* bg-blue-600 */
+  z-index: 10;
+}
+
+/* Utility classes for manual tab implementation */
+.tab-indicator-blue {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #2563eb;
+  z-index: 10;
+}
+
+/* Blue color utilities for tabs */
+.bg-blue-50 {
+  background-color: #dbeafe !important;
+}
+
+.bg-blue-600 {
+  background-color: #2563eb !important;
+}
+
+.text-blue-600 {
+  color: #2563eb !important;
+}
+
+.text-blue-700 {
+  color: #1d4ed8 !important;
+}
+
+/* Border color utilities for tabs */
+.border-blue-600 {
+  border-color: #2563eb !important;
+}
+
+/* Override Motork Tab component colors to use blue */
+[data-state="active"][class*="border-brand"] {
+  border-color: #2563eb !important;
+}
+
+[data-state="active"][class*="text-brand"] {
+  color: #2563eb !important;
+}
+
+/* Ensure active tabs always show blue bottom border */
+button[role="tab"][data-state="active"] {
+  border-bottom-color: #2563eb !important;
+}
+
+/* For tabs with data attributes */
+[data-state="active"].tab-trigger,
+button[data-state="active"][role="tab"] {
+  position: relative;
+}
+
+button[data-state="active"][role="tab"]:not(.no-indicator)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #2563eb;
+  z-index: 10;
+}
+
+/* ========================================
+   DataTable Styling - Match Reference Project
+   ======================================== */
+
+/* DataTable container */
+[data-slot="table-container"],
+.table-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--base-card, #fff);
+  box-shadow: var(--mk-dashboard-card-shadow);
+}
+
+/* Table header styling */
+[data-slot="table"] thead {
+  background-color: var(--base-muted, #f5f5f5);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-slot="table"] thead th {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-heading, #0a0a0a);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+/* Table body styling */
+[data-slot="table"] tbody {
+  background-color: var(--base-card, #fff);
+}
+
+[data-slot="table"] tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background-color 0.15s ease;
+}
+
+[data-slot="table"] tbody tr:hover {
+  background-color: var(--base-muted, #f5f5f5);
+}
+
+[data-slot="table"] tbody tr:last-child {
+  border-bottom: none;
+}
+
+[data-slot="table"] tbody td {
+  padding: 1rem;
+  font-size: var(--text-sm);
+  color: var(--text-body, #3f3f46);
+}
+
+/* Table pagination footer */
+[data-slot="table-pagination"],
+footer[class*="items-center justify-between"] {
+  background-color: var(--base-muted, #f5f5f5) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0.75rem 1rem;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Table frame panel (top section with filters) */
+div[data-slot='frame-panel'] {
+  background-color: var(--base-muted, #f5f5f5) !important;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+  padding: 1rem;
+}
+
+/* Badge styles in tables */
+[data-slot="table"] .badge,
+[data-slot="table"] [class*="badge"],
+[data-slot="table"] span[class*="bg-"][class*="text-"] {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* DataTable specific component overrides */
+.relative.bg-clip-padding[data-slot='frame-panel'] {
+  background-color: var(--base-muted, #f5f5f5) !important;
+}
+
+table[data-slot="table"] {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table cell content styling */
+[data-slot="table"] .text-content {
+  font-size: var(--text-sm);
+  line-height: 1.25rem;
+}
+
+[data-slot="table"] .text-meta {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-sub, #71717a);
+}
+
+[data-slot="table"] .text-heading {
+  color: var(--text-heading, #0a0a0a);
+}
+
+/* Search and filter inputs in DataTable */
+[data-slot="table-search"] input,
+[data-slot="table-filter"] select,
+[data-slot="table-filter"] input {
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--text-heading, #0a0a0a);
+  transition: all 0.15s ease;
+}
+
+[data-slot="table-search"] input:focus,
+[data-slot="table-filter"] select:focus,
+[data-slot="table-filter"] input:focus {
+  outline: none;
+  border-color: #0470e9;
+  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
+}
+
+/* Pagination buttons */
+[data-slot="table-pagination"] button {
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--text-heading, #0a0a0a);
+  transition: all 0.15s ease;
+}
+
+[data-slot="table-pagination"] button:hover:not(:disabled) {
+  background-color: var(--base-muted, #f5f5f5);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-slot="table-pagination"] button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[data-slot="table-pagination"] button[data-active="true"] {
+  background-color: #0470e9;
+  color: white;
+  border-color: #0470e9;
+}
+
+/* Sort indicators */
+[data-slot="table"] th button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: var(--text-heading, #0a0a0a);
+}
+
+[data-slot="table"] th button:hover {
+  color: #0470e9;
+}
+
+/* Empty state styling for DataTables */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: var(--text-sub, #71717a);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: var(--text-sm);
+  color: var(--text-sub, #71717a);
+  margin: 0;
+}
+
+.empty-state-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-heading, #0a0a0a);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+  font-size: var(--text-sm);
+  color: var(--text-sub, #71717a);
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+/* DataTable row selection styles */
+[data-slot="table"] tbody tr[data-selected="true"],
+[data-slot="table"] tbody tr[aria-selected="true"] {
+  background-color: rgba(4, 112, 233, 0.05) !important;
+}
+
+[data-slot="table"] tbody tr[data-selected="true"]:hover,
+[data-slot="table"] tbody tr[aria-selected="true"]:hover {
+  background-color: rgba(4, 112, 233, 0.08) !important;
+}
+
+/* DataTable loading state */
+[data-slot="table"] .loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--base-muted, #f5f5f5) 0%,
+    #e5e5e5 50%,
+    var(--base-muted, #f5f5f5) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 1rem;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* DataTable action buttons (in cells) */
+[data-slot="table"] .action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: var(--base-card, #fff);
+  color: var(--text-sub, #71717a);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+[data-slot="table"] .action-button:hover {
+  background-color: var(--base-muted, #f5f5f5);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-heading, #0a0a0a);
+}
+
+/* DataTable column resize handle */
+[data-slot="table"] .resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  background-color: transparent;
+}
+
+[data-slot="table"] .resize-handle:hover,
+[data-slot="table"] .resize-handle.is-resizing {
+  background-color: #0470e9;
+}
+
+/* DataTable filter popover */
+[data-slot="table-filter-popover"] {
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 0.75rem;
+  min-width: 12rem;
+}
+
+/* DataTable global search */
+[data-slot="table"] input[type="search"],
+[data-slot="table"] input[placeholder*="Search"] {
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+  font-size: var(--text-sm);
+  width: 100%;
+  max-width: 20rem;
+  transition: all 0.15s ease;
+}
+
+[data-slot="table"] input[type="search"]:focus,
+[data-slot="table"] input[placeholder*="Search"]:focus {
+  outline: none;
+  border-color: #0470e9;
+  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
+}
+
+/* DataTable row actions menu */
+[data-slot="table"] .row-actions-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  background-color: var(--base-card, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  min-width: 10rem;
+  z-index: 50;
+  overflow: hidden;
+}
+
+[data-slot="table"] .row-actions-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--text-heading, #0a0a0a);
+  border: none;
+  background: transparent;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+[data-slot="table"] .row-actions-menu button:hover {
+  background-color: var(--base-muted, #f5f5f5);
+}
+
+/* ========================================
+   Input & Search Box Styling
+   ======================================== */
+
+/* Standard input styling matching reference */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  color: var(--text-heading, #0a0a0a);
+  font-size: var(--text-sm);
+  transition: all 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #0470e9;
+  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
+}
+
+/* Search box pattern from reference */
+.search-box {
+  background-color: var(--base-background, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.search-box:focus-within {
+  border-color: #0470e9;
+  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
+}
+
+.search-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: var(--text-sm);
+  color: var(--text-heading, #0a0a0a);
+}
+
+.search-box input::placeholder {
+  color: var(--text-sub, #71717a);
+}
+
+/* ========================================
+   Filter and Chip Components
+   ======================================== */
+
+/* Filter Dropdown Button */
+.filter-dropdown-button {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--base-background, #fff);
+  color: var(--text-sub, #71717a);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.filter-dropdown-button:hover {
+  background-color: var(--base-muted, #f5f5f5);
+  color: var(--text-heading, #0a0a0a);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Active filter indicator dot */
+.filter-indicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #0a0a0a;
+  border: 2px solid var(--base-background, #fff);
+}
+
+/* Filter Chip (removable badge) */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 8px;
+  background-color: var(--base-muted, #f5f5f5);
+  color: var(--text-heading, #0a0a0a);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.filter-chip:hover {
+  background-color: #efefef;
+}
+
+.filter-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--text-sub, #71717a);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.filter-chip-remove:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-heading, #0a0a0a);
+}
+
+/* Filter Dropdown Menu Container */
+.filter-dropdown-wrapper {
+  min-width: 14rem;
+}
+
+/* Dropdown menu items styling override for Motork DropdownMenu */
+.filter-dropdown-wrapper [role="menu"],
+.filter-dropdown-wrapper [role="menuitem"],
+.filter-dropdown-wrapper button,
+.filter-dropdown-wrapper [class*="item"] {
+  font-size: var(--text-sm, 0.875rem) !important;
+  position: relative;
+  padding-left: 2.5rem !important;
+}
+
+/* Selected menu item background */
+.filter-item-selected,
+.sort-item-selected {
+  background-color: var(--base-muted, #f5f5f5) !important;
+}
+
+/* Selection indicator dot for active filters/sorts */
+.filter-item-selected::before,
+.sort-item-selected::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: #0a0a0a;
+}
+
+/* Dropdown menu transitions */
+.dropdown-fade-enter-active,
+.dropdown-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.dropdown-fade-enter-from,
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ========================================
+   Common UI Patterns from Reference
+   ======================================== */
+
+/* Button-like elements with white bg and border */
+.btn-outlined {
+  background-color: var(--base-background, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.btn-outlined:hover {
+  background-color: #f9fafb;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Panel/section separators */
+.panel-divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.panel-divider-r {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Lead/task card styling from reference */
+.task-card {
+  background: var(--base-background, #fff);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--mk-dashboard-card-shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.task-card:hover {
+  box-shadow: 
+    0 0 0 1px rgba(14, 63, 126, 0.06),
+    0 2px 2px -1px rgba(42, 51, 69, 0.06),
+    0 4px 4px -2px rgba(42, 51, 70, 0.06),
+    0 8px 8px -4px rgba(42, 51, 70, 0.06),
+    0 16px 16px -8px rgba(14, 63, 126, 0.06);
+}
+
+.task-card-selected {
+  border-color: var(--base-primary, #0470e9);
+  border-width: 2px;
+}
+
+/* ========================================
+   Scrollbar Styling (Optional)
+   ======================================== */
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for specific elements */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   FullCalendar Custom Theme
+   ======================================== */
+
+/* Keep FullCalendar styles as they're library-specific */
+.fc {
+  /* FullCalendar will be styled separately if needed */
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

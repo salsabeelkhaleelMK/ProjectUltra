@@ -1,59 +1,46 @@
 <template>
-  <div class="bg-greys-100 rounded-xl p-1 flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-    <div
-      class="bg-white rounded-lg shadow-sm flex flex-col"
-      style="box-shadow: var(--nsc-card-shadow);"
-    >
-      <!-- Loading Skeleton -->
-      <template v-if="loading">
-        <div class="px-4 py-4 pb-4 border-b border-black/5">
-          <div class="h-6 bg-gray-200 rounded w-40 animate-pulse"></div>
-        </div>
-        <div class="p-4">
-          <div class="space-y-3">
-            <div v-for="n in 5" :key="`row-${n}`" class="flex items-center gap-4">
-              <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-              <div class="h-4 bg-gray-200 rounded w-12 animate-pulse"></div>
-              <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-              <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-              <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-              <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </template>
-      
-      <!-- Actual Content -->
-      <template v-else>
-        <!-- Title Section -->
-        <div class="px-4 py-4 flex items-center justify-between shrink-0">
-          <div class="flex items-center gap-2">
-            <Trophy :size="16" class="text-heading" />
-            <h3 class="text-lg font-medium text-heading leading-5">Best performers</h3>
-          </div>
-          <div class="flex items-center gap-2">
-            <Button variant="ghost" size="sm">
-              This month
-              <ChevronDown :size="16" class="ml-1" />
-            </Button>
-          </div>
-        </div>
-        
-        <DataTable 
-          :data="teamMembers" 
-          :columns="columns"
-          :pagination="pagination"
-          :sorting="sorting"
-          :pagination-options="{
-            rowCount: teamMembers.length,
-            pageSizeOptions: [10, 20, 50]
-          }"
-          @update:pagination="pagination = $event"
-          @update:sorting="sorting = $event"
-        />
-      </template>
+  <!-- Loading Skeleton -->
+  <div v-if="loading" class="p-4">
+    <div class="space-y-3">
+      <div v-for="n in 5" :key="`row-${n}`" class="flex items-center gap-4">
+        <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-12 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+      </div>
     </div>
   </div>
+  
+  <!-- Actual Content -->
+  <DataTable 
+    v-else
+    :data="teamMembers" 
+    :columns="columns"
+    :pagination="pagination"
+    :sorting="sorting"
+    :pagination-options="{
+      rowCount: teamMembers.length,
+      pageSizeOptions: [10, 20, 50]
+    }"
+    @update:pagination="pagination = $event"
+    @update:sorting="sorting = $event"
+    class="h-full"
+  >
+    <template #toolbar>
+      <div class="flex items-center gap-2">
+        <Trophy :size="16" class="text-heading" />
+        <h3 class="text-lg font-medium text-heading leading-5">Best performers</h3>
+      </div>
+      <div class="flex items-center gap-2">
+        <Button variant="ghost" size="sm">
+          This month
+          <ChevronDown :size="16" class="ml-1" />
+        </Button>
+      </div>
+    </template>
+  </DataTable>
 </template>
 
 <script setup>

@@ -1,0 +1,1087 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source "../../../node_modules/@motork/component-library";
+
+@font-face {
+  font-family: Figtree;
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('../fonts/Figtree-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Figtree;
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('../fonts/Figtree-Italic-VariableFont_wght.ttf') format('truetype');
+}
+
+@import '@motork/component-library/theme';
+
+/* Fluid Typography System - Base: 1280px */
+:root {
+  /* Font sizes using clamp() for fluid scaling */
+  --text-xs: clamp(10px, 0.625vw, 12px);
+  --text-sm: clamp(12px, 0.875vw, 14px);
+  --text-base: clamp(14px, 1vw, 16px);
+  --text-lg: clamp(16px, 1.125vw, 18px);
+  --text-xl: clamp(18px, 1.25vw, 20px);
+  --text-2xl: clamp(20px, 1.5vw, 24px);
+
+  /* Line heights */
+  --leading-4: clamp(16px, 1.25vw, 20px);
+  --leading-5: clamp(20px, 1.5625vw, 24px);
+  --leading-6: clamp(24px, 1.875vw, 28px);
+  --leading-7: clamp(28px, 2.1875vw, 32px);
+
+  /* Responsive widths - base at 1280px */
+  --sidebar-width: clamp(40px, 3.75vw, 48px);
+  --lead-list-width: clamp(240px, 23.125vw, 296px);
+  --activity-width: clamp(260px, 25vw, 320px);
+
+  /* Responsive spacing */
+  --spacing-1: clamp(4px, 0.3125vw, 6px);
+  --spacing-2: clamp(8px, 0.625vw, 10px);
+  --spacing-3: clamp(12px, 0.9375vw, 16px);
+  --spacing-4: clamp(16px, 1.25vw, 20px);
+  --spacing-6: clamp(24px, 1.875vw, 32px);
+
+  /* Responsive heights */
+  --header-height: clamp(48px, 3.75vw, 60px);
+  --topbar-height: clamp(40px, 3.125vw, 48px);
+
+  /* Chart color palette */
+  --chart-color-1: #3b82f6;
+  --chart-color-2: #14b8a6;
+  --chart-color-3: #0ea5e9;
+  --chart-color-4: #8b5cf6;
+  --chart-color-5: #ec4899;
+  --chart-color-6: #f97316;
+  --chart-color-7: #ef4444;
+  --chart-color-8: #10b981;
+  --chart-color-9: #eab308;
+  --chart-color-10: #84cc16;
+
+  /* Ensure --primary CSS variable is set correctly for Motork Button component */
+  --primary: #0470e9;
+  --primary-foreground: white;
+}
+
+/* Make leads list and activity 10% narrower on smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --lead-list-width: clamp(216px, 20.8125vw, 266px);
+    --activity-width: clamp(234px, 22.5vw, 288px);
+  }
+}
+
+/* Fluid Typography Utility Classes */
+.text-fluid-xs {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.text-fluid-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.text-fluid-base {
+  font-size: var(--text-base);
+  line-height: var(--leading-5);
+}
+
+.text-fluid-lg {
+  font-size: var(--text-lg);
+  line-height: var(--leading-6);
+}
+
+.text-fluid-xl {
+  font-size: var(--text-xl);
+  line-height: var(--leading-7);
+}
+
+.text-fluid-2xl {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-7);
+}
+
+.w-\[--reka-popover-trigger-width\] {
+  width: var(--reka-popover-trigger-width) !important;
+}
+
+:root {
+  --mk-dashboard-card-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
+    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04),
+    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
+}
+
+.mk-dashboard-card {
+  box-shadow: var(--mk-dashboard-card-shadow);
+}
+
+/* Primary Button Styling - Gradient and Shadows from Figma Spec */
+/* Based on Figma design: Blue gradient (lighter top-left to darker bottom-right) with layered shadows */
+
+/* Target ONLY primary buttons - exclude outline, ghost, and other variants */
+button[data-variant="default"]:not([data-variant="outline"]):not([data-variant="ghost"]):not([data-variant="secondary"]):not([class*="outline"]),
+button[data-variant="primary"]:not([class*="outline"]) {
+  border-radius: 8px;
+  border: none;
+  background: #0470e9;
+  font-weight: 500;
+  box-shadow:
+    0 1px 3px 0 rgba(11, 19, 36, 0.08),
+    0 -1px 0 0 rgba(0, 0, 0, 0.1) inset;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* Hover state - Enhanced shadows for elevation */
+button[data-variant='default']:not([data-variant="outline"]):not([data-variant="ghost"]):not([data-variant="secondary"]):not([class*="outline"]):hover:not(:disabled),
+button[data-variant='primary']:not([class*="outline"]):hover:not(:disabled) {
+  box-shadow:
+    0 2px 4px 0 rgba(11, 19, 36, 0.12),
+    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset;
+  transform: translateY(-1px);
+}
+
+/* Active/pressed state - Reduced shadows for pressed effect */
+button[data-variant='default']:not([data-variant="outline"]):not([data-variant="ghost"]):not([data-variant="secondary"]):not([class*="outline"]):active:not(:disabled),
+button[data-variant='primary']:not([class*="outline"]):active:not(:disabled) {
+  box-shadow:
+    0 1px 2px 0 rgba(11, 19, 36, 0.1),
+    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset;
+  transform: translateY(0px);
+}
+
+/* Disabled state */
+button[data-variant='default']:not([data-variant="outline"]):not([data-variant="ghost"]):not([data-variant="secondary"]):not([class*="outline"]):disabled,
+button[data-variant='primary']:not([class*="outline"]):disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #4b5563 100%);
+  box-shadow:
+    0px 2px 4px 0px rgba(0, 0, 0, 0.08),
+    0px 0px 0px 1px rgba(255, 255, 255, 0.05) inset;
+  opacity: 0.6;
+}
+
+/* Global UI Theme - MotorK Design System */
+/* Consolidated from theme.css and style.css - Adopting external project structure */
+
+/* Design Tokens */
+:root {
+  /* Brand Colors */
+  --brand-red: #F80032;
+  --brand-red-dark: #D0002A;
+  --brand-dark: #282828;
+  --brand-dark-darker: #1a1a1a;
+  --brand-gray: #f5f5f5; /* rgb(245, 245, 245) - Main grey shade */
+  --brand-slate: #6B7280;
+  --brand-blue: #0056B3;
+  --brand-blue-light: #E6F0FA;
+  --brand-white: #FFFFFF;
+  --brand-text-body: #484848;
+
+  /* Semantic Color Mappings (for backward compatibility) */
+  --color-bg-primary: var(--brand-gray);
+  --color-bg-secondary: var(--brand-white);
+  --color-bg-tertiary: #f8fafc;
+  
+  --color-border: #E5E7EB; /* Gray-200 for borders */
+  --color-border-input: #D1D5DB; /* Gray-300 for form inputs */
+  --color-border-light: #f3f4f6;
+  
+  /* Text Colors */
+  --color-text-sub: #6B7280; /* Gray-500 for sub-text/labels */
+  
+  /* Semantic Text Colors - Light Mode */
+  --color-text-heading: #282828; /* Deep Black for headings */
+  --color-text-body: #374151; /* Slate 700 for body - never pure black */
+  --color-text-eyebrow: #F80032; /* Brand Red */
+  
+  /* Semantic Background Colors - Light Mode */
+  --color-bg-surface: #FFFFFF; /* White */
+  --color-bg-surface-secondary: #f5f5f5; /* rgb(245, 245, 245) - Off-White/Light Gray */
+  --color-bg-surface-tertiary: #f8fafc; /* Very light gray */
+  
+  /* Sidebar Colors */
+  --base-sidebar-foreground: #0a0a0a; /* Dark sidebar background */
+  
+  /* NSC Dashboard Card Colors */
+  --base-muted: #f5f5f5;
+  --base-card: white;
+  --base-background: #FFF;
+  --base-primary: #0470e9;
+  
+  /* NSC Dashboard Card Shadow - 6-layer shadow from lskultra-main source */
+  --nsc-card-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.04),
+    0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
+    0 3px 3px -1.5px rgba(42, 51, 70, 0.04),
+    0 6px 6px -3px rgba(42, 51, 70, 0.04),
+    0 12px 12px -6px rgba(14, 63, 126, 0.04),
+    0 24px 24px -12px rgba(14, 63, 126, 0.04);
+  
+  /* Legacy semantic mappings (for backward compatibility) */
+  --color-text-primary: var(--color-text-heading);
+  --color-text-secondary: var(--color-text-body);
+  --color-text-tertiary: var(--brand-slate);
+  --color-text-muted: #9ca3af;
+  
+  --color-primary: #0470e9; /* Blue for Motork library primary buttons */
+  --color-primary-hover: #0470e9;
+  --color-primary-light: rgba(4, 112, 233, 0.1);
+  
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  
+  --color-danger: var(--brand-red);
+  --color-danger-light: rgba(248, 0, 50, 0.1);
+  
+  --color-warning: #f59e0b;
+  --color-warning-light: #fed7aa;
+
+  /* Typography */
+  --font-heading: 'Figtree', sans-serif;
+  --font-body: 'Figtree', sans-serif;
+
+  /* Typography Sizes - Per Design System Spec */
+  /* Base Font Size */
+  --text-base: 1rem; /* 16px - Base font size */
+  
+  /* Typography Hierarchy - Per Design System Spec */
+  --text-h1: 4rem; /* 64px - Desktop size per spec */
+  --text-h2: 2.5rem; /* 40px - Desktop size per spec */
+  --text-h3: 1.5rem; /* 24px - Card Title per spec */
+  --text-subtitle: clamp(1.125rem, 1.25rem, 1.25rem); /* 18px mobile / 20px desktop */
+  --text-body: 1rem; /* 16px - Base font size, same on all devices */
+  --text-small: 0.875rem; /* 14px - Same on all devices */
+  --text-button: 0.9375rem; /* 15px - Fixed per spec */
+  --text-eyebrow: 0.75rem; /* 12px - Eyebrow headers */
+  
+  /* Legacy aliases for backward compatibility */
+  --text-h4: 1rem; /* 16px - Subheadings */
+  --text-xs: 0.625rem; /* 10px - Labels, metadata - NOTE: Below recommended 12px minimum */
+  --text-nav: var(--text-small); /* 12px */
+
+  /* Fluid Typography System - Base: 1280px */
+  /* Responsive scaling using clamp() - Base viewport: 1280px, scales between 320px and 1920px */
+  --text-fluid-xs: clamp(10px, 0.625vw, 12px);
+  --text-fluid-sm: clamp(12px, 0.875vw, 14px);
+  --text-fluid-base: clamp(14px, 1vw, 16px);
+  --text-fluid-lg: clamp(16px, 1.125vw, 18px);
+  --text-fluid-xl: clamp(18px, 1.25vw, 20px);
+  --text-fluid-2xl: clamp(20px, 1.5vw, 24px);
+
+  /* Responsive Line Heights */
+  --leading-4: clamp(16px, 1.25vw, 20px);
+  --leading-5: clamp(20px, 1.5625vw, 24px);
+  --leading-6: clamp(24px, 1.875vw, 28px);
+  --leading-7: clamp(28px, 2.1875vw, 32px);
+
+  /* Responsive Layout Widths - base at 1280px */
+  --sidebar-width: clamp(40px, 3.75vw, 48px);
+  --lead-list-width: clamp(240px, 23.125vw, 296px);
+  --activity-width: clamp(260px, 25vw, 320px);
+
+  /* Responsive Spacing */
+  --spacing-xs: 0.25rem; /* 1 */
+  --spacing-sm: 0.5rem; /* 2 */
+  --spacing-md: 1rem; /* 4 */
+  --spacing-lg: 1.5rem; /* 6 */
+  --spacing-xl: 2rem; /* 8 */
+  --spacing-1: clamp(4px, 0.3125vw, 6px);
+  --spacing-2: clamp(8px, 0.625vw, 10px);
+  --spacing-3: clamp(12px, 0.9375vw, 16px);
+  --spacing-4: clamp(16px, 1.25vw, 20px);
+  --spacing-6: clamp(24px, 1.875vw, 32px);
+
+  /* Responsive Heights */
+  --header-height: clamp(48px, 3.75vw, 60px);
+  --topbar-height: clamp(40px, 3.125vw, 48px);
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem; /* rounded-md */
+  --radius-md: 0.5rem; /* rounded-lg */
+  --radius-lg: 0.75rem; /* rounded-xl */
+  --radius-2xl: 1rem; /* rounded-2xl */
+  --radius-full: 9999px; /* rounded-full */
+  --radius-card: 12px; /* or 16px - use var(--radius-card) in components */
+  --radius-btn: 8px; /* use var(--radius-btn) or rounded-btn in components */
+  --border-radius-rounded-lg: 10px; /* Specific 10px radius for source matching */
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  
+  /* Dashboard Card Shadow - Layered shadows from external project */
+  --mk-dashboard-card-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
+    0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04),
+    0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
+
+  /* Chart color palette */
+  --chart-color-1: #3b82f6;
+  --chart-color-2: #14b8a6;
+  --chart-color-3: #0ea5e9;
+  --chart-color-4: #8b5cf6;
+  --chart-color-5: #ec4899;
+  --chart-color-6: #f97316;
+  --chart-color-7: #ef4444;
+  --chart-color-8: #10b981;
+  --chart-color-9: #eab308;
+  --chart-color-10: #84cc16;
+}
+
+/* Make leads list and activity 10% narrower on smaller screens */
+@media (max-width: 1024px) {
+  :root {
+    --lead-list-width: clamp(216px, 20.8125vw, 266px);
+    --activity-width: clamp(234px, 22.5vw, 288px);
+  }
+}
+
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Brand Colors (same in both modes) */
+  --brand-red: #F80032;
+  --brand-red-dark: #D0002A;
+  
+  /* Dark Mode Background Colors */
+  --brand-dark: #282828; /* Used for dark surfaces */
+  --brand-dark-darker: #1a1a1a; /* Darker surfaces */
+  --brand-gray: #1a1a1a; /* Dark background (was light gray) */
+  --brand-white: #282828; /* Dark surface (was white) */
+  
+  /* Semantic Text Colors - Dark Mode */
+  --color-text-heading: #FFFFFF; /* White for headings on dark */
+  --color-text-body: #E5E7EB; /* Light gray for body text (Slate 200) */
+  --color-text-eyebrow: #F80032; /* Brand Red (same in both modes) */
+  --color-text-primary: #FFFFFF; /* White */
+  --color-text-secondary: #E5E7EB; /* Light gray */
+  --color-text-tertiary: #9CA3AF; /* Medium gray */
+  --color-text-muted: #6B7280; /* Muted gray */
+  --color-text-sub: #9CA3AF; /* Lighter sub-text for dark mode */
+  
+  /* Semantic Background Colors - Dark Mode */
+  --color-bg-surface: #282828; /* Dark surface */
+  --color-bg-surface-secondary: #1a1a1a; /* Darker surface */
+  --color-bg-surface-tertiary: #111111; /* Darkest surface */
+  --color-bg-primary: #1a1a1a; /* Dark background */
+  --color-bg-secondary: #282828; /* Dark surface */
+  --color-bg-tertiary: #111111; /* Darkest */
+  
+  /* Borders - Dark Mode */
+  --color-border: #374151; /* Darker borders */
+  --color-border-input: #4B5563; /* Darker input borders */
+  --color-border-light: #1f2937; /* Subtle borders */
+}
+
+
+.mk-dashboard-card {
+  box-shadow: var(--mk-dashboard-card-shadow);
+}
+
+@layer components {
+  /* GLOBAL STYLES COMMENTED OUT - Use Motork UI components instead */
+  /* Only .page-container remains active as it's used across many views */
+  
+  /* Eyebrow Header Utility Class - DISABLED */
+  /* .eyebrow-header {
+    font-size: var(--text-eyebrow);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--brand-red);
+    line-height: 1.4;
+  } */
+
+  /* Page Container - KEPT ACTIVE */
+  .page-container {
+    @apply h-full overflow-y-auto overflow-x-hidden;
+    background-color: var(--color-bg-surface);
+  }
+  
+  /* Home page - revert to original gray background */
+  .home-page.page-container {
+    background-color: var(--color-bg-surface-secondary);
+  }
+  
+  /* Main content area - DISABLED - Use Motork layout */
+  /* .main-content-area {
+    margin-left: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .main-content-area {
+      margin-left: var(--sidebar-width);
+    }
+  } */
+  
+  /* Page Header - DISABLED - Use Motork Card components */
+  /* .page-header {
+    background-color: var(--base-muted, #f5f5f5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    @apply px-6 shrink-0;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .page-header-main {
+    @apply flex items-center pt-5 pb-4;
+    min-height: 3.5rem;
+  }
+  
+  .page-header-content {
+    @apply flex flex-col sm:flex-row sm:items-center sm:justify-between w-full;
+    gap: var(--spacing-md);
+    min-width: 0;
+    width: 100%;
+    align-items: flex-start;
+    overflow: visible;
+    position: relative;
+  }
+  
+  @media (min-width: 640px) {
+    .page-header-content {
+      align-items: center;
+    }
+  }
+  
+  .page-header-title-container {
+    @apply min-w-0;
+    flex: 0 1 auto;
+    width: 100%;
+    order: 1;
+  }
+  
+  @media (min-width: 640px) {
+    .page-header-title-container {
+      width: auto;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      max-width: 100%;
+    }
+    
+    .page-header-title-container .page-header-title {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+  }
+  
+  .page-header-actions {
+    @apply flex items-center gap-2 sm:gap-3;
+    flex-wrap: wrap;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    order: 2;
+  }
+  
+  @media (min-width: 640px) {
+    .page-header-actions {
+      width: auto;
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      min-width: fit-content;
+    }
+  }
+  
+  .page-header-actions > * {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+  
+  @media (max-width: 639px) {
+    .page-header-actions > * {
+      max-width: calc(100% - var(--spacing-xs));
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .page-header-main {
+      align-items: center;
+      min-height: 4rem;
+    }
+    
+    .page-header-content {
+      gap: var(--spacing-lg);
+    }
+  }
+  
+  .page-header-bottom {
+    @apply pb-4;
+    padding-bottom: var(--spacing-xl);
+  } */
+  
+  
+  /* Card - COMMENTED OUT - Conflicts with Motork Card component */
+  /* Use Motork Card component instead */
+  /* .card {
+    @apply rounded-xl shadow-sm;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card) !important;
+  }
+  
+  .card-hover {
+    @apply rounded-xl shadow-sm hover:shadow-md transition-shadow;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card) !important;
+  } */
+
+  /* Grey Card Container - For DataTable-style containers with grey background */
+  .card-container {
+    background-color: var(--brand-gray);
+    border: 1px solid #E5E7EB;
+    border-radius: var(--radius-card);
+  }
+
+  /* COMMENTED OUT - Let Motork components handle their own styling */
+  /* div[class*="bg-surface"][class*="border"][class*="p-"]:not([class*="rounded-none"]):not([class*="rounded-full"]):not([class*="rounded-2xl"]):not([class*="rounded-xl"]),
+  div[class*="bg-white"][class*="border"][class*="p-"]:not([class*="rounded-none"]):not([class*="rounded-full"]):not([class*="rounded-2xl"]):not([class*="rounded-xl"]) {
+    border-radius: var(--radius-card) !important;
+  }
+
+  div[class*="bg-surface"][class*="rounded-lg"][class*="border"][class*="p-"],
+  div[class*="bg-white"][class*="rounded-lg"][class*="border"][class*="p-"] {
+    border-radius: var(--radius-card) !important;
+  } */
+  
+  /* Button Utility Classes - DISABLED - Use Motork Button component instead */
+  /* All button styles commented out to prevent conflicts with Motork components */
+  
+  /*
+  .btn-primary:not([data-variant]):not([class*="variant-"]) {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: var(--brand-dark);
+    color: white;
+    border: 1px solid var(--brand-dark);
+  }
+  
+  .btn-primary:not([data-variant]):not([class*="variant-"]):hover:not(:disabled) {
+    background-color: var(--brand-dark-darker);
+    border-color: var(--brand-dark-darker);
+  }
+  
+  .btn-primary:not([data-variant]):not([class*="variant-"]):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-secondary {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: white;
+    color: var(--brand-slate);
+    border: 1px solid var(--brand-slate);
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-bg-surface-secondary);
+  }
+  
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-danger {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: var(--text-button);
+    line-height: 1;
+    background-color: var(--brand-red);
+    color: white;
+    border: 1px solid var(--brand-red);
+  }
+  
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--brand-red-dark);
+    border-color: var(--brand-red-dark);
+  }
+  
+  .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  button[class*="bg-brand-red"]:not(.btn-danger),
+  button[class*="!bg-brand-red"]:not(.btn-danger),
+  [class*="bg-brand-red"]:not(.btn-danger):not(.badge):not(.badge-primary):not(.eyebrow-header) {
+    background-color: var(--brand-dark) !important;
+    border-color: var(--brand-dark) !important;
+    color: white !important;
+  }
+
+  button[class*="bg-brand-red"]:not(.btn-danger):hover:not(:disabled),
+  button[class*="!bg-brand-red"]:not(.btn-danger):hover:not(:disabled) {
+    background-color: var(--brand-dark-darker) !important;
+    border-color: var(--brand-dark-darker) !important;
+  }
+
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: var(--text-fluid-sm);
+    line-height: var(--leading-5);
+  }
+  
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-fluid-lg);
+    line-height: var(--leading-6);
+  }
+  */
+  
+  /* Form Inputs - DISABLED - Use Motork Input/TextInput/Textarea components */
+  /* .input {
+    @apply w-full rounded-md px-3 py-2 focus:outline-none transition-all;
+    font-size: var(--text-fluid-sm);
+    line-height: var(--leading-5);
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
+    &:focus {
+      border-color: var(--brand-red);
+    }
+  }
+  
+  .input-with-icon {
+    @apply w-full rounded-md px-3 py-2 focus:outline-none transition-all pl-10;
+    font-size: var(--text-fluid-sm);
+    line-height: var(--leading-5);
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
+    &:focus {
+      border-color: var(--brand-red);
+    }
+  }
+  
+  select.input {
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
+    &:focus {
+      border-color: var(--brand-red);
+    }
+  }
+  
+  textarea.input {
+    @apply w-full rounded-md px-3 py-2 text-sm focus:outline-none transition-all resize-none;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-body);
+    &:focus {
+      border-color: var(--brand-red);
+    }
+  }
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--brand-red);
+  }
+  
+  input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(248, 0, 50, 0.2);
+  } */
+  
+  /* Badge - DISABLED - Use Motork Badge component */
+  /* .badge {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .badge-primary {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-red-100;
+    color: var(--brand-red);
+  }
+  
+  .badge-success {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700;
+  }
+  
+  .badge-danger {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700;
+  }
+  
+  .badge-warning {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700;
+  }
+  
+  .badge-gray {
+    @apply inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700;
+  } */
+  
+  /* Typography Classes - DISABLED - Use Motork design tokens and Tailwind utilities */
+  /* .page-header-title {
+    font-size: var(--text-fluid-xl);
+    line-height: var(--leading-7);
+    font-weight: 500;
+    letter-spacing: 0em;
+    color: var(--color-text-heading);
+    margin: 0;
+    padding: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .heading-main {
+    font-size: var(--text-h3);
+    line-height: 1.3;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--brand-dark);
+  }
+  
+  .heading-sub {
+    font-size: var(--text-h4);
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--brand-dark);
+  }
+  
+  .heading-tab {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    font-weight: 500;
+    color: var(--brand-dark);
+  }
+  
+  .label-upper {
+    font-size: var(--text-xs);
+    @apply font-bold uppercase tracking-wider;
+    color: var(--color-text-sub);
+  }
+  
+  .badge-ui {
+    font-size: var(--text-xs);
+    @apply font-bold uppercase px-1.5 md:px-2 py-0.5 rounded border leading-none flex items-center justify-center;
+  }
+
+  .metadata-bar {
+    @apply flex items-center rounded-lg shadow-sm overflow-hidden;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+  }
+  
+  .metadata-divider {
+    @apply w-px h-4 mx-0;
+    background-color: var(--color-border);
+  }
+  
+  .btn-action-circle {
+    @apply w-7 h-7 flex items-center justify-center rounded-full transition-colors;
+    background-color: var(--color-bg-surface-secondary);
+    color: var(--color-text-sub);
+    &:hover {
+      background-color: var(--color-bg-surface-tertiary);
+    }
+  } */
+  
+  /* Content Text Classes - DISABLED - Use Tailwind typography utilities */
+  /* .text-content {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-weight: 400;
+    color: var(--brand-text-body);
+  }
+  
+  .text-content-bold {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-weight: 600;
+    color: var(--brand-text-body);
+  }
+  
+  .text-meta {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: #6b7280;
+  }
+  
+  @media (min-width: 640px) {
+    .text-meta {
+      font-size: var(--text-small);
+    }
+  }
+  
+  .text-meta-bold {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    font-weight: 600;
+    color: #4b5563;
+  }
+  
+  @media (min-width: 640px) {
+    .text-meta-bold {
+      font-size: var(--text-small);
+    }
+  }
+  
+  .section-title {
+    font-size: var(--text-h2);
+    line-height: 1.3;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--brand-dark);
+  }
+  
+  .section-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: #4b5563;
+  }
+  
+  .modal-title {
+    font-size: var(--text-h4);
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--brand-dark);
+  }
+  
+  .modal-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+  
+  .text-small {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--brand-text-body);
+  }
+  
+  .text-stat {
+    font-size: var(--text-h3);
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--brand-dark);
+  } */
+  
+  /* Empty State - DISABLED - Use Motork Empty component */
+  /* .empty-state {
+    @apply text-center py-12 rounded-xl;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+  }
+  
+  .empty-state-icon {
+    @apply text-6xl mb-4;
+    color: var(--color-text-sub);
+    opacity: 0.5;
+  }
+  
+  .empty-state-text {
+    color: var(--color-text-sub);
+  } */
+  
+  /* Table Wrapper - Keep minimal styling for DataTable */
+  .table-wrapper {
+    @apply w-full;
+  }
+}
+
+@layer utilities {
+  /* Fluid Typography Utility Classes */
+  .text-fluid-xs {
+    font-size: var(--text-fluid-xs);
+    line-height: var(--leading-4);
+  }
+  
+  .text-fluid-sm {
+    font-size: var(--text-fluid-sm);
+    line-height: var(--leading-5);
+  }
+  
+  .text-fluid-base {
+    font-size: var(--text-fluid-base);
+    line-height: var(--leading-5);
+  }
+  
+  .text-fluid-lg {
+    font-size: var(--text-fluid-lg);
+    line-height: var(--leading-6);
+  }
+  
+  .text-fluid-xl {
+    font-size: var(--text-fluid-xl);
+    line-height: var(--leading-7);
+  }
+  
+  .text-fluid-2xl {
+    font-size: var(--text-fluid-2xl);
+    line-height: var(--leading-7);
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Prevent horizontal overflow */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Reka popover trigger width utility */
+  .w-\[--reka-popover-trigger-width\] {
+    width: var(--reka-popover-trigger-width);
+  }
+}
+
+/* Custom animations */
+@keyframes sweep {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: sweep 0.2s ease-in-out;
+}
+
+/* FullCalendar Custom Theme - Brand Red */
+/* Toolbar buttons */
+.fc .fc-button-primary {
+  background-color: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
+  color: white !important;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: var(--brand-red-dark) !important;
+  border-color: var(--brand-red-dark) !important;
+}
+
+.fc .fc-button-primary:disabled {
+  background-color: rgba(248, 0, 50, 0.4) !important;
+  border-color: rgba(248, 0, 50, 0.4) !important;
+  opacity: 0.6;
+}
+
+.fc .fc-button-active {
+  background-color: var(--brand-red-dark) !important;
+  border-color: var(--brand-red-dark) !important;
+}
+
+/* Today button */
+.fc .fc-today-button {
+  background-color: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
+}
+
+/* Current day highlight */
+.fc .fc-day-today {
+  background-color: var(--brand-blue-light) !important;
+}
+
+/* Table header styling */
+.fc .fc-col-header-cell {
+  background-color: var(--brand-blue-light);
+  font-weight: 600;
+  color: var(--brand-blue);
+}
+
+/* Event hover */
+.fc-event:hover {
+  filter: brightness(0.95);
+}
+
+/* More link styling */
+.fc .fc-more-link {
+  color: var(--brand-red) !important;
+  font-weight: 600;
+}
+
+.fc .fc-more-link:hover {
+  color: var(--brand-red-dark) !important;
+}
+
+/* DataTable Component Wrapper */
+/* Removed isolation: isolate - it was preventing component library styles from applying */
+.table-wrapper {
+  /* Let component library styles apply naturally */
+  width: 100%;
+}
+
+/* Button Override Rules - DISABLED - Let Motork Button use its default styles */
+/*
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2),
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  color: var(--primary-foreground, white) !important;
+  border-color: var(--primary, #0470e9) !important;
+}
+
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2):hover:not(:disabled),
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child):hover:not(:disabled) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  opacity: 0.9;
+}
+
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2):disabled,
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child):disabled {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  opacity: 0.5;
+}
+
+button.bg-primary,
+button[class*="bg-primary"]:not([class*="bg-brand-primary"]):not([class*="bg-brand-dark"]) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  color: var(--primary-foreground, white) !important;
+  border-color: var(--primary, #0470e9) !important;
+}
+*/
+

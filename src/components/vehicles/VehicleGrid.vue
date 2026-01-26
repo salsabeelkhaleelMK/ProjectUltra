@@ -1,41 +1,38 @@
 <template>
-  <div class="bg-greys-100 rounded-xl p-1 flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--mk-dashboard-card-shadow);">
-      <DataTable 
-        :data="filteredVehicles" 
-        :columns="columns"
-        :loading="loading"
-        :meta="tableMeta"
-        @row-click="$emit('row-click', $event)"
-        :columnFiltersOptions="{
-          filterDefs: filterDefinitions
-        }"
-        v-model:pagination="paginationModel"
-        v-model:globalFilter="globalFilterModel"
-        v-model:sorting="sortingModel"
-        v-model:columnFilters="columnFiltersModel"
-        :paginationOptions="{
-          rowCount: filteredVehicles.length
-        }"
-        :globalFilterOptions="{
-          debounce: 300,
-          placeholder: 'Q Search or ask a question'
-        }"
-      >
-        <!-- Toolbar slot for action buttons -->
-        <template #toolbar>
-          <slot name="toolbar" />
-        </template>
-        
-        <template #empty-state>
-          <div class="empty-state">
-            <i class="fa-solid fa-car empty-state-icon"></i>
-            <p class="empty-state-text">No vehicles found</p>
-          </div>
-        </template>
-      </DataTable>
-    </div>
-  </div>
+  <DataTable 
+    :data="filteredVehicles" 
+    :columns="columns"
+    :loading="loading"
+    :meta="tableMeta"
+    @row-click="$emit('row-click', $event)"
+    :columnFiltersOptions="{
+      filterDefs: filterDefinitions
+    }"
+    v-model:pagination="paginationModel"
+    v-model:globalFilter="globalFilterModel"
+    v-model:sorting="sortingModel"
+    v-model:columnFilters="columnFiltersModel"
+    :paginationOptions="{
+      rowCount: filteredVehicles.length
+    }"
+    :globalFilterOptions="{
+      debounce: 300,
+      placeholder: 'Q Search or ask a question'
+    }"
+    class="h-full"
+  >
+    <!-- Toolbar slot for action buttons -->
+    <template #toolbar>
+      <slot name="toolbar" />
+    </template>
+    
+    <template #empty-state>
+      <div class="empty-state">
+        <i class="fa-solid fa-car empty-state-icon"></i>
+        <p class="empty-state-text">No vehicles found</p>
+      </div>
+    </template>
+  </DataTable>
 </template>
 
 <script setup>

@@ -4,16 +4,21 @@
     <div class="flex items-center gap-2 flex-wrap">
       <!-- Filter Dropdown (Icon only) -->
       <div class="relative" ref="filterContainer">
-        <button
+        <Button
           @click.stop="toggleFilterMenu"
-          class="filter-dropdown-button"
+          variant="outline"
+          size="small"
+          class="relative flex items-center justify-center w-8 h-8 p-0"
         >
           <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
-          <span 
+          <Badge
             v-if="activeFilters.length > 0 || (sortOption && sortOption !== 'recent-first')"
-            class="filter-indicator"
-          ></span>
-        </button>
+            :text="String(activeFilters.length + (sortOption && sortOption !== 'recent-first' ? 1 : 0))"
+            size="small"
+            theme="blue"
+            class="absolute -top-1 -right-1 min-w-5 h-5 flex items-center justify-center text-xs leading-none"
+          />
+        </Button>
         
         <transition name="dropdown-fade">
           <div 
@@ -31,15 +36,19 @@
         <div
           v-for="filterKey in activeFilters"
           :key="filterKey"
-          class="filter-chip"
+          class="inline-flex items-center gap-1.5"
         >
-          <span>{{ getFilterLabel(filterKey) }}</span>
+          <Badge
+            :text="getFilterLabel(filterKey)"
+            theme="gray"
+            size="small"
+          />
           <button
-            @click="removeFilter(filterKey)"
-            class="filter-chip-remove"
+            @click.stop="removeFilter(filterKey)"
+            class="ml-1 hover:opacity-70 transition-opacity p-0.5"
             aria-label="Remove filter"
           >
-            <i class="fa-solid fa-xmark text-xs"></i>
+            <i class="fa-solid fa-xmark text-xs text-sub"></i>
           </button>
         </div>
       </div>
@@ -48,16 +57,21 @@
   
   <!-- Button Only Mode -->
   <div v-else-if="buttonOnly" class="relative" ref="filterContainer">
-    <button
+    <Button
       @click.stop="toggleFilterMenu"
-      class="filter-dropdown-button"
+      variant="outline"
+      size="small"
+      class="relative flex items-center justify-center w-8 h-8 p-0"
     >
       <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
-      <span 
+      <Badge
         v-if="activeFilters.length > 0 || (sortOption && sortOption !== 'recent-first')"
-        class="filter-indicator"
-      ></span>
-    </button>
+        :text="String(activeFilters.length + (sortOption && sortOption !== 'recent-first' ? 1 : 0))"
+        size="small"
+        theme="blue"
+        class="absolute -top-1 -right-1 min-w-5 h-5 flex items-center justify-center text-xs leading-none"
+      />
+    </Button>
     
     <transition name="dropdown-fade">
       <div 
@@ -75,15 +89,19 @@
     <div
       v-for="filterKey in activeFilters"
       :key="filterKey"
-      class="filter-chip"
+      class="inline-flex items-center gap-1.5"
     >
-      <span>{{ getFilterLabel(filterKey) }}</span>
+      <Badge
+        :text="getFilterLabel(filterKey)"
+        theme="gray"
+        size="small"
+      />
       <button
-        @click="removeFilter(filterKey)"
-        class="filter-chip-remove"
+        @click.stop="removeFilter(filterKey)"
+        class="ml-1 hover:opacity-70 transition-opacity p-0.5"
         aria-label="Remove filter"
       >
-        <i class="fa-solid fa-xmark text-xs"></i>
+        <i class="fa-solid fa-xmark text-xs text-sub"></i>
       </button>
     </div>
   </div>
@@ -91,7 +109,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library/future/primitives'
+import { DropdownMenu, Button, Badge } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   activeFilters: { type: Array, default: () => [] },
