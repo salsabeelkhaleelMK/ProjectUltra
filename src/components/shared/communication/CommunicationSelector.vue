@@ -109,12 +109,16 @@ const props = defineProps({
   initialMessage: {
     type: String,
     default: ''
+  },
+  defaultChannel: {
+    type: String,
+    default: null
   }
 })
 
 const emit = defineEmits(['send', 'cancel', 'dont-send'])
 
-const selectedChannel = ref(null)
+const selectedChannel = ref(props.defaultChannel || null)
 
 const selectChannel = (channel) => {
   if (channel === 'dont-send') {

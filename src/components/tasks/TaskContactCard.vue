@@ -8,39 +8,39 @@
       box-shadow: var(--nsc-card-shadow);
     "
   >
-    <h3 class="text-base font-medium text-greys-900 mb-4 leading-6">Customer information</h3>
+    <h3 class="text-base font-medium text-heading mb-4 leading-6">Customer information</h3>
     
     <!-- Card Content --><div class="flex flex-col">
       <!-- Contact Details -->
       <div class="space-y-3">
         <!-- Customer Name -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm text-greys-500 leading-5 shrink-0">Customer</p>
-          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-sub leading-5 shrink-0">Customer</p>
+          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.name || 'Unknown' }}
           </p>
         </div>
         
         <!-- Email -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm text-greys-500 leading-5 shrink-0">Email</p>
-          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-sub leading-5 shrink-0">Email</p>
+          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.email || 'N/A' }}
           </p>
         </div>
         
         <!-- Phone -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm text-greys-500 leading-5 shrink-0">Phone</p>
-          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-sub leading-5 shrink-0">Phone</p>
+          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.phone || 'N/A' }}
           </p>
         </div>
         
         <!-- Address -->
         <div v-if="task.customer?.address" class="flex items-start justify-between gap-2">
-          <p class="text-sm text-greys-500 leading-5 shrink-0">Address</p>
-          <p class="text-sm font-medium text-greys-900 leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-sub leading-5 shrink-0">Address</p>
+          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer.address }}
           </p>
         </div>
@@ -48,7 +48,7 @@
 
       <!-- Other Tasks from Same Customer (Ultra-Compact) -->
       <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-black/5">
-        <h4 class="text-[11px] font-bold uppercase tracking-wider text-greys-500 mb-2">Other customer requests</h4>
+        <h4 class="text-sm font-bold uppercase tracking-wider text-sub mb-2">Other customer requests</h4>
         <div class="space-y-0.5">
           <div
             v-for="relatedTask in relatedTasks"
@@ -58,21 +58,21 @@
           >
             <!-- Single Line: Type + Stage + Vehicle + Price + Date -->
             <span 
-              class="text-[9px] font-bold uppercase px-1 py-0.5 rounded leading-none shrink-0"
+              class="text-sm font-bold uppercase px-1 py-0.5 rounded leading-normal shrink-0"
               :class="relatedTask.type === 'lead' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'"
             >
               {{ relatedTask.type === 'lead' ? 'Lead' : 'Opp' }}
             </span>
-            <span class="text-[10px] font-medium text-greys-900 truncate shrink-0 min-w-0">
+            <span class="text-sm font-medium text-heading truncate shrink-0 min-w-0">
               {{ getTaskStage(relatedTask) }}
             </span>
-            <span class="text-[10px] text-greys-600 truncate flex-1 min-w-0">
+            <span class="text-sm text-body truncate flex-1 min-w-0">
               {{ getVehicleDisplay(relatedTask) }}
             </span>
-            <span v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-[10px] font-bold text-greys-900 shrink-0">
+            <span v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-sm font-bold text-heading shrink-0">
               {{ formatCurrency(relatedTask.estimatedValue) }}
             </span>
-            <span class="text-[10px] text-greys-400 shrink-0">
+            <span class="text-sm text-sub shrink-0">
               {{ formatTaskDate(relatedTask) }}
             </span>
           </div>
@@ -209,12 +209,3 @@ const formatCurrency = (amount) => {
 }
 </script>
 
-<style scoped>
-.text-greys-500 {
-  color: #6B7280;
-}
-
-.text-greys-900 {
-  color: #111827;
-}
-</style>

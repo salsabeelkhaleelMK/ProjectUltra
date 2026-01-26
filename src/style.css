@@ -5,6 +5,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap');
 @source "../node_modules/@motork/component-library";
 
+/* Ensure --primary CSS variable is set correctly for Motork Button component */
+:root {
+  --primary: #0470e9;
+  --primary-foreground: white;
+}
+
 /* Global UI Theme - MotorK Design System */
 /* Consolidated from theme.css and style.css - Adopting external project structure */
 
@@ -68,9 +74,9 @@
   --color-text-tertiary: var(--brand-slate);
   --color-text-muted: #9ca3af;
   
-  --color-primary: var(--brand-dark); /* Black as primary */
-  --color-primary-hover: var(--brand-dark-darker);
-  --color-primary-light: rgba(40, 40, 40, 0.1);
+  --color-primary: #0470e9; /* Blue for Motork library primary buttons */
+  --color-primary-hover: #0470e9;
+  --color-primary-light: rgba(4, 112, 233, 0.1);
   
   --color-success: #10b981;
   --color-success-light: #d1fae5;
@@ -184,20 +190,6 @@
   }
 }
 
-/* Override MotorK Component Library Primary Color Theme */
-:root {
-  /* Override primary color to black for MotorK components */
-  --primary: var(--brand-dark);
-  --primary-hover: var(--brand-dark-darker);
-  --primary-foreground: white;
-  
-  /* Additional possible MotorK CSS variables */
-  --color-primary: var(--brand-dark);
-  --color-primary-hover: var(--brand-dark-darker);
-  --button-primary-bg: var(--brand-dark);
-  --button-primary-hover-bg: var(--brand-dark-darker);
-  --button-primary-text: white;
-}
 
 /* Dark Mode */
 [data-theme="dark"] {
@@ -235,94 +227,6 @@
   --color-border-light: #1f2937; /* Subtle borders */
 }
 
-/* Primary Button Styling - Layered Shadows from External Project */
-/* Based on external project design: Black background with layered shadows */
-/* Target primary buttons (variant="default" and variant="black") */
-button[data-variant="default"],
-button[data-variant="black"],
-button[data-variant="primary"],
-button[class*="variant-default"],
-button[class*="variant-black"],
-button[class*="variant-primary"],
-button[class*="data-variant-default"],
-button[class*="data-variant-black"],
-button[class*="data-variant-primary"],
-/* Fallback: target buttons that have primary-like styling */
-button[class*="bg-brand-primary"],
-button[class*="bg-primary"],
-button[class*="bg-brand-dark"]:not(.btn-secondary):not(.btn-danger) {
-  /* Match external project's button styling but with black */
-  border-radius: 8px !important;
-  border: none !important;
-  background: var(--brand-dark) !important; /* Black instead of blue */
-  font-weight: 500 !important;
-  box-shadow:
-    0 1px 3px 0 rgba(11, 19, 36, 0.08),
-    0 -1px 0 0 rgba(0, 0, 0, 0.1) inset !important;
-
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.1s ease !important;
-}
-
-/* Hover state - Enhanced shadows for elevation */
-button[data-variant='default']:hover:not(:disabled),
-button[data-variant='black']:hover:not(:disabled),
-button[data-variant='primary']:hover:not(:disabled),
-button[class*='variant-default']:hover:not(:disabled),
-button[class*='variant-black']:hover:not(:disabled),
-button[class*='variant-primary']:hover:not(:disabled),
-button[class*='data-variant-default']:hover:not(:disabled),
-button[class*='data-variant-black']:hover:not(:disabled),
-button[class*='data-variant-primary']:hover:not(:disabled),
-button[class*='bg-brand-primary']:hover:not(:disabled),
-button[class*='bg-primary']:hover:not(:disabled),
-button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):hover:not(:disabled) {
-  background: var(--brand-dark-darker) !important; /* Darker black on hover */
-  box-shadow:
-    0 2px 4px 0 rgba(11, 19, 36, 0.12),
-    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Active/pressed state - Reduced shadows for pressed effect */
-button[data-variant='default']:active:not(:disabled),
-button[data-variant='black']:active:not(:disabled),
-button[data-variant='primary']:active:not(:disabled),
-button[class*='variant-default']:active:not(:disabled),
-button[class*='variant-black']:active:not(:disabled),
-button[class*='variant-primary']:active:not(:disabled),
-button[class*='data-variant-default']:active:not(:disabled),
-button[class*='data-variant-black']:active:not(:disabled),
-button[class*='data-variant-primary']:active:not(:disabled),
-button[class*='bg-brand-primary']:active:not(:disabled),
-button[class*='bg-primary']:active:not(:disabled),
-button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):active:not(:disabled) {
-  box-shadow:
-    0 1px 2px 0 rgba(11, 19, 36, 0.1),
-    0 -1px 0 0 rgba(0, 0, 0, 0.12) inset !important;
-  transform: translateY(0px) !important;
-}
-
-/* Disabled state */
-button[data-variant='default']:disabled,
-button[data-variant='black']:disabled,
-button[data-variant='primary']:disabled,
-button[class*='variant-default']:disabled,
-button[class*='variant-black']:disabled,
-button[class*='variant-primary']:disabled,
-button[class*='data-variant-default']:disabled,
-button[class*='data-variant-black']:disabled,
-button[class*='data-variant-primary']:disabled,
-button[class*='bg-brand-primary']:disabled,
-button[class*='bg-primary']:disabled,
-button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):disabled {
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #4b5563 100%) !important;
-  box-shadow:
-    0px 2px 4px 0px rgba(0, 0, 0, 0.08),
-    0px 0px 0px 1px rgba(255, 255, 255, 0.05) inset !important;
-  opacity: 0.6 !important;
-}
 
 .mk-dashboard-card {
   box-shadow: var(--mk-dashboard-card-shadow);
@@ -508,8 +412,9 @@ button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):disabled {
   
   /* Button Utility Classes - Global Button Styles */
   
-  /* Primary Button - Black background with white text */
-  .btn-primary {
+  /* Primary Button - Legacy class for non-Motork buttons */
+  /* Note: Motork Button component from future/primitives does NOT use this class */
+  .btn-primary:not([data-variant]):not([class*="variant-"]) {
     padding: 0.5rem 1rem; /* py-2 px-4 */
     border-radius: var(--radius-btn);
     font-weight: 500;
@@ -521,12 +426,12 @@ button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):disabled {
     border: 1px solid var(--brand-dark);
   }
   
-  .btn-primary:hover:not(:disabled) {
+  .btn-primary:not([data-variant]):not([class*="variant-"]):hover:not(:disabled) {
     background-color: var(--brand-dark-darker);
     border-color: var(--brand-dark-darker);
   }
   
-  .btn-primary:disabled {
+  .btn-primary:not([data-variant]):not([class*="variant-"]):disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -577,31 +482,8 @@ button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):disabled {
   }
   
   /* Global Overrides - Convert all primary buttons to black theme */
+  /* NOTE: Removed override to allow Motork library default blue primary buttons */
   
-  /* MotorK Button Component - Primary Variant (Black Theme) */
-  /* Target all possible MotorK button selectors */
-  button[data-variant="primary"],
-  button[class*="variant-primary"],
-  button[class*="variant_primary"],
-  button[class*="Primary"],
-  .motork-button-primary,
-  [class*="Button"][class*="primary"],
-  [class*="button"][class*="primary"]:not(.btn-secondary):not(.btn-danger) {
-    background-color: var(--brand-dark) !important;
-    color: white !important;
-    border-color: var(--brand-dark) !important;
-  }
-  
-  button[data-variant="primary"]:hover:not(:disabled),
-  button[class*="variant-primary"]:hover:not(:disabled),
-  button[class*="variant_primary"]:hover:not(:disabled),
-  button[class*="Primary"]:hover:not(:disabled),
-  .motork-button-primary:hover:not(:disabled),
-  [class*="Button"][class*="primary"]:hover:not(:disabled),
-  [class*="button"][class*="primary"]:not(.btn-secondary):not(.btn-danger):hover:not(:disabled) {
-    background-color: var(--brand-dark-darker) !important;
-    border-color: var(--brand-dark-darker) !important;
-  }
   
   /* Convert legacy brand-red buttons to black primary style */
   /* This catches buttons using Tailwind's bg-brand-red class, excluding elements explicitly marked as danger */
@@ -1033,3 +915,39 @@ button[class*='bg-brand-dark']:not(.btn-secondary):not(.btn-danger):disabled {
   /* Let component library styles apply naturally */
   width: 100%;
 }
+
+/* Ensure Motork Button component primary variant uses blue background */
+/* The Motork Button from future/primitives uses data-slot="button" but doesn't apply bg-primary class */
+/* Target buttons that are the second button in a flex container (primary action buttons) */
+/* This targets the primary button which comes after the Cancel (secondary) button */
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2),
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  color: var(--primary-foreground, white) !important;
+  border-color: var(--primary, #0470e9) !important;
+}
+
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2):hover:not(:disabled),
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child):hover:not(:disabled) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  opacity: 0.9;
+}
+
+.flex.justify-end.gap-2 > button[data-slot="button"]:nth-child(2):disabled,
+.flex.justify-end.gap-2 > button[data-slot="button"]:last-child:not(:only-child):disabled {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  opacity: 0.5;
+}
+
+/* Also target buttons with bg-primary class if the component applies it */
+button.bg-primary,
+button[class*="bg-primary"]:not([class*="bg-brand-primary"]):not([class*="bg-brand-dark"]) {
+  background-color: var(--primary, #0470e9) !important;
+  background: var(--primary, #0470e9) !important;
+  color: var(--primary-foreground, white) !important;
+  border-color: var(--primary, #0470e9) !important;
+}
+

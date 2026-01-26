@@ -4,32 +4,32 @@
       <div class="flex flex-col min-w-0">
         <!-- Task Title & Badges Row -->
         <div class="flex items-center gap-2 min-w-0">
-          <h2 v-if="task" class="text-fluid-lg font-medium text-greys-900 truncate">
+          <h2 v-if="task" class="text-fluid-lg font-medium text-heading truncate">
             {{ getTaskTitle(task) }}
           </h2>
-          <h2 v-else class="text-fluid-lg font-medium text-greys-900">
+          <h2 v-else class="text-fluid-lg font-medium text-heading">
             No task selected
           </h2>
 
           <!-- Compact Badges -->
           <div v-if="task" class="flex items-center gap-1.5 shrink-0">
             <span 
-              class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border border-transparent"
+              class="px-1.5 py-0.5 rounded text-sm font-bold uppercase border border-transparent"
               :class="getStageColor(task)"
             >
               {{ getDisplayStage(task) }}
             </span>
-            <span class="px-1.5 py-0.5 rounded bg-greys-100 text-greys-600 text-[10px] font-bold uppercase border border-E5E7EB">
+            <span class="px-1.5 py-0.5 rounded bg-surfaceSecondary text-body text-sm font-bold uppercase border border-black/5">
               {{ task.source || 'N/A' }}
             </span>
           </div>
         </div>
         
         <!-- Task Subtitle -->
-        <p v-if="task" class="text-[11px] text-greys-500 truncate leading-none mt-0.5">
+        <p v-if="task" class="text-sm text-sub truncate leading-normal mt-0.5">
           {{ getTaskSubtitle(task) }}
         </p>
-        <p v-else class="text-fluid-sm text-greys-500">
+        <p v-else class="text-fluid-sm text-sub">
           Select a task to view details
         </p>
       </div>
@@ -41,7 +41,7 @@
           @click="$emit('previous')" 
           :disabled="!hasPrevious"
         >
-          <ChevronLeft :size="16" class="text-greys-700" />
+          <ChevronLeft :size="16" class="text-body" />
         </Button>
         <Button 
           variant="secondary" 
@@ -49,7 +49,7 @@
           @click="$emit('next')" 
           :disabled="!hasNext"
         >
-          <ChevronRight :size="16" class="text-greys-700" />
+          <ChevronRight :size="16" class="text-body" />
         </Button>
         
         <!-- Close button (only shown in drawer view) -->
@@ -60,7 +60,7 @@
           @click="$emit('close')"
           class="ml-1"
         >
-          <X :size="16" class="text-greys-700" />
+          <X :size="16" class="text-body" />
         </Button>
       </div>
     </div>
@@ -158,7 +158,7 @@ const getStageColor = (task) => {
   if (stage.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
   if (stage.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
   if (stage.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
-  if (stage.includes('close')) return 'bg-greys-100 text-greys-600 border-greys-300'
+  if (stage.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
   return 'bg-blue-50 text-blue-600 border-blue-200'
 }
 </script>

@@ -13,15 +13,15 @@
           <div class="size-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
             <Check :size="16" class="text-green-600" />
           </div>
-          <p class="text-fluid-sm font-medium text-heading flex-1 pr-10">
+          <p class="text-sm font-medium text-heading flex-1 pr-10">
             {{ successState.statusText }}
           </p>
         </div>
         <div
           v-if="successState.meeting"
-          class="mt-4 bg-white rounded-lg border border-E5E7EB overflow-hidden shadow-sm"
+          class="mt-4 bg-white rounded-lg border border-black/5 overflow-hidden shadow-sm"
         >
-          <div class="grid grid-cols-2 gap-3 p-4 text-fluid-sm">
+          <div class="grid grid-cols-2 gap-3 p-4 text-sm">
             <div>
               <span class="text-body">Date:</span>
               <span class="ml-2 font-medium text-heading">{{ successState.meeting.date }}</span>
@@ -52,7 +52,7 @@
           </Button>
         </div>
       </div>
-      <div class="px-4 py-2 flex items-center justify-between text-fluid-sm text-sub">
+      <div class="px-4 py-2 flex items-center justify-between text-sm text-sub">
         <span>Updated by {{ successState.actorName || 'Unknown' }}</span>
         <span class="tabular-nums">{{ successPerformedAtLabel }}</span>
       </div>
@@ -72,13 +72,13 @@
         <div class="p-4">
           <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-heading text-fluid-sm">{{ dynamicTitle }}</h4>
-            <p class="text-fluid-xs text-body mt-0.5">
+            <h4 class="font-bold text-heading text-sm">{{ dynamicTitle }}</h4>
+            <p class="text-sm text-body mt-0.5">
               {{ dynamicDescription }}
             </p>
           </div>
           <div
-            class="flex items-center gap-2 px-2 py-1 rounded-btn text-fluid-xs font-semibold"
+            class="flex items-center gap-2 px-2 py-1 rounded-btn text-sm font-semibold"
             :class="statusBadge.class"
           >
             {{ statusBadge.text }}
@@ -86,14 +86,14 @@
         </div>
 
         <!-- Combined Follow-up and Contact Attempts Banner -->
-        <div v-if="hasScheduledFollowUp || contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-E5E7EB rounded-lg p-3">
+        <div v-if="hasScheduledFollowUp || contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-black/5 rounded-lg p-3">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <!-- Scheduled Follow-up Call -->
             <div v-if="hasScheduledFollowUp" class="flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-blue-600 text-fluid-xs"></i>
+              <i class="fa-solid fa-calendar-check text-blue-600 text-sm"></i>
               <div class="flex items-center gap-2">
-                <span class="text-fluid-xs font-semibold text-heading">Scheduled Follow-up Call:</span>
-                <span class="text-fluid-xs text-body">
+                <span class="text-sm font-semibold text-heading">Scheduled Follow-up Call:</span>
+                <span class="text-sm text-body">
                   {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
                 </span>
               </div>
@@ -101,12 +101,12 @@
             
             <!-- Contact Attempts -->
             <div v-if="contactAttempts > 0" class="flex items-center gap-2">
-              <i class="fa-solid fa-phone text-body text-fluid-xs"></i>
-              <span class="text-fluid-xs font-semibold text-body">Contact Attempts:</span>
-              <span class="text-fluid-xs font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
+              <i class="fa-solid fa-phone text-body text-sm"></i>
+              <span class="text-sm font-semibold text-body">Contact Attempts:</span>
+              <span class="text-sm font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
               <div
                 v-if="contactAttempts >= maxContactAttempts - 1"
-                class="text-fluid-xs text-orange-600 font-medium flex items-center gap-1 ml-2"
+                class="text-sm text-orange-600 font-medium flex items-center gap-1 ml-2"
               >
                 <i class="fa-solid fa-exclamation-triangle"></i>
                 <span>One more attempt before auto-disqualification</span>
@@ -117,13 +117,13 @@
 
         <!-- Phone Number Row -->
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-fluid-sm text-body font-medium">{{ lead.customer.phone }}</span>
+          <span class="text-sm text-body font-medium">{{ lead.customer.phone }}</span>
           <button
             @click="copyNumber"
             class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
             title="Copy phone number"
           >
-            <i class="fa-regular fa-copy text-fluid-xs"></i>
+            <i class="fa-regular fa-copy text-sm"></i>
           </button>
         </div>
 
@@ -151,130 +151,163 @@
       <div class="px-4 py-4 space-y-3">
         <!-- Inline Outcome Selection -->
         <div v-if="!successState" class="space-y-4">
-          <div>
-            <p class="text-fluid-sm font-medium text-heading leading-6 mb-3">Log what is happening?</p>
+            <div>
+            <p class="text-sm font-medium text-heading leading-normal mb-3">Log what is happening?</p>
             <div class="flex flex-wrap gap-3">
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
-                :class="
-                  selectedOutcome === 'no-answer'
-                    ? 'border-green-600 text-heading'
-                    : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
-                "
+              <Button
+                variant="outline"
                 @click="selectOutcome('no-answer')"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
+                :style="selectedOutcome === 'no-answer' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
               >
-                <PhoneOff :size="18" class="shrink-0" />
+                <PhoneOff :size="18" class="shrink-0" :style="selectedOutcome === 'no-answer' ? { color: 'var(--brand-blue)' } : {}" />
                 <span>No answer</span>
-              </button>
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
-                :class="
-                  selectedOutcome === 'not-valid'
-                    ? 'border-green-600 text-heading'
-                    : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
-                "
+              </Button>
+              <Button
+                variant="outline"
                 @click="selectOutcome('not-valid')"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
+                :style="selectedOutcome === 'not-valid' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
               >
-                <ThumbsDown :size="18" class="shrink-0" />
+                <ThumbsDown :size="18" class="shrink-0" :style="selectedOutcome === 'not-valid' ? { color: 'var(--brand-blue)' } : {}" />
                 <span>Not valid</span>
-              </button>
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-fluid-sm font-medium transition-all bg-white"
-                :class="
-                  selectedOutcome === 'interested'
-                    ? 'border-green-600 text-heading'
-                    : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
-                "
+              </Button>
+              <Button
+                variant="outline"
                 @click="selectOutcome('interested')"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
+                :style="selectedOutcome === 'interested' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
               >
-                <Check :size="18" class="shrink-0" />
+                <Check :size="18" class="shrink-0" :style="selectedOutcome === 'interested' ? { color: 'var(--brand-blue)' } : {}" />
                 <span>Interested</span>
-              </button>
+              </Button>
             </div>
           </div>
 
           <!-- No Answer Follow-up (Inline) -->
           <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
             <!-- When did you call field -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
-              <input
+            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
-                class="input w-full"
+                class="w-full"
               />
             </div>
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <CommunicationSelector
-            title="Send follow-up message"
-            :show-email="true"
-            :show-sms="true"
-            :show-whatsapp="true"
-            :show-dont-send="true"
-            @send="handleFollowupSend"
-                @dont-send="() => { followupChannel.value = 'dont-send' }"
-                @cancel="() => { selectedOutcome.value = null }"
-              />
+            
+            <!-- Send follow-up message -->
+            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+              <h5 class="font-semibold text-heading text-sm mb-4">Send follow-up message</h5>
+              
+              <!-- Channel Selection -->
+              <div class="grid grid-cols-4 gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  @click="followupChannel = 'whatsapp'"
+                  class="flex items-center justify-center gap-2"
+                  :style="followupChannel === 'whatsapp' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                >
+                  <i class="fa-brands fa-whatsapp text-xs" :style="followupChannel === 'whatsapp' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <span>WhatsApp</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  @click="followupChannel = 'sms'"
+                  class="flex items-center justify-center gap-2"
+                  :style="followupChannel === 'sms' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                >
+                  <i class="fa-solid fa-message text-xs" :style="followupChannel === 'sms' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <span>SMS</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  @click="followupChannel = 'email'"
+                  class="flex items-center justify-center gap-2"
+                  :style="followupChannel === 'email' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                >
+                  <i class="fa-solid fa-envelope text-xs" :style="followupChannel === 'email' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <span>Email</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  @click="followupChannel = 'dont-send'"
+                  class="flex items-center justify-center gap-2"
+                  :style="followupChannel === 'dont-send' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                >
+                  <i class="fa-solid fa-xmark text-xs" :style="followupChannel === 'dont-send' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <span>Don't send</span>
+                </Button>
+              </div>
+              
+              <!-- Template and Message Preview (only show if channel selected and not 'dont-send') -->
+              <div v-if="followupChannel && followupChannel !== 'dont-send'" class="space-y-3">
+                <!-- Template -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Template</Label>
+                  <Select v-model="selectedTemplate">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="followup-1">Follow-up 1</SelectItem>
+                      <SelectItem value="followup-2">Follow-up 2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <!-- Message Preview -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Message preview</Label>
+                  <textarea
+                    :value="messagePreview"
+                    rows="4"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-body bg-white resize-none"
+                    readonly
+                  ></textarea>
+                </div>
+              </div>
             </div>
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-fluid-sm mb-2">Next call attempt</h5>
+            
+            <!-- Next call attempt -->
+            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+              <h5 class="font-semibold text-heading text-sm mb-4">Next call attempt</h5>
               <div class="grid grid-cols-3 gap-2">
-                <button
+                <Button
+                  variant="outline"
                   @click="rescheduleTime = 'tomorrow-9am'"
-                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-                  :class="rescheduleTime === 'tomorrow-9am' ? 'border-green-600 bg-surfaceSecondary' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
+                  class="px-4 py-2 text-sm font-medium"
+                  :style="rescheduleTime === 'tomorrow-9am' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
                 >
                   Tomorrow 9:00 AM
-                </button>
-                <button
-                  @click="handleAISuggestionClick"
-                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-                  :class="rescheduleTime === 'monday' ? 'border-green-600 bg-surfaceSecondary' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
+                </Button>
+                <Button
+                  variant="outline"
+                  @click="rescheduleTime = 'monday'"
+                  class="px-4 py-2 text-sm font-medium"
+                  :style="rescheduleTime === 'monday' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
                 >
-                  AI suggestion
-                </button>
-                <button
+                  Monday
+                </Button>
+                <Button
+                  variant="outline"
                   @click="rescheduleTime = 'custom'"
-                  class="bg-surfaceSecondary border-2 rounded-lg px-4 py-2 text-fluid-xs font-medium text-heading transition-all"
-                  :class="rescheduleTime === 'custom' ? 'border-green-600 bg-surfaceSecondary' : 'border-E5E7EB hover:border-green-600/30 hover:bg-surfaceSecondary/50'"
+                  class="px-4 py-2 text-sm font-medium"
+                  :style="rescheduleTime === 'custom' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
                 >
                   Select time
-                </button>
+                </Button>
               </div>
               <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-fluid-xs font-semibold mb-1.5">Date</label>
-                  <input type="date" v-model="customDate" class="input">
+                  <Label class="block text-sm font-semibold mb-1.5">Date</Label>
+                  <Input type="date" v-model="customDate" class="w-full" />
                 </div>
                 <div>
-                  <label class="block text-fluid-xs font-medium text-body mb-1.5">Time</label>
-                  <input type="time" v-model="customTime" class="input">
+                  <Label class="block text-sm font-medium text-body mb-1.5">Time</Label>
+                  <Input type="time" v-model="customTime" class="w-full" />
                 </div>
               </div>
-              <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p class="text-fluid-xs text-body">
-                  <span class="font-semibold text-heading">AI Suggestion:</span>
-                  {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}. {{ aiSuggestionData.reason }}
-                </p>
-              </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
-              <Button
-                label="Cancel"
-                variant="outline"
-                size="small"
-                @click="cancelOutcome"
-              />
-              <Button
-                label="Send and reschedule"
-                variant="primary"
-                size="small"
-                @click="handleNoAnswerConfirm"
-                class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-              />
             </div>
           </div>
 
@@ -282,66 +315,54 @@
           <div v-if="selectedOutcome === 'not-valid'" class="space-y-4">
             <!-- When did you call field -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
-              <input
+              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
-                class="input w-full"
+                class="w-full"
               />
             </div>
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <div>
-                <label class="block text-fluid-xs font-semibold mb-2">Category</label>
+                <Label class="block text-sm font-semibold mb-2">Category</Label>
                 <div class="flex gap-4">
-                  <label class="flex items-center gap-2 cursor-pointer">
+                  <Label class="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
                       v-model="disqualifyCategory"
                       value="Not Valid"
                       class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                     >
-                    <span class="text-fluid-sm text-body">Not Valid</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer">
+                    <span class="text-sm text-body">Not Valid</span>
+                  </Label>
+                  <Label class="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
                       v-model="disqualifyCategory"
                       value="Not Interested"
                       class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                     >
-                    <span class="text-fluid-sm text-body">Not Interested</span>
-                  </label>
+                    <span class="text-sm text-body">Not Interested</span>
+                  </Label>
                 </div>
               </div>
               <div>
-                <label class="block text-fluid-xs font-medium text-body mb-2">Failure Reason</label>
-                <select v-model="disqualifyReason" class="input">
-                  <option value="">Select a reason...</option>
-                  <option value="Data cleanup">Data cleanup</option>
-                  <option value="Unreachable">Unreachable</option>
-                  <option value="Purchase postponed">Purchase postponed</option>
-                  <option value="Vehicle sold">Vehicle sold</option>
-                  <option value="Out of budget">Out of budget</option>
-                  <option value="Financing rejected">Financing rejected</option>
-                  <option value="Duplicate">Duplicate</option>
-                  <option value="Bought elsewhere">Bought elsewhere</option>
-                </select>
-              </div>
-              <div class="flex justify-end gap-2 pt-3 border-t border-E5E7EB">
-                <Button
-                  label="Cancel"
-                  variant="outline"
-                  size="small"
-                  @click="cancelOutcome"
-                />
-                <Button
-                  label="Disqualify"
-                  variant="primary"
-                  size="small"
-                  :disabled="!disqualifyCategory || !disqualifyReason"
-                  @click="handleNotValidConfirm"
-                  class="!bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
-                />
+                <Label class="block text-sm font-medium text-body mb-2">Failure Reason</Label>
+                <Select v-model="disqualifyReason">
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select a reason..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Data cleanup">Data cleanup</SelectItem>
+                    <SelectItem value="Unreachable">Unreachable</SelectItem>
+                    <SelectItem value="Purchase postponed">Purchase postponed</SelectItem>
+                    <SelectItem value="Vehicle sold">Vehicle sold</SelectItem>
+                    <SelectItem value="Out of budget">Out of budget</SelectItem>
+                    <SelectItem value="Financing rejected">Financing rejected</SelectItem>
+                    <SelectItem value="Duplicate">Duplicate</SelectItem>
+                    <SelectItem value="Bought elsewhere">Bought elsewhere</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -350,26 +371,89 @@
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
             <!-- When did you call field -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <label class="block text-fluid-xs font-semibold mb-2">When did you call?</label>
-              <input
+              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
-                class="input w-full"
+                class="w-full"
               />
             </div>
-            <!-- Add Note Card -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Add Note</h5>
-              <div>
-                <label class="block text-fluid-xs font-medium text-body mb-1.5">Note</label>
-                <textarea 
-                  v-model="inlineNoteText"
-                  rows="4" 
-                  class="input w-full"
-                  placeholder="Enter your note..."
-                ></textarea>
+            <!-- Call Notes Card -->
+            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+              <h5 class="font-semibold text-heading text-sm mb-4">Call notes</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Left: Free text box -->
+                <div>
+                  <Textarea 
+                    v-model="inlineNoteText"
+                    rows="8" 
+                    class="w-full min-h-[200px]"
+                    placeholder="Enter your notes..."
+                  />
+                </div>
+                
+                <!-- Right: Form elements -->
+                <div class="space-y-4">
+                  <!-- Interest Level -->
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Interest level</Label>
+                    <Select v-model="interestLevel">
+                      <SelectTrigger class="w-full h-10 min-h-10">
+                        <SelectValue placeholder="Interest level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <!-- Trade-in -->
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        v-model="hasTradeIn"
+                        class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
+                        style="accent-color: var(--brand-blue);"
+                      />
+                      <span class="text-sm font-medium text-body">Trade-in</span>
+                    </label>
+                    <Input
+                      v-model="tradeInModel"
+                      :disabled="!hasTradeIn"
+                      placeholder="Trade-in"
+                      class="w-full h-10 min-h-10"
+                    />
+                  </div>
+                  
+                  <!-- Financing -->
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        v-model="hasFinancing"
+                        class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
+                        style="accent-color: var(--brand-blue);"
+                      />
+                      <span class="text-sm font-medium text-body">Financing</span>
+                    </label>
+                    <Select v-model="financingOption" :disabled="!hasFinancing">
+                      <SelectTrigger class="w-full h-10 min-h-10">
+                        <SelectValue placeholder="Financing option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="FIN">Captive Financing</SelectItem>
+                        <SelectItem value="LEA">Leasing</SelectItem>
+                        <SelectItem value="LTR">Long-Term Rental</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
-              <div class="flex gap-2 mt-3">
+              
+              <div class="flex gap-2 mt-4">
                 <Button
                   label="Save"
                   variant="primary"
@@ -385,22 +469,66 @@
               </div>
             </div>
 
-            <!-- Customer Data Section -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Customer data</h5>
-              <div class="flex gap-2 flex-wrap">
-                <Button
-                  label="+ Add trade-in"
-                  variant="outline"
-                  size="small"
-                  @click="showVehicleModal = true"
-                />
-                <Button
-                  label="+ Add financing"
-                  variant="outline"
-                  size="small"
-                  @click="showFinancingModal = true"
-                />
+            <!-- Assign to Sales Section -->
+            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+              <h5 class="font-semibold text-heading text-sm mb-4">Assign to salesman</h5>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Dealership -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Dealership</Label>
+                  <Select v-model="selectedDealership">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select dealership" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="dealership in availableDealerships"
+                        :key="dealership"
+                        :value="dealership"
+                      >
+                        {{ dealership }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <!-- Team -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Team</Label>
+                  <Select v-model="selectedTeam">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="team in filteredTeams"
+                        :key="team.id"
+                        :value="team.id"
+                      >
+                        {{ team.name }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <!-- Assignee -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Assignee</Label>
+                  <Select v-model="selectedAssignee">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select assignee" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="user in filteredAssignees"
+                        :key="user.id"
+                        :value="user.id"
+                      >
+                        {{ user.name }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -419,7 +547,7 @@
             <div v-if="surveyCompleted" class="bg-green-50 border border-green-200 rounded-lg p-3">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-check-circle text-green-600 text-fluid-sm"></i>
-                <span class="text-fluid-xs font-semibold text-green-900">Survey completed</span>
+                <span class="text-sm font-semibold text-green-900">Survey completed</span>
               </div>
             </div>
 
@@ -429,29 +557,29 @@
 
             <!-- Qualification method -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-fluid-sm mb-3">Qualification method</h5>
+              <h5 class="font-semibold text-heading text-sm mb-3">Qualification method</h5>
               <div class="space-y-2">
                 <label
                   class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
                   :class="
                     qualificationMethod === 'assign-only'
                       ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                      : 'border border-E5E7EB hover:bg-surfaceSecondary/50'
+                      : 'border border-black/5 hover:bg-surfaceSecondary/50'
                   "
                 >
                   <input v-model="qualificationMethod" type="radio" value="assign-only" class="shrink-0" />
-                  <span class="text-fluid-sm text-heading">Assign only</span>
+                  <span class="text-sm text-heading">Assign only</span>
                 </label>
                 <label
                   class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
                   :class="
                     qualificationMethod === 'assign-and-schedule'
                       ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                      : 'border border-E5E7EB hover:bg-surfaceSecondary/50'
+                      : 'border border-black/5 hover:bg-surfaceSecondary/50'
                   "
                 >
                   <input v-model="qualificationMethod" type="radio" value="assign-and-schedule" class="shrink-0" />
-                  <span class="text-fluid-sm text-heading">Assign and schedule</span>
+                  <span class="text-sm text-heading">Assign and schedule</span>
                 </label>
               </div>
             </div>
@@ -463,124 +591,125 @@
             >
               <!-- Step 1: Event Type Selection (FIRST STEP) -->
               <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-                <h5 class="font-semibold text-heading text-fluid-sm mb-3">Event Type</h5>
-                <label class="block text-fluid-xs font-medium text-body mb-1.5">Select event type</label>
-                <select
-                  v-model="qualificationEventType"
-                  class="input w-full"
-                >
-                  <option value="" disabled>Select event type</option>
-                  <option
-                    v-for="opt in qualificationEventTypeOptions"
-                    :key="opt.value"
-                    :value="opt.value"
-                  >
-                    {{ opt.label }}
-                  </option>
-                </select>
+                <h5 class="font-semibold text-heading text-sm mb-3">Event Type</h5>
+                <Label class="block text-sm font-medium text-body mb-1.5">Select event type</Label>
+                <Select v-model="qualificationEventType">
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="opt in qualificationEventTypeOptions"
+                      :key="opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <!-- Step 2: Duration and Date Range (only show if event type selected) -->
               <div v-if="qualificationEventType" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-                <h5 class="font-semibold text-heading text-fluid-sm mb-4">Schedule</h5>
+                <h5 class="font-semibold text-heading text-sm mb-4">Schedule</h5>
                 
                 <!-- Duration Selection -->
                 <div class="mb-4">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Duration</label>
+                  <Label class="block text-sm font-medium text-body mb-2">Duration</Label>
                   <div class="flex gap-2 items-center flex-wrap">
-                    <button
-                      type="button"
-                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                    <Button
+                      variant="outline"
+                      @click="handleQualificationDurationSelect(30)"
+                      class="px-3 py-2 text-sm font-medium"
                       :class="
                         qualificationDurationMinutes === 30
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30'
+                          : ''
                       "
-                      @click="handleQualificationDurationSelect(30)"
                     >
                       30min
-                    </button>
-                    <button
-                      type="button"
-                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                    </Button>
+                    <Button
+                      variant="outline"
+                      @click="handleQualificationDurationSelect(60)"
+                      class="px-3 py-2 text-sm font-medium"
                       :class="
                         qualificationDurationMinutes === 60
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30'
+                          : ''
                       "
-                      @click="handleQualificationDurationSelect(60)"
                     >
                       60min
-                    </button>
-                    <input
+                    </Button>
+                    <Input
                       v-model="qualificationCustomDuration"
                       type="number"
                       min="1"
                       placeholder="Custom"
-                      class="input w-24"
+                      class="w-24"
                       @input="qualificationDurationMinutes = null"
-                    >
+                    />
                   </div>
                 </div>
 
                 <!-- Date Range Selection -->
                 <div class="mb-4">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Select Date Range</label>
+                  <Label class="block text-sm font-medium text-body mb-2">Select Date Range</Label>
                   <div class="flex gap-2 flex-wrap">
-                    <button
-                      type="button"
-                      class="px-4 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                    <Button
+                      variant="outline"
+                      @click="handleDateRangeSelect('tomorrow')"
+                      class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'tomorrow'
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30'
+                          : ''
                       "
-                      @click="handleDateRangeSelect('tomorrow')"
                     >
                       Tomorrow
-                    </button>
-                    <button
-                      type="button"
-                      class="px-4 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                    </Button>
+                    <Button
+                      variant="outline"
+                      @click="handleDateRangeSelect('this-week')"
+                      class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'this-week'
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30'
+                          : ''
                       "
-                      @click="handleDateRangeSelect('this-week')"
                     >
                       This Week
-                    </button>
-                    <button
-                      type="button"
-                      class="px-4 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all"
+                    </Button>
+                    <Button
+                      variant="outline"
+                      @click="handleDateRangeSelect('custom')"
+                      class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'custom'
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30'
+                          : ''
                       "
-                      @click="handleDateRangeSelect('custom')"
                     >
                       Custom
-                    </button>
+                    </Button>
                   </div>
                   
                   <!-- Custom Date Range Inputs -->
                   <div v-if="qualificationDateRange === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
                     <div>
-                      <label class="block text-fluid-xs font-medium text-body mb-1.5">Start Date</label>
-                      <input
+                      <Label class="block text-sm font-medium text-body mb-1.5">Start Date</Label>
+                      <Input
                         type="date"
                         v-model="qualificationCustomDateStart"
-                        class="input w-full"
+                        class="w-full"
                       />
                     </div>
                     <div>
-                      <label class="block text-fluid-xs font-medium text-body mb-1.5">End Date</label>
-                      <input
+                      <Label class="block text-sm font-medium text-body mb-1.5">End Date</Label>
+                      <Input
                         type="date"
                         v-model="qualificationCustomDateEnd"
-                        class="input w-full"
+                        class="w-full"
                       />
                     </div>
                   </div>
@@ -589,106 +718,106 @@
 
               <!-- Step 3: Recommended Teams and People (show when date range selected, with default selection) -->
               <div v-if="qualificationEventType && qualificationDateRange" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-                <h5 class="font-semibold text-heading text-fluid-sm mb-2">Assign appointment to :</h5>
+                <h5 class="font-semibold text-heading text-sm mb-2">Assign appointment to :</h5>
                 
                 <!-- Teams -->
                 <div class="mb-3">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Select Team</label>
+                  <Label class="block text-sm font-medium text-body mb-2">Select Team</Label>
                   <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <button
+                    <Button
                       v-for="team in sortedTeams"
                       :key="team.id"
-                      type="button"
-                      class="flex items-center gap-1.5 px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all whitespace-nowrap shrink-0"
+                      variant="outline"
+                      @click="qualificationSelectedTeam = team"
+                      class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedTeam && qualificationSelectedTeam.id === team.id
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
+                          : ''
                       "
-                      @click="qualificationSelectedTeam = team"
                     >
                       <span class="text-sub">{{ team.dealership || 'No location' }}</span>
                       <span class="text-sub">→</span>
                       <span class="font-medium text-heading">{{ team.name }}</span>
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
                 <!-- People -->
                 <div v-if="qualificationSelectedTeam">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Select Salesperson (Optional)</label>
-                  <p class="text-fluid-xs text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
+                  <Label class="block text-sm font-medium text-body mb-2">Select Salesperson (Optional)</Label>
+                  <p class="text-sm text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
                   <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <button
+                    <Button
                       v-for="(user, index) in assignableUsers"
                       :key="user.id"
-                      type="button"
-                      class="flex items-center gap-2 px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all whitespace-nowrap shrink-0"
+                      variant="outline"
+                      @click="qualificationSelectedSalesman = user"
+                      class="flex items-center gap-2 px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedSalesman && qualificationSelectedSalesman.id === user.id
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
                           : index === 0 && !qualificationSelectedSalesman
                             ? 'border-green-600/50 bg-surfaceSecondary/30 text-heading'
-                            : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
+                            : ''
                       "
-                      @click="qualificationSelectedSalesman = user"
                     >
                       <div
-                        class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-fluid-xs shrink-0"
+                        class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
                         :class="getRoleAvatarClass(user.role)"
                       >
                         {{ getInitials(user.name) }}
                       </div>
                       <span class="font-medium text-heading truncate">{{ user.name }}</span>
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               <!-- Step 4: Time Slot Selection (only show after team/person selected) -->
               <div v-if="qualificationSelectedTeam" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-                <h5 class="font-semibold text-heading text-fluid-sm mb-3">Select Date and Time Slot</h5>
+                <h5 class="font-semibold text-heading text-sm mb-3">Select Date and Time Slot</h5>
                 
                 <!-- Available Dates from Range -->
                 <div v-if="availableDatesForRange.length > 0" class="mb-4">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Select Date</label>
+                  <Label class="block text-sm font-medium text-body mb-2">Select Date</Label>
                   <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <button
+                    <Button
                       v-for="date in availableDatesForRange"
                       :key="date.getTime()"
-                      type="button"
-                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all whitespace-nowrap shrink-0"
+                      variant="outline"
+                      @click="qualificationSelectedDate = date; qualificationSelectedSlot = ''"
+                      class="px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedDate && qualificationIsSameDay(date, qualificationSelectedDate)
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
+                          : ''
                       "
-                      @click="qualificationSelectedDate = date; qualificationSelectedSlot = ''"
                     >
                       {{ formatDate(date) }}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
                 <!-- Time Slots (only show if date selected) -->
                 <div v-if="qualificationSelectedDate">
-                  <label class="block text-fluid-xs font-medium text-body mb-2">Select Time Slot</label>
+                  <Label class="block text-sm font-medium text-body mb-2">Select Time Slot</Label>
                   <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <button
+                    <Button
                       v-for="slot in availableScheduleSlots"
                       :key="slot"
-                      type="button"
-                      class="px-3 py-2 rounded-lg border-2 text-fluid-sm font-medium transition-all whitespace-nowrap shrink-0"
+                      variant="outline"
+                      @click="qualificationSelectedSlot = slot"
+                      class="px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedSlot === slot
                           ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : 'border-E5E7EB text-body hover:border-green-600/30 hover:bg-surfaceSecondary/50'
+                          : ''
                       "
-                      @click="qualificationSelectedSlot = slot"
                     >
                       {{ slot }}
-                    </button>
-                    <p v-if="availableScheduleSlots.length === 0" class="text-fluid-xs text-sub text-center py-4">
+                    </Button>
+                    <p v-if="availableScheduleSlots.length === 0" class="text-sm text-sub text-center py-4">
                       No available slots for this date
                     </p>
                   </div>
@@ -716,9 +845,9 @@
               <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-calendar-check text-blue-600"></i>
-                  <h5 class="font-semibold text-heading text-fluid-sm">Existing Appointment</h5>
+                  <h5 class="font-semibold text-heading text-sm">Existing Appointment</h5>
                 </div>
-                <span class="text-fluid-xs font-semibold text-blue-600 uppercase">Scheduled</span>
+                <span class="text-sm font-semibold text-blue-600 uppercase">Scheduled</span>
               </div>
               <div class="grid grid-cols-2 gap-3 text-fluid-sm mb-3">
                 <div>
@@ -745,34 +874,25 @@
                 @click="showScheduleAppointmentModal = true"
               />
             </div>
-
-            <!-- Action Buttons -->
-            <div class="flex justify-between items-center pt-3 border-t border-E5E7EB">
-              <Button
-                label="Cancel"
-                variant="outline"
-                size="small"
-                @click="cancelOutcome"
-              />
-              <div class="flex gap-2">
-                <Button
-                  v-if="qualificationMethod !== 'assign-and-schedule'"
-                  label="Disqualify"
-                  variant="outline"
-                  size="small"
-                  @click="handleDisqualifyFromInterested"
-                />
-                <Button
-                  :label="qualificationMethod === 'assign-and-schedule' ? 'Confirm Appointment and Qualify' : 'Qualify'"
-                  variant="primary"
-                  size="small"
-                  :disabled="!canQualify"
-                  @click="handleQualify"
-                  class="!bg-green-600 !hover:bg-green-700 !text-white !border-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </div>
-            </div>
           </div>
+        </div>
+        
+        <!-- Unified Action Buttons at Bottom Right of Gray Wrapper -->
+        <div v-if="selectedOutcome && !successState" class="flex justify-end gap-2 px-4 pb-4 pt-3 border-t border-black/5">
+          <Button
+            variant="secondary"
+            @click="cancelOutcome"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            :disabled="!canConfirmAction"
+            @click="handleConfirmAction"
+            class="bg-primary"
+          >
+            {{ actionButtonLabel }}
+          </Button>
         </div>
       </div>
     </template>
@@ -833,7 +953,17 @@
 
 <script setup>
 import { ref, computed, toRef, watch } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  Label,
+  Input,
+  Textarea
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
@@ -924,6 +1054,48 @@ const currentUser = computed(() => userStore.currentUser)
 
 // Inline note state
 const inlineNoteText = ref('')
+const interestLevel = ref('')
+const hasTradeIn = ref(false)
+const tradeInModel = ref('')
+const hasFinancing = ref(false)
+const financingOption = ref('')
+
+const tradeInNoteLine = ref('')
+const financingNoteLine = ref('')
+
+// Assignment state
+const selectedDealership = ref('')
+const selectedTeam = ref('')
+const selectedAssignee = ref('')
+
+// Available dealerships (unique from teams)
+const availableDealerships = computed(() => {
+  const dealerships = new Set()
+  assignableTeams.value?.forEach(team => {
+    if (team.dealership) {
+      dealerships.add(team.dealership)
+    }
+  })
+  return Array.from(dealerships).sort()
+})
+
+// Filtered teams based on selected dealership
+const filteredTeams = computed(() => {
+  if (!selectedDealership.value) {
+    return assignableTeams.value || []
+  }
+  return assignableTeams.value?.filter(team => team.dealership === selectedDealership.value) || []
+})
+
+// Filtered assignees based on selected team
+const filteredAssignees = computed(() => {
+  if (!selectedTeam.value) {
+    return assignableUsers.value || []
+  }
+  const team = assignableTeams.value?.find(t => t.id === selectedTeam.value)
+  if (!team) return assignableUsers.value || []
+  return assignableUsers.value?.filter(user => user.team === team.name || user.teamId === team.id) || []
+})
 
 // Helper functions
 const getInitials = (name) => {
@@ -1263,6 +1435,125 @@ watch(qualificationSelectedSalesman, () => {
   qualificationSelectedSlot.value = ''
 })
 
+// Helper function to update notes with auto-generated lines
+const updateNoteWithAutoLines = () => {
+  const currentText = inlineNoteText.value || ''
+  const lines = currentText.split('\n')
+  
+  const userLines = lines.filter(line => {
+    const trimmed = line.trim()
+    return trimmed !== '' && 
+           trimmed !== tradeInNoteLine.value && 
+           trimmed !== financingNoteLine.value
+  })
+  
+  const autoLines = []
+  if (hasTradeIn.value && tradeInModel.value && tradeInModel.value.trim()) {
+    tradeInNoteLine.value = `Customer has a ${tradeInModel.value} for a trade-in`
+    autoLines.push(tradeInNoteLine.value)
+  } else {
+    tradeInNoteLine.value = ''
+  }
+  
+  if (hasFinancing.value && financingOption.value) {
+    const optionLabels = {
+      'FIN': 'Captive Financing',
+      'LEA': 'Leasing',
+      'LTR': 'Long-Term Rental'
+    }
+    financingNoteLine.value = `Customer is interested in ${optionLabels[financingOption.value] || financingOption.value}`
+    autoLines.push(financingNoteLine.value)
+  } else {
+    financingNoteLine.value = ''
+  }
+  
+  const allLines = [...userLines, ...autoLines].filter(line => line.trim() !== '')
+  inlineNoteText.value = allLines.join('\n')
+}
+
+// Watch for trade-in changes to update notes
+watch([hasTradeIn, tradeInModel], () => {
+  updateNoteWithAutoLines()
+  if (!hasTradeIn.value) {
+    tradeInModel.value = ''
+  }
+}, { immediate: false })
+
+// Watch for financing changes to update notes
+watch([hasFinancing, financingOption], () => {
+  updateNoteWithAutoLines()
+  if (!hasFinancing.value) {
+    financingOption.value = ''
+  }
+}, { immediate: false })
+
+// Check if everything is selected for "Send and postpone" button
+const canSendAndPostpone = computed(() => {
+  if (selectedOutcome.value !== 'no-answer') return false
+  if (!followupChannel.value) return false
+  if (followupChannel.value !== 'dont-send' && !selectedTemplate.value) return false
+  if (!rescheduleTime.value) return false
+  if (rescheduleTime.value === 'custom' && (!customDate.value || !customTime.value)) return false
+  return true
+})
+
+// Reset call notes fields when outcome changes
+watch(selectedOutcome, (newOutcome) => {
+  if (newOutcome !== 'interested') {
+    inlineNoteText.value = ''
+    interestLevel.value = ''
+    hasTradeIn.value = false
+    tradeInModel.value = ''
+    hasFinancing.value = false
+    financingOption.value = ''
+    tradeInNoteLine.value = ''
+    financingNoteLine.value = ''
+    selectedDealership.value = ''
+    selectedTeam.value = ''
+    selectedAssignee.value = ''
+  }
+})
+
+// Auto-fill dealership and team when assignee is selected
+watch(selectedAssignee, (assigneeId) => {
+  if (assigneeId) {
+    const user = assignableUsers.value?.find(u => u.id === assigneeId)
+    if (user) {
+      const userTeam = assignableTeams.value?.find(team => 
+        team.name === user.team || team.id === user.teamId
+      )
+      if (userTeam) {
+        selectedTeam.value = userTeam.id
+        if (userTeam.dealership) {
+          selectedDealership.value = userTeam.dealership
+        }
+      }
+    }
+  }
+})
+
+// Reset assignee when team changes (if team doesn't match current assignee)
+watch(selectedTeam, (teamId) => {
+  if (teamId && selectedAssignee.value) {
+    const user = assignableUsers.value?.find(u => u.id === selectedAssignee.value)
+    const team = assignableTeams.value?.find(t => t.id === teamId)
+    if (user && team && user.team !== team.name && user.teamId !== team.id) {
+      selectedAssignee.value = ''
+    }
+  }
+})
+
+// Reset team and assignee when dealership changes (if dealership doesn't match)
+watch(selectedDealership, (dealership) => {
+  if (dealership && selectedTeam.value) {
+    const team = assignableTeams.value?.find(t => t.id === selectedTeam.value)
+    if (team && team.dealership !== dealership) {
+      selectedTeam.value = ''
+      selectedAssignee.value = ''
+    }
+  }
+})
+
 // Watch for call ending to initialize datetime and assignee
 watch(callEnded, (ended) => {
   if (ended && !successState.value) {
@@ -1303,6 +1594,46 @@ const canQualify = computed(() => {
     qualificationSelectedTeam.value
   )
 })
+
+const canCloseAsNotValid = computed(() => {
+  return !!(disqualifyCategory.value && disqualifyReason.value)
+})
+
+const actionButtonLabel = computed(() => {
+  if (selectedOutcome.value === 'no-answer') {
+    return followupChannel.value === 'dont-send' ? 'Postpone' : 'Send and postpone'
+  }
+  if (selectedOutcome.value === 'not-valid') {
+    return disqualifyCategory.value ? `Close as ${disqualifyCategory.value}` : 'Close'
+  }
+  if (selectedOutcome.value === 'interested') {
+    return 'Schedule and qualify'
+  }
+  return ''
+})
+
+const canConfirmAction = computed(() => {
+  if (selectedOutcome.value === 'no-answer') {
+    return canSendAndPostpone.value
+  }
+  if (selectedOutcome.value === 'not-valid') {
+    return canCloseAsNotValid.value
+  }
+  if (selectedOutcome.value === 'interested') {
+    return canQualify.value
+  }
+  return false
+})
+
+const handleConfirmAction = () => {
+  if (selectedOutcome.value === 'no-answer') {
+    handleNoAnswerConfirm()
+  } else if (selectedOutcome.value === 'not-valid') {
+    handleNotValidConfirm()
+  } else if (selectedOutcome.value === 'interested') {
+    handleQualify()
+  }
+}
 
 const handlers = useLQWidgetHandlers(
   emit,

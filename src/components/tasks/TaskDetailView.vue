@@ -30,33 +30,34 @@
 
         <!-- Right Sidebar with Tabs -->
         <div
-          class="right-sidebar flex flex-col overflow-hidden shrink-0 border-l border-black/5"
-          style="background-color: #F8F8F8"
+          class="right-sidebar flex flex-col overflow-hidden shrink-0 border-l border-black/5 bg-surface"
         >
           <!-- Sidebar Tabs -->
           <div class="flex border-b border-black/5 bg-white">
-            <button
+            <Button
+              variant="ghost"
               @click="sidebarTab = 'request'"
-              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative"
-              :class="sidebarTab === 'request' ? 'text-blue-600' : 'text-greys-600 hover:text-greys-900'"
+              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative rounded-none h-auto"
+              :class="sidebarTab === 'request' ? 'text-primary-600' : 'text-body hover:text-heading'"
             >
               Request
               <span
                 v-if="sidebarTab === 'request'"
-                class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
+                class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
               ></span>
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               @click="sidebarTab = 'activity'"
-              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative"
-              :class="sidebarTab === 'activity' ? 'text-blue-600' : 'text-greys-600 hover:text-greys-900'"
+              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative rounded-none h-auto"
+              :class="sidebarTab === 'activity' ? 'text-primary-600' : 'text-body hover:text-heading'"
             >
               Activity
               <span
                 v-if="sidebarTab === 'activity'"
-                class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
+                class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
               ></span>
-            </button>
+            </Button>
           </div>
           
           <!-- Sidebar Content -->
@@ -147,6 +148,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { Button } from '@motork/component-library/future/primitives'
 import TaskDetailHeader from './TaskDetailHeader.vue'
 import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'

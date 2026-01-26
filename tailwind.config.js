@@ -40,18 +40,19 @@ export default {
           input: 'var(--color-border-input)',
           light: 'var(--color-border-light)',
         },
-        // Replace primary color scale with brand black (dark)
+        // Primary color scale - Use Motork library default blue
         primary: {
-          50: 'rgba(40, 40, 40, 0.05)',
-          100: 'rgba(40, 40, 40, 0.1)',
-          200: 'rgba(40, 40, 40, 0.2)',
-          300: 'rgba(40, 40, 40, 0.3)',
-          400: 'rgba(40, 40, 40, 0.4)',
-          500: 'rgba(40, 40, 40, 0.5)',
-          600: 'var(--brand-dark)', // #282828 - Main primary color
-          700: 'var(--brand-darkDarker)', // #1a1a1a - Hover state
-          800: 'rgba(26, 26, 26, 0.8)',
-          900: 'rgba(26, 26, 26, 0.9)',
+          DEFAULT: '#0470e9', // Motork library default blue
+          50: 'rgba(4, 112, 233, 0.05)',
+          100: 'rgba(4, 112, 233, 0.1)',
+          200: 'rgba(4, 112, 233, 0.2)',
+          300: 'rgba(4, 112, 233, 0.3)',
+          400: 'rgba(4, 112, 233, 0.4)',
+          500: 'rgba(4, 112, 233, 0.5)',
+          600: '#0470e9', // Main primary color - Motork blue
+          700: '#0360c7', // Darker blue for hover
+          800: '#0250a5',
+          900: '#014083',
         },
         gray: {
           50: '#f5f5f5',

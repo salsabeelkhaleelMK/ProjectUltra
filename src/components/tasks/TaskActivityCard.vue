@@ -10,22 +10,24 @@
   >
     <div class="mb-4">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-base font-medium text-greys-900 leading-6">Activity</h3>
+        <h3 class="text-base font-medium text-heading leading-6">Activity</h3>
         
         <!-- Filter Dropdown and Chips (Right side of title) -->
         <div class="flex items-center gap-2 flex-wrap">
           <!-- Filter Dropdown Button -->
           <div class="relative" ref="filterContainer">
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               @click.stop="toggleFilterMenu"
-              class="relative w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-900"
+              class="relative w-8 h-8"
             >
               <i class="fa-solid fa-filter text-sm"></i>
               <span 
                 v-if="selectedFilters.length > 0"
                 class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-black"
               ></span>
-            </button>
+            </Button>
             
             <transition name="dropdown">
               <div 
@@ -43,16 +45,18 @@
             <div
               v-for="filterValue in selectedFilters"
               :key="filterValue"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-xs font-medium text-heading border border-E5E7EB"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-sm font-medium text-heading border border-black/5"
             >
               <span>{{ getFilterLabel(filterValue) }}</span>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 @click="removeFilter(filterValue)"
-                class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 transition-colors text-sub hover:text-heading"
+                class="w-4 h-4 rounded-full"
                 aria-label="Remove filter"
               >
-                <i class="fa-solid fa-xmark text-xs"></i>
-              </button>
+                <i class="fa-solid fa-xmark text-sm"></i>
+              </Button>
             </div>
           </div>
         </div>
@@ -60,69 +64,77 @@
       
       <!-- Add Activity Button - Always below title -->
       <div class="relative">
-        <button
+        <Button
+          variant="ghost"
           @click="showAddDropdown = !showAddDropdown"
-          class="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 underline decoration-blue-600 hover:decoration-blue-700 transition-colors"
+          class="flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 underline decoration-primary-600 hover:decoration-primary-700 transition-colors h-auto p-0"
         >
           <Plus :size="14" />
           Add activity
-        </button>
+        </Button>
         <div
           v-if="showAddDropdown"
           class="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-black/10 py-1 z-10"
           v-click-outside="() => showAddDropdown = false"
         >
-          <button
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'note')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <StickyNote :size="16" class="text-orange-600" />
             Note
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'sms')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <MessageCircle :size="16" class="text-purple-600" />
             SMS
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'whatsapp')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <MessageCircle :size="16" class="text-green-600" />
             WhatsApp
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'email')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <Mail :size="16" class="text-blue-600" />
             Email
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'attachment')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <Paperclip :size="16" class="text-gray-600" />
             Attachment
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'tradein')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-600">
               <path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Trade-In
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             @click="$emit('add-activity', 'purchase-method')"
-            class="w-full px-4 py-2 text-left text-sm text-greys-900 hover:bg-greys-50 flex items-center gap-2"
+            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
           >
             <FileText :size="16" class="text-indigo-600" />
             Purchase Method
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -131,8 +143,7 @@
       <div v-if="sortedActivities.length > 0" class="flex-1 overflow-y-auto min-h-0">
         <div class="flex flex-col items-start gap-1 mb-4">
           <h3
-            class="text-fluid-sm font-normal text-greys-500"
-            style="line-height: var(--leading-5)"
+            class="text-sm font-normal text-sub leading-normal"
           >
             {{ getActivityDateHeader(sortedActivities) }}
           </h3>
@@ -166,7 +177,7 @@
                           ? 'bg-blue-100'
                           : activity.type === 'whatsapp'
                             ? 'bg-green-100'
-                            : 'bg-greys-100',
+                            : 'bg-surfaceSecondary',
                 ]"
               >
                 <StickyNote
@@ -194,13 +205,12 @@
                   :size="16"
                   class="text-green-600"
                 />
-                <FileText v-else :size="16" class="text-greys-900" />
+                <FileText v-else :size="16" class="text-heading" />
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-2">
                   <p
-                    class="text-xs text-greys-900 flex-1 wrap-break-word min-w-0"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-heading flex-1 wrap-break-word min-w-0 leading-normal"
                   >
                     <span
                       :class="[
@@ -210,40 +220,39 @@
                     >
                       {{ activity.type === 'ai-summary' ? 'MotorKAI' : activity.user }}
                     </span>
-                    <span v-if="activity.type === 'note'" class="text-greys-500">
+                    <span v-if="activity.type === 'note'" class="text-sub">
                       added a note</span
                     >
                     <span
                       v-else-if="activity.type === 'created'"
-                      class="text-greys-500"
+                      class="text-sub"
                     >
                       {{ activity.message || activity.action }}</span
                     >
-                    <span v-else-if="activity.type === 'call'" class="text-greys-500">
+                    <span v-else-if="activity.type === 'call'" class="text-sub">
                       {{ ' ' + (activity.message || activity.action) }}</span
                     >
                     <span
                       v-else-if="activity.type === 'ai-summary'"
-                      class="text-greys-500"
+                      class="text-sub"
                     >
                       summary</span
                     >
-                    <span v-else-if="activity.type === 'email'" class="text-greys-500">
+                    <span v-else-if="activity.type === 'email'" class="text-sub">
                       {{ ' sent an email' }}</span
                     >
                     <span
                       v-else-if="activity.type === 'whatsapp'"
-                      class="text-greys-500"
+                      class="text-sub"
                     >
                       {{ ' sent a WhatsApp message' }}</span
                     >
-                    <span v-else class="text-greys-500">
+                    <span v-else class="text-sub">
                       {{ ' ' + (activity.message || activity.action) }}</span
                     >
                   </p>
                   <p
-                    class="text-xs text-greys-500 text-right shrink-0 w-14"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-sub text-right shrink-0 w-14 leading-normal"
                   >
                     {{ activity.time }}
                   </p>
@@ -253,8 +262,7 @@
                   class="mt-2 bg-[#fef7ee] rounded-lg p-4 backdrop-blur-sm"
                 >
                   <p
-                    class="text-xs text-greys-900 wrap-break-word"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-heading wrap-break-word leading-normal"
                   >
                     {{ activity.message || activity.content }}
                   </p>
@@ -264,8 +272,7 @@
                   class="mt-2 bg-blue-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-xs text-greys-900 wrap-break-word"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-heading wrap-break-word leading-normal"
                   >
                     {{ activity.content }}
                   </p>
@@ -275,8 +282,7 @@
                   class="mt-2 bg-green-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-xs text-greys-900 wrap-break-word"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-heading wrap-break-word leading-normal"
                   >
                     {{ activity.content }}
                   </p>
@@ -286,8 +292,7 @@
                   class="mt-2 bg-purple-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-xs text-greys-900 wrap-break-word"
-                    style="line-height: var(--leading-5)"
+                    class="text-sm text-heading wrap-break-word leading-normal"
                   >
                     {{ activity.message || activity.content }}
                   </p>
@@ -301,8 +306,8 @@
       <!-- Empty State -->
       <div v-else class="py-8 flex-1 flex flex-col justify-center min-h-full">
         <div class="text-center">
-          <Clock :size="32" class="mx-auto text-greys-400 mb-2" />
-          <p class="text-sm text-greys-500">No activity yet</p>
+          <Clock :size="32" class="mx-auto text-sub mb-2" />
+          <p class="text-sm text-sub">No activity yet</p>
         </div>
       </div>
     </div>
@@ -311,6 +316,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { Button } from '@motork/component-library/future/primitives'
 import { 
   StickyNote, 
   Mail, 

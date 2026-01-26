@@ -30,7 +30,19 @@ export const calendarTeams = [
   { id: 4, name: 'Service', dealershipId: 2, dealership: 'Firenze' },
   { id: 5, name: 'Sales (New)', dealershipId: 3, dealership: 'Milano' },
   { id: 6, name: 'Sales (Rent)', dealershipId: 2, dealership: 'Firenze' },
-  { id: 7, name: 'Sales (Used)', dealershipId: 2, dealership: 'Firenze' }
+  { id: 7, name: 'Sales (Used)', dealershipId: 2, dealership: 'Firenze' },
+  { id: 8, name: 'Sales (New)', dealershipId: 2, dealership: 'Firenze' },
+  { id: 9, name: 'Service', dealershipId: 1, dealership: 'Bari' },
+  { id: 10, name: 'Sales (New)', dealershipId: 1, dealership: 'Bari' },
+  { id: 11, name: 'BDC', dealershipId: 4, dealership: 'Roma' },
+  { id: 12, name: 'Sales (New)', dealershipId: 4, dealership: 'Roma' },
+  { id: 13, name: 'Service', dealershipId: 4, dealership: 'Roma' },
+  { id: 14, name: 'Sales (New)', dealershipId: 5, dealership: 'Trento' },
+  { id: 15, name: 'Service', dealershipId: 5, dealership: 'Trento' },
+  { id: 16, name: 'General', dealershipId: 2, dealership: 'Firenze' },
+  { id: 17, name: 'General', dealershipId: 1, dealership: 'Bari' },
+  { id: 18, name: 'General', dealershipId: 4, dealership: 'Roma' },
+  { id: 19, name: 'General', dealershipId: 5, dealership: 'Trento' }
 ]
 
 export const mockCalendarEvents = [

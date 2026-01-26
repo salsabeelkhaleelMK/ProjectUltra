@@ -2,7 +2,7 @@
   <div 
     class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
   >
-    <h3 class="text-base font-medium mb-4 text-greys-900 -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Requested Car</h3>
+    <h3 class="text-base font-medium mb-4 text-heading -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Requested Car</h3>
     
     <!-- Vehicle Image -->
     <div 
@@ -27,20 +27,20 @@
     <div class="space-y-2 mb-4">
       <div class="flex justify-between items-start gap-2">
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-greys-900 truncate">
+          <p class="text-sm font-medium text-heading truncate">
             {{ vehicleName }}
           </p>
-          <p v-if="vehicle.year" class="text-xs text-greys-500">
+          <p v-if="vehicle.year" class="text-sm text-sub">
             {{ vehicle.year }}
           </p>
         </div>
-        <p v-if="vehicle.price" class="text-sm font-semibold text-greys-900 shrink-0">
+        <p v-if="vehicle.price" class="text-sm font-semibold text-heading shrink-0">
           €{{ formatPrice(vehicle.price) }}
         </p>
       </div>
       
       <!-- Additional vehicle details -->
-      <div v-if="vehicle.mileage || vehicle.fuelType" class="flex gap-3 text-xs text-greys-500">
+      <div v-if="vehicle.mileage || vehicle.fuelType" class="flex gap-3 text-sm text-sub">
         <span v-if="vehicle.mileage">{{ formatMileage(vehicle.mileage) }} km</span>
         <span v-if="vehicle.fuelType">{{ vehicle.fuelType }}</span>
       </div>
@@ -48,7 +48,7 @@
     
     <!-- Source Badge -->
     <div v-if="source" class="mb-4">
-      <Badge variant="secondary" class="text-xs">
+      <Badge variant="secondary" class="text-sm">
         {{ source }}
       </Badge>
     </div>
@@ -59,8 +59,8 @@
       class="rounded-btn p-3 mb-4"
       style="background-color: var(--base-muted, #f5f5f5);"
     >
-      <p class="text-xs text-greys-500 mb-1">Request message</p>
-      <p class="text-sm text-greys-900">{{ requestMessage }}</p>
+      <p class="text-sm text-sub mb-1">Request message</p>
+      <p class="text-sm text-heading">{{ requestMessage }}</p>
     </div>
     
     <!-- Action Buttons -->
@@ -162,12 +162,3 @@ const handleImageError = () => {
 }
 </script>
 
-<style scoped>
-.text-greys-500 {
-  color: #6B7280;
-}
-
-.text-greys-900 {
-  color: #111827;
-}
-</style>
