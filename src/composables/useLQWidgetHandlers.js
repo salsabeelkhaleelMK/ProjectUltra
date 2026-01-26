@@ -3,7 +3,7 @@
  * Coordinates between call and outcome composables
  * @param {Object} currentUserRef - optional ref to current user for "Updated by" in success state
  */
-export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef, leadsStore, currentUserRef) {
+export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contactAttemptsRef, maxContactAttemptsRef, leadsStore, currentUserRef, enrichLeadDataRef = null) {
   const { callData, extractedData, isCallActive, callEnded } = callState
   const {
     showOutcomeSelection,
@@ -232,12 +232,29 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
         }
       : assignment.value
 
+    // Prepare survey/enrich data from enrichLeadData if available, otherwise fall back to surveyResponses
+    let enrichData = null
+    if (enrichLeadDataRef?.value) {
+      const data = enrichLeadDataRef.value
+      enrichData = {
+        interestLevel: data.interestLevel,
+        purchaseTimeline: data.purchaseTimeline,
+        budgetRange: data.budgetRange,
+        hasTradeIn: data.hasTradeIn,
+        tradeInModel: data.tradeInModel,
+        financingOption: data.financingOption,
+        additionalNotes: data.additionalNotes
+      }
+    } else if (surveyCompleted.value && surveyResponses.value) {
+      enrichData = surveyResponses.value
+    }
+
     emit('qualified', {
       assignment: assignmentData,
       preferences: preferences.value,
       scheduleAppointment,
       appointmentData,
-      surveyData: surveyCompleted.value ? surveyResponses.value : null
+      surveyData: enrichData
     })
 
     let statusText = `Qualified - Assigned to ${assigneeName}`
