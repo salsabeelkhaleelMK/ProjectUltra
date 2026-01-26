@@ -5,27 +5,90 @@
       </template>
     </PageHeader>
     
-    <div class="p-4 md:p-8">
-      <UnifiedAddForm ref="formRef" @submit="handleSubmit" />
+    <div class="px-4 md:px-8 py-4">
+      <div class="max-w-6xl mx-auto">
+        <!-- Custom Tabs matching Tabs.vue style -->
+        <div class="flex gap-0 md:gap-8 text-fluid-sm font-medium text-sub py-1 mb-4 border-b border-border">
+          <div 
+            v-for="tab in tabs"
+            :key="tab.value"
+            @click="activeTab = tab.value"
+            class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5 -mb-px"
+            :class="activeTab === tab.value ? 'border-brand-dark text-brand-darkDarker' : 'border-transparent hover:text-body hover:border-slate-200'"
+          >
+            <!-- Icon -->
+            <i 
+              :class="[tab.icon, 'text-sm md:text-sm', activeTab === tab.value ? 'text-brand-darkDarker' : 'text-sub']"
+            ></i>
+            
+            <!-- Label (hidden on mobile, visible on desktop) -->
+            <span class="hidden md:inline whitespace-nowrap" :class="activeTab === tab.value ? 'text-brand-darkDarker' : ''">{{ tab.label }}</span>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="mt-6">
+          <div v-if="activeTab === 'manual'">
+            <ManualTab ref="manualTabRef" @submit="handleSubmit" />
+          </div>
+
+          <div v-if="activeTab === 'upload'">
+            <UploadTab />
+          </div>
+
+          <div v-if="activeTab === 'integrations'">
+            <IntegrationsTab />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import UnifiedAddForm from '@/components/addnew/UnifiedAddForm.vue'
+import ManualTab from '@/components/addnew/ManualTab.vue'
+import UploadTab from '@/components/addnew/UploadTab.vue'
+import IntegrationsTab from '@/components/addnew/IntegrationsTab.vue'
+import { useTabPersistence } from '@/composables/useTabPersistence'
 
 const router = useRouter()
 const customersStore = useCustomersStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 
-const formRef = ref(null)
+const manualTabRef = ref(null)
+const { activeTab } = useTabPersistence('add-new-active-tab', 'manual')
+
+// Ensure manual is automatically selected on mount
+onMounted(() => {
+  if (!activeTab.value || !['manual', 'upload', 'integrations'].includes(activeTab.value)) {
+    activeTab.value = 'manual'
+  }
+})
+
+const tabs = [
+  {
+    value: 'manual',
+    label: 'Manual',
+    icon: 'fa-solid fa-pen'
+  },
+  {
+    value: 'upload',
+    label: 'Upload',
+    icon: 'fa-solid fa-upload'
+  },
+  {
+    value: 'integrations',
+    label: 'Integrations',
+    icon: 'fa-solid fa-plug'
+  }
+]
 
 const handleSubmit = async (formData) => {
   try {
@@ -125,8 +188,8 @@ const handleSubmit = async (formData) => {
     alert('Failed to save. Please try again.')
     
     // Reset submitting state
-    if (formRef.value) {
-      formRef.value.resetSubmitting()
+    if (manualTabRef.value) {
+      manualTabRef.value.resetSubmitting()
     }
   }
 }

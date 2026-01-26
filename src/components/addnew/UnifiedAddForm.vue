@@ -1,95 +1,82 @@
 <template>
-  <form v-click-outside="() => (showResults = false)" @submit.prevent="handleSubmit" class="max-w-4xl mx-auto">
+  <form v-click-outside="() => (showResults = false)" @submit.prevent="handleSubmit" class="w-full">
     <!-- Contact Section -->
-    <div class="bg-surface border border-E5E7EB rounded-lg p-6 mb-6">
-      <h3 class="font-bold text-gray-800 mb-4">Contact Information</h3>
+    <div class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h3 class="font-bold text-heading text-fluid-sm mb-3">Contact Information</h3>
       
       <!-- Toggle and Search (hidden if hideContactSelection is true) -->
       <div v-if="!hideContactSelection">
         <!-- Toggle: Existing vs New -->
-        <div class="flex gap-6 mb-6">
+        <div class="flex gap-4 mb-4">
           <label class="flex items-center gap-2 cursor-pointer">
             <input 
               type="radio" 
               v-model="contactMode" 
               value="new"
-              class="w-4 h-4 text-blue-600"
+              class="w-3.5 h-3.5 text-blue-600"
             />
-            <span class="text-sm font-medium text-body">New Contact</span>
+            <span class="text-fluid-xs font-medium text-body">New Contact</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input 
               type="radio" 
               v-model="contactMode" 
               value="existing"
-              class="w-4 h-4 text-blue-600"
+              class="w-3.5 h-3.5 text-blue-600"
             />
-            <span class="text-sm font-medium text-body">Existing Contact</span>
+            <span class="text-fluid-xs font-medium text-body">Existing Contact</span>
           </label>
         </div>
         
         <!-- Contact Search (if existing) -->
-        <div v-if="contactMode === 'existing'" class="space-y-4">
+        <div v-if="contactMode === 'existing'" class="space-y-3">
           <div class="relative">
-            <label class="block label-upper mb-2">Search Contact</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Search Contact</label>
             <div class="relative">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
               <input 
                 v-model="searchQuery"
                 @input="handleSearch"
                 @focus="showResults = true"
                 type="text" 
                 placeholder="Search by name, email, or company..." 
-                class="input pl-10"
+                class="input pl-9 text-fluid-xs py-1.5"
               />
             </div>
             
             <!-- Autocomplete Dropdown -->
             <div 
               v-if="showResults && filteredContacts.length > 0"
-              class="absolute z-50 w-full mt-2 bg-surface border border-E5E7EB rounded-lg shadow-lg max-h-80 overflow-y-auto"
+              class="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto"
             >
               <div 
                 v-for="contact in filteredContacts" 
                 :key="contact.id"
                 @click="selectContact(contact)"
-                class="flex items-center gap-3 p-4 hover:bg-surfaceSecondary cursor-pointer transition-colors border-b border last:border-b-0"
+                class="flex items-center gap-2 p-3 hover:bg-surfaceSecondary cursor-pointer transition-colors border-b border-border last:border-b-0"
               >
-                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold shrink-0">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
                   {{ contact.initials }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-gray-800 truncate">{{ contact.name }}</div>
-                  <div class="text-meta truncate">{{ contact.email }}</div>
-                  <div v-if="contact.company" class="text-xs text-gray-400 truncate">{{ contact.company }}</div>
+                  <div class="font-semibold text-heading text-fluid-xs truncate">{{ contact.name }}</div>
+                  <div class="text-meta text-[10px] truncate">{{ contact.email }}</div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
-              </div>
-            </div>
-            
-            <!-- No Results -->
-            <div 
-              v-if="showResults && searchQuery && filteredContacts.length === 0"
-              class="absolute z-50 w-full mt-2 bg-surface border border-E5E7EB rounded-lg shadow-lg p-4"
-            >
-              <div class="text-center text-gray-500">
-                <i class="fa-solid fa-search text-2xl mb-2"></i>
-                <p class="text-sm">No contacts found matching "{{ searchQuery }}"</p>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-[10px]"></i>
               </div>
             </div>
           </div>
           
           <!-- Selected Contact Display -->
-          <div v-if="selectedContact" class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <div v-if="selectedContact" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
                   {{ selectedContact.initials }}
                 </div>
                 <div>
-                  <div class="font-bold text-gray-800">{{ selectedContact.name }}</div>
-                  <div class="text-content text-gray-600">{{ selectedContact.email }}</div>
-                  <div v-if="selectedContact.company" class="text-xs text-gray-500">{{ selectedContact.company }}</div>
+                  <div class="font-bold text-heading text-fluid-xs">{{ selectedContact.name }}</div>
+                  <div class="text-body text-[11px] text-gray-600">{{ selectedContact.email }}</div>
                 </div>
               </div>
               <button
@@ -97,258 +84,215 @@
                 @click="clearSelection"
                 class="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <i class="fa-solid fa-xmark text-xl"></i>
+                <i class="fa-solid fa-xmark text-sm"></i>
               </button>
             </div>
           </div>
         </div>
         
         <!-- Contact Form Fields (if new) -->
-        <div v-else class="space-y-4">
+        <div v-else class="space-y-3">
           <div>
-            <label class="block label-upper mb-2">
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">
               Contact Name <span class="text-red-500">*</span>
             </label>
             <input 
               v-model="contactFormData.name"
               type="text" 
               placeholder="Enter contact name..." 
-              class="input"
+              class="input text-fluid-xs py-1.5"
               :required="contactMode === 'new'"
             >
-            <p v-if="errors.name" class="text-red-500 text-xs mt-1">{{ errors.name }}</p>
+            <p v-if="errors.name" class="text-red-500 text-[10px] mt-1">{{ errors.name }}</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                Email <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="contactFormData.email"
+                type="email" 
+                placeholder="contact@example.com" 
+                class="input text-fluid-xs py-1.5"
+                :required="contactMode === 'new'"
+              >
+              <p v-if="errors.email" class="text-red-500 text-[10px] mt-1">{{ errors.email }}</p>
+            </div>
+            
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Phone</label>
+              <input 
+                v-model="contactFormData.phone"
+                type="tel" 
+                placeholder="+49..." 
+                class="input text-fluid-xs py-1.5"
+              >
+            </div>
           </div>
           
           <div>
-            <label class="block label-upper mb-2">
-              Email <span class="text-red-500">*</span>
-            </label>
-            <input 
-              v-model="contactFormData.email"
-              type="email" 
-              placeholder="contact@example.com" 
-              class="input"
-              :required="contactMode === 'new'"
-            >
-            <p v-if="errors.email" class="text-red-500 text-xs mt-1">{{ errors.email }}</p>
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Phone</label>
-            <input 
-              v-model="contactFormData.phone"
-              type="tel" 
-              placeholder="+49..." 
-              class="input"
-            >
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Company (optional)</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Company (optional)</label>
             <input 
               v-model="contactFormData.company"
               type="text" 
               placeholder="Company name..." 
-              class="input"
+              class="input text-fluid-xs py-1.5"
             >
-            <p class="text-xs text-gray-500 mt-1">Leave empty for individual contacts</p>
           </div>
         </div>
       </div>
 
       <!-- Read-only Selected Contact Display (shown if selection is hidden) -->
-      <div v-else-if="selectedContact" class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-4">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+      <div v-else-if="selectedContact" class="bg-surfaceSecondary border border-border rounded-lg p-3">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
             {{ selectedContact.initials }}
           </div>
           <div>
-            <div class="font-bold text-gray-800">{{ selectedContact.name }}</div>
-            <div class="text-sm text-gray-600">{{ selectedContact.email }}</div>
-            <div v-if="selectedContact.company" class="text-xs text-gray-500">{{ selectedContact.company }}</div>
+            <div class="font-bold text-heading text-fluid-xs">{{ selectedContact.name }}</div>
+            <div class="text-[11px] text-body text-gray-600">{{ selectedContact.email }}</div>
           </div>
         </div>
       </div>
     </div>
     
     <!-- Vehicle Details Section (Optional) -->
-    <div class="bg-surface border border-E5E7EB rounded-lg p-6 mb-6">
-      <h3 class="font-bold text-gray-800 mb-4">
+    <div class="bg-surface border border-border rounded-xl p-4 mb-4">
+      <h3 class="font-bold text-heading text-fluid-sm mb-3">
         Vehicle Details 
-        <span class="text-meta font-normal">(Optional)</span>
+        <span class="text-meta font-normal text-[11px]">(Optional)</span>
       </h3>
       
       <!-- Basic Information -->
-      <div class="mb-6">
-        <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">Basic Information</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="mb-4">
+        <h4 class="text-[10px] font-bold uppercase text-sub tracking-wider mb-2.5">Basic Information</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label class="block label-upper mb-2">Brand</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Brand</label>
             <input 
               v-model="vehicleFormData.brand"
               type="text" 
-              placeholder="e.g., Volkswagen" 
-              class="input"
+              placeholder="e.g., VW" 
+              class="input text-fluid-xs py-1.5"
             >
           </div>
           
           <div>
-            <label class="block label-upper mb-2">Model</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Model</label>
             <input 
               v-model="vehicleFormData.model"
               type="text" 
               placeholder="e.g., ID.4" 
-              class="input"
+              class="input text-fluid-xs py-1.5"
             >
           </div>
           
           <div>
-            <label class="block label-upper mb-2">Year</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Year</label>
             <input 
               v-model="vehicleFormData.year"
               type="number" 
               min="1900"
               :max="new Date().getFullYear() + 1"
-              placeholder="e.g., 2024" 
-              class="input"
+              placeholder="2024" 
+              class="input text-fluid-xs py-1.5"
             >
           </div>
           
           <div>
-            <label class="block label-upper mb-2">Price</label>
+            <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Price</label>
             <input 
               v-model="vehicleFormData.price"
               type="number" 
               min="0"
-              placeholder="e.g., 45000" 
-              class="input"
+              placeholder="45000" 
+              class="input text-fluid-xs py-1.5"
             >
-          </div>
-          
-          <div class="md:col-span-2">
-            <label class="block label-upper mb-2">Request Message</label>
-            <textarea 
-              v-model="vehicleFormData.requestMessage"
-              rows="3"
-              placeholder="Customer's message or notes..." 
-              class="input resize-none"
-            ></textarea>
           </div>
         </div>
       </div>
       
-      <!-- Request Details -->
-      <div class="mb-6">
-        <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">Request Details</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block label-upper mb-2">Request Type</label>
-            <select v-model="vehicleFormData.requestType" class="input">
-              <option value="">Select type</option>
-              <option value="Quotation">Quotation</option>
-              <option value="Test Drive">Test Drive</option>
-              <option value="Information">Information</option>
-              <option value="Purchase">Purchase</option>
-            </select>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Request Details -->
+        <div>
+          <h4 class="text-[10px] font-bold uppercase text-sub tracking-wider mb-2.5">Request Details</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Request Type</label>
+              <select v-model="vehicleFormData.requestType" class="input text-fluid-xs py-1.5">
+                <option value="">Select type</option>
+                <option value="Quotation">Quotation</option>
+                <option value="Test Drive">Test Drive</option>
+                <option value="Information">Information</option>
+                <option value="Purchase">Purchase</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Source</label>
+              <select v-model="vehicleFormData.source" class="input text-fluid-xs py-1.5">
+                <option value="">Select source</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Website">Website</option>
+                <option value="Phone">Phone</option>
+                <option value="Walk-in">Walk-in</option>
+                <option value="Referral">Referral</option>
+              </select>
+            </div>
           </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Source</label>
-            <select v-model="vehicleFormData.source" class="input">
-              <option value="">Select source</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Website">Website</option>
-              <option value="Phone">Phone</option>
-              <option value="Walk-in">Walk-in</option>
-              <option value="Referral">Referral</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Dealership</label>
-            <input 
-              v-model="vehicleFormData.dealership"
-              type="text" 
-              placeholder="e.g., Berlin Mitte" 
-              class="input"
-            >
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Channel</label>
-            <select v-model="vehicleFormData.channel" class="input">
-              <option value="Email">Email</option>
-              <option value="Phone">Phone</option>
-              <option value="WhatsApp">WhatsApp</option>
-              <option value="SMS">SMS</option>
-            </select>
+        </div>
+        
+        <!-- Vehicle Specs -->
+        <div>
+          <h4 class="text-[10px] font-bold uppercase text-sub tracking-wider mb-2.5">Vehicle Specs</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Fuel Type</label>
+              <select v-model="vehicleFormData.fuelType" class="input text-fluid-xs py-1.5">
+                <option value="">Select fuel</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Gear Type</label>
+              <select v-model="vehicleFormData.gearType" class="input text-fluid-xs py-1.5">
+                <option value="">Select gear</option>
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
-      
-      <!-- Vehicle Details -->
-      <div>
-        <h4 class="text-xs font-bold uppercase text-gray-500 tracking-wider mb-4">Vehicle Details</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block label-upper mb-2">Fuel Type</label>
-            <select v-model="vehicleFormData.fuelType" class="input">
-              <option value="">Select fuel type</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Electric">Electric</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Gear Type</label>
-            <select v-model="vehicleFormData.gearType" class="input">
-              <option value="">Select gear type</option>
-              <option value="Manual">Manual</option>
-              <option value="Automatic">Automatic</option>
-              <option value="Semi-Automatic">Semi-Automatic</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Kilometers</label>
-            <input 
-              v-model="vehicleFormData.kilometers"
-              type="number" 
-              min="0"
-              placeholder="e.g., 50000" 
-              class="input"
-            >
-          </div>
-          
-          <div>
-            <label class="block label-upper mb-2">Stock Days</label>
-            <input 
-              v-model="vehicleFormData.stockDays"
-              type="number" 
-              min="0"
-              placeholder="Days in stock" 
-              class="input"
-            >
-            <p class="text-xs text-gray-500 mt-1">Leave empty if out of stock</p>
-          </div>
-        </div>
+
+      <div class="mt-4">
+        <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">Request Message</label>
+        <textarea 
+          v-model="vehicleFormData.requestMessage"
+          rows="2"
+          placeholder="Customer's message or notes..." 
+          class="input resize-none text-fluid-xs py-1.5"
+        ></textarea>
       </div>
     </div>
     
     <!-- Task Creation Checkboxes -->
-    <div class="bg-surfaceSecondary border border-E5E7EB rounded-lg p-6 mb-6">
-      <h3 class="font-bold text-gray-800 mb-4">Create Task (Optional)</h3>
-      <p class="text-meta mb-4">
+    <div class="bg-surfaceSecondary border border-border rounded-xl p-4 mb-4">
+      <h3 class="font-bold text-heading text-fluid-sm mb-2">Create Task (Optional)</h3>
+      <p class="text-meta text-[11px] mb-3">
         Convert this contact to a lead or opportunity. 
-        <span class="font-semibold">Requires vehicle details to be filled.</span>
+        <span class="font-semibold">Requires vehicle details.</span>
       </p>
       
-      <div v-if="!forceType" class="space-y-3">
+      <div v-if="!forceType" class="flex flex-col md:flex-row gap-3">
         <div 
-          class="flex items-center gap-3 p-3 bg-surface border border-E5E7EB rounded-lg transition-all"
+          class="flex-1 flex items-center gap-3 p-2.5 bg-surface border border-border rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-blue-50 hover:border-blue-300' : 'cursor-not-allowed opacity-60'"
         >
           <Checkbox
@@ -358,17 +302,17 @@
           />
           <div>
             <span 
-              class="font-medium"
-              :class="hasVehicleData ? 'text-gray-800' : 'text-gray-400'"
+              class="text-fluid-xs font-bold"
+              :class="hasVehicleData ? 'text-heading' : 'text-gray-400'"
             >
               Mark as Lead
             </span>
-            <p class="text-xs text-gray-500">Create a new lead task with vehicle details</p>
+            <p class="text-[10px] text-meta">New lead task</p>
           </div>
         </div>
         
         <div 
-          class="flex items-center gap-3 p-3 bg-surface border border-E5E7EB rounded-lg transition-all"
+          class="flex-1 flex items-center gap-3 p-2.5 bg-surface border border-border rounded-lg transition-all"
           :class="hasVehicleData ? 'cursor-pointer hover:bg-purple-50 hover:border-purple-300' : 'cursor-not-allowed opacity-60'"
         >
           <Checkbox
@@ -378,36 +322,30 @@
           />
           <div>
             <span 
-              class="font-medium"
-              :class="hasVehicleData ? 'text-gray-800' : 'text-gray-400'"
+              class="text-fluid-xs font-bold"
+              :class="hasVehicleData ? 'text-heading' : 'text-gray-400'"
             >
               Mark as Opportunity
             </span>
-            <p class="text-xs text-gray-500">Create a new opportunity task with vehicle details</p>
+            <p class="text-[10px] text-meta">New opportunity</p>
           </div>
         </div>
       </div>
 
       <!-- If forceType is set, just show confirmation -->
-      <div v-else class="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-        <i class="fa-solid fa-info-circle text-blue-600"></i>
+      <div v-else class="p-2.5 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+        <i class="fa-solid fa-info-circle text-blue-600 text-xs"></i>
         <div>
-          <p class="text-sm font-medium text-blue-900">
+          <p class="text-[11px] font-bold text-blue-900">
             Converting to {{ forceType === 'lead' ? 'Lead' : 'Opportunity' }}
           </p>
-          <p class="text-xs text-blue-700">Vehicle details are required for this action.</p>
         </div>
       </div>
       
-      <div v-if="!hasVehicleData" class="mt-3 flex items-start gap-2 text-xs text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-3">
+      <div v-if="!hasVehicleData" class="mt-2 flex items-start gap-2 text-[10px] text-orange-600 bg-orange-50 border border-orange-200 rounded-lg p-2">
         <i class="fa-solid fa-exclamation-triangle mt-0.5"></i>
-        <span>Fill in vehicle details above to enable lead/opportunity creation</span>
+        <span>Fill in vehicle details to enable lead/opportunity creation</span>
       </div>
-      
-      <p v-if="!markAsLead && !markAsOpportunity && hasVehicleData" class="text-xs text-gray-500 mt-3 italic">
-        <i class="fa-solid fa-info-circle mr-1"></i>
-        If neither is selected, only the contact and vehicle information will be saved
-      </p>
     </div>
   </form>
 </template>
