@@ -74,6 +74,35 @@
     "disqualify": "Disqualify",
     "requalifyAsLead": "Requalify as Lead",
     "comingSoon": "Coming Soon"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "eventType": {
+      "label": "Event type",
+      "placeholder": "Select event type",
+      "options": {
+        "showroomVisit": "Showroom Visit",
+        "testDrive": "Test Drive",
+        "videoCall": "Video Call",
+        "homeVisit": "Home Visit",
+        "closingMeeting": "Closing Meeting"
+      }
+    },
+    "duration": {
+      "label": "Duration",
+      "15min": "15min",
+      "30min": "30min",
+      "60min": "60min",
+      "90min": "90min",
+      "custom": "Custom"
+    },
+    "timeSlots": {
+      "noSlots": "No available time slots for this date",
+      "selectDate": "Select a date to see available time slots"
+    },
+    "calendar": {
+      "days": ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    }
   }
 }
 

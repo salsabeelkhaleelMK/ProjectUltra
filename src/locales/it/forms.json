@@ -74,6 +74,35 @@
     "disqualify": "Disqualifica",
     "requalifyAsLead": "Riqualifica come Lead",
     "comingSoon": "Prossimamente"
+  },
+  "schedule": {
+    "title": "Programma",
+    "eventType": {
+      "label": "Tipo di evento",
+      "placeholder": "Seleziona tipo di evento",
+      "options": {
+        "showroomVisit": "Visita Showroom",
+        "testDrive": "Prova su Strada",
+        "videoCall": "Videochiamata",
+        "homeVisit": "Visita a Domicilio",
+        "closingMeeting": "Riunione di Chiusura"
+      }
+    },
+    "duration": {
+      "label": "Durata",
+      "15min": "15min",
+      "30min": "30min",
+      "60min": "60min",
+      "90min": "90min",
+      "custom": "Personalizzato"
+    },
+    "timeSlots": {
+      "noSlots": "Nessuno slot orario disponibile per questa data",
+      "selectDate": "Seleziona una data per vedere gli slot orari disponibili"
+    },
+    "calendar": {
+      "days": ["DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"]
+    }
   }
 }
 

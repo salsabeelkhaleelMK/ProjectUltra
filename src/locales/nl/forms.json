@@ -74,6 +74,35 @@
     "disqualify": "Diskwalificeren",
     "requalifyAsLead": "Herkwalificeren als Lead",
     "comingSoon": "Binnenkort Beschikbaar"
+  },
+  "schedule": {
+    "title": "Inplannen",
+    "eventType": {
+      "label": "Type evenement",
+      "placeholder": "Selecteer type evenement",
+      "options": {
+        "showroomVisit": "Showroom Bezoek",
+        "testDrive": "Proefrit",
+        "videoCall": "Videogesprek",
+        "homeVisit": "Huisbezoek",
+        "closingMeeting": "Afsluitbijeenkomst"
+      }
+    },
+    "duration": {
+      "label": "Duur",
+      "15min": "15min",
+      "30min": "30min",
+      "60min": "60min",
+      "90min": "90min",
+      "custom": "Aangepast"
+    },
+    "timeSlots": {
+      "noSlots": "Geen beschikbare tijdslots voor deze datum",
+      "selectDate": "Selecteer een datum om beschikbare tijdslots te zien"
+    },
+    "calendar": {
+      "days": ["ZON", "MAA", "DIN", "WOE", "DON", "VRI", "ZAT"]
+    }
   }
 }
 
