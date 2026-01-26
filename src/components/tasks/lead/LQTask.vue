@@ -188,7 +188,7 @@
           <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
             <!-- When did you call field -->
             <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
@@ -300,7 +300,7 @@
               </div>
               <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
                 <div>
-                  <Label class="block text-sm font-semibold mb-1.5">Date</Label>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Date</Label>
                   <Input type="date" v-model="customDate" class="w-full" />
                 </div>
                 <div>
@@ -315,7 +315,7 @@
           <div v-if="selectedOutcome === 'not-valid'" class="space-y-4">
             <!-- When did you call field -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
@@ -323,8 +323,8 @@
               />
             </div>
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <div>
-                <Label class="block text-sm font-semibold mb-2">Category</Label>
+              <div class="mb-4">
+                <Label class="block text-sm font-medium text-body mb-1.5">Category</Label>
                 <div class="flex gap-4">
                   <Label class="flex items-center gap-2 cursor-pointer">
                     <input
@@ -347,7 +347,7 @@
                 </div>
               </div>
               <div>
-                <Label class="block text-sm font-medium text-body mb-2">Failure Reason</Label>
+                <Label class="block text-sm font-medium text-body mb-1.5">Failure Reason</Label>
                 <Select v-model="disqualifyReason">
                   <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select a reason..." />
@@ -371,189 +371,140 @@
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
             <!-- When did you call field -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <Label class="block text-sm font-semibold mb-2">When did you call?</Label>
+              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
                 class="w-full"
               />
             </div>
-            <!-- Call Notes Card -->
+            <!-- Enrich Lead Card -->
             <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Call notes</h5>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Left: Free text box -->
+              <h5 class="font-semibold text-heading text-sm mb-4">Enrich lead</h5>
+              <div class="space-y-4">
+                <!-- Customer interest level -->
                 <div>
-                  <Textarea 
-                    v-model="inlineNoteText"
-                    rows="8" 
-                    class="w-full min-h-[200px]"
-                    placeholder="Enter your notes..."
+                  <Label class="block text-sm font-medium text-body mb-1.5">Customer interest level?</Label>
+                  <div class="flex gap-4">
+                    <Label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        v-model="enrichLeadData.interestLevel"
+                        value="High"
+                        class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
+                      />
+                      <span class="text-sm text-body">High</span>
+                    </Label>
+                    <Label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        v-model="enrichLeadData.interestLevel"
+                        value="Medium"
+                        class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
+                      />
+                      <span class="text-sm text-body">Medium</span>
+                    </Label>
+                    <Label class="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        v-model="enrichLeadData.interestLevel"
+                        value="Low"
+                        class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
+                      />
+                      <span class="text-sm text-body">Low</span>
+                    </Label>
+                  </div>
+                </div>
+
+                <!-- Expected purchase timeline -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Expected purchase timeline?</Label>
+                  <Select v-model="enrichLeadData.purchaseTimeline">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select timeline" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Immediate">Immediate</SelectItem>
+                      <SelectItem value="Within 1 month">Within 1 month</SelectItem>
+                      <SelectItem value="Within 3 months">Within 3 months</SelectItem>
+                      <SelectItem value="Within 6 months">Within 6 months</SelectItem>
+                      <SelectItem value="Just browsing">Just browsing</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <!-- Budget range -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Budget range (if discussed)?</Label>
+                  <Select v-model="enrichLeadData.budgetRange">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select budget range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Under €30k">Under €30k</SelectItem>
+                      <SelectItem value="€30k-€50k">€30k-€50k</SelectItem>
+                      <SelectItem value="€50k-€80k">€50k-€80k</SelectItem>
+                      <SelectItem value="€80k+">€80k+</SelectItem>
+                      <SelectItem value="Not discussed">Not discussed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <!-- Trade in -->
+                <div class="space-y-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="enrichLeadData.hasTradeIn"
+                      class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
+                      style="accent-color: var(--brand-blue);"
+                    />
+                    <span class="text-sm font-medium text-body">Trade in?</span>
+                  </label>
+                  <Input
+                    v-model="enrichLeadData.tradeInModel"
+                    :disabled="!enrichLeadData.hasTradeIn"
+                    placeholder="Car brand and model"
+                    class="w-full h-10 min-h-10"
                   />
                 </div>
-                
-                <!-- Right: Form elements -->
-                <div class="space-y-4">
-                  <!-- Interest Level -->
-                  <div>
-                    <Label class="block text-sm font-medium text-body mb-1.5">Interest level</Label>
-                    <Select v-model="interestLevel">
-                      <SelectTrigger class="w-full h-10 min-h-10">
-                        <SelectValue placeholder="Interest level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <!-- Trade-in -->
-                  <div class="space-y-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        v-model="hasTradeIn"
-                        class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
-                        style="accent-color: var(--brand-blue);"
-                      />
-                      <span class="text-sm font-medium text-body">Trade-in</span>
-                    </label>
-                    <Input
-                      v-model="tradeInModel"
-                      :disabled="!hasTradeIn"
-                      placeholder="Trade-in"
-                      class="w-full h-10 min-h-10"
-                    />
-                  </div>
-                  
-                  <!-- Financing -->
-                  <div class="space-y-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        v-model="hasFinancing"
-                        class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
-                        style="accent-color: var(--brand-blue);"
-                      />
-                      <span class="text-sm font-medium text-body">Financing</span>
-                    </label>
-                    <Select v-model="financingOption" :disabled="!hasFinancing">
-                      <SelectTrigger class="w-full h-10 min-h-10">
-                        <SelectValue placeholder="Financing option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="FIN">Captive Financing</SelectItem>
-                        <SelectItem value="LEA">Leasing</SelectItem>
-                        <SelectItem value="LTR">Long-Term Rental</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+
+                <!-- Financing -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Financing?</Label>
+                  <Select v-model="enrichLeadData.financingOption">
+                    <SelectTrigger class="w-full h-10 min-h-10">
+                      <SelectValue placeholder="Select financing option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="FIN">Captive Financing</SelectItem>
+                      <SelectItem value="LEA">Leasing</SelectItem>
+                      <SelectItem value="LTR">Long-Term Rental</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <!-- Additional notes -->
+                <div>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Additional notes</Label>
+                  <Textarea 
+                    v-model="enrichLeadData.additionalNotes"
+                    rows="4" 
+                    class="w-full"
+                    placeholder="Any relevant information about customer interest or preferences..."
+                  />
                 </div>
               </div>
               
-              <div class="flex gap-2 mt-4">
+              <div class="flex justify-end gap-2 mt-4">
                 <Button
                   label="Save"
                   variant="primary"
                   size="small"
-                  @click="handleInlineNoteSave"
-                  class="!bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-                />
-                <AIButton
-                  label="Extract with AI"
-                  size="small"
-                  @click="handleExtractWithAI"
+                  @click="handleEnrichLeadSave"
                 />
               </div>
             </div>
-
-            <!-- Assign to Sales Section -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Assign to salesman</h5>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Dealership -->
-                <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Dealership</Label>
-                  <Select v-model="selectedDealership">
-                    <SelectTrigger class="w-full h-10 min-h-10">
-                      <SelectValue placeholder="Select dealership" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="dealership in availableDealerships"
-                        :key="dealership"
-                        :value="dealership"
-                      >
-                        {{ dealership }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <!-- Team -->
-                <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Team</Label>
-                  <Select v-model="selectedTeam">
-                    <SelectTrigger class="w-full h-10 min-h-10">
-                      <SelectValue placeholder="Select team" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="team in filteredTeams"
-                        :key="team.id"
-                        :value="team.id"
-                      >
-                        {{ team.name }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <!-- Assignee -->
-                <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Assignee</Label>
-                  <Select v-model="selectedAssignee">
-                    <SelectTrigger class="w-full h-10 min-h-10">
-                      <SelectValue placeholder="Select assignee" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="user in filteredAssignees"
-                        :key="user.id"
-                        :value="user.id"
-                      >
-                        {{ user.name }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Survey Section -->
-            <div v-if="showSurvey && !surveyCompleted" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <SurveyWidget
-                :questions="leadQualificationSurveyQuestions"
-                :initial-expanded="false"
-                @survey-completed="handleSurveyCompleted"
-                @survey-refused="handleSurveyRefused"
-                @not-responding="handleNotResponding"
-              />
-            </div>
-
-            <!-- Survey Completed Indicator -->
-            <div v-if="surveyCompleted" class="bg-green-50 border border-green-200 rounded-lg p-3">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-check-circle text-green-600 text-fluid-sm"></i>
-                <span class="text-sm font-semibold text-green-900">Survey completed</span>
-              </div>
-            </div>
-
-            <!-- Select team - REMOVED: Now handled by TaskAssignee component shown before LQTask -->
-            <!-- Team assignment is now managed via TaskAssignee component in LeadManagementWidget -->
-            <!-- The assignee data flows from lead.assignee prop, set by TaskAssignee component -->
 
             <!-- Qualification method -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
@@ -581,6 +532,96 @@
                   <input v-model="qualificationMethod" type="radio" value="assign-and-schedule" class="shrink-0" />
                   <span class="text-sm text-heading">Assign and schedule</span>
                 </label>
+              </div>
+            </div>
+
+            <!-- Assign only flow -->
+            <div
+              v-if="qualificationMethod === 'assign-only'"
+              class="space-y-4"
+            >
+              <!-- Event Type -->
+              <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+                <h5 class="font-semibold text-heading text-sm mb-4">Event type</h5>
+                <div class="space-y-4">
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Select event type</Label>
+                    <Select v-model="qualificationEventType">
+                      <SelectTrigger class="w-full h-10 min-h-10">
+                        <SelectValue placeholder="Select event type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          v-for="opt in qualificationEventTypeOptions"
+                          :key="opt.value"
+                          :value="opt.value"
+                        >
+                          {{ opt.label }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Note for sellers</Label>
+                    <Textarea 
+                      v-model="noteForSellers"
+                      rows="4" 
+                      class="w-full"
+                      placeholder="Add any notes or instructions for the sellers..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Assign appointment to -->
+              <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+                <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to :</h5>
+                
+                <!-- Teams -->
+                <div class="mb-4">
+                  <Label class="block text-sm font-medium text-body mb-1.5">Select Team</Label>
+                  <SelectMenu
+                    v-model="selectedTeamId"
+                    :items="teamSelectOptions"
+                    placeholder="Search and select team..."
+                    value-key="id"
+                    class="w-full"
+                  >
+                    <template #item="{ item }">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sub">{{ item.dealership || 'No location' }}</span>
+                        <span class="text-sub">→</span>
+                        <span class="font-medium text-heading">{{ item.name }}</span>
+                      </div>
+                    </template>
+                  </SelectMenu>
+                </div>
+
+                <!-- People -->
+                <div v-if="qualificationSelectedTeam">
+                  <Label class="block text-sm font-medium text-body mb-1.5">Select Salesperson (Optional)</Label>
+                  <p class="text-sm text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
+                  <SelectMenu
+                    v-model="selectedSalesmanId"
+                    :items="salespersonSelectOptions"
+                    placeholder="Search and select salesperson..."
+                    value-key="id"
+                    class="w-full"
+                  >
+                    <template #item="{ item }">
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
+                          :class="getRoleAvatarClass(item.role)"
+                        >
+                          {{ getInitials(item.name) }}
+                        </div>
+                        <span class="font-medium text-heading">{{ item.name }}</span>
+                      </div>
+                    </template>
+                  </SelectMenu>
+                </div>
               </div>
             </div>
 
@@ -623,7 +664,7 @@
                       class="px-3 py-2 text-sm font-medium"
                       :class="
                         qualificationDurationMinutes === 30
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -635,7 +676,7 @@
                       class="px-3 py-2 text-sm font-medium"
                       :class="
                         qualificationDurationMinutes === 60
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -662,7 +703,7 @@
                       class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'tomorrow'
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -674,7 +715,7 @@
                       class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'this-week'
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -686,7 +727,7 @@
                       class="px-4 py-2 text-sm font-medium"
                       :class="
                         qualificationDateRange === 'custom'
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -718,59 +759,51 @@
 
               <!-- Step 3: Recommended Teams and People (show when date range selected, with default selection) -->
               <div v-if="qualificationEventType && qualificationDateRange" class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-                <h5 class="font-semibold text-heading text-sm mb-2">Assign appointment to :</h5>
+                <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to :</h5>
                 
                 <!-- Teams -->
-                <div class="mb-3">
-                  <Label class="block text-sm font-medium text-body mb-2">Select Team</Label>
-                  <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <Button
-                      v-for="team in sortedTeams"
-                      :key="team.id"
-                      variant="outline"
-                      @click="qualificationSelectedTeam = team"
-                      class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
-                      :class="
-                        qualificationSelectedTeam && qualificationSelectedTeam.id === team.id
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : ''
-                      "
-                    >
-                      <span class="text-sub">{{ team.dealership || 'No location' }}</span>
-                      <span class="text-sub">→</span>
-                      <span class="font-medium text-heading">{{ team.name }}</span>
-                    </Button>
-                  </div>
+                <div class="mb-4">
+                  <Label class="block text-sm font-medium text-body mb-1.5">Select Team</Label>
+                  <SelectMenu
+                    v-model="selectedTeamId"
+                    :items="teamSelectOptions"
+                    placeholder="Search and select team..."
+                    value-key="id"
+                    class="w-full"
+                  >
+                    <template #item="{ item }">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sub">{{ item.dealership || 'No location' }}</span>
+                        <span class="text-sub">→</span>
+                        <span class="font-medium text-heading">{{ item.name }}</span>
+                      </div>
+                    </template>
+                  </SelectMenu>
                 </div>
 
                 <!-- People -->
                 <div v-if="qualificationSelectedTeam">
-                  <Label class="block text-sm font-medium text-body mb-2">Select Salesperson (Optional)</Label>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Select Salesperson (Optional)</Label>
                   <p class="text-sm text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
-                  <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                    <Button
-                      v-for="(user, index) in assignableUsers"
-                      :key="user.id"
-                      variant="outline"
-                      @click="qualificationSelectedSalesman = user"
-                      class="flex items-center gap-2 px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
-                      :class="
-                        qualificationSelectedSalesman && qualificationSelectedSalesman.id === user.id
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
-                          : index === 0 && !qualificationSelectedSalesman
-                            ? 'border-green-600/50 bg-surfaceSecondary/30 text-heading'
-                            : ''
-                      "
-                    >
-                      <div
-                        class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
-                        :class="getRoleAvatarClass(user.role)"
-                      >
-                        {{ getInitials(user.name) }}
+                  <SelectMenu
+                    v-model="selectedSalesmanId"
+                    :items="salespersonSelectOptions"
+                    placeholder="Search and select salesperson..."
+                    value-key="id"
+                    class="w-full"
+                  >
+                    <template #item="{ item }">
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
+                          :class="getRoleAvatarClass(item.role)"
+                        >
+                          {{ getInitials(item.name) }}
+                        </div>
+                        <span class="font-medium text-heading">{{ item.name }}</span>
                       </div>
-                      <span class="font-medium text-heading truncate">{{ user.name }}</span>
-                    </Button>
-                  </div>
+                    </template>
+                  </SelectMenu>
                 </div>
               </div>
 
@@ -790,7 +823,7 @@
                       class="px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedDate && qualificationIsSameDay(date, qualificationSelectedDate)
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -811,7 +844,7 @@
                       class="px-3 py-2 text-sm font-medium whitespace-nowrap shrink-0"
                       :class="
                         qualificationSelectedSlot === slot
-                          ? 'border-green-600 bg-surfaceSecondary text-heading'
+                          ? 'border-2 border-[#0470e9] bg-surfaceSecondary text-heading'
                           : ''
                       "
                     >
@@ -878,7 +911,7 @@
         </div>
         
         <!-- Unified Action Buttons at Bottom Right of Gray Wrapper -->
-        <div v-if="selectedOutcome && !successState" class="flex justify-end gap-2 px-4 pb-4 pt-3 border-t border-black/5">
+        <div v-if="selectedOutcome && !successState" class="flex justify-end gap-2 px-4 pb-4 pt-3">
           <Button
             variant="secondary"
             @click="cancelOutcome"
@@ -964,6 +997,7 @@ import {
   Input,
   Textarea
 } from '@motork/component-library/future/primitives'
+import { SelectMenu } from '@motork/component-library/future/components'
 import {
   Dialog,
   DialogContent,
@@ -980,7 +1014,6 @@ import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
 import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
-import SurveyWidget from '@/components/customer/SurveyWidget.vue'
 import CommunicationSelector from '@/components/shared/communication/CommunicationSelector.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
@@ -993,7 +1026,6 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useLQWidgetOutcomes } from '@/composables/useLQWidgetOutcomes'
 import { useLQWidgetHandlers } from '@/composables/useLQWidgetHandlers'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
-import AIButton from '@/components/shared/AIButton.vue'
 import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import AppointmentCommunications from '@/components/shared/communication/AppointmentCommunications.vue'
 import { getAvailabilityForAssignee } from '@/services/availabilityService'
@@ -1052,21 +1084,24 @@ const assignableUsers = computed(() => usersStore.assignableUsers)
 const assignableTeams = computed(() => usersStore.assignableTeams)
 const currentUser = computed(() => userStore.currentUser)
 
-// Inline note state
-const inlineNoteText = ref('')
-const interestLevel = ref('')
-const hasTradeIn = ref(false)
-const tradeInModel = ref('')
-const hasFinancing = ref(false)
-const financingOption = ref('')
-
-const tradeInNoteLine = ref('')
-const financingNoteLine = ref('')
+// Enrich lead data
+const enrichLeadData = ref({
+  interestLevel: '', // 'High', 'Medium', 'Low'
+  purchaseTimeline: '',
+  budgetRange: '',
+  hasTradeIn: false,
+  tradeInModel: '',
+  financingOption: '', // 'FIN', 'LEA', 'LTR'
+  additionalNotes: ''
+})
 
 // Assignment state
 const selectedDealership = ref('')
 const selectedTeam = ref('')
 const selectedAssignee = ref('')
+
+// Note for sellers (when assign-only is selected)
+const noteForSellers = ref('')
 
 // Available dealerships (unique from teams)
 const availableDealerships = computed(() => {
@@ -1146,42 +1181,88 @@ const currentTaskOutcome = computed(() => {
   return null
 })
 
-// Handle inline note save
-const handleInlineNoteSave = async () => {
-  if (!inlineNoteText.value.trim()) return
-  
+// Handle enrich lead save
+const handleEnrichLeadSave = async () => {
   try {
-    await leadsStore.addActivity(props.lead.id, {
-      type: 'note',
-      user: currentUser.value?.name || 'You',
-      action: 'added a note',
-      content: inlineNoteText.value,
-      timestamp: new Date().toISOString()
-    })
+    const data = enrichLeadData.value
+    const noteParts = []
     
-    emit('note-saved', {
-      type: 'note',
-      content: inlineNoteText.value,
-      timestamp: new Date().toISOString()
-    })
+    // Build note content from form data
+    if (data.interestLevel) {
+      noteParts.push(`Interest level: ${data.interestLevel}`)
+    }
+    if (data.purchaseTimeline) {
+      noteParts.push(`Purchase timeline: ${data.purchaseTimeline}`)
+    }
+    if (data.budgetRange) {
+      noteParts.push(`Budget range: ${data.budgetRange}`)
+    }
+    if (data.hasTradeIn && data.tradeInModel) {
+      noteParts.push(`Trade-in: ${data.tradeInModel}`)
+    }
+    if (data.financingOption) {
+      const financingLabels = {
+        'FIN': 'Captive Financing',
+        'LEA': 'Leasing',
+        'LTR': 'Long-Term Rental'
+      }
+      noteParts.push(`Financing: ${financingLabels[data.financingOption] || data.financingOption}`)
+    }
+    if (data.additionalNotes) {
+      noteParts.push(data.additionalNotes)
+    }
     
-    // Clear note text
-    inlineNoteText.value = ''
+    const noteContent = noteParts.join('\n')
+    
+    if (noteContent.trim()) {
+      await leadsStore.addActivity(props.lead.id, {
+        type: 'note',
+        user: currentUser.value?.name || 'You',
+        action: 'enriched lead information',
+        content: noteContent,
+        timestamp: new Date().toISOString()
+      })
+      
+      emit('note-saved', {
+        type: 'note',
+        content: noteContent,
+        timestamp: new Date().toISOString(),
+        enrichData: { ...data }
+      })
+    }
+    
+    // Save survey data if any fields are filled
+    const hasSurveyData = data.interestLevel || data.purchaseTimeline || data.budgetRange
+    if (hasSurveyData) {
+      const surveyResponses = {
+        interestLevel: data.interestLevel,
+        purchaseTimeline: data.purchaseTimeline,
+        budgetRange: data.budgetRange
+      }
+      
+      await leadsStore.addActivity(props.lead.id, {
+        type: 'survey',
+        action: 'Lead Qualification Survey',
+        content: JSON.stringify(surveyResponses),
+        timestamp: new Date().toISOString()
+      })
+      
+      emit('survey-completed', { lead: props.lead, responses: surveyResponses })
+    }
+    
+    // Clear form after successful save
+    enrichLeadData.value = {
+      interestLevel: '',
+      purchaseTimeline: '',
+      budgetRange: '',
+      hasTradeIn: false,
+      tradeInModel: '',
+      financingOption: '',
+      additionalNotes: ''
+    }
   } catch (error) {
-    console.error('Error saving note:', error)
+    console.error('Error saving enriched lead data:', error)
   }
-}
-
-// Handle extract with AI
-const handleExtractWithAI = async () => {
-  if (!inlineNoteText.value.trim()) {
-    // TODO: Show error or placeholder
-    return
-  }
-  
-  // TODO: Implement AI extraction logic
-  // For now, this is a placeholder
-  console.log('Extracting information with AI from:', inlineNoteText.value)
 }
 
 // Wrapper functions for coordination
@@ -1375,6 +1456,56 @@ const sortedTeams = computed(() => {
   return teams
 })
 
+// Team options for SelectMenu
+const teamSelectOptions = computed(() => {
+  return sortedTeams.value.map(team => ({
+    ...team,
+    label: `${team.dealership || 'No location'} → ${team.name}`,
+    value: team.id
+  }))
+})
+
+// Salesperson options for SelectMenu (filtered by selected team)
+const salespersonSelectOptions = computed(() => {
+  if (!qualificationSelectedTeam.value) return []
+  
+  const team = qualificationSelectedTeam.value
+  const users = assignableUsers.value?.filter(user => 
+    user.team === team.name || user.teamId === team.id
+  ) || []
+  
+  return users.map(user => ({
+    ...user,
+    label: user.name,
+    value: user.id
+  }))
+})
+
+// Computed refs for SelectMenu v-model (convert between object and ID)
+const selectedTeamId = computed({
+  get: () => qualificationSelectedTeam.value?.id || null,
+  set: (id) => {
+    if (!id) {
+      qualificationSelectedTeam.value = null
+      return
+    }
+    const team = assignableTeams.value?.find(t => t.id === id)
+    qualificationSelectedTeam.value = team || null
+  }
+})
+
+const selectedSalesmanId = computed({
+  get: () => qualificationSelectedSalesman.value?.id || null,
+  set: (id) => {
+    if (!id) {
+      qualificationSelectedSalesman.value = null
+      return
+    }
+    const user = salespersonSelectOptions.value.find(u => u.id === id)
+    qualificationSelectedSalesman.value = user || null
+  }
+})
+
 // Auto-select suggested team when date range is selected
 watch([qualificationDateRange, suggestedTeam, assignableTeams], ([range, suggested, teams]) => {
   if (range && suggested && teams && !qualificationSelectedTeam.value) {
@@ -1435,57 +1566,6 @@ watch(qualificationSelectedSalesman, () => {
   qualificationSelectedSlot.value = ''
 })
 
-// Helper function to update notes with auto-generated lines
-const updateNoteWithAutoLines = () => {
-  const currentText = inlineNoteText.value || ''
-  const lines = currentText.split('\n')
-  
-  const userLines = lines.filter(line => {
-    const trimmed = line.trim()
-    return trimmed !== '' && 
-           trimmed !== tradeInNoteLine.value && 
-           trimmed !== financingNoteLine.value
-  })
-  
-  const autoLines = []
-  if (hasTradeIn.value && tradeInModel.value && tradeInModel.value.trim()) {
-    tradeInNoteLine.value = `Customer has a ${tradeInModel.value} for a trade-in`
-    autoLines.push(tradeInNoteLine.value)
-  } else {
-    tradeInNoteLine.value = ''
-  }
-  
-  if (hasFinancing.value && financingOption.value) {
-    const optionLabels = {
-      'FIN': 'Captive Financing',
-      'LEA': 'Leasing',
-      'LTR': 'Long-Term Rental'
-    }
-    financingNoteLine.value = `Customer is interested in ${optionLabels[financingOption.value] || financingOption.value}`
-    autoLines.push(financingNoteLine.value)
-  } else {
-    financingNoteLine.value = ''
-  }
-  
-  const allLines = [...userLines, ...autoLines].filter(line => line.trim() !== '')
-  inlineNoteText.value = allLines.join('\n')
-}
-
-// Watch for trade-in changes to update notes
-watch([hasTradeIn, tradeInModel], () => {
-  updateNoteWithAutoLines()
-  if (!hasTradeIn.value) {
-    tradeInModel.value = ''
-  }
-}, { immediate: false })
-
-// Watch for financing changes to update notes
-watch([hasFinancing, financingOption], () => {
-  updateNoteWithAutoLines()
-  if (!hasFinancing.value) {
-    financingOption.value = ''
-  }
-}, { immediate: false })
 
 // Check if everything is selected for "Send and postpone" button
 const canSendAndPostpone = computed(() => {
@@ -1497,17 +1577,18 @@ const canSendAndPostpone = computed(() => {
   return true
 })
 
-// Reset call notes fields when outcome changes
+// Reset enrich lead data when outcome changes
 watch(selectedOutcome, (newOutcome) => {
   if (newOutcome !== 'interested') {
-    inlineNoteText.value = ''
-    interestLevel.value = ''
-    hasTradeIn.value = false
-    tradeInModel.value = ''
-    hasFinancing.value = false
-    financingOption.value = ''
-    tradeInNoteLine.value = ''
-    financingNoteLine.value = ''
+    enrichLeadData.value = {
+      interestLevel: '',
+      purchaseTimeline: '',
+      budgetRange: '',
+      hasTradeIn: false,
+      tradeInModel: '',
+      financingOption: '',
+      additionalNotes: ''
+    }
     selectedDealership.value = ''
     selectedTeam.value = ''
     selectedAssignee.value = ''
@@ -1563,19 +1644,57 @@ watch(callEnded, (ended) => {
 })
 
 const qualificationEventTypeOptions = [
-  { value: 'test-drive', label: 'Test Drive' },
-  { value: 'in-store-visit', label: 'In-Store Visit' }
+  { value: 'appointment-on-phone', label: 'Appointment on the phone (15m)' },
+  { value: 'appointment-at-dealership', label: 'Appointment at the dealership (30m)' },
+  { value: 'recall-internal', label: 'Recall - internal (15m)' },
+  { value: 'appointment-at-dealership-test-drive', label: 'Appointment at the dealership + Test drive (1h)' },
+  { value: 'appointment-at-workshop', label: 'Appointment at the workshop (15m)' },
+  { value: 'appointment-at-customer-site', label: 'Appointment at customer\'s site (1h 40m)' },
+  { value: 'appointment-at-customer-site-test-drive', label: 'Appointment at customer\'s site + Test drive (5h)' }
 ]
+
+// Map event types to their durations in minutes
+const eventTypeDurationMap = {
+  'appointment-on-phone': 15,
+  'appointment-at-dealership': 30,
+  'recall-internal': 15,
+  'appointment-at-dealership-test-drive': 60,
+  'appointment-at-workshop': 15,
+  'appointment-at-customer-site': 100, // 1h 40m = 100 minutes
+  'appointment-at-customer-site-test-drive': 300 // 5h = 300 minutes
+}
 
 const handleQualificationDurationSelect = (minutes) => {
   qualificationDurationMinutes.value = minutes
   qualificationCustomDuration.value = ''
 }
 
+// Watch for event type changes and auto-set duration
+watch(qualificationEventType, (newEventType) => {
+  if (!newEventType) return
+  
+  const duration = eventTypeDurationMap[newEventType]
+  if (!duration) return
+  
+  if (duration === 30) {
+    handleQualificationDurationSelect(30)
+  } else if (duration === 60) {
+    handleQualificationDurationSelect(60)
+  } else {
+    qualificationDurationMinutes.value = null
+    qualificationCustomDuration.value = duration.toString()
+  }
+})
+
 const canQualify = computed(() => {
-  // For "assign-only" method, require assignee
+  // For "assign-only" method, require:
+  // - Event type
+  // - Team (salesperson is optional)
   if (qualificationMethod.value === 'assign-only') {
-    return !!assignment.value?.assignee
+    return Boolean(
+      qualificationEventType.value &&
+      qualificationSelectedTeam.value
+    )
   }
   
   // For "assign-and-schedule" method, require:
@@ -1643,7 +1762,8 @@ const handlers = useLQWidgetHandlers(
   contactAttempts,
   maxContactAttempts,
   leadsStore,
-  currentUser
+  currentUser,
+  enrichLeadData
 )
 
 const {
@@ -1671,39 +1791,6 @@ const successPerformedAtLabel = computed(() => {
   return `${day}/${month}/${year} ${hours}:${minutes}`
 })
 
-// Define survey questions
-const leadQualificationSurveyQuestions = [
-  {
-    key: 'interestLevel',
-    label: 'Customer interest level?',
-    type: 'radio',
-    options: ['High', 'Medium', 'Low']
-  },
-  {
-    key: 'purchaseTimeline',
-    label: 'Expected purchase timeline?',
-    type: 'select',
-    options: ['Immediate', 'Within 1 month', 'Within 3 months', 'Within 6 months', 'Just browsing']
-  },
-  {
-    key: 'budgetRange',
-    label: 'Budget range (if discussed)?',
-    type: 'select',
-    options: ['Under €30k', '€30k-€50k', '€50k-€80k', '€80k+', 'Not discussed']
-  },
-  {
-    key: 'preferredContact',
-    label: 'Preferred contact method?',
-    type: 'radio',
-    options: ['Phone', 'Email', 'WhatsApp', 'SMS']
-  },
-  {
-    key: 'additionalNotes',
-    label: 'Additional notes',
-    type: 'text',
-    placeholder: 'Any relevant information about customer interest or preferences...'
-  }
-]
 
 // Trade-in handler
 const { saveTradeInVehicle } = useTradeInVehicle()

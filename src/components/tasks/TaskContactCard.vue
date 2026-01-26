@@ -48,7 +48,7 @@
 
       <!-- Other Tasks from Same Customer (Ultra-Compact) -->
       <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-black/5">
-        <h4 class="text-sm font-bold uppercase tracking-wider text-sub mb-2">Other customer requests</h4>
+        <h3 class="text-base font-medium text-heading mb-4 leading-6">Other customer requests</h3>
         <div class="space-y-0.5">
           <div
             v-for="relatedTask in relatedTasks"

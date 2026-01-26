@@ -32,66 +32,88 @@
         <div
           class="right-sidebar flex flex-col overflow-hidden shrink-0 border-l border-black/5 bg-surface"
         >
-          <!-- Sidebar Tabs -->
-          <div class="flex border-b border-black/5 bg-white">
-            <Button
-              variant="ghost"
-              @click="sidebarTab = 'request'"
-              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative rounded-none h-auto"
-              :class="sidebarTab === 'request' ? 'text-primary-600' : 'text-body hover:text-heading'"
-            >
-              Request
-              <span
-                v-if="sidebarTab === 'request'"
-                class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
-              ></span>
-            </Button>
-            <Button
-              variant="ghost"
-              @click="sidebarTab = 'activity'"
-              class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative rounded-none h-auto"
-              :class="sidebarTab === 'activity' ? 'text-primary-600' : 'text-body hover:text-heading'"
-            >
-              Activity
-              <span
-                v-if="sidebarTab === 'activity'"
-                class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
-              ></span>
-            </Button>
-          </div>
-          
-          <!-- Sidebar Content -->
-          <div class="flex-1 overflow-y-auto">
-            <!-- Request Tab -->
-            <div v-if="sidebarTab === 'request'" class="space-y-2 p-2">
-              <TaskContactCard
-                :task="task"
-                :task-type="task.type"
-                :customer-id="task.customerId || task.customer?.id"
-                @action="handleContactAction"
-              />
-              <VehicleRequestCard
-                v-if="task.requestedCar || task.vehicle"
-                :vehicle="task.requestedCar || task.vehicle"
-                :request-message="task.requestMessage || task.requestedCar?.requestMessage"
-                :source="task.source"
-                :image-url="getCarImageUrl(task.requestedCar || task.vehicle)"
-                @open-ad="handleOpenAd"
-                @more-actions="handleMoreActions"
-              />
-            </div>
+          <Tabs v-model="sidebarTab" class="flex flex-col flex-1 overflow-hidden">
+            <!-- Sidebar Tabs -->
+            <TabsList class="flex border-b border-black/5 bg-white rounded-none w-full relative h-full">
+              <TabsTrigger 
+                value="request" 
+                class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full"
+                :class="sidebarTab === 'request' 
+                  ? 'text-heading' 
+                  : 'text-sub hover:text-body'"
+              >
+                <span>Request</span>
+                <span 
+                  v-if="requestCount > 0"
+                  class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold leading-none"
+                  :class="sidebarTab === 'request' 
+                    ? 'bg-[#0470e9] text-white' 
+                    : 'bg-gray-200 text-heading'"
+                >
+                  {{ requestCount }}
+                </span>
+                <span 
+                  v-if="sidebarTab === 'request'"
+                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0470e9] z-10"
+                ></span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="activity" 
+                class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full"
+                :class="sidebarTab === 'activity' 
+                  ? 'text-heading' 
+                  : 'text-sub hover:text-body'"
+              >
+                <span>Activity</span>
+                <span 
+                  v-if="activityCount > 0"
+                  class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold leading-none"
+                  :class="sidebarTab === 'activity' 
+                    ? 'bg-[#0470e9] text-white' 
+                    : 'bg-gray-200 text-heading'"
+                >
+                  {{ activityCount }}
+                </span>
+                <span 
+                  v-if="sidebarTab === 'activity'"
+                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0470e9] z-10"
+                ></span>
+              </TabsTrigger>
+            </TabsList>
             
-            <!-- Activity Tab -->
-            <div v-if="sidebarTab === 'activity'" class="p-2 flex-1 overflow-hidden h-full flex flex-col">
-              <TaskActivityCard
-                :activities="allActivities"
-                :expanded-summaries="expandedSummaries"
-                @activity-click="handleActivityClick"
-                @toggle-summary-expanded="toggleSummaryExpanded"
-                @add-activity="handleAddActivity"
-              />
+            <!-- Sidebar Content -->
+            <div class="flex-1 overflow-y-auto bg-[#F8F8F8]">
+              <!-- Request Tab -->
+              <TabsContent value="request" class="space-y-2 p-2 mt-0">
+                <TaskContactCard
+                  :task="task"
+                  :task-type="task.type"
+                  :customer-id="task.customerId || task.customer?.id"
+                  @action="handleContactAction"
+                />
+                <VehicleRequestCard
+                  v-if="task.requestedCar || task.vehicle"
+                  :vehicle="task.requestedCar || task.vehicle"
+                  :request-message="task.requestMessage || task.requestedCar?.requestMessage"
+                  :source="task.source"
+                  :image-url="getCarImageUrl(task.requestedCar || task.vehicle)"
+                  @open-ad="handleOpenAd"
+                  @more-actions="handleMoreActions"
+                />
+              </TabsContent>
+              
+              <!-- Activity Tab -->
+              <TabsContent value="activity" class="p-2 flex-1 overflow-hidden h-full flex flex-col mt-0">
+                <TaskActivityCard
+                  :activities="allActivities"
+                  :expanded-summaries="expandedSummaries"
+                  @activity-click="handleActivityClick"
+                  @toggle-summary-expanded="toggleSummaryExpanded"
+                  @add-activity="handleAddActivity"
+                />
+              </TabsContent>
             </div>
-          </div>
+          </Tabs>
         </div>
       </div>
     </div>
@@ -148,7 +170,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@motork/component-library/future/primitives'
+import { useLeadsStore } from '@/stores/leads'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 import TaskDetailHeader from './TaskDetailHeader.vue'
 import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'
@@ -189,6 +213,9 @@ const props = defineProps({
 
 const emit = defineEmits(['task-navigate', 'close'])
 
+const leadsStore = useLeadsStore()
+const opportunitiesStore = useOpportunitiesStore()
+
 // Sidebar tab state
 const sidebarTab = ref('request')
 
@@ -205,6 +232,35 @@ const showEmailModal = ref(false)
 // Activities
 const allActivities = computed(() => {
   return props.storeAdapter.currentActivities?.value || []
+})
+
+// Badge counts
+const activityCount = computed(() => {
+  return allActivities.value.length
+})
+
+const requestCount = computed(() => {
+  if (!props.task?.customer) return 0
+  
+  const customerEmail = props.task.customer.email
+  const customerPhone = props.task.customer.phone
+  const currentTaskId = props.task.compositeId || `${props.task.type}-${props.task.id}`
+  
+  // Combine all leads and opportunities
+  const allTasks = [
+    ...(leadsStore.leads || []).map(lead => ({ ...lead, type: 'lead', compositeId: `lead-${lead.id}` })),
+    ...(opportunitiesStore.opportunities || []).map(opp => ({ ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }))
+  ]
+  
+  // Filter by same customer (email or phone match) and exclude current task
+  const relatedTasks = allTasks.filter(task => {
+    if (task.compositeId === currentTaskId) return false
+    if (!task.customer) return false
+    
+    return task.customer.email === customerEmail || task.customer.phone === customerPhone
+  })
+  
+  return relatedTasks.length
 })
 
 // Navigation handlers
@@ -359,5 +415,55 @@ const handleEmailSave = async (data) => {
     width: 420px;
     min-width: 420px;
   }
+}
+
+/* Tab styling overrides to ensure proper appearance */
+:deep([role="tablist"]) {
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  height: auto !important;
+  min-height: 48px !important;
+}
+
+:deep([role="tab"]) {
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  position: relative !important;
+  box-shadow: none !important;
+  height: 100% !important;
+  min-height: 48px !important;
+}
+
+:deep([role="tab"]:not(:last-child)) {
+  border-right: none !important;
+}
+
+:deep([role="tab"]::before),
+:deep([role="tab"]::after) {
+  display: none !important;
+  box-shadow: none !important;
+}
+
+:deep([role="tab"] *) {
+  box-shadow: none !important;
+}
+
+:deep([role="tab"][data-state="active"]) {
+  color: var(--color-text-heading) !important;
+  box-shadow: none !important;
+}
+
+:deep([role="tab"][data-state="inactive"]) {
+  color: var(--color-text-sub) !important;
+  box-shadow: none !important;
 }
 </style>

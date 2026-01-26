@@ -91,7 +91,7 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const successPerformedAt = ref(null) // Date
 
   // Qualification method (Assign only | Assign and schedule) and schedule state
-  const qualificationMethod = ref('assign-only')
+  const qualificationMethod = ref(null)
   const qualificationEventType = ref('')
   const qualificationDurationMinutes = ref(null) // 30 | 60 | null
   const qualificationCustomDuration = ref('')
