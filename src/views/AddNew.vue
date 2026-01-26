@@ -1,29 +1,32 @@
 <template>
   <div class="page-container">
-    <PageHeader title="Add New Customer">
-      <template #actions>
-      </template>
-    </PageHeader>
+    <!-- Header using Motork Card -->
+    <Card class="border-b border-border rounded-none">
+      <CardHeader class="px-4 md:px-8 py-4">
+        <CardTitle>Add New Customer</CardTitle>
+      </CardHeader>
+    </Card>
     
     <div class="px-4 md:px-8 py-4">
       <div class="max-w-6xl mx-auto">
-        <!-- Custom Tabs matching Tabs.vue style -->
+        <!-- Tabs using Motork Button components -->
         <div class="flex gap-0 md:gap-8 text-fluid-sm font-medium text-sub py-1 mb-4 border-b border-border">
-          <div 
+          <Button
             v-for="tab in tabs"
-            :key="tab.value"
-            @click="activeTab = tab.value"
-            class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5 -mb-px"
-            :class="activeTab === tab.value ? 'border-brand-dark text-brand-darkDarker' : 'border-transparent hover:text-body hover:border-slate-200'"
+            :key="tab.key"
+            @click="activeTab = tab.key"
+            variant="ghost"
+            size="small"
+            class="flex-1 md:flex-none pb-2 border-b-2 rounded-none"
+            :class="activeTab === tab.key 
+              ? 'border-brand-dark text-brand-darkDarker' 
+              : 'border-transparent text-sub hover:text-body hover:border-border'"
           >
-            <!-- Icon -->
-            <i 
-              :class="[tab.icon, 'text-sm md:text-sm', activeTab === tab.value ? 'text-brand-darkDarker' : 'text-sub']"
-            ></i>
-            
-            <!-- Label (hidden on mobile, visible on desktop) -->
-            <span class="hidden md:inline whitespace-nowrap" :class="activeTab === tab.value ? 'text-brand-darkDarker' : ''">{{ tab.label }}</span>
-          </div>
+            <div class="flex items-center justify-center gap-1.5">
+              <i :class="[getTabIcon(tab.key), 'text-sm', activeTab === tab.key ? 'text-brand-darkDarker' : 'text-sub']"></i>
+              <span class="hidden md:inline whitespace-nowrap" :class="activeTab === tab.key ? 'text-brand-darkDarker' : 'text-sub'">{{ tab.label }}</span>
+            </div>
+          </Button>
         </div>
 
         <!-- Tab Content -->
@@ -46,12 +49,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import PageHeader from '@/components/layout/PageHeader.vue'
+import { Button } from '@motork/component-library'
+import { Card, CardHeader, CardTitle } from '@motork/component-library/future/primitives'
 import ManualTab from '@/components/addnew/ManualTab.vue'
 import UploadTab from '@/components/addnew/UploadTab.vue'
 import IntegrationsTab from '@/components/addnew/IntegrationsTab.vue'
@@ -72,23 +76,37 @@ onMounted(() => {
   }
 })
 
+// Watch for tab changes to update persistence
+watch(activeTab, (newTab) => {
+  if (newTab && ['manual', 'upload', 'integrations'].includes(newTab)) {
+    // Tab persistence is handled by useTabPersistence composable
+  }
+})
+
 const tabs = [
   {
-    value: 'manual',
-    label: 'Manual',
-    icon: 'fa-solid fa-pen'
+    key: 'manual',
+    label: 'Manual'
   },
   {
-    value: 'upload',
-    label: 'Upload',
-    icon: 'fa-solid fa-upload'
+    key: 'upload',
+    label: 'Upload'
   },
   {
-    value: 'integrations',
-    label: 'Integrations',
-    icon: 'fa-solid fa-plug'
+    key: 'integrations',
+    label: 'Integrations'
   }
 ]
+
+// Icon mapping for tabs
+const getTabIcon = (tabKey) => {
+  const iconMap = {
+    manual: 'fa-solid fa-pen',
+    upload: 'fa-solid fa-upload',
+    integrations: 'fa-solid fa-plug'
+  }
+  return iconMap[tabKey] || 'fa-solid fa-circle'
+}
 
 const handleSubmit = async (formData) => {
   try {

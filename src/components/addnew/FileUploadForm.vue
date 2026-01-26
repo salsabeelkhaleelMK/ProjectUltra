@@ -2,8 +2,8 @@
   <div class="space-y-4">
     <!-- File Input -->
     <div>
-      <label class="block label-upper text-sub text-[10px] font-bold uppercase tracking-wider mb-1.5">
-        Select File <span class="text-red-500">*</span>
+      <label class="block label-upper text-sub text-fluid-xs font-bold uppercase tracking-wider mb-1.5">
+        Select File <span class="text-brand-red">*</span>
       </label>
       <div class="relative">
         <input
@@ -14,69 +14,75 @@
           class="hidden"
           :disabled="loading"
         />
-        <div
+        <Card
           @click="fileInputRef?.click()"
-          class="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer transition-all hover:border-primary hover:bg-surfaceSecondary"
+          class="border-dashed cursor-pointer"
           :class="{ 'opacity-50 cursor-not-allowed': loading }"
         >
-          <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-3"></i>
-          <p class="text-heading text-fluid-xs font-bold mb-1">
-            {{ selectedFile ? selectedFile.name : 'Click to upload or drag and drop' }}
-          </p>
-          <p class="text-meta text-[10px]">CSV or Excel (.csv, .xls, .xlsx) up to 10MB</p>
-        </div>
+          <CardContent class="text-center">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-sub mb-3"></i>
+            <p class="text-heading text-fluid-xs font-bold mb-1">
+              {{ selectedFile ? selectedFile.name : 'Click to upload or drag and drop' }}
+            </p>
+            <p class="text-meta text-fluid-xs">CSV or Excel (.csv, .xls, .xlsx) up to 10MB</p>
+          </CardContent>
+        </Card>
       </div>
-      <p v-if="error" class="text-red-500 text-[10px] mt-1.5">{{ error }}</p>
+      <p v-if="error" class="text-brand-red text-fluid-xs mt-1.5">{{ error }}</p>
     </div>
 
     <!-- File Preview -->
-    <div v-if="selectedFile && parsedData && parsedData.length > 0" class="bg-surface border border-border rounded-xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-bold text-heading text-fluid-xs">File Preview</h3>
-        <Badge :text="`${parsedData.length} rows`" theme="gray" size="small" />
-      </div>
-      
-      <div class="overflow-x-auto">
-        <table class="w-full text-[11px]">
-          <thead>
-            <tr class="border-b border-border">
-              <th
-                v-for="header in headers"
-                :key="header"
-                class="text-left p-2 font-bold text-sub uppercase tracking-wider"
+    <Card v-if="selectedFile && parsedData && parsedData.length > 0">
+      <CardHeader>
+        <div class="flex items-center justify-between">
+          <CardTitle>File Preview</CardTitle>
+          <Badge :text="`${parsedData.length} rows`" theme="gray" size="small" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div class="overflow-x-auto">
+          <table class="w-full text-fluid-xs">
+            <thead>
+              <tr class="border-b border-border">
+                <th
+                  v-for="header in headers"
+                  :key="header"
+                  class="text-left p-2 font-bold text-sub uppercase tracking-wider"
+                >
+                  {{ header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(row, index) in previewRows"
+                :key="index"
+                class="border-b border-border hover:bg-surfaceSecondary"
               >
-                {{ header }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(row, index) in previewRows"
-              :key="index"
-              class="border-b border-border hover:bg-surfaceSecondary transition-colors"
-            >
-              <td
-                v-for="header in headers"
-                :key="header"
-                class="p-2 text-body"
-              >
-                {{ row[header] || '-' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <p v-if="parsedData.length > previewLimit" class="text-meta text-[10px] mt-3 text-center">
-        Showing first {{ previewLimit }} of {{ parsedData.length }} rows
-      </p>
-    </div>
+                <td
+                  v-for="header in headers"
+                  :key="header"
+                  class="p-2 text-body"
+                >
+                  {{ row[header] || '-' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <p v-if="parsedData.length > previewLimit" class="text-meta text-fluid-xs mt-3 text-center">
+          Showing first {{ previewLimit }} of {{ parsedData.length }} rows
+        </p>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { Badge } from '@motork/component-library'
+import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
 import { useFileUpload } from '@/composables/useFileUpload'
 
 const props = defineProps({

@@ -1,34 +1,40 @@
 <template>
   <div class="w-full space-y-4">
     <!-- Entity Type Selection -->
-    <div class="bg-surface border border-border rounded-xl p-4">
-      <h3 class="font-bold text-heading text-fluid-sm mb-1.5">Select Entity Type</h3>
-      <p class="text-meta text-[11px] mb-3">
-        Choose what type of data you want to import.
-      </p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <button
-          v-for="type in entityTypes"
-          :key="type.value"
-          @click="selectedEntityType = type.value"
-          class="p-3 border-2 rounded-xl text-left transition-all"
-          :class="selectedEntityType === type.value
-            ? 'border-brand-red bg-red-50'
-            : 'border-border hover:border-primary hover:bg-surfaceSecondary'"
-        >
-          <div class="flex items-center gap-2 mb-1">
-            <i :class="[type.icon, 'text-xl', selectedEntityType === type.value ? 'text-brand-red' : 'text-gray-400']"></i>
-            <span class="font-bold text-heading text-fluid-xs">{{ type.label }}</span>
-          </div>
-          <p class="text-meta text-[10px]">{{ type.description }}</p>
-        </button>
-      </div>
-      
-      <p v-if="!selectedEntityType" class="text-red-500 text-[10px] mt-3">
-        Please select an entity type to continue
-      </p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Select Entity Type</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p class="text-meta text-fluid-xs mb-3">
+          Choose what type of data you want to import.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Card
+            v-for="type in entityTypes"
+            :key="type.value"
+            @click="selectedEntityType = type.value"
+            class="cursor-pointer"
+            :class="selectedEntityType === type.value
+              ? 'border-brand-red bg-surfaceSecondary'
+              : 'border-border'"
+          >
+            <CardContent>
+              <div class="flex items-center gap-2 mb-1">
+                <i :class="[type.icon, 'text-xl', selectedEntityType === type.value ? 'text-brand-red' : 'text-sub']"></i>
+                <span class="font-bold text-heading text-fluid-xs">{{ type.label }}</span>
+              </div>
+              <p class="text-meta text-fluid-xs">{{ type.description }}</p>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <p v-if="!selectedEntityType" class="text-brand-red text-fluid-xs mt-3">
+          Please select an entity type to continue
+        </p>
+      </CardContent>
+    </Card>
 
     <!-- File Upload (shown after entity type selection) -->
     <div v-if="selectedEntityType">
@@ -51,7 +57,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div v-if="selectedEntityType && parsedData && parsedData.length > 0" class="flex items-center justify-end gap-3 pt-4 border-t border-border">
+    <div v-if="selectedEntityType && parsedData && parsedData.length > 0" class="flex items-center justify-end gap-3 pt-4 border-t border-border mt-4">
       <Button
         variant="outline"
         size="small"
@@ -71,32 +77,36 @@
     </div>
 
     <!-- Progress Indicator -->
-    <div v-if="processing" class="bg-surface border border-border rounded-xl p-4">
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-heading text-fluid-xs font-bold">Importing...</span>
-          <span class="text-meta text-[10px]">{{ processedCount }} / {{ totalCount }}</span>
+    <Card v-if="processing">
+      <CardContent>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-heading text-fluid-xs font-bold">Importing...</span>
+            <span class="text-meta text-fluid-xs">{{ processedCount }} / {{ totalCount }}</span>
+          </div>
+          <Progress :value="progressPercentage" class="h-1.5" />
+          <p v-if="importErrors.length > 0" class="text-brand-red text-fluid-xs">
+            {{ importErrors.length }} errors encountered
+          </p>
         </div>
-        <Progress :value="progressPercentage" class="h-1.5" />
-        <p v-if="importErrors.length > 0" class="text-red-500 text-[10px]">
-          {{ importErrors.length }} errors encountered
-        </p>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
     <!-- Success Message -->
-    <div v-if="importSuccess" class="bg-green-50 border border-green-200 rounded-xl p-4">
-      <div class="flex items-center gap-2 mb-1.5">
-        <i class="fa-solid fa-check-circle text-green-600 text-base"></i>
-        <span class="font-bold text-green-900 text-fluid-xs">Import Successful</span>
-      </div>
-      <p class="text-green-700 text-[11px]">
-        Successfully imported {{ successCount }} {{ selectedEntityType }}.
-        <span v-if="importErrors.length > 0">
-          {{ importErrors.length }} rows had errors.
-        </span>
-      </p>
-    </div>
+    <Card v-if="importSuccess" class="bg-surfaceSecondary">
+      <CardContent>
+        <div class="flex items-center gap-2 mb-1.5">
+          <i class="fa-solid fa-check-circle text-success text-base"></i>
+          <span class="font-bold text-heading text-fluid-xs">Import Successful</span>
+        </div>
+        <p class="text-body text-fluid-xs">
+          Successfully imported {{ successCount }} {{ selectedEntityType }}.
+          <span v-if="importErrors.length > 0">
+            {{ importErrors.length }} rows had errors.
+          </span>
+        </p>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
@@ -104,7 +114,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Button } from '@motork/component-library'
-import { Progress } from '@motork/component-library/future/primitives'
+import { Progress, Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
 import FileUploadForm from '@/components/addnew/FileUploadForm.vue'
 import ColumnMappingForm from '@/components/addnew/ColumnMappingForm.vue'
 import { useColumnMapping, getEntityFields } from '@/composables/useColumnMapping'

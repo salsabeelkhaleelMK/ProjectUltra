@@ -22,7 +22,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Card } from '@motork/component-library/future/primitives'
 import IntegrationCard from '@/components/addnew/IntegrationCard.vue'
 import IntegrationConfigModal from '@/components/addnew/IntegrationConfigModal.vue'
 import { useIntegrationsStore } from '@/stores/integrations'
