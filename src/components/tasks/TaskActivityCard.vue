@@ -10,7 +10,7 @@
   >
     <div class="mb-4">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-base font-medium text-heading leading-6">Activity</h3>
+        <h3 class="text-base font-medium text-foreground leading-6">Activity</h3>
         
         <!-- Filter Dropdown, Add Activity Button, and Chips (Right side of title) -->
         <div class="flex items-center gap-2 flex-wrap">
@@ -53,51 +53,51 @@
             </Button>
             <div
               v-if="showAddDropdown"
-              class="absolute right-0 top-full mt-2 w-48 bg-white border border-black/10 rounded-lg shadow-lg py-1 z-50"
+              class="absolute right-0 top-full mt-2 w-48 bg-white border border-black/10 rounded-lg shadow-nsc-card py-1 z-50"
               v-click-outside="() => showAddDropdown = false"
               @click.stop
             >
             <!-- Communication Group -->
-            <button @click="handleAddActivity('email')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('email')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-envelope text-sm text-primary"></i> Email
             </button>
-            <button @click="handleAddActivity('sms')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('sms')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-comment text-sm text-purple-600"></i> SMS
             </button>
-            <button @click="handleAddActivity('whatsapp')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('whatsapp')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-brands fa-whatsapp text-sm text-green-600"></i> WhatsApp
             </button>
-            <button @click="handleAddActivity('call')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('call')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-phone text-sm text-green-600"></i> Call
             </button>
 
             <div class="border-t border-black/10 my-1"></div>
 
             <!-- Activities Group -->
-            <button @click="handleAddActivity('note')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('note')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-sticky-note text-sm text-orange-600"></i> Note
             </button>
-            <button @click="handleAddActivity('attachment')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
-              <i class="fa-solid fa-paperclip text-sm text-sub"></i> Attachment
+            <button @click="handleAddActivity('attachment')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
+              <i class="fa-solid fa-paperclip text-sm text-muted-foreground"></i> Attachment
             </button>
 
             <div class="border-t border-black/10 my-1"></div>
 
             <!-- Business Group -->
-            <button @click="handleAddActivity('financing')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('financing')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-file-invoice-dollar text-sm text-primary"></i> Financing
             </button>
-            <button @click="handleAddActivity('tradein')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('tradein')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-arrow-right-arrow-left text-sm text-primary"></i> Trade-in
             </button>
-            <button @click="handleAddActivity('purchase')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('purchase')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-handshake text-sm text-primary"></i> Offer
             </button>
 
             <div class="border-t border-black/10 my-1"></div>
 
             <!-- Appointment -->
-            <button @click="handleAddActivity('appointment')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+            <button @click="handleAddActivity('appointment')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-regular fa-calendar text-sm text-purple-600"></i> Appointment
             </button>
         </div>
@@ -110,7 +110,7 @@
       <div v-if="sortedActivities.length > 0" class="flex-1 overflow-y-auto min-h-0">
         <div class="flex flex-col items-start gap-1 mb-4">
           <h3
-            class="text-sm font-normal text-sub leading-normal"
+            class="text-sm font-normal text-muted-foreground leading-normal"
           >
             {{ getActivityDateHeader(sortedActivities) }}
           </h3>
@@ -144,7 +144,7 @@
                           ? 'bg-blue-100'
                           : activity.type === 'whatsapp'
                             ? 'bg-green-100'
-                            : 'bg-surfaceSecondary',
+                            : 'bg-muted',
                 ]"
               >
                 <StickyNote
@@ -172,12 +172,12 @@
                   :size="16"
                   class="text-green-600"
                 />
-                <FileText v-else :size="16" class="text-heading" />
+                <FileText v-else :size="16" class="text-foreground" />
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-2">
                   <p
-                    class="text-sm text-heading flex-1 wrap-break-word min-w-0 leading-normal"
+                    class="text-sm text-foreground flex-1 wrap-break-word min-w-0 leading-normal"
                   >
                     <span
                       :class="[
@@ -187,49 +187,49 @@
                     >
                       {{ activity.type === 'ai-summary' ? 'MotorKAI' : activity.user }}
                     </span>
-                    <span v-if="activity.type === 'note'" class="text-sub">
+                    <span v-if="activity.type === 'note'" class="text-muted-foreground">
                       added a note</span
                     >
                     <span
                       v-else-if="activity.type === 'created'"
-                      class="text-sub"
+                      class="text-muted-foreground"
                     >
                       {{ activity.message || activity.action }}</span
                     >
-                    <span v-else-if="activity.type === 'call'" class="text-sub">
+                    <span v-else-if="activity.type === 'call'" class="text-muted-foreground">
                       {{ ' ' + (activity.message || activity.action) }}</span
                     >
                     <span
                       v-else-if="activity.type === 'ai-summary'"
-                      class="text-sub"
+                      class="text-muted-foreground"
                     >
                       summary</span
                     >
-                    <span v-else-if="activity.type === 'email'" class="text-sub">
+                    <span v-else-if="activity.type === 'email'" class="text-muted-foreground">
                       {{ ' sent an email' }}</span
                     >
                     <span
                       v-else-if="activity.type === 'whatsapp'"
-                      class="text-sub"
+                      class="text-muted-foreground"
                     >
                       {{ ' sent a WhatsApp message' }}</span
                     >
-                    <span v-else class="text-sub">
+                    <span v-else class="text-muted-foreground">
                       {{ ' ' + (activity.message || activity.action) }}</span
                     >
                   </p>
                   <p
-                    class="text-sm text-sub text-right shrink-0 w-14 leading-normal"
+                    class="text-sm text-muted-foreground text-right shrink-0 w-14 leading-normal"
                   >
                     {{ activity.time }}
                   </p>
                 </div>
                 <div
                   v-if="activity.type === 'note' && (activity.message || activity.content)"
-                  class="mt-2 bg-[#fef7ee] rounded-lg p-4 backdrop-blur-sm"
+                  class="mt-2 bg-amber-50 rounded-lg p-4 backdrop-blur-sm"
                 >
                   <p
-                    class="text-sm text-heading wrap-break-word leading-normal"
+                    class="text-sm text-foreground wrap-break-word leading-normal"
                   >
                     {{ activity.message || activity.content }}
                   </p>
@@ -239,7 +239,7 @@
                   class="mt-2 bg-blue-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-sm text-heading wrap-break-word leading-normal"
+                    class="text-sm text-foreground wrap-break-word leading-normal"
                   >
                     {{ activity.content }}
                   </p>
@@ -249,7 +249,7 @@
                   class="mt-2 bg-green-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-sm text-heading wrap-break-word leading-normal"
+                    class="text-sm text-foreground wrap-break-word leading-normal"
                   >
                     {{ activity.content }}
                   </p>
@@ -259,7 +259,7 @@
                   class="mt-2 bg-purple-50 rounded-lg p-4"
                 >
                   <p
-                    class="text-sm text-heading wrap-break-word leading-normal"
+                    class="text-sm text-foreground wrap-break-word leading-normal"
                   >
                     {{ activity.message || activity.content }}
                   </p>
@@ -273,7 +273,7 @@
             <div
               v-for="filterValue in selectedFilters"
               :key="filterValue"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-sm font-medium text-heading border border-black/5"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted text-sm font-medium text-foreground border border-border"
             >
               <span>{{ getFilterLabel(filterValue) }}</span>
               <Button
@@ -293,8 +293,8 @@
       <!-- Empty State -->
       <div v-else class="py-8 flex-1 flex flex-col justify-center min-h-full">
         <div class="text-center">
-          <Clock :size="32" class="mx-auto text-sub mb-2" />
-          <p class="text-sm text-sub">No activity yet</p>
+          <Clock :size="32" class="mx-auto text-muted-foreground mb-2" />
+          <p class="text-sm text-muted-foreground">No activity yet</p>
         </div>
       </div>
     </div>

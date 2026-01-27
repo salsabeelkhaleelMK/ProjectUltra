@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 md:p-6">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-nsc-card p-4 md:p-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-bold text-gray-900">Full funnel</h3>
       <i class="fa-solid fa-filter text-gray-400 text-sm"></i>

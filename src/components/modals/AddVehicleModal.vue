@@ -11,27 +11,27 @@
           <!-- Vehicle Type Selection (only when mode is 'vehicle' and no item is being edited) -->
           <!-- Skip selection screen when mode is 'tradein' - go directly to form -->
           <div v-if="mode === 'vehicle' && !item && !selectedVehicleType" class="space-y-4 py-4 w-full">
-          <p class="text-body text-sm mb-4">Select the type of vehicle you want to add:</p>
+          <p class="text-muted-foreground text-sm mb-4">Select the type of vehicle you want to add:</p>
           <div class="grid grid-cols-1 gap-3">
             <Button
               label="Drove"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-heading hover:!bg-surfaceSecondary"
+              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
               @click="selectedVehicleType = 'drove'"
             />
             <Button
               label="Requested"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-heading hover:!bg-surfaceSecondary"
+              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
               @click="selectedVehicleType = 'requested'"
             />
             <Button
               label="Trade-In"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-heading hover:!bg-surfaceSecondary"
+              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
               @click="selectedVehicleType = 'tradein'"
             />
           </div>
@@ -43,7 +43,7 @@
             <!-- Brand and Model in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Brand <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-semibold text-foreground">Brand <span class="text-brand-red">*</span></Label>
                 <Input 
                   v-model="vehicleData.brand"
                   type="text" 
@@ -53,7 +53,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Model <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-semibold text-foreground">Model <span class="text-brand-red">*</span></Label>
                 <Input 
                   v-model="vehicleData.model"
                   type="text" 
@@ -67,7 +67,7 @@
             <!-- Year and Kilometers in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Year (or registration year) <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-semibold text-foreground">Year (or registration year) <span class="text-brand-red">*</span></Label>
                 <Input 
                   v-model="vehicleData.year"
                   type="number" 
@@ -79,7 +79,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Kilometers</Label>
+                <Label class="block text-sm font-semibold text-foreground">Kilometers</Label>
                 <Input 
                   v-model.number="vehicleData.kilometers"
                   type="number" 
@@ -93,7 +93,7 @@
             <!-- Fuel Type and Gear Type in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Fuel Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
                 <Select v-model="vehicleData.fuelType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select fuel type..." />
@@ -108,7 +108,7 @@
                 </Select>
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Gear Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
                 <Select v-model="vehicleData.gearType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select gear type..." />
@@ -124,19 +124,19 @@
 
             <!-- Plates -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Plates</Label>
+              <Label class="block text-sm font-semibold text-foreground">Plates</Label>
               <Input 
                 v-model="vehicleData.plates"
                 type="text" 
                 placeholder="License plate number" 
                 class="w-full h-10"
               />
-              <p class="text-xs text-sub mt-1">These can be relevant for automatically retrieving other information.</p>
+              <p class="text-xs text-muted-foreground mt-1">These can be relevant for automatically retrieving other information.</p>
             </div>
 
             <!-- Note field -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Note</Label>
+              <Label class="block text-sm font-semibold text-foreground">Note</Label>
               <Textarea 
                 v-model="vehicleData.note"
                 rows="5"
@@ -151,7 +151,7 @@
             <!-- Vehicle Information -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Brand</Label>
+                <Label class="block text-sm font-semibold text-foreground">Brand</Label>
                 <Input 
                   v-model="vehicleData.brand"
                   type="text" 
@@ -161,7 +161,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Model</Label>
+                <Label class="block text-sm font-semibold text-foreground">Model</Label>
                 <Input 
                   v-model="vehicleData.model"
                   type="text" 
@@ -171,7 +171,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Year</Label>
+                <Label class="block text-sm font-semibold text-foreground">Year</Label>
                 <Input 
                   v-model="vehicleData.year"
                   type="number" 
@@ -186,7 +186,7 @@
 
             <!-- Version/Trim -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Version/Trim</Label>
+              <Label class="block text-sm font-semibold text-foreground">Version/Trim</Label>
               <Input 
                 v-model="vehicleData.version"
                 type="text" 
@@ -198,7 +198,7 @@
             <!-- Identification -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">VIN</Label>
+                <Label class="block text-sm font-semibold text-foreground">VIN</Label>
                 <Input 
                   v-model="vehicleData.vin"
                   type="text" 
@@ -207,7 +207,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Plates</Label>
+                <Label class="block text-sm font-semibold text-foreground">Plates</Label>
                 <Input 
                   v-model="vehicleData.plates"
                   type="text" 
@@ -220,7 +220,7 @@
             <!-- Vehicle Details -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Fuel Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
                 <Select v-model="vehicleData.fuelType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select fuel type..." />
@@ -235,7 +235,7 @@
                 </Select>
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Gear Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
                 <Select v-model="vehicleData.gearType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select gear type..." />
@@ -248,7 +248,7 @@
                 </Select>
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Mileage (km)</Label>
+                <Label class="block text-sm font-semibold text-foreground">Mileage (km)</Label>
                 <Input 
                   v-model.number="vehicleData.kilometers"
                   type="number" 
@@ -261,7 +261,7 @@
 
             <!-- Registration -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Registration Year/Month</Label>
+              <Label class="block text-sm font-semibold text-foreground">Registration Year/Month</Label>
               <Input 
                 v-model="vehicleData.registration"
                 type="text" 
@@ -273,7 +273,7 @@
             <!-- Owner Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Owned Since</Label>
+                <Label class="block text-sm font-semibold text-foreground">Owned Since</Label>
                 <Input 
                   v-model="vehicleData.ownedSince"
                   type="text" 
@@ -282,7 +282,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Owner</Label>
+                <Label class="block text-sm font-semibold text-foreground">Owner</Label>
                 <Input 
                   v-model="vehicleData.owner"
                   type="text" 
@@ -294,7 +294,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Ownership Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Ownership Type</Label>
                 <Select v-model="vehicleData.ownershipType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select ownership type..." />
@@ -310,7 +310,7 @@
             </div>
 
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Warranty Info</Label>
+              <Label class="block text-sm font-semibold text-foreground">Warranty Info</Label>
               <Textarea 
                 v-model="vehicleData.warrantyInfo"
                 rows="4"

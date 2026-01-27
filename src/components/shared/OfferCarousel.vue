@@ -2,8 +2,8 @@
   <div v-if="offers.length > 0">
     <div class="flex items-center justify-between mb-2">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-file-invoice-dollar text-sub text-xs"></i>
-        <h3 class="font-semibold text-heading text-sm">Offers ({{ offers.length }})</h3>
+        <i class="fa-solid fa-file-invoice-dollar text-muted-foreground text-xs"></i>
+        <h3 class="font-semibold text-foreground text-sm">Offers ({{ offers.length }})</h3>
       </div>
     </div>
     <div class="relative">
@@ -11,7 +11,7 @@
         <div
           v-for="offer in offers"
           :key="offer.id"
-          class="flex-none w-36 snap-start bg-white border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow relative"
+          class="flex-none w-36 snap-start bg-white border rounded-lg shadow-nsc-card overflow-hidden transition-shadow relative"
           :class="getOfferBorderClass(offer)"
         >
           <!-- Status Badge -->
@@ -23,25 +23,25 @@
           </div>
           
           <!-- Vehicle Image -->
-          <div class="w-full h-16 bg-surfaceSecondary flex items-center justify-center overflow-hidden">
+          <div class="w-full h-16 bg-muted flex items-center justify-center overflow-hidden">
             <img 
               v-if="offer.data?.image" 
               :src="offer.data.image" 
               alt="Vehicle" 
               class="w-full h-full object-cover"
             >
-            <i v-else class="fa-solid fa-car text-base text-sub"></i>
+            <i v-else class="fa-solid fa-car text-base text-muted-foreground"></i>
           </div>
           
           <!-- Offer Details -->
           <div class="p-2 space-y-1.5">
             <!-- Vehicle Info -->
             <div>
-              <h4 class="font-bold text-heading text-xs leading-tight line-clamp-2 mb-0.5">
+              <h4 class="font-bold text-foreground text-xs leading-tight line-clamp-2 mb-0.5">
                 {{ offer.vehicleBrand }} {{ offer.vehicleModel }} ({{ offer.vehicleYear }})
               </h4>
-              <p class="text-sm font-bold text-heading">€ {{ formatCurrency(offer.price) }}</p>
-              <p class="text-xs text-sub">
+              <p class="text-sm font-bold text-foreground">€ {{ formatCurrency(offer.price) }}</p>
+              <p class="text-xs text-muted-foreground">
                 {{ formatDate(offer.createdAt) }}
               </p>
             </div>
@@ -65,10 +65,10 @@
   </div>
   
   <!-- Empty State -->
-  <div v-else class="text-center py-6 px-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
-    <i class="fa-solid fa-file-invoice text-2xl text-sub mb-2"></i>
-    <p class="text-xs font-medium text-body">No offers created yet</p>
-    <p class="text-xs text-sub mt-0.5">Create an offer to start negotiations</p>
+  <div v-else class="text-center py-6 px-3 bg-muted border border-border rounded-lg">
+    <i class="fa-solid fa-file-invoice text-2xl text-muted-foreground mb-2"></i>
+    <p class="text-xs font-medium text-muted-foreground">No offers created yet</p>
+    <p class="text-xs text-muted-foreground mt-0.5">Create an offer to start negotiations</p>
   </div>
 </template>
 
@@ -129,7 +129,7 @@ const getOfferBorderClass = (offer) => {
   if (offer.status === 'accepted') {
     return 'border-green-500 border-2'
   }
-  return 'border-E5E7EB'
+  return 'border-border'
 }
 </script>
 

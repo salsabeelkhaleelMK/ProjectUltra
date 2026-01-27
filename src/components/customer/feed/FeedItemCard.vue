@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-E5E7EB rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in mb-4 feed-item">
+  <div class="bg-white border border-border rounded-xl p-4 shadow-nsc-card flex gap-4 animate-fade-in mb-4 feed-item">
     <div 
       class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border"
       :class="getItemIconClass(item.type)"
@@ -8,14 +8,14 @@
     </div>
     <div class="flex-1">
       <div class="flex items-center gap-2 mb-1">
-        <span class="text-sm font-bold text-heading">{{ customerInitials }}</span>
-        <span class="text-sm text-body">{{ item.action || 'added' }}</span>
-        <span class="text-sm text-sub">• {{ formatTime(item.timestamp) }}</span>
+        <span class="text-sm font-bold text-foreground">{{ customerInitials }}</span>
+        <span class="text-sm text-muted-foreground">{{ item.action || 'added' }}</span>
+        <span class="text-sm text-muted-foreground">• {{ formatTime(item.timestamp) }}</span>
         <span v-if="item.autoDetected" class="bg-blue-50 text-blue-600 text-sm px-1 py-0.5 rounded border border-blue-100">Auto-detected</span>
         <div class="ml-auto relative">
           <button 
             @click.stop="showMenu = !showMenu"
-            class="text-gray-400 hover:text-body transition-colors p-1"
+            class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
             title="More actions"
           >
             <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
@@ -31,8 +31,8 @@
           </div>
         </div>
       </div>
-      <div v-if="item.content" class="text-sm text-body">{{ item.content }}</div>
-      <div v-if="item.fileName" class="text-sm text-body flex items-center gap-2">
+      <div v-if="item.content" class="text-sm text-muted-foreground">{{ item.content }}</div>
+      <div v-if="item.fileName" class="text-sm text-muted-foreground flex items-center gap-2">
         <i class="fa-solid fa-paperclip text-gray-400"></i>
         <span>{{ item.fileName }}</span>
       </div>
@@ -40,11 +40,11 @@
         <div v-if="item.type === 'appointment'">
           <AppointmentWidget :appointment-data="item.data" />
         </div>
-        <div v-else class="bg-white border border-E5E7EB rounded-lg p-3">
+        <div v-else class="bg-white border border-border rounded-lg p-3">
           <div v-if="item.type === 'tradein'">
-              <h4 class="text-sm font-bold text-heading">{{ item.data.brand }} {{ item.data.model }}</h4>
-              <p v-if="item.data.version" class="text-sm text-sub mt-0.5">{{ item.data.version }}</p>
-              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-sub mt-2">
+              <h4 class="text-sm font-bold text-foreground">{{ item.data.brand }} {{ item.data.model }}</h4>
+              <p v-if="item.data.version" class="text-sm text-muted-foreground mt-0.5">{{ item.data.version }}</p>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
               <div v-if="item.data.year">
                 <i class="fa-regular fa-calendar mr-1"></i>{{ item.data.year }}
               </div>
@@ -63,31 +63,31 @@
             </div>
           </div>
           <div v-else-if="item.type === 'financing'">
-              <h4 class="text-sm font-bold text-heading mb-2">{{ item.data.product }}</h4>
-              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-sub">
+              <h4 class="text-sm font-bold text-foreground mb-2">{{ item.data.product }}</h4>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
               <div v-if="item.data.provider">
-                <span class="text-sub">Provider:</span>
-                <span class="text-body font-medium ml-1">{{ item.data.provider }}</span>
+                <span class="text-muted-foreground">Provider:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ item.data.provider }}</span>
               </div>
               <div v-if="item.data.total">
-                <span class="text-sub">Total:</span>
-                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.total) }}</span>
+                <span class="text-muted-foreground">Total:</span>
+                <span class="text-muted-foreground font-medium ml-1">€{{ formatCurrency(item.data.total) }}</span>
               </div>
               <div v-if="item.data.monthly">
-                <span class="text-sub">Monthly:</span>
-                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.monthly) }}</span>
+                <span class="text-muted-foreground">Monthly:</span>
+                <span class="text-muted-foreground font-medium ml-1">€{{ formatCurrency(item.data.monthly) }}</span>
               </div>
               <div v-if="item.data.deposit">
-                <span class="text-sub">Deposit:</span>
-                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.deposit) }}</span>
+                <span class="text-muted-foreground">Deposit:</span>
+                <span class="text-muted-foreground font-medium ml-1">€{{ formatCurrency(item.data.deposit) }}</span>
               </div>
               <div v-if="item.data.startDate">
-                <span class="text-sub">Start:</span>
-                <span class="text-body font-medium ml-1">{{ formatDate(item.data.startDate) }}</span>
+                <span class="text-muted-foreground">Start:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ formatDate(item.data.startDate) }}</span>
               </div>
               <div v-if="item.data.expDate">
-                <span class="text-sub">Expires:</span>
-                <span class="text-body font-medium ml-1">{{ formatDate(item.data.expDate) }}</span>
+                <span class="text-muted-foreground">Expires:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ formatDate(item.data.expDate) }}</span>
               </div>
             </div>
           </div>
@@ -96,45 +96,45 @@
               <img :src="item.data.image" alt="Car" class="w-full h-full object-cover">
             </div>
             <div class="flex-1">
-              <h4 class="text-sm font-bold text-heading">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
-              <p class="text-sm text-sub">€ {{ formatCurrency(item.data.price) }}</p>
+              <h4 class="text-sm font-bold text-foreground">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
+              <p class="text-sm text-muted-foreground">€ {{ formatCurrency(item.data.price) }}</p>
             </div>
             <span v-if="item.data.isMainOffer" class="bg-purple-600 text-white text-xs font-bold px-1 py-0.5 rounded">Main Offer</span>
           </div>
           <div v-else-if="item.type === 'purchase'" class="flex items-center gap-3">
             <div class="flex-1">
-              <h4 class="text-sm font-bold text-heading">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
-              <p class="text-sm text-sub">€ {{ formatCurrency(item.data.price) }}</p>
-              <p v-if="item.data.purchaseDate" class="text-sm text-sub mt-1">Purchased: {{ formatDate(item.data.purchaseDate) }}</p>
-              <p v-if="item.data.notes" class="text-sm text-sub mt-1">{{ item.data.notes }}</p>
+              <h4 class="text-sm font-bold text-foreground">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
+              <p class="text-sm text-muted-foreground">€ {{ formatCurrency(item.data.price) }}</p>
+              <p v-if="item.data.purchaseDate" class="text-sm text-muted-foreground mt-1">Purchased: {{ formatDate(item.data.purchaseDate) }}</p>
+              <p v-if="item.data.notes" class="text-sm text-muted-foreground mt-1">{{ item.data.notes }}</p>
             </div>
           </div>
           <div v-else-if="item.type === 'purchase-method'">
-            <h4 class="text-sm font-bold text-heading mb-2">{{ item.data.typeLabel || item.data.type }}</h4>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-sub">
+            <h4 class="text-sm font-bold text-foreground mb-2">{{ item.data.typeLabel || item.data.type }}</h4>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
               <div v-if="item.data.monthlyInstalment">
-                <span class="text-sub">Monthly:</span>
-                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.monthlyInstalment) }}</span>
+                <span class="text-muted-foreground">Monthly:</span>
+                <span class="text-muted-foreground font-medium ml-1">€{{ formatCurrency(item.data.monthlyInstalment) }}</span>
               </div>
               <div v-if="item.data.duration">
-                <span class="text-sub">Duration:</span>
-                <span class="text-body font-medium ml-1">{{ item.data.duration }} months</span>
+                <span class="text-muted-foreground">Duration:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ item.data.duration }} months</span>
               </div>
               <div v-if="item.data.downPayment">
-                <span class="text-sub">Down Payment:</span>
-                <span class="text-body font-medium ml-1">€{{ formatCurrency(item.data.downPayment) }}</span>
+                <span class="text-muted-foreground">Down Payment:</span>
+                <span class="text-muted-foreground font-medium ml-1">€{{ formatCurrency(item.data.downPayment) }}</span>
               </div>
               <div v-if="item.data.interestRate">
-                <span class="text-sub">Interest Rate:</span>
-                <span class="text-body font-medium ml-1">{{ item.data.interestRate }}%</span>
+                <span class="text-muted-foreground">Interest Rate:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ item.data.interestRate }}%</span>
               </div>
               <div v-if="item.data.mileageLimit">
-                <span class="text-sub">Mileage Limit:</span>
-                <span class="text-body font-medium ml-1">{{ formatCurrency(item.data.mileageLimit) }} km/year</span>
+                <span class="text-muted-foreground">Mileage Limit:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ formatCurrency(item.data.mileageLimit) }} km/year</span>
               </div>
               <div v-if="item.data.customerType">
-                <span class="text-sub">Customer Type:</span>
-                <span class="text-body font-medium ml-1">{{ item.data.customerType }}</span>
+                <span class="text-muted-foreground">Customer Type:</span>
+                <span class="text-muted-foreground font-medium ml-1">{{ item.data.customerType }}</span>
               </div>
             </div>
             <div v-if="item.data.insuranceIncluded || item.data.maintenanceIncluded || item.data.registrationTaxesIncluded" class="flex flex-wrap gap-2 mt-2">
@@ -199,10 +199,10 @@ const getItemIcon = (type) => {
 const getItemIconClass = (type) => {
   const classes = {
     'note': 'bg-orange-100 text-orange-600 border-orange-200',
-    'communication': 'bg-surfaceSecondary text-body border',
+    'communication': 'bg-muted text-muted-foreground border',
     'email': 'bg-blue-100 text-blue-600 border-blue-200',
     'whatsapp': 'bg-green-100 text-green-600 border-green-200',
-    'sms': 'bg-surfaceSecondary text-body border',
+    'sms': 'bg-muted text-muted-foreground border',
     'attachment': 'bg-blue-50 text-blue-600 border-blue-100',
     'tradein': 'bg-green-50 text-green-600 border-green-100',
     'financing': 'bg-purple-50 text-purple-600 border-purple-100',
@@ -211,7 +211,7 @@ const getItemIconClass = (type) => {
     'purchase-method': 'bg-amber-50 text-amber-600 border-amber-100',
     'appointment': 'bg-purple-100 text-purple-600 border-purple-200'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border'
+  return classes[type] || 'bg-muted text-muted-foreground border'
 }
 
 const formatTime = (timestamp) => {

@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-4">
     <!-- Title and Description Card -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h4 class="font-bold text-heading text-sm mb-1">No Follow-Up Task</h4>
-      <p class="text-sm text-body">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h4 class="font-bold text-foreground text-sm mb-1">No Follow-Up Task</h4>
+      <p class="text-sm text-muted-foreground">
         5+ days in negotiation with no future appointment scheduled. Schedule an appointment to move forward or close as lost.
       </p>
     </div>
 
     <!-- Action Selection Buttons -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Choose Action</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Choose Action</h5>
       <div class="flex flex-wrap gap-3">
         <Button
           variant="outline"
@@ -34,9 +34,9 @@
     </div>
 
     <!-- Schedule Appointment Form (placeholder - will be implemented) -->
-    <div v-if="selectedAction === 'schedule'" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Schedule Appointment</h5>
-      <p class="text-sm text-sub">
+    <div v-if="selectedAction === 'schedule'" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Schedule Appointment</h5>
+      <p class="text-sm text-muted-foreground">
         This will reuse the full schedule appointment form from the Awaiting Appointment stage.
       </p>
       <!-- TODO: Add full schedule form here -->

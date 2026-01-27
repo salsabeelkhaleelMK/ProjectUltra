@@ -4,19 +4,19 @@
     <button
       v-if="!isExpanded"
       @click="isExpanded = true"
-      class="w-full flex items-center justify-between text-fluid-sm text-body hover:text-heading py-2 transition-colors"
+      class="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground py-2 transition-colors"
     >
       <span class="font-medium">Lead Qualification Survey</span>
-      <i class="fa-solid fa-chevron-down text-fluid-xs text-sub"></i>
+      <i class="fa-solid fa-chevron-down text-xs text-muted-foreground"></i>
     </button>
     
     <!-- Expanded State -->
     <div v-else class="space-y-4">
       <div class="flex items-center justify-between">
-        <h5 class="text-fluid-sm font-semibold text-heading">Lead Qualification Survey</h5>
+        <h5 class="text-sm font-semibold text-foreground">Lead Qualification Survey</h5>
         <button
           @click="isExpanded = false"
-          class="text-fluid-xs text-sub hover:text-body transition-colors"
+          class="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <i class="fa-solid fa-chevron-up"></i>
         </button>
@@ -29,7 +29,7 @@
           :key="index"
           class="space-y-2"
         >
-          <label class="block text-fluid-sm font-medium text-body">{{ question.label }}</label>
+          <label class="block text-sm font-medium text-muted-foreground">{{ question.label }}</label>
           
           <!-- Text input -->
           <textarea
@@ -37,7 +37,7 @@
             v-model="responses[question.key]"
             :placeholder="question.placeholder"
             rows="3"
-            class="input resize-none text-fluid-sm py-2 px-3 w-full"
+            class="input resize-none text-sm py-2 px-3 w-full"
           ></textarea>
           
           <!-- Select dropdown -->
@@ -67,7 +67,7 @@
             <label
               v-for="option in question.options"
               :key="option"
-              class="flex items-center text-fluid-sm text-body cursor-pointer"
+              class="flex items-center text-sm text-muted-foreground cursor-pointer"
             >
               <input
                 type="radio"

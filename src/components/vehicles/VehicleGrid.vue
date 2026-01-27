@@ -12,6 +12,7 @@
     v-model:globalFilter="globalFilterModel"
     v-model:sorting="sortingModel"
     v-model:columnFilters="columnFiltersModel"
+    v-model:rowSelection="rowSelection"
     :paginationOptions="{
       rowCount: filteredVehicles.length
     }"
@@ -32,12 +33,42 @@
         <p class="empty-state-text">No vehicles found</p>
       </div>
     </template>
+    <template #batch-action-bar>
+      <div v-if="hasSelection" class="flex items-center gap-2">
+        <div class="flex items-center gap-2 mr-1">
+          <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-medium">
+            {{ selectedCount }}
+          </div>
+          <span class="text-white text-fluid-sm font-medium whitespace-nowrap">Items selected</span>
+        </div>
+        <div class="h-4 w-px bg-greys-700"></div>
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="handleBulkDelete"
+        >
+          <i class="fa-solid fa-trash mr-2"></i>
+          Delete
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="clearSelection"
+        >
+          <i class="fa-solid fa-x mr-2"></i>
+          Close
+        </Button>
+      </div>
+    </template>
   </DataTable>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { DataTable } from '@motork/component-library/future/components'
+import { Button } from '@motork/component-library/future/primitives'
+import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useVehiclesStore } from '@/stores/vehicles'
 
 const props = defineProps({
   filteredVehicles: {
@@ -79,6 +110,28 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['row-click', 'update:pagination', 'update:globalFilter', 'update:sorting', 'update:columnFilters'])
+
+const vehiclesStore = useVehiclesStore()
+
+// Row selection - Motork automatically adds the checkbox column when v-model:rowSelection is bound
+const { rowSelection, selectedCount, hasSelection, getSelectedRows, clearSelection } = useTableRowSelection((row) => String(row.id))
+
+// Bulk delete handler
+const handleBulkDelete = () => {
+  const selectedRows = getSelectedRows(props.filteredVehicles)
+  
+  if (selectedRows.length === 0) return
+  
+  if (!confirm(`Are you sure you want to delete ${selectedRows.length} ${selectedRows.length === 1 ? 'vehicle' : 'vehicles'}?`)) {
+    return
+  }
+  
+  selectedRows.forEach(row => {
+    vehiclesStore.deleteVehicle(row.id)
+  })
+  
+  clearSelection()
+}
 
 const paginationModel = computed({
   get: () => props.pagination,

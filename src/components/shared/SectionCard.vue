@@ -1,10 +1,10 @@
 <template>
   <Card class="mb-6 shadow-mk-dashboard-card">
-    <CardHeader class="border-b border-black/5 bg-surfaceSecondary/50 p-4">
+    <CardHeader class="border-b border-border bg-muted/50 p-4">
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
-          <i v-if="icon" :class="[icon, 'text-sub text-fluid-xs']"></i>
-          <CardTitle class="text-fluid-sm font-medium text-heading">{{ title }}</CardTitle>
+          <i v-if="icon" :class="[icon, 'text-muted-foreground text-xs']"></i>
+          <CardTitle class="text-sm font-medium text-foreground">{{ title }}</CardTitle>
           <Badge
             v-if="count !== undefined && count > 0"
             :text="String(count)"
@@ -29,10 +29,10 @@
       </div>
     </CardHeader>
     
-    <CardContent v-if="hasEmptyState" class="p-6 text-center text-sub">
+    <CardContent v-if="hasEmptyState" class="p-6 text-center text-muted-foreground">
       <slot name="empty-state">
-        <i class="fa-solid fa-inbox text-2xl mb-2 text-sub opacity-50"></i>
-        <p class="text-fluid-base text-sub">{{ emptyStateMessage || 'No items found' }}</p>
+        <i class="fa-solid fa-inbox text-2xl mb-2 text-muted-foreground opacity-50"></i>
+        <p class="text-base text-muted-foreground">{{ emptyStateMessage || 'No items found' }}</p>
       </slot>
     </CardContent>
     

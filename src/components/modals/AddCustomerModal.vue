@@ -9,9 +9,9 @@
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Form fields based on active tab -->
-      <div v-if="activeTab === 'contacts'" class="space-y-6">
+      <div v-if="activeTab === 'customers'" class="space-y-6">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Contact Name</Label>
+          <Label class="block text-sm font-semibold text-foreground">Contact Name</Label>
           <Input 
             v-model="formData.customerName"
             type="text" 
@@ -21,7 +21,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Email</Label>
+          <Label class="block text-sm font-semibold text-foreground">Email</Label>
           <Input 
             v-model="formData.email"
             type="email" 
@@ -31,7 +31,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Phone</Label>
+          <Label class="block text-sm font-semibold text-foreground">Phone</Label>
           <Input 
             v-model="formData.phone"
             type="tel" 
@@ -41,7 +41,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Company (optional)</Label>
+          <Label class="block text-sm font-semibold text-foreground">Company (optional)</Label>
           <Input 
             v-model="formData.company"
             type="text" 
@@ -53,7 +53,7 @@
       
       <div v-else-if="activeTab === 'open-leads'" class="space-y-6">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Label class="block text-sm font-semibold text-foreground">Customer Name</Label>
           <Input 
             v-model="formData.customerName"
             type="text" 
@@ -63,7 +63,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Email</Label>
+          <Label class="block text-sm font-semibold text-foreground">Email</Label>
           <Input 
             v-model="formData.email"
             type="email" 
@@ -73,7 +73,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Requested Vehicle</Label>
+          <Label class="block text-sm font-semibold text-foreground">Requested Vehicle</Label>
           <Input 
             v-model="formData.vehicle"
             type="text" 
@@ -85,7 +85,7 @@
       
       <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'" class="space-y-6">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Label class="block text-sm font-semibold text-foreground">Customer Name</Label>
           <Input 
             v-model="formData.customerName"
             type="text" 
@@ -95,7 +95,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+          <Label class="block text-sm font-semibold text-foreground">Vehicle</Label>
           <Input 
             v-model="formData.vehicle"
             type="text" 
@@ -105,7 +105,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Opportunity Value</Label>
+          <Label class="block text-sm font-semibold text-foreground">Opportunity Value</Label>
           <Input 
             v-model="formData.value"
             type="number" 
@@ -117,7 +117,7 @@
       
       <div v-else class="space-y-6">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Label class="block text-sm font-semibold text-foreground">Customer Name</Label>
           <Input 
             v-model="formData.customerName"
             type="text" 
@@ -127,7 +127,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+          <Label class="block text-sm font-semibold text-foreground">Vehicle</Label>
           <Input 
             v-model="formData.vehicle"
             type="text" 
@@ -137,7 +137,7 @@
         </div>
         
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Reason</Label>
+          <Label class="block text-sm font-semibold text-foreground">Reason</Label>
           <Textarea 
             v-model="formData.reason"
             rows="4"
@@ -237,7 +237,7 @@ const handleOpenChange = (isOpen) => {
 
 const modalTitle = computed(() => {
   const titles = {
-    'contacts': 'Add New Contact',
+    'customers': 'Add New Customer',
     'open-leads': 'Add New Lead',
     'open-opportunities': 'Add New Opportunity',
     'in-negotiation': 'Add Opportunity in Negotiation',
@@ -249,7 +249,7 @@ const modalTitle = computed(() => {
 
 const itemType = computed(() => {
   const types = {
-    'contacts': 'Contact',
+    'customers': 'Customer',
     'open-leads': 'Lead',
     'open-opportunities': 'Opportunity',
     'in-negotiation': 'Opportunity',

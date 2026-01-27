@@ -5,20 +5,20 @@
         <CardTitle>Map Columns</CardTitle>
       </CardHeader>
       <CardContent class="space-y-6">
-        <p class="text-sub text-fluid-xs">
+        <p class="text-muted-foreground text-xs">
           Map file columns to {{ entityType }} fields. <span class="text-brand-red">*</span> Required.
         </p>
 
         <!-- Required Fields -->
         <div v-if="availableFields.required.length > 0" class="space-y-4">
-          <h4 class="text-fluid-xs font-bold uppercase text-sub tracking-wider">Required Fields</h4>
+          <h4 class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Required Fields</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               v-for="field in availableFields.required"
               :key="field"
               class="space-y-2"
             >
-              <Label class="block text-sm font-semibold text-heading">
+              <Label class="block text-sm font-semibold text-foreground">
                 {{ formatFieldName(field) }} <span class="text-brand-red">*</span>
               </Label>
               <Select
@@ -38,21 +38,21 @@
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p v-if="errors[field]" class="text-brand-red text-fluid-xs mt-1">{{ errors[field] }}</p>
+              <p v-if="errors[field]" class="text-brand-red text-xs mt-1">{{ errors[field] }}</p>
             </div>
           </div>
         </div>
 
         <!-- Optional Fields -->
         <div v-if="availableFields.optional.length > 0" class="space-y-4">
-          <h4 class="text-fluid-xs font-bold uppercase text-sub tracking-wider">Optional Fields</h4>
+          <h4 class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Optional Fields</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               v-for="field in availableFields.optional"
               :key="field"
               class="space-y-2"
             >
-              <Label class="block text-sm font-semibold text-heading">
+              <Label class="block text-sm font-semibold text-foreground">
                 {{ formatFieldName(field) }}
               </Label>
               <Select
@@ -77,12 +77,12 @@
         </div>
 
         <!-- Mapping Summary -->
-        <Card v-if="summary" class="bg-surfaceSecondary border-border">
+        <Card v-if="summary" class="bg-muted border-border">
           <CardContent>
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sub text-fluid-xs font-semibold uppercase tracking-wider mb-1">Mapping Progress</p>
-                <p class="text-heading font-bold text-sm">
+                <p class="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1">Mapping Progress</p>
+                <p class="text-foreground font-bold text-sm">
                   {{ summary.mappedFields }} / {{ summary.totalFields }} fields mapped
                 </p>
               </div>

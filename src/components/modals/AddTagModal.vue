@@ -9,7 +9,7 @@
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Tag Name</Label>
+        <Label class="block text-sm font-semibold text-foreground">Tag Name</Label>
         <Input
           v-model="tagName"
           @keyup.enter="handleAdd"
@@ -22,7 +22,7 @@
       
       <!-- Existing tags -->
       <div v-if="existingTags.length > 0" class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Existing Tags</Label>
+        <Label class="block text-sm font-semibold text-foreground">Existing Tags</Label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="tag in existingTags"

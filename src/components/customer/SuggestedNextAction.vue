@@ -1,28 +1,28 @@
 <template>
   <div
     v-if="suggestedActions.length > 0"
-    class="rounded-card flex flex-col mb-6 bg-surfaceSecondary"
+    class="rounded-lg flex flex-col mb-6 bg-muted"
   >
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-heading"></i>
-        <h2 class="text-sm font-semibold text-heading leading-5">Suggested Next Action</h2>
+        <i class="fa-solid fa-lightbulb text-foreground"></i>
+        <h2 class="text-sm font-semibold text-foreground leading-5">Suggested Next Action</h2>
       </div>
     </div>
 
     <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-nsc-card flex flex-col">
+    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
       <div class="divide-y divide-gray-100">
         <!-- Action Description Section -->
         <div class="p-3">
-          <p class="text-sm text-body leading-relaxed break-words">
+          <p class="text-sm text-muted-foreground leading-relaxed break-words">
             <template v-for="(action, index) in suggestedActions" :key="action.id">
               <template v-if="index > 0">
-                <span class="text-sub"> or </span>
+                <span class="text-muted-foreground"> or </span>
               </template>
-              <span class="font-medium text-heading">{{ action.title }}</span>
-              <span class="text-xs text-sub ml-1">
+              <span class="font-medium text-foreground">{{ action.title }}</span>
+              <span class="text-xs text-muted-foreground ml-1">
                 ({{ action.type === 'lead' ? 'Lead' : 'Opp' }} #{{ action.entityId }})
               </span>
             </template>
@@ -43,7 +43,7 @@
             <button
               v-if="suggestedActions.length > 1"
               @click="handleAction(suggestedActions[1])"
-              class="flex items-center justify-center gap-2 px-4 py-2 bg-surface border border-border hover:bg-surfaceSecondary text-heading rounded-btn font-medium text-sm transition-colors w-full sm:w-auto sm:shrink-0"
+              class="flex items-center justify-center gap-2 px-4 py-2 bg-surface border border-border hover:bg-muted text-foreground rounded-btn font-medium text-sm transition-colors w-full sm:w-auto sm:shrink-0"
             >
               <i :class="suggestedActions[1].icon" class="text-sm"></i>
               <span>{{ suggestedActions[1].label }}</span>

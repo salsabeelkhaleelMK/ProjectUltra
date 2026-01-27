@@ -1,34 +1,34 @@
 <template>
-  <!-- EXTREMELY COMPACT DESIGN -->
-  <div class="rounded-lg" style="background-color: var(--base-muted, #f5f5f5)">
-    <div class="bg-white rounded-lg px-3 py-2 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-      
+  <div
+    class="rounded-lg"
+    :class="isAssigned ? 'bg-muted' : 'bg-blue-50'"
+    :style="!isAssigned ? { borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--brand-primary)' } : undefined"
+  >
+    <div
+      class="rounded-lg px-3 py-2 shadow-nsc-card flex items-center justify-between gap-2 flex-wrap"
+      :class="isAssigned ? 'bg-white border border-border' : 'bg-transparent'"
+    >
       <!-- ASSIGNED STATE: Compact owner info (avatar + name + team + dealership) -->
-      <div v-if="isAssigned" class="flex items-center justify-between gap-2">
-        <!-- Avatar + Comprehensive Info (single line) -->
+      <div v-if="isAssigned" class="flex items-center justify-between gap-2 w-full">
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <div 
+          <div
             class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
             :class="getRoleAvatarClass(ownerInfo.role)"
           >
             {{ getInitials(ownerInfo.name) }}
           </div>
           <div class="min-w-0 flex-1">
-            <!-- Name + Team in one line -->
-            <p class="text-sm font-semibold text-greys-900 truncate leading-tight">
+            <p class="text-sm font-semibold text-foreground truncate leading-tight">
               {{ ownerInfo.name }}
-              <span class="font-normal text-greys-500">• {{ ownerInfo.team }}</span>
+              <span class="font-normal text-muted-foreground">• {{ ownerInfo.team }}</span>
             </p>
-            <!-- Dealership (tiny, subtle) -->
-            <p class="text-xs text-greys-500 truncate leading-tight">
+            <p class="text-xs text-muted-foreground truncate leading-tight">
               {{ ownerInfo.dealership }}
             </p>
           </div>
         </div>
-        
-        <!-- Reassign button (minimal) -->
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           @click="showReassignModal = true"
           class="shrink-0 text-xs px-2 py-1"
@@ -36,51 +36,47 @@
           Change
         </Button>
       </div>
-      
-      <!-- UNASSIGNED STATE: Assignment CTAs -->
-      <div v-else class="space-y-2">
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <p class="text-sm text-greys-500 font-medium">Unassigned</p>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <Button
-              variant="primary"
-              size="sm"
-              @click="assignToSelf"
-              class="!bg-brand-red text-sm px-3 py-1"
-            >
-              Assign to me
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              @click="showReassignModal = true"
-              class="text-sm px-3 py-1 border-D1D5DB"
-            >
-              Assign to someone
-            </Button>
-          </div>
-        </div>
 
-        <!-- Suggested Teams (compact pills) -->
-        <div v-if="suggestedTeams.length > 0" class="flex gap-1.5 flex-wrap">
-          <button
-            v-for="team in suggestedTeams"
-            :key="team.id"
-            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-xs font-medium transition-all"
-            :class="selectedTeam?.id === team.id
-              ? 'border-brand-blue bg-blue-50 text-brand-blue'
-              : 'border-E5E7EB hover:border-brand-blue/30 text-greys-600'"
-            @click="handleTeamSelect(team)"
-          >
-            <i class="fa-solid fa-users text-xs"></i>
-            {{ team.name }}
-          </button>
+      <!-- UNASSIGNED STATE: info + message left, split button group right -->
+      <template v-else>
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <Info :size="14" class="shrink-0" aria-hidden="true" stroke-width="2" style="color: var(--brand-primary)" />
+          <p class="text-sm font-medium text-foreground">{{ t('common.assignee.taskUnassigned') }}</p>
         </div>
-      </div>
+        <ButtonGroup class="assignee-button-group flex items-stretch gap-0 rounded-lg overflow-hidden">
+          <Button
+            variant="default"
+            size="sm"
+            class="rounded-r-none border-r border-white/20 bg-primary"
+            @click="assignToSelf"
+          >
+            {{ t('common.assignee.assignToMe') }}
+          </Button>
+          <ButtonGroupSeparator />
+          <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
+            <PopoverTrigger as-child>
+              <Button
+                variant="default"
+                size="icon-sm"
+                class="rounded-l-none border-0 bg-primary -ml-px"
+                :aria-label="t('common.assignee.assignToSomeone')"
+              >
+                <ChevronDown :size="14" stroke-width="2" aria-hidden="true" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
+              side="bottom"
+              align="end"
+            >
+              <AssigneeDropdownContent @select="handleAssigneeFromDropdown" />
+            </PopoverContent>
+          </Popover>
+        </ButtonGroup>
+      </template>
     </div>
   </div>
-  
-  <!-- Assign / Reassign Modal -->
+
   <ReassignUserModal
     :show="showReassignModal"
     :title="isAssigned ? 'Reassign task' : 'Assign task'"
@@ -92,13 +88,24 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { useI18n } from 'vue-i18n'
+import {
+  Button,
+  ButtonGroup,
+  ButtonGroupSeparator,
+  Popover,
+  PopoverTrigger,
+  PopoverContent
+} from '@motork/component-library/future/primitives'
+import { Info, ChevronDown } from 'lucide-vue-next'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
+import AssigneeDropdownContent from '@/components/tasks/AssigneeDropdownContent.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 
+const { t } = useI18n()
 const props = defineProps({
   task: {
     type: Object,
@@ -106,7 +113,7 @@ const props = defineProps({
   },
   taskType: {
     type: String,
-    default: 'lead' // 'lead' | 'opportunity'
+    default: 'lead'
   }
 })
 
@@ -118,7 +125,7 @@ const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 
 const showReassignModal = ref(false)
-const selectedTeam = ref(null)
+const assigneeDropdownOpen = ref(false)
 
 // Current user
 const currentUser = computed(() => userStore.currentUser)
@@ -128,31 +135,15 @@ const isAssigned = computed(() => {
   return !!(props.task.assignee || props.task.owner || props.task.assignedTo)
 })
 
-// Get owner information from task
 const ownerInfo = computed(() => {
   const assigneeName = props.task.assignee || props.task.owner || props.task.assignedTo || 'Unassigned'
-  
-  // Try to find the user in the users store to get full info
-  const assigneeUser = usersStore.allUsers?.find(u => u.name === assigneeName)
-  
+  const assigneeUser = usersStore.users?.find((u) => u.name === assigneeName)
   return {
     name: assigneeName,
     team: assigneeUser?.team || props.task.assigneeTeam || props.task.team || 'No team',
     dealership: assigneeUser?.dealership || props.task.assigneeDealership || 'MotorK Dealership',
     role: assigneeUser?.role || props.task.assigneeRole || 'salesman'
   }
-})
-
-// Check if current user owns this task
-const isOwnedByCurrentUser = computed(() => {
-  if (!currentUser.value || !isAssigned.value) return false
-  return ownerInfo.value.name === currentUser.value.name
-})
-
-// Get suggested teams (first 3)
-const suggestedTeams = computed(() => {
-  const teams = usersStore.assignableTeams || []
-  return teams.slice(0, 3)
 })
 
 // Helper functions
@@ -172,7 +163,7 @@ const getRoleAvatarClass = (role) => {
     'salesman': 'bg-purple-100 text-purple-700',
     'operator': 'bg-orange-100 text-orange-700'
   }
-  return classes[role] || 'bg-surfaceSecondary text-body'
+  return classes[role] || 'bg-muted text-muted-foreground'
 }
 
 // Assign to self
@@ -204,56 +195,34 @@ const assignToSelf = async () => {
   }
 }
 
-// Handle team selection
-const handleTeamSelect = async (team) => {
-  selectedTeam.value = team
-  
-  try {
-    if (props.taskType === 'lead') {
-      await leadsStore.updateLead(props.task.id, { 
-        assignee: team.name,
-        assigneeType: 'team',
-        teamId: team.id,
-        assigneeTeam: team.name
-      })
-    } else if (props.taskType === 'opportunity') {
-      await opportunitiesStore.updateOpportunity(props.task.id, { 
-        assignee: team.name,
-        assigneeType: 'team',
-        teamId: team.id,
-        assigneeTeam: team.name
-      })
-    }
-    
-    emit('reassigned', team)
-  } catch (error) {
-    console.error('Error assigning to team:', error)
+async function applyAssignment(assignee) {
+  const updateData = {
+    assignee: assignee.name,
+    assigneeType: assignee.type,
+    assigneeTeam: assignee.team ?? assignee.name,
+    assigneeDealership: assignee.dealership,
+    assigneeRole: assignee.role
   }
+  if (assignee.type === 'team') {
+    updateData.teamId = assignee.id
+  }
+  if (props.taskType === 'lead') {
+    await leadsStore.updateLead(props.task.id, updateData)
+  } else if (props.taskType === 'opportunity') {
+    await opportunitiesStore.updateOpportunity(props.task.id, updateData)
+  }
+  emit('reassigned', assignee)
 }
 
-// Handle reassignment from modal
-const handleReassign = async (assignee) => {
+function handleAssigneeFromDropdown(assignee) {
+  applyAssignment(assignee).catch((err) => console.error('Error assigning:', err))
+  assigneeDropdownOpen.value = false
+}
+
+async function handleReassign(assignee) {
   try {
-    const updateData = {
-      assignee: assignee.name,
-      assigneeType: assignee.type,
-      assigneeTeam: assignee.team,
-      assigneeDealership: assignee.dealership,
-      assigneeRole: assignee.role
-    }
-    
-    if (assignee.type === 'team') {
-      updateData.teamId = assignee.id
-    }
-    
-    if (props.taskType === 'lead') {
-      await leadsStore.updateLead(props.task.id, updateData)
-    } else if (props.taskType === 'opportunity') {
-      await opportunitiesStore.updateOpportunity(props.task.id, updateData)
-    }
-    
+    await applyAssignment(assignee)
     showReassignModal.value = false
-    emit('reassigned', assignee)
   } catch (error) {
     console.error('Error reassigning:', error)
   }

@@ -11,7 +11,7 @@
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
             <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
-            <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -19,8 +19,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'card'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Card View"
                 :aria-pressed="viewMode === 'card'"
@@ -34,8 +34,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'table'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Table View"
                 :aria-pressed="viewMode === 'table'"
@@ -47,9 +47,9 @@
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
-              <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
+              <i class="fa-solid fa-eye-slash text-muted-foreground group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
             </button>
           </div>
@@ -58,7 +58,7 @@
     </header>
     
     <!-- Content -->
-    <div class="flex-1 overflow-y-auto p-4 md:p-8">
+    <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
       <DataTable 
             :data="filteredTasks" 
             :columns="columns"
@@ -72,13 +72,14 @@
             v-model:sorting="sorting"
             v-model:columnFilters="columnFilters"
             v-model:columnVisibility="columnVisibility"
+            v-model:rowSelection="rowSelection"
             :paginationOptions="{
               rowCount: filteredTasks.length
             }"
             :globalFilterOptions="{
               debounce: 300,
               placeholder: 'Q Search or ask a question',
-              show: false
+              show: true
             }"
             class="h-full"
           >
@@ -88,6 +89,33 @@
                 <p class="empty-state-text">No tasks found</p>
               </div>
             </template>
+            <template #batch-action-bar>
+              <div v-if="hasSelection" class="flex items-center gap-2">
+                <div class="flex items-center gap-2 mr-1">
+                  <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-medium">
+                    {{ selectedCount }}
+                  </div>
+                  <span class="text-white text-fluid-sm font-medium whitespace-nowrap">Items selected</span>
+                </div>
+                <div class="h-4 w-px bg-greys-700"></div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  @click="handleBulkDelete"
+                >
+                  <i class="fa-solid fa-trash mr-2"></i>
+                  Delete
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  @click="clearSelection"
+                >
+                  <i class="fa-solid fa-x mr-2"></i>
+                  Close
+                </Button>
+              </div>
+            </template>
           </DataTable>
     </div>
   </div>
@@ -95,13 +123,16 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
-import { Table, LayoutGrid } from 'lucide-vue-next'
+import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
 import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
 import { useTasksTableFilters } from '@/composables/useTasksTableFilters'
+import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useLeadsStore } from '@/stores/leads'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -121,7 +152,12 @@ const props = defineProps({
 const emit = defineEmits(['select', 'menu-click', 'menu-close', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
 const settingsStore = useSettingsStore()
+const leadsStore = useLeadsStore()
+const opportunitiesStore = useOpportunitiesStore()
 const searchQuery = ref('')
+
+// Row selection
+const { rowSelection, selectedCount, hasSelection, getSelectedRows, clearSelection } = useTableRowSelection((row) => row.compositeId)
 
 // DataTable state management
 const pagination = ref({
@@ -185,11 +221,11 @@ const getDateDisplay = (date) => {
 // Helper function to get car status
 const getCarStatus = (task) => {
   const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
-  if (!vehicle) return { status: 'N/A', class: 'bg-surfaceSecondary text-body' }
+  if (!vehicle) return { status: 'N/A', class: 'bg-muted text-muted-foreground' }
   const isInStock = vehicle.stockDays !== undefined && vehicle.stockDays !== null
   return {
     status: isInStock ? 'In Stock' : 'Out of Stock',
-    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-surfaceSecondary text-body'
+    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'
   }
 }
 
@@ -237,7 +273,7 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-content font-semibold text-heading truncate max-w-32 md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-content font-semibold text-foreground truncate max-w-32 md:max-w-none' }, task.customer.name),
           h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.phone || 'N/A')
         ])
       ])
@@ -266,8 +302,8 @@ const columns = computed(() => [
 
       return h('div', { class: 'flex flex-col gap-1' }, [
         h('div', { class: 'flex items-center gap-2' }, [
-          h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
-          h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
+          h('i', { class: 'fa-brands fa-volkswagen text-muted-foreground text-sm' }),
+          h('span', { class: 'text-content font-medium text-foreground truncate max-w-32' }, vehicleInfo)
         ]),
         h('div', { class: 'flex items-center gap-2 flex-wrap' }, [
           h('span', { class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}` }, carStatus.status),
@@ -307,7 +343,7 @@ const columns = computed(() => [
       if (price == null || price === '') {
         return h('span', { class: 'text-meta' }, '—')
       }
-      return h('span', { class: 'text-content font-medium text-heading' }, `€ ${formatCurrency(price)}`)
+      return h('span', { class: 'text-content font-medium text-foreground' }, `€ ${formatCurrency(price)}`)
     }
   },
   {
@@ -318,7 +354,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       return h('span', {
-        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-surfaceSecondary text-body'
+        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-muted text-muted-foreground'
       }, task.source || 'N/A')
     }
   },
@@ -330,7 +366,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       const attempts = task.contactAttempts?.length || 0
-      return h('span', { class: 'text-content font-medium text-heading' }, attempts)
+      return h('span', { class: 'text-content font-medium text-foreground' }, attempts)
     }
   },
   {
@@ -343,7 +379,7 @@ const columns = computed(() => [
       const owner = props.getOwnerInfo(task)
       return h('div', { class: 'flex items-center gap-2' }, [
         h('div', {
-          class: 'w-6 h-6 rounded-full bg-surfaceSecondary flex items-center justify-center text-xs font-bold text-body shrink-0'
+          class: 'w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0'
         }, owner.initials),
         h('span', { class: 'text-meta truncate max-w-20' }, owner.name)
       ])
@@ -390,10 +426,12 @@ const columns = computed(() => [
         urgencyLevel = urgencyResult.level
       }
       const colorClass = getUrgencyColorClass(urgencyLevel)
-      const icon = getUrgencyIcon(urgencyLevel)
+      const iconName = getUrgencyIcon(urgencyLevel)
+      const urgencyIconComponents = { Flame, Sun, CheckCircle, Circle }
+      const IconComp = urgencyIconComponents[iconName] || Circle
       return h('span', {
         class: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${colorClass}`
-      }, [h('span', {}, icon), h('span', {}, urgencyLevel)])
+      }, [h(IconComp, { class: 'size-3 shrink-0' }), h('span', {}, urgencyLevel)])
     }
   }] : [])
 ])
@@ -405,11 +443,32 @@ const handleRowClick = (record) => {
   emit('select', record.compositeId)
 }
 
+// Bulk delete handler
+const handleBulkDelete = () => {
+  const selectedTasks = getSelectedRows(filteredTasks.value)
+  
+  if (selectedTasks.length === 0) return
+  
+  if (!confirm(`Are you sure you want to delete ${selectedTasks.length} ${selectedTasks.length === 1 ? 'task' : 'tasks'}?`)) {
+    return
+  }
+  
+  selectedTasks.forEach(task => {
+    if (task.type === 'lead') {
+      leadsStore.deleteLead(task.id)
+    } else {
+      opportunitiesStore.deleteOpportunity(task.id)
+    }
+  })
+  
+  clearSelection()
+}
+
 // Table meta with row click handler and highlighting
 const tableMeta = computed(() => ({
   class: {
     tr: (row) => {
-      const baseClasses = 'cursor-pointer hover:bg-surfaceSecondary transition-colors'
+      const baseClasses = 'cursor-pointer hover:bg-muted transition-colors'
       const task = row.original
       if (isSelected(task)) {
         // Highlight selected/highlighted row with a subtle background and border
@@ -423,84 +482,22 @@ const tableMeta = computed(() => ({
 </script>
 
 <style scoped>
-/* DataTable styling overrides to match reference design */
-:deep(thead),
-:deep(thead th),
-:deep(thead tr),
-:deep(thead tr th) {
-  background-color: transparent !important;
-  background: transparent !important;
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
+/* Component-specific styles only - global table styles are in main.css */
 
-:deep(div[data-slot='frame-panel'].relative.bg-clip-padding) {
-  background-color: rgba(245, 245, 245, 1) !important;
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 10px !important;
-}
-
-:deep(footer.flex.items-center.justify-between) {
-  background-color: rgba(245, 245, 245, 1) !important;
-  border-bottom-left-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
-}
-
+/* Avatar fallback - use greys-300 color */
 :deep([data-radix-avatar-fallback]),
 :deep(.avatar-fallback),
 :deep(span[class*='AvatarFallback']) {
   background-color: #d4d4d4 !important;
 }
 
-/* Table border overrides - make borders very subtle */
-:deep(table),
-:deep(tbody),
-:deep(tbody tr),
-:deep(tbody td),
-:deep(thead),
-:deep(thead th) {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
+/* Table border overrides - make borders very subtle (border-black/5) */
 :deep(tbody tr) {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
-}
-
-/* Remove any dark borders from table container */
-:deep([data-slot="table-container"]),
-:deep(.table-wrapper) {
-  border: none !important;
-}
-
-/* Frame panel - should have gray background */
-:deep([data-slot="frame-panel"]) {
-  background-color: rgba(245, 245, 245, 1) !important;
-}
-
-/* Pagination dropdown - transparent in footer */
-:deep(footer select),
-:deep(footer button[role="combobox"]) {
-  background-color: transparent !important;
-  border: none !important;
-}
-
-/* Search input - white background like reference */
-:deep(input[type="search"]),
-:deep(input[placeholder*="Search"]),
-:deep([data-slot="table-search"] input) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Filter button - white background like reference */
-:deep(button[aria-label*="filter"]),
-:deep(button[aria-label*="Filter"]),
-:deep([data-slot="table-filter"] button) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Enable horizontal and vertical scrolling */

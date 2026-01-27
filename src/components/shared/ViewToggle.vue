@@ -1,6 +1,6 @@
 <template>
   <!-- Compact Icon-Only View Toggle -->
-  <div class="flex items-center gap-1 bg-surfaceSecondary rounded-full p-1">
+  <div class="flex items-center gap-1 bg-muted rounded-full p-1">
     <button
       v-for="option in options"
       :key="option.value"
@@ -9,7 +9,7 @@
         'w-8 h-8 flex items-center justify-center rounded-full transition-all',
         view === option.value 
           ? 'bg-surface text-brand-red shadow-sm' 
-          : 'text-sub hover:text-heading'
+          : 'text-muted-foreground hover:text-foreground'
       ]"
       :title="option.label"
     >

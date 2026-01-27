@@ -4,7 +4,7 @@
       <!-- Back Button -->
       <button
         @click="handleBack"
-        class="w-11 h-11 flex items-center justify-center text-body hover:text-heading hover:bg-surfaceSecondary rounded-lg transition-colors shrink-0"
+        class="w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors shrink-0"
         :aria-label="backLabel"
       >
         <i class="fa-solid fa-arrow-left text-lg"></i>

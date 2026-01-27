@@ -104,6 +104,7 @@ stateDiagram-v2
 | **Offer Sent** | In Negotiation - Offer Sent | First offer created OR showed up for appointment | Follow Up, Add Offer, Mark Accepted, Communicate |
 | **Offer Feedback** | In Negotiation - Offer Feedback | 3 days after most recent offer | Follow Up, Add Offer, Mark Accepted, Communicate, Schedule Apt, Close Lost |
 | **Offer Accepted** | Offer Accepted | Any offer marked as accepted | Auto-transitions to Contract Pending |
+| **Contract Pending** | In Negotiation - Contract Pending | Offer accepted OR contract date set | Collect e-signatures, finalize contract, Add offer, Extend deadline, Schedule appointment |
 
 ### Substatus Transition Rules
 
@@ -132,6 +133,7 @@ NS3 (3rd miss) → Closed Lost (automatic)
 - Appointment scheduled: `Awaiting Appointment → Appointment Scheduled`
 - Offer 3 days old: `In Negotiation (Offer Sent) → In Negotiation (Offer Feedback)`
 - Offer accepted: `In Negotiation (Offer Accepted) → Contract Pending`
+- Contract date set: `Contract Pending → Closed Won` (auto-transition)
 - Third no-show: `Appointment Scheduled → Closed Lost`
 - Delivery date set: Substatus `None → Awaiting Delivery`
 - Delivery logged: Substatus `Awaiting Delivery → Delivered`
@@ -143,6 +145,15 @@ NS3 (3rd miss) → Closed Lost (automatic)
 | Reopen | Closed Won, Closed Lost only |
 | Select Vehicle | All active stages |
 | Close as Lost | All stages except Closed Won/Lost |
+
+### 4. Reopen Behavior
+When reopening a closed opportunity:
+- **If no offers exist** → Returns to `Qualified` stage
+- **If offers exist** → Returns to `In Negotiation` stage with appropriate `negotiationSubstatus`:
+  - If most recent offer is < 3 days old → `negotiationSubstatus = 'Offer Sent'`
+  - If most recent offer is 3+ days old → `negotiationSubstatus = 'Offer Feedback'`
+  - If any offer was accepted → `negotiationSubstatus = 'Offer Accepted'` (displays as Contract Pending)
+- Task rules are re-triggered based on the stage returned to
 
 ## Task Widgets Reference
 
@@ -177,7 +188,7 @@ UI:
 {
   stage: String,                    // 'Qualified', 'In Negotiation', 'Closed Won', 'Closed Lost'
   displayStage: String,             // Computed from stage + context (9 stages)
-  negotiationSubstatus: String,     // null | 'Offer Sent' | 'Offer Feedback' | 'Offer Accepted'
+  negotiationSubstatus: String,     // null | 'Offer Sent' | 'Offer Feedback' | 'Offer Accepted' | 'Contract Pending' (displayed as "In Negotiation - Contract Pending")
   deliverySubstatus: String,        // null | 'Awaiting Delivery' | 'Delivered'
   contractDate: String,             // ISO date
   deliveryDate: String,             // ISO date

@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-y-auto space-y-3">
     <!-- Quick Filters Card - Always Visible -->
-    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm p-3">
+    <div class="bg-surface rounded-xl border border-border shadow-nsc-card p-3">
       <div class="flex items-center justify-between mb-2">
         <h3 class="label-upper">Quick Filters</h3>
         <button 
@@ -15,7 +15,7 @@
       
       <div class="space-y-2">
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-xs text-body font-medium group-hover:text-heading">Only mine</span>
+          <span class="text-xs text-muted-foreground font-medium group-hover:text-foreground">Only mine</span>
           <Toggle
             name="onlyMine"
             :modelValue="modelValue.onlyMine"
@@ -24,7 +24,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-xs text-body font-medium group-hover:text-heading">Most relevant</span>
+          <span class="text-xs text-muted-foreground font-medium group-hover:text-foreground">Most relevant</span>
           <Toggle
             name="mostRelevant"
             :modelValue="modelValue.mostRelevant"
@@ -33,7 +33,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-xs text-body font-medium group-hover:text-heading">Include cancelled</span>
+          <span class="text-xs text-muted-foreground font-medium group-hover:text-foreground">Include cancelled</span>
           <Toggle
             name="includeCancelled"
             :modelValue="modelValue.includeCancelled"
@@ -42,7 +42,7 @@
         </label>
         
         <label class="flex items-center justify-between cursor-pointer group">
-          <span class="text-xs text-body font-medium group-hover:text-heading">No-shows only</span>
+          <span class="text-xs text-muted-foreground font-medium group-hover:text-foreground">No-shows only</span>
           <Toggle
             name="noShowsOnly"
             :modelValue="modelValue.noShowsOnly"
@@ -53,10 +53,10 @@
     </div>
     
     <!-- Event Type Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-border shadow-nsc-card overflow-hidden">
       <button
         @click="expandedSections.eventTypes = !expandedSections.eventTypes"
-        class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
+        class="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors"
       >
         <div class="flex items-center gap-2">
           <h3 class="label-upper text-xs">Event Types</h3>
@@ -86,7 +86,7 @@
             <div
               v-for="type in filteredEventTypes"
               :key="type.value"
-              class="px-2 py-1.5 rounded hover:bg-surfaceSecondary"
+              class="px-2 py-1.5 rounded hover:bg-muted"
             >
               <Checkbox
                 :modelValue="modelValue.eventTypes.includes(type.value)"
@@ -100,10 +100,10 @@
     </div>
     
     <!-- Dealership Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-border shadow-nsc-card overflow-hidden">
       <button
         @click="expandedSections.dealerships = !expandedSections.dealerships"
-        class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
+        class="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors"
       >
         <div class="flex items-center gap-2">
           <h3 class="label-upper text-xs">Dealerships</h3>
@@ -125,7 +125,7 @@
             <div
               v-for="d in dealerships"
               :key="d"
-              class="px-2 py-1.5 rounded hover:bg-surfaceSecondary"
+              class="px-2 py-1.5 rounded hover:bg-muted"
             >
               <Checkbox
                 :modelValue="modelValue.dealerships.includes(d)"
@@ -139,10 +139,10 @@
     </div>
     
     <!-- Team Filter Card - Collapsible -->
-    <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm overflow-hidden">
+    <div class="bg-surface rounded-xl border border-border shadow-nsc-card overflow-hidden">
       <button
         @click="expandedSections.teams = !expandedSections.teams"
-        class="w-full flex items-center justify-between p-3 hover:bg-surfaceSecondary transition-colors"
+        class="w-full flex items-center justify-between p-3 hover:bg-muted transition-colors"
       >
         <div class="flex items-center gap-2">
           <h3 class="label-upper text-xs">Teams</h3>
@@ -164,7 +164,7 @@
             <div
               v-for="t in teams"
               :key="t"
-              class="px-2 py-1.5 rounded hover:bg-surfaceSecondary"
+              class="px-2 py-1.5 rounded hover:bg-muted"
             >
               <Checkbox
                 :modelValue="modelValue.teams.includes(t)"
@@ -178,10 +178,10 @@
     </div>
     
     <!-- Apply Filters Button -->
-    <div class="sticky bottom-0 bg-surface rounded-xl border border-E5E7EB shadow-sm p-3 mt-3">
+    <div class="sticky bottom-0 bg-surface rounded-xl border border-border shadow-nsc-card p-3 mt-3">
       <button
         @click="$emit('apply')"
-        class="group w-full flex items-center justify-center gap-2 rounded-2xl border border-E5E7EB px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+        class="group w-full flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
         <i class="fa-solid fa-check text-gray-400 group-hover:text-brand-red"></i>
         <span>Apply Filters</span>

@@ -5,7 +5,7 @@
       v-if="loading"
       v-for="n in 4"
       :key="`skeleton-${n}`"
-      class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-4 relative"
+      class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-4 relative"
     >
       <div class="flex flex-col gap-2">
         <div class="h-3 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
@@ -23,16 +23,16 @@
       v-else
       v-for="kpi in kpis"
       :key="kpi.id"
-      class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-4 relative"
+      class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-4 relative"
     >
       <div class="flex flex-col gap-2">
-        <h4 class="text-sm font-medium text-greys-500 leading-5 whitespace-nowrap">
+        <h4 class="text-sm font-medium text-muted-foreground leading-5 whitespace-nowrap">
           {{ kpi.title }}
         </h4>
 
         <div class="flex flex-col gap-1">
           <div class="flex items-baseline gap-2">
-            <h2 class="text-xl font-semibold text-greys-900 leading-none">
+            <h2 class="text-xl font-semibold text-foreground leading-none">
               {{ kpi.value }}
             </h2>
             <Badge
@@ -45,7 +45,7 @@
               <span>{{ kpi.changeType === 'increase' ? '+' : '-' }}{{ Math.abs(kpi.change) }}%</span>
             </Badge>
           </div>
-          <p class="text-sm text-greys-500">vs last month</p>
+          <p class="text-sm text-muted-foreground">vs last month</p>
         </div>
       </div>
       <!-- Mini Line Chart -->

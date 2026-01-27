@@ -1,64 +1,64 @@
 <template>
   <div 
-    class="bg-surface border-l border-black/5 shrink-0 flex flex-col transition-all duration-300"
+    class="bg-surface border-l border-border shrink-0 flex flex-col transition-all duration-300"
     :class="[
       collapsed ? 'w-16' : 'w-80',
       mobileFullscreen ? 'xl:relative xl:border-l' : ''
     ]"
     v-if="show"
   >
-    <div class="h-16 px-5 border-b border-black/5 bg-surfaceSecondary/50 flex items-center justify-between gap-3">
+    <div class="h-16 px-5 border-b border-border bg-muted/50 flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <!-- Mobile close button -->
         <button 
           v-if="mobileFullscreen"
           @click="$emit('close')"
-          class="xl:hidden w-8 h-8 flex items-center justify-center text-body hover:text-heading hover:bg-surfaceSecondary rounded-lg transition-colors"
+          class="xl:hidden w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
         >
-          <i class="fa-solid fa-xmark text-fluid-lg"></i>
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
         <!-- Desktop collapse button -->
         <button 
           v-else-if="showCollapse"
           @click="$emit('toggle-collapse')"
-          class="w-8 h-8 flex items-center justify-center rounded-md text-sub hover:text-heading hover:bg-surfaceSecondary transition-colors shrink-0"
+          class="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           :title="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         >
-          <i v-if="collapsed" class="fa-solid fa-arrow-left text-fluid-sm"></i>
-          <i v-else class="fa-solid fa-arrow-right text-fluid-sm"></i>
+          <i v-if="collapsed" class="fa-solid fa-arrow-left text-sm"></i>
+          <i v-else class="fa-solid fa-arrow-right text-sm"></i>
         </button>
-        <h2 v-if="!collapsed" class="font-bold text-fluid-lg text-heading">{{ title }}</h2>
+        <h2 v-if="!collapsed" class="font-bold text-lg text-foreground">{{ title }}</h2>
       </div>
     </div>
     
     <!-- Expanded View -->
     <div v-if="!collapsed" class="flex-1 overflow-y-auto px-5 py-6 scrollbar-hide relative">
       <div v-if="activities.length > 0" class="absolute left-[2.4375rem] top-0 bottom-0 w-0.5 bg-border z-0"></div>
-      <div v-if="activities.length === 0" class="text-center py-8 text-sub relative z-10">
+      <div v-if="activities.length === 0" class="text-center py-8 text-muted-foreground relative z-10">
         <i class="fa-solid fa-clock text-4xl mb-2"></i>
-        <p class="text-fluid-sm">{{ emptyMessage }}</p>
+        <p class="text-sm">{{ emptyMessage }}</p>
       </div>
       
       <div v-else class="space-y-6 relative z-10">
         <template v-for="(activity, idx) in activities" :key="activity.id">
           <div v-if="shouldShowDateHeader(idx, activity)" class="mb-4 pl-12">
-            <h3 class="text-fluid-sm font-semibold text-heading">{{ formatActivityDate(activity.timestamp) }}</h3>
+            <h3 class="text-sm font-semibold text-foreground">{{ formatActivityDate(activity.timestamp) }}</h3>
           </div>
           <div class="flex gap-4 relative mb-6">
             <div 
               class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
               :class="getActivityIconClass(activity.type)"
             >
-              <i :class="getActivityIcon(activity.type)" class="text-fluid-sm"></i>
+              <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="text-fluid-sm text-slate-700 leading-snug">
+              <div class="text-sm text-slate-700 leading-snug">
                 <span class="font-bold">{{ activity.user }}</span> {{ activity.action }}
               </div>
-              <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-fluid-sm text-body">
+              <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-sm text-muted-foreground">
                 {{ activity.content }}
               </div>
-              <div class="text-fluid-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
+              <div class="text-xs text-muted-foreground mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
             </div>
           </div>
         </template>
@@ -78,17 +78,17 @@
           class="relative"
         >
           <div 
-            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface border-2 border-black/5"
+            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface border-2 border-border"
             :class="getActivityIconClass(activity.type)"
             :title="`${activity.user} ${activity.action}`"
           >
-            <i :class="getActivityIcon(activity.type)" class="text-fluid-xs"></i>
+            <i :class="getActivityIcon(activity.type)" class="text-xs"></i>
           </div>
         </div>
       </div>
       
       <!-- Empty state when collapsed -->
-      <div v-else class="text-center py-8 text-sub relative z-10">
+      <div v-else class="text-center py-8 text-muted-foreground relative z-10">
         <i class="fa-solid fa-clock text-2xl mb-2"></i>
       </div>
     </div>
@@ -138,9 +138,9 @@ const getActivityIcon = (type) => {
     'note': 'fa-solid fa-sticky-note text-yellow-600',
     'meeting': 'fa-solid fa-calendar text-purple-600',
     'task': 'fa-solid fa-check-circle text-indigo-600',
-    'attachment': 'fa-solid fa-paperclip text-body',
+    'attachment': 'fa-solid fa-paperclip text-muted-foreground',
     'status': 'fa-solid fa-tag text-orange-600',
-    'default': 'fa-solid fa-circle text-sub'
+    'default': 'fa-solid fa-circle text-muted-foreground'
   }
   return icons[type] || icons.default
 }
@@ -152,9 +152,9 @@ const getActivityIconClass = (type) => {
     'note': 'bg-yellow-100 text-yellow-600',
     'meeting': 'bg-purple-100 text-purple-600',
     'task': 'bg-indigo-100 text-indigo-600',
-    'attachment': 'bg-surfaceSecondary text-body',
+    'attachment': 'bg-muted text-muted-foreground',
     'status': 'bg-orange-100 text-orange-600',
-    'default': 'bg-surfaceSecondary text-sub'
+    'default': 'bg-muted text-muted-foreground'
   }
   return classes[type] || classes.default
 }

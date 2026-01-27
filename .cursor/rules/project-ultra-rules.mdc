@@ -11,11 +11,13 @@ alwaysApply: true
 ## 2. Components & Reuse
 
 - Reuse shared widgets; check existing components before creating new ones.
-- Prefer **Motork** (`@motork/component-library`) for UI; use existing primitives over custom wrappers.
+- Use **Motork future namespace** for all UI: `@motork/component-library/future/primitives` and `@motork/component-library/future/components`. Only **Toast** may stay on root (`@motork/component-library`) until a future Toast exists.
+- **Icons**: All from `lucide-vue-next`; no emoji or other icon sources.
 
 ## 3. Styling & Layout
 
-- **Tailwind**: Use semantic tokens from `tailwind.config.js` (`text-primary`, `bg-surface`, `border-border`, `text-heading`, etc.). No arbitrary values (`w-[350px]`, `text-[14px]`), no hardcoded hex, no inline styles for static values.
+- **Tailwind**: Use Motork theme tokens (`text-foreground`, `text-muted-foreground`, `bg-background`, `bg-muted`, `border-border`, `bg-primary`, `text-primary`, etc.). No arbitrary values (`w-[350px]`, `text-[14px]`), no hardcoded hex, no inline styles for static values.
+- **main.css**: Only these exceptions are allowed — (1) custom card shadow (`--mk-dashboard-card-shadow`, `.mk-dashboard-card`, `.shadow-mk-dashboard-card`, `.shadow-selected`), (2) toggle selected state (`[data-state="on"]` / `[aria-pressed="true"]` styling). All other theme semantics come from Motork theme (`@import '@motork/component-library/theme'`).
 - **Responsive**: Mobile-first (`flex flex-col md:flex-row`); tables drop columns (no horizontal scroll); filters above content; Flexbox/Grid, no floats/hardcoded heights.
 
 ## 4. Build & Deploy

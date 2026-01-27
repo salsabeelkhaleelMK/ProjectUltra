@@ -1,17 +1,15 @@
 <template>
   <div
-    class="rounded-lg flex flex-col"
-    style="background-color: var(--base-muted, #f5f5f5)"
+    class="rounded-lg flex flex-col bg-muted"
   >
     <div
       class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-      style="box-shadow: var(--nsc-card-shadow)"
     >
       <div class="p-4">
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-heading text-fluid-sm">{{ title }}</h4>
-            <p class="text-fluid-xs text-sub mt-0.5">{{ description }}</p>
+            <h4 class="font-bold text-foreground text-sm">{{ title }}</h4>
+            <p class="text-xs text-muted-foreground mt-0.5">{{ description }}</p>
           </div>
           <slot name="badge" />
         </div>

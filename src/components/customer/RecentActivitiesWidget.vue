@@ -1,31 +1,31 @@
 <template>
-  <div class="rounded-card flex flex-col mb-6 bg-surfaceSecondary">
+  <div class="rounded-lg flex flex-col mb-6 bg-muted">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-clock-rotate-left text-heading"></i>
-        <h2 class="text-sm font-semibold text-heading leading-5">Recent Activities</h2>
+        <i class="fa-solid fa-clock-rotate-left text-foreground"></i>
+        <h2 class="text-sm font-semibold text-foreground leading-5">Recent Activities</h2>
       </div>
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-nsc-card flex flex-col">
+    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
       <div class="divide-y divide-gray-100">
         <!-- Next Appointment -->
-        <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+        <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
               <i class="fa-solid fa-calendar-check text-primary text-sm"></i>
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Next Appointment</div>
-              <div class="text-sm text-body truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
-              <div class="text-xs text-sub truncate">{{ nextAppointment.title || 'Appointment' }}</div>
+              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Next Appointment</div>
+              <div class="text-sm text-muted-foreground truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
+              <div class="text-xs text-muted-foreground truncate">{{ nextAppointment.title || 'Appointment' }}</div>
             </div>
           </div>
           <button
             @click="viewAppointmentDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-primary/30 text-sub hover:text-primary transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-primary/30 text-muted-foreground hover:text-primary transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -33,20 +33,20 @@
         </div>
         
         <!-- Last Communication -->
-        <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+        <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center shrink-0">
               <i :class="getCommunicationIcon(lastCommunication.type)" class="text-slate-600 text-sm"></i>
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Last Communication</div>
-              <div class="text-sm text-body truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
-              <div class="text-xs text-sub truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
+              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Last Communication</div>
+              <div class="text-sm text-muted-foreground truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
+              <div class="text-xs text-muted-foreground truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
             </div>
           </div>
           <button
             @click="viewCommunicationDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-slate-300 text-sub hover:text-slate-600 transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-slate-300 text-muted-foreground hover:text-slate-600 transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -54,20 +54,20 @@
         </div>
         
         <!-- Active Lead Next Action -->
-        <div v-if="activeLead" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+        <div v-if="activeLead" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-8 h-8 rounded bg-brand-dark/10 flex items-center justify-center shrink-0">
               <i class="fa-solid fa-user-clock text-brand-dark text-sm"></i>
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Lead Request</div>
-              <div class="text-sm text-body truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
-              <div class="text-xs text-sub truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
+              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Lead Request</div>
+              <div class="text-sm text-muted-foreground truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
+              <div class="text-xs text-muted-foreground truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
             </div>
           </div>
           <button
             @click="viewLeadDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-dark/30 text-sub hover:text-brand-dark transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-brand-dark/30 text-muted-foreground hover:text-brand-dark transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -75,20 +75,20 @@
         </div>
         
         <!-- Active Opportunity Next Action -->
-        <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
+        <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
               <i class="fa-solid fa-handshake text-primary text-sm"></i>
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Opportunity</div>
-              <div class="text-sm text-body truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
-              <div class="text-xs text-sub truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
+              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Opportunity</div>
+              <div class="text-sm text-muted-foreground truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
+              <div class="text-xs text-muted-foreground truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
             </div>
           </div>
           <button
             @click="viewOpportunityDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-primary/30 text-sub hover:text-primary transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-primary/30 text-muted-foreground hover:text-primary transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -97,7 +97,7 @@
       </div>
       
       <!-- Empty State -->
-      <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-6 text-sub">
+      <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-6 text-muted-foreground">
         <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
         <p class="text-xs">No recent activities available</p>
       </div>

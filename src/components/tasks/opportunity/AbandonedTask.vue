@@ -2,24 +2,24 @@
   <BaseTaskWidget
     :title="'Opportunity Abandoned'"
     :description="`This opportunity has been inactive for ${daysInactive} days. Consider reopening it or closing as lost.`"
-    :color-scheme="{ background: 'bg-surfaceSecondary/50', border: 'border' }"
+    :color-scheme="{ background: 'bg-muted/50', border: 'border' }"
   >
     <template #actions>
       <button
         @click="handleReopen"
-        class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
+        class="bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors"
       >
         <i class="fa-solid fa-rotate-left"></i> Reopen Opportunity
       </button>
       <button
         @click="handleCloseLost"
-        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
+        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted"
       >
         <i class="fa-solid fa-xmark"></i> Close as Lost
       </button>
       <button
         @click="handleRequalify"
-        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
+        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted"
       >
         <i class="fa-solid fa-arrow-left"></i> Requalify as Lead
       </button>

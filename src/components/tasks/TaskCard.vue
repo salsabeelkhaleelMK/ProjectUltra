@@ -17,7 +17,7 @@
     <!-- Card Menu Dropdown -->
     <div 
       v-if="openMenuId === item.id && showMenu"
-      class="absolute right-2 top-7 z-50 w-40 bg-white border border-black/10 rounded-lg shadow-lg py-1"
+      class="absolute right-2 top-7 z-50 w-40 bg-white border border-black/10 rounded-lg shadow-nsc-card py-1"
       v-click-outside="() => $emit('menu-close')"
       @click.stop
     >
@@ -25,7 +25,7 @@
         v-for="menuItem in menuItems"
         :key="menuItem.key"
         @click="menuItem.onClick"
-        class="w-full px-3 py-2 text-left text-xs text-heading hover:bg-surfaceSecondary flex items-center gap-2"
+        class="w-full px-3 py-2 text-left text-xs text-foreground hover:bg-muted flex items-center gap-2"
       >
         {{ menuItem.label }}
       </button>
@@ -33,10 +33,10 @@
 
     <div class="flex flex-col min-w-0 flex-1 pr-4">
       <div class="flex items-center gap-1 mb-0.5">
-        <h3 v-if="actionTitle" class="font-bold text-heading text-fluid-base truncate">{{ actionTitle }}</h3>
+        <h3 v-if="actionTitle" class="font-bold text-foreground text-base truncate">{{ actionTitle }}</h3>
         <span 
           v-if="deadline"
-          class="flex items-center gap-1 text-[10px] font-bold uppercase leading-none shrink-0"
+          class="flex items-center gap-1 text-xs font-bold uppercase leading-none shrink-0"
           :class="deadline.status.textClass"
         >
           <span 
@@ -47,13 +47,13 @@
         </span>
       </div>
       <div class="flex items-center gap-2 overflow-hidden">
-        <span class="text-sub text-fluid-sm truncate">{{ getName(item) }}</span>
+        <span class="text-muted-foreground text-sm truncate">{{ getName(item) }}</span>
       </div>
       
       <!-- Badges -->
       <div class="flex flex-wrap items-center gap-2 mt-2">
         <span 
-          class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
+          class="px-1.5 py-0.5 rounded text-xs font-bold uppercase border leading-none"
           :class="item.type === 'lead' 
             ? 'bg-blue-50 text-blue-700 border-blue-200' 
             : 'bg-purple-50 text-purple-700 border-purple-200'"
@@ -64,7 +64,7 @@
         <!-- Single status badge -->
         <span 
           v-if="getDisplayStage(item)"
-          class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
+          class="px-1.5 py-0.5 rounded text-xs font-bold uppercase border leading-none"
           :class="stageColorClass"
         >
           {{ getDisplayStage(item) }}
@@ -72,7 +72,7 @@
         
         <span 
           v-if="item.priority === 'Hot'"
-          class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200 leading-none"
+          class="px-1.5 py-0.5 rounded text-xs font-bold uppercase bg-red-50 text-red-700 border border-red-200 leading-none"
         >
           Hot
         </span>
@@ -256,7 +256,7 @@ const getStageColorForStage = (stage, entityType = 'opportunity') => {
     if (stageLower.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
     if (stageLower.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
     if (stageLower.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
-    if (stageLower.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+    if (stageLower.includes('close')) return 'bg-muted text-muted-foreground border-border'
     return 'bg-gray-50 text-gray-700 border-gray-200'
   }
 }
@@ -276,7 +276,7 @@ const stageColorClass = computed(() => {
   if (stage.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
   if (stage.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
   if (stage.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
-  if (stage.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+  if (stage.includes('close')) return 'bg-muted text-muted-foreground border-border'
   return 'bg-blue-50 text-blue-600 border-blue-200'
 })
 
@@ -305,7 +305,7 @@ const cardRef = ref(null)
 
 <style scoped>
 .task-card:hover {
-  box-shadow: var(--mk-dashboard-card-shadow);
+  box-shadow: var(--nsc-card-shadow);
 }
 
 .task-card.task-card-selected {

@@ -1,13 +1,13 @@
 <template>
-  <div class="border border-black/5 rounded-lg overflow-hidden">
+  <div class="border border-border rounded-lg overflow-hidden">
     <!-- Section Header -->
     <button
       @click="$emit('toggle')"
-      class="w-full flex items-center justify-between px-4 py-3 bg-surfaceSecondary/30 hover:bg-surfaceSecondary/50 transition-colors"
+      class="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
     >
-      <h6 class="font-semibold text-heading text-sm">{{ title }}</h6>
+      <h6 class="font-semibold text-foreground text-sm">{{ title }}</h6>
       <i
-        class="fa-solid fa-chevron-down text-xs text-sub transition-transform duration-200"
+        class="fa-solid fa-chevron-down text-xs text-muted-foreground transition-transform duration-200"
         :class="{ 'rotate-180': isExpanded }"
       ></i>
     </button>

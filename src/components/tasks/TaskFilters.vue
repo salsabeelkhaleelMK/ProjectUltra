@@ -18,7 +18,7 @@
         <transition name="dropdown-fade">
           <div 
             v-if="showFilterMenu"
-            class="absolute left-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-lg py-1"
+            class="absolute left-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-nsc-card py-1"
             @click.stop
           >
             <!-- Filter Options -->
@@ -26,8 +26,8 @@
               v-for="option in filterOptions"
               :key="option.key"
               @click="toggleFilter(option.key)"
-              class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
-              :class="{ 'bg-surfaceSecondary filter-item-selected': activeFilters.includes(option.key) }"
+              class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2 relative"
+              :class="{ 'bg-muted filter-item-selected': activeFilters.includes(option.key) }"
             >
               <span>{{ option.label }}</span>
             </button>
@@ -39,8 +39,8 @@
               v-for="sortItem in sortMenuItems"
               :key="sortItem.key"
               @click="selectSort(sortItem.key)"
-              class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
-              :class="{ 'bg-surfaceSecondary sort-item-selected': sortItem.key === sortOption }"
+              class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2 relative"
+              :class="{ 'bg-muted sort-item-selected': sortItem.key === sortOption }"
             >
               <span>{{ sortItem.label }}</span>
             </button>
@@ -100,7 +100,7 @@
     <transition name="dropdown-fade">
       <div 
         v-if="showFilterMenu"
-        class="absolute right-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-lg py-1"
+        class="absolute right-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-nsc-card py-1"
         @click.stop
       >
         <!-- Filter Options -->
@@ -108,8 +108,8 @@
           v-for="option in filterOptions"
           :key="option.key"
           @click="toggleFilter(option.key)"
-          class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
-          :class="{ 'bg-surfaceSecondary filter-item-selected': activeFilters.includes(option.key) }"
+          class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2 relative"
+          :class="{ 'bg-muted filter-item-selected': activeFilters.includes(option.key) }"
         >
           <span>{{ option.label }}</span>
         </button>
@@ -121,8 +121,8 @@
           v-for="sortItem in sortMenuItems"
           :key="sortItem.key"
           @click="selectSort(sortItem.key)"
-          class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
-          :class="{ 'bg-surfaceSecondary sort-item-selected': sortItem.key === sortOption }"
+          class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2 relative"
+          :class="{ 'bg-muted sort-item-selected': sortItem.key === sortOption }"
         >
           <span>{{ sortItem.label }}</span>
         </button>

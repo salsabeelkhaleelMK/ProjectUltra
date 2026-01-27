@@ -1,13 +1,13 @@
 <template>
-  <div class="border-b border-black/5 bg-white px-6 h-16 min-h-16 shrink-0">
+  <div class="border-b border-border bg-white px-6 h-16 min-h-16 shrink-0">
     <div class="flex items-center justify-between gap-4 w-full h-full">
       <div class="flex flex-col min-w-0">
         <!-- Task Title & Badges Row -->
         <div class="flex items-center gap-2 min-w-0">
-          <h2 v-if="task" class="text-fluid-lg font-medium text-heading truncate">
+          <h2 v-if="task" class="text-lg font-medium text-foreground truncate">
             {{ getTaskTitle(task) }}
           </h2>
-          <h2 v-else class="text-fluid-lg font-medium text-heading">
+          <h2 v-else class="text-lg font-medium text-foreground">
             No task selected
           </h2>
 
@@ -15,7 +15,7 @@
           <div v-if="task" class="flex items-center gap-1.5 shrink-0">
             <!-- Type Badge (Lead/Opportunity) -->
             <span 
-              class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
+              class="px-1.5 py-0.5 rounded text-xs font-bold uppercase border leading-none"
               :class="task.type === 'lead' 
                 ? 'bg-blue-50 text-blue-700 border-blue-200' 
                 : 'bg-purple-50 text-purple-700 border-purple-200'"
@@ -25,7 +25,7 @@
             
             <!-- Single status badge -->
             <span 
-              class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
+              class="px-1.5 py-0.5 rounded text-xs font-bold uppercase border leading-none"
               :class="getStageColor(task)"
             >
               {{ getDisplayStage(task) }}
@@ -34,7 +34,7 @@
             <!-- Hot Priority Badge -->
             <span 
               v-if="task.priority === 'Hot'"
-              class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200 leading-none"
+              class="px-1.5 py-0.5 rounded text-xs font-bold uppercase bg-red-50 text-red-700 border border-red-200 leading-none"
             >
               Hot
             </span>
@@ -42,10 +42,10 @@
         </div>
         
         <!-- Task Subtitle -->
-        <p v-if="task" class="text-sm text-sub truncate leading-normal mt-0.5">
+        <p v-if="task" class="text-sm text-muted-foreground truncate leading-normal mt-0.5">
           {{ getTaskSubtitle(task) }}
         </p>
-        <p v-else class="text-fluid-sm text-sub">
+        <p v-else class="text-sm text-muted-foreground">
           Select a task to view details
         </p>
       </div>
@@ -57,7 +57,7 @@
           @click="$emit('previous')" 
           :disabled="!hasPrevious"
         >
-          <ChevronLeft :size="16" class="text-body" />
+          <ChevronLeft :size="16" class="text-muted-foreground" />
         </Button>
         <Button 
           variant="secondary" 
@@ -65,7 +65,7 @@
           @click="$emit('next')" 
           :disabled="!hasNext"
         >
-          <ChevronRight :size="16" class="text-body" />
+          <ChevronRight :size="16" class="text-muted-foreground" />
         </Button>
         
         <!-- Close button (only shown in drawer view) -->
@@ -76,7 +76,7 @@
           @click="$emit('close')"
           class="ml-1"
         >
-          <X :size="16" class="text-body" />
+          <X :size="16" class="text-muted-foreground" />
         </Button>
       </div>
     </div>
@@ -267,7 +267,7 @@ const getStageColor = (task) => {
   if (stage.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
   if (stage.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
   if (stage.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
-  if (stage.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+  if (stage.includes('close')) return 'bg-muted text-muted-foreground border-border'
   return 'bg-blue-50 text-blue-600 border-blue-200'
 }
 
@@ -293,7 +293,7 @@ const getStageColorForStage = (stage, entityType = 'opportunity') => {
     if (stageLower.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
     if (stageLower.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
     if (stageLower.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
-    if (stageLower.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+    if (stageLower.includes('close')) return 'bg-muted text-muted-foreground border-border'
     return 'bg-gray-50 text-gray-700 border-gray-200'
   }
 }
@@ -301,12 +301,12 @@ const getStageColorForStage = (stage, entityType = 'opportunity') => {
 
 <style scoped>
 /* Fluid typography for responsive text sizes */
-.text-fluid-lg {
+.text-lg {
   font-size: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
   line-height: 1.4;
 }
 
-.text-fluid-sm {
+.text-sm {
   font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   line-height: 1.5;
 }

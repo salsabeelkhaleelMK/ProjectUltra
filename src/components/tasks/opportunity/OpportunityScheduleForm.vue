@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-4">
     <!-- Step 1: Event Type Selection -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <Label class="block text-sm font-medium text-body mb-2">Event type <span class="text-red-600">*</span></Label>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <Label class="block text-sm font-medium text-muted-foreground mb-2">Event type <span class="text-red-600">*</span></Label>
       <SelectMenu
         v-model="eventType"
         :items="eventTypeOptionsForSelect"
@@ -17,11 +17,11 @@
     </div>
 
     <!-- Step 2: Assign appointment to -->
-    <div v-if="eventType" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to</h5>
+    <div v-if="eventType" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Assign appointment to</h5>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <Label class="block text-sm font-medium text-body mb-1.5">Team</Label>
+          <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Team</Label>
           <SelectMenu
             v-model="selectedTeamId"
             :items="teamSelectOptions"
@@ -31,15 +31,15 @@
           >
             <template #item="{ item }">
               <div class="flex items-center gap-2">
-                <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                <span class="text-sub">→</span>
-                <span class="font-medium text-heading">{{ item.name }}</span>
+                <span class="text-muted-foreground">{{ item.dealership || 'No location' }}</span>
+                <span class="text-muted-foreground">→</span>
+                <span class="font-medium text-foreground">{{ item.name }}</span>
               </div>
             </template>
           </SelectMenu>
         </div>
         <div>
-          <Label class="block text-sm font-medium text-body mb-1.5">Salesperson (optional)</Label>
+          <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Salesperson (optional)</Label>
           <SelectMenu
             v-model="selectedSalesmanId"
             :items="salespersonSelectOptions"
@@ -56,7 +56,7 @@
                 >
                   {{ getInitials(item.name) }}
                 </div>
-                <span class="font-medium text-heading">{{ item.name }}</span>
+                <span class="font-medium text-foreground">{{ item.name }}</span>
               </div>
             </template>
           </SelectMenu>
@@ -65,30 +65,30 @@
     </div>
 
     <!-- Step 3: Schedule (Calendar and Time Slots) -->
-    <div v-if="eventType && selectedTeam" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Schedule <span class="text-red-600">*</span></h5>
-      <div class="bg-white border border-black/5 rounded-lg overflow-hidden">
+    <div v-if="eventType && selectedTeam" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Schedule <span class="text-red-600">*</span></h5>
+      <div class="bg-white border border-border rounded-lg overflow-hidden">
         <div class="grid grid-cols-1 md:grid-cols-2 divide-x divide-black/5">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <button
                 type="button"
                 @click="previousMonth"
-                class="p-1 hover:bg-surfaceSecondary rounded transition-colors cursor-pointer"
+                class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-left text-sm text-body"></i>
+                <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
               </button>
-              <h6 class="text-sm font-semibold text-heading">{{ currentMonthYear }}</h6>
+              <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
               <button
                 type="button"
                 @click="nextMonth"
-                class="p-1 hover:bg-surfaceSecondary rounded transition-colors cursor-pointer"
+                class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-right text-sm text-body"></i>
+                <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
               </button>
             </div>
             <div class="grid grid-cols-7 gap-1 mb-2">
-              <div v-for="label in calendarDayLabels" :key="label" class="text-center text-xs font-semibold text-sub py-1">
+              <div v-for="label in calendarDayLabels" :key="label" class="text-center text-xs font-semibold text-muted-foreground py-1">
                 {{ label }}
               </div>
             </div>
@@ -100,14 +100,14 @@
                 class="aspect-square flex items-center justify-center text-sm font-medium rounded-lg transition-all"
                 :class="isSelectedDate(day)
                   ? 'bg-primary text-white cursor-pointer'
-                  : day ? 'text-body hover:bg-surfaceSecondary cursor-pointer' : 'text-transparent'"
+                  : day ? 'text-muted-foreground hover:bg-muted cursor-pointer' : 'text-transparent'"
               >
                 {{ day }}
               </div>
             </div>
           </div>
           <div class="p-6">
-            <h6 class="text-sm font-semibold text-heading mb-4">{{ selectedDateLabel }}</h6>
+            <h6 class="text-sm font-semibold text-foreground mb-4">{{ selectedDateLabel }}</h6>
             <div v-if="selectedDate && availableScheduleSlots.length > 0" class="space-y-2">
               <button
                 v-for="slot in availableScheduleSlots"
@@ -116,16 +116,16 @@
                 @click="selectedSlot = slot"
                 class="w-full py-2 px-4 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
                 :class="selectedSlot === slot
-                  ? 'border-primary bg-surfaceSecondary text-heading'
-                  : 'border-black/5 text-body hover:border-primary/30'"
+                  ? 'border-primary bg-muted text-foreground'
+                  : 'border-border text-muted-foreground hover:border-primary/30'"
               >
                 {{ slot }}
               </button>
             </div>
-            <div v-else-if="selectedDate && availableScheduleSlots.length === 0" class="text-sm text-sub py-4 text-center">
+            <div v-else-if="selectedDate && availableScheduleSlots.length === 0" class="text-sm text-muted-foreground py-4 text-center">
               No available time slots for this date
             </div>
-            <div v-else class="text-sm text-sub py-4 text-center">
+            <div v-else class="text-sm text-muted-foreground py-4 text-center">
               Select a date to see available time slots
             </div>
           </div>
@@ -158,10 +158,9 @@
         Cancel
       </Button>
       <Button
-        variant="primary"
+        variant="default"
         :disabled="!canSubmit"
         @click="handleSubmit"
-        class="bg-primary"
       >
         {{ primaryButtonLabel }}
       </Button>
@@ -363,7 +362,7 @@ function getRoleAvatarClass(role) {
     salesman: 'bg-purple-100 text-purple-700',
     operator: 'bg-orange-100 text-orange-700'
   }
-  return map[role] || 'bg-surfaceSecondary text-body'
+  return map[role] || 'bg-muted text-muted-foreground'
 }
 
 function selectDate(day) {

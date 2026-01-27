@@ -86,7 +86,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Calendar Area (3/4) -->
         <div class="lg:col-span-3 overflow-y-auto">
-          <div class="bg-surface rounded-xl border border-E5E7EB shadow-sm p-2 md:p-3 lg:p-4">
+          <div class="bg-surface rounded-xl border border-border shadow-nsc-card p-2 md:p-3 lg:p-4">
             <FullCalendar :options="calendarOptions" />
           </div>
         </div>
@@ -126,7 +126,7 @@
           <h3 class="heading-sub">Filters</h3>
           <button 
             @click="showFilterDrawer = false"
-            class="w-8 h-8 flex items-center justify-center text-sub hover:text-body hover:bg-surfaceSecondary rounded transition-colors"
+            class="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded transition-colors"
             aria-label="Close filters"
           >
             <i class="fa-solid fa-xmark text-lg"></i>

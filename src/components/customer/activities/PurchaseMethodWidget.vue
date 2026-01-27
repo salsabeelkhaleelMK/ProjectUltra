@@ -1,18 +1,18 @@
 <template>
   <div 
     class="animate-fade-in relative"
-    :class="{ 'bg-surface border border-E5E7EB rounded-xl p-5 shadow-sm mb-6': !hideHeader }"
+    :class="{ 'bg-surface border border-border rounded-xl p-5 shadow-nsc-card mb-6': !hideHeader }"
   >
-    <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
+    <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-border rotate-45"></div>
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
-      <h5 class="text-fluid-sm font-semibold text-heading">{{ item ? 'Edit Purchase Method' : 'Add Purchase Method' }}</h5>
-      <button @click="$emit('cancel')" class="text-sub hover:text-body"><i class="fa-solid fa-xmark"></i></button>
+      <h5 class="text-sm font-semibold text-foreground">{{ item ? 'Edit Purchase Method' : 'Add Purchase Method' }}</h5>
+      <button @click="$emit('cancel')" class="text-muted-foreground hover:text-muted-foreground"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <form @submit.prevent="handleSave" class="space-y-4">
       <!-- Type Selector (Radio buttons styled as tabs) -->
       <div>
-        <label class="block text-fluid-xs font-medium text-body mb-2">Purchase Method Type <span class="text-brand-red">*</span></label>
+        <label class="block text-xs font-medium text-muted-foreground mb-2">Purchase Method Type <span class="text-brand-red">*</span></label>
         <div class="flex gap-2">
           <label
             v-for="typeOption in typeOptions"
@@ -30,7 +30,7 @@
               class="px-4 py-3 rounded-btn border-2 text-center text-sm font-medium transition-colors"
               :class="formData.type === typeOption.value
                 ? 'border-brand-red bg-brand-red/5 text-brand-red'
-                : 'border-D1D5DB bg-white text-body hover:border-brand-slate'"
+                : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-slate'"
             >
               {{ typeOption.label }}
             </div>
@@ -43,11 +43,11 @@
         <!-- Common Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1">
+            <label class="block text-xs font-medium text-muted-foreground mb-1">
               Monthly Instalment <span class="text-brand-red">*</span>
             </label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
               <input
                 v-model.number="formData.fields.monthlyInstalment"
                 type="number"
@@ -65,11 +65,11 @@
           </div>
 
           <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1">
+            <label class="block text-xs font-medium text-muted-foreground mb-1">
               Down Payment <span class="text-brand-red">*</span>
             </label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
               <input
                 v-model.number="formData.fields.downPayment"
                 type="number"
@@ -89,7 +89,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1">
+            <label class="block text-xs font-medium text-muted-foreground mb-1">
               Duration (months) <span class="text-brand-red">*</span>
             </label>
             <select
@@ -114,7 +114,7 @@
 
           <!-- FIN/LEA: Interest Rate -->
           <div v-if="formData.type === 'FIN' || formData.type === 'LEA'">
-            <label class="block text-fluid-xs font-medium text-body mb-1">Interest Rate / APR (%)</label>
+            <label class="block text-xs font-medium text-muted-foreground mb-1">Interest Rate / APR (%)</label>
             <div class="relative">
               <input
                 v-model.number="formData.fields.interestRate"
@@ -126,13 +126,13 @@
                 class="input pr-8"
                 @input="clearError('interestRate')"
               />
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-body">%</span>
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
             </div>
           </div>
 
           <!-- LEA/LTR: Mileage Limit -->
           <div v-if="formData.type === 'LEA' || formData.type === 'LTR'">
-            <label class="block text-fluid-xs font-medium text-body mb-1">Mileage Limit (annual km)</label>
+            <label class="block text-xs font-medium text-muted-foreground mb-1">Mileage Limit (annual km)</label>
             <input
               v-model.number="formData.fields.mileageLimit"
               type="number"
@@ -147,7 +147,7 @@
         <template v-if="formData.type === 'FIN'">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Effective Interest Rate / TAEG (%)</label>
+              <label class="block text-xs font-medium text-muted-foreground mb-1">Effective Interest Rate / TAEG (%)</label>
               <div class="relative">
                 <input
                   v-model.number="formData.fields.effectiveInterestRate"
@@ -158,14 +158,14 @@
                   placeholder="0.00"
                   class="input pr-8"
                 />
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-body">%</span>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
               </div>
             </div>
 
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Guaranteed Future Value / GFV (€)</label>
+              <label class="block text-xs font-medium text-muted-foreground mb-1">Guaranteed Future Value / GFV (€)</label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                 <input
                   v-model.number="formData.fields.gfv"
                   type="number"
@@ -185,7 +185,7 @@
               v-model="formData.fields.insuranceIncluded"
               class="w-4 h-4 rounded border-D1D5DB"
             />
-            <label for="fin-insurance" class="text-sm text-body cursor-pointer">
+            <label for="fin-insurance" class="text-sm text-muted-foreground cursor-pointer">
               Insurance Included
             </label>
           </div>
@@ -195,9 +195,9 @@
         <template v-if="formData.type === 'LEA'">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Final Instalment (€)</label>
+              <label class="block text-xs font-medium text-muted-foreground mb-1">Final Instalment (€)</label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                 <input
                   v-model.number="formData.fields.finalInstalment"
                   type="number"
@@ -211,12 +211,12 @@
           </div>
 
           <!-- Calculated Total Leasing Amount -->
-          <div class="bg-surfaceSecondary p-4 rounded-card border border-E5E7EB">
+          <div class="bg-muted p-4 rounded-lg border border-border">
             <div class="flex justify-between items-center">
-              <span class="text-sm font-medium text-body">Total Leasing Amount:</span>
-              <span class="text-lg font-bold text-heading">€ {{ formatCurrency(totalLeasingAmount) }}</span>
+              <span class="text-sm font-medium text-muted-foreground">Total Leasing Amount:</span>
+              <span class="text-lg font-bold text-foreground">€ {{ formatCurrency(totalLeasingAmount) }}</span>
             </div>
-            <p class="text-xs text-sub mt-1">
+            <p class="text-xs text-muted-foreground mt-1">
               (Monthly × Duration + Down Payment + Final Instalment)
             </p>
           </div>
@@ -229,7 +229,7 @@
                 v-model="formData.fields.insuranceIncluded"
                 class="w-4 h-4 rounded border-D1D5DB"
               />
-              <label for="lea-insurance" class="text-sm text-body cursor-pointer">
+              <label for="lea-insurance" class="text-sm text-muted-foreground cursor-pointer">
                 Insurance Included
               </label>
             </div>
@@ -240,7 +240,7 @@
                 v-model="formData.fields.maintenanceIncluded"
                 class="w-4 h-4 rounded border-D1D5DB"
               />
-              <label for="lea-maintenance" class="text-sm text-body cursor-pointer">
+              <label for="lea-maintenance" class="text-sm text-muted-foreground cursor-pointer">
                 Maintenance Included
               </label>
             </div>
@@ -250,7 +250,7 @@
         <!-- LTR-specific Fields -->
         <template v-if="formData.type === 'LTR'">
           <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1">
+            <label class="block text-xs font-medium text-muted-foreground mb-1">
               Customer Type <span class="text-brand-red">*</span>
             </label>
             <select
@@ -270,12 +270,12 @@
           </div>
 
           <!-- Calculated Total Rental Amount -->
-          <div class="bg-surfaceSecondary p-4 rounded-card border border-E5E7EB">
+          <div class="bg-muted p-4 rounded-lg border border-border">
             <div class="flex justify-between items-center">
-              <span class="text-sm font-medium text-body">Total Rental Amount:</span>
-              <span class="text-lg font-bold text-heading">€ {{ formatCurrency(totalRentalAmount) }}</span>
+              <span class="text-sm font-medium text-muted-foreground">Total Rental Amount:</span>
+              <span class="text-lg font-bold text-foreground">€ {{ formatCurrency(totalRentalAmount) }}</span>
             </div>
-            <p class="text-xs text-sub mt-1">
+            <p class="text-xs text-muted-foreground mt-1">
               (Monthly × Duration + Down Payment)
             </p>
           </div>
@@ -288,7 +288,7 @@
                 v-model="formData.fields.insuranceIncluded"
                 class="w-4 h-4 rounded border-D1D5DB"
               />
-              <label for="ltr-insurance" class="text-sm text-body cursor-pointer">
+              <label for="ltr-insurance" class="text-sm text-muted-foreground cursor-pointer">
                 Insurance Included
               </label>
             </div>
@@ -299,7 +299,7 @@
                 v-model="formData.fields.maintenanceIncluded"
                 class="w-4 h-4 rounded border-D1D5DB"
               />
-              <label for="ltr-maintenance" class="text-sm text-body cursor-pointer">
+              <label for="ltr-maintenance" class="text-sm text-muted-foreground cursor-pointer">
                 Maintenance Included
               </label>
             </div>
@@ -310,7 +310,7 @@
                 v-model="formData.fields.registrationTaxesIncluded"
                 class="w-4 h-4 rounded border-D1D5DB"
               />
-              <label for="ltr-registration" class="text-sm text-body cursor-pointer">
+              <label for="ltr-registration" class="text-sm text-muted-foreground cursor-pointer">
                 Registration/Taxes Included
               </label>
             </div>
@@ -319,7 +319,7 @@
       </div>
     </form>
 
-    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-E5E7EB pt-4">
+    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-border pt-4">
       <Button
         label="Cancel"
         variant="outline"
