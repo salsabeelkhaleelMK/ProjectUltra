@@ -57,7 +57,7 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
       opportunity: opp,
       scheduledAppointment: appt,
       activities: acts,
-      hasOffers: acts?.some(a => a.type === 'offer') || false,
+      hasOffers: (opp.offers && opp.offers.length > 0) || acts?.some(a => a.type === 'offer') || false,
       stage: opp.displayStage || opp.stage,
       deliverySubstatus: opp.deliverySubstatus || null,
       formatDateTime: formatDateTime,

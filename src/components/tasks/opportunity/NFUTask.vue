@@ -1,32 +1,63 @@
 <template>
-  <BaseTaskWidget
-    :title="'Opportunity Follow-up'"
-    :description="'No contract date exists. Push to close or schedule a closing meeting to finalize the deal.'"
-    :color-scheme="{ background: 'bg-purple-50/50', border: 'border-purple-100' }"
-  >
-    <template #actions>
-      <button
-        @click="handleScheduleClosing"
-        class="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
-      >
-        Schedule Closing Meeting
-      </button>
-    </template>
-    
-    <template #survey>
-      <SurveyWidget
-        :questions="surveyQuestions"
-        @survey-completed="handleSurveyCompleted"
-        @survey-refused="handleSurveyRefused"
-        @not-responding="handleNotResponding"
+  <div class="space-y-4">
+    <!-- Title and Description Card -->
+    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+      <h4 class="font-bold text-heading text-sm mb-1">No Follow-Up Task</h4>
+      <p class="text-sm text-body">
+        5+ days in negotiation with no future appointment scheduled. Schedule an appointment to move forward or close as lost.
+      </p>
+    </div>
+
+    <!-- Action Selection Buttons -->
+    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+      <h5 class="font-semibold text-heading text-sm mb-4">Choose Action</h5>
+      <div class="flex flex-wrap gap-3">
+        <Button
+          variant="outline"
+          @click="selectedAction = 'schedule'"
+          class="flex-1"
+          :class="selectedAction === 'schedule' ? 'border-purple-500 bg-purple-50 text-purple-700' : ''"
+        >
+          <i class="fa-solid fa-calendar-plus mr-2"></i>
+          Schedule Appointment
+        </Button>
+        <Button
+          variant="outline"
+          @click="selectedAction = 'close-lost'"
+          class="flex-1"
+          :class="selectedAction === 'close-lost' ? 'border-red-500 bg-red-50 text-red-700' : ''"
+        >
+          <i class="fa-solid fa-xmark mr-2"></i>
+          Close as Lost
+        </Button>
+      </div>
+    </div>
+
+    <!-- Schedule Appointment Form (placeholder - will be implemented) -->
+    <div v-if="selectedAction === 'schedule'" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+      <h5 class="font-semibold text-heading text-sm mb-4">Schedule Appointment</h5>
+      <p class="text-sm text-sub">
+        This will reuse the full schedule appointment form from the Awaiting Appointment stage.
+      </p>
+      <!-- TODO: Add full schedule form here -->
+    </div>
+
+    <!-- Close as Lost Form -->
+    <div v-if="selectedAction === 'close-lost'">
+      <CloseAsLostForm
+        ref="closeFormRef"
+        :item="opportunity"
+        item-type="opportunity"
+        @close="handleCloseAsLost"
       />
-    </template>
-  </BaseTaskWidget>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import BaseTaskWidget from '@/components/tasks/shared/BaseTaskWidget.vue'
-import SurveyWidget from '@/components/customer/SurveyWidget.vue'
+import { ref, computed } from 'vue'
+import { Button } from '@motork/component-library/future/primitives'
+import CloseAsLostForm from '@/components/shared/CloseAsLostForm.vue'
 
 const props = defineProps({
   opportunity: {
@@ -35,44 +66,45 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['schedule-closing', 'survey-completed', 'survey-refused', 'not-responding'])
+const emit = defineEmits(['appointment-scheduled', 'close-as-lost', 'cancel'])
 
-const surveyQuestions = [
-  {
-    key: 'appointmentStatus',
-    label: 'Why no appointment scheduled?',
-    type: 'select',
-    options: ['Customer delaying', 'Awaiting vehicle availability', 'Logistics issues', 'Customer not responding', 'Other']
-  },
-  {
-    key: 'customerStatus',
-    label: 'Customer status?',
-    type: 'radio',
-    options: ['Still interested', 'Considering', 'Lost interest', 'Unknown']
-  },
-  {
-    key: 'notes',
-    label: 'Additional information',
-    type: 'text',
-    placeholder: 'Any relevant details about the follow-up...'
+const selectedAction = ref(null)
+const closeFormRef = ref(null)
+
+// Validation - expose to parent
+const canSubmit = computed(() => {
+  if (selectedAction.value === 'schedule') {
+    // TODO: Add schedule form validation
+    return false
   }
-]
+  if (selectedAction.value === 'close-lost') {
+    return closeFormRef.value?.canSubmit || false
+  }
+  return false
+})
 
-
-const handleScheduleClosing = () => {
-  emit('schedule-closing', props.opportunity)
+// Submit method - called by parent
+async function submit() {
+  if (selectedAction.value === 'schedule') {
+    // TODO: Submit schedule form
+    emit('appointment-scheduled', { opportunity: props.opportunity })
+  } else if (selectedAction.value === 'close-lost') {
+    closeFormRef.value?.submit()
+  }
 }
 
-const handleSurveyCompleted = (responses) => {
-  emit('survey-completed', { opportunity: props.opportunity, responses })
+// Handle close as lost from form
+function handleCloseAsLost(data) {
+  emit('close-as-lost', {
+    opportunity: props.opportunity,
+    reason: data.reason
+  })
 }
 
-const handleSurveyRefused = () => {
-  emit('survey-refused', { opportunity: props.opportunity })
-}
-
-const handleNotResponding = () => {
-  emit('not-responding', { opportunity: props.opportunity })
-}
+// Expose for parent component
+defineExpose({
+  canSubmit,
+  submit
+})
 </script>
 

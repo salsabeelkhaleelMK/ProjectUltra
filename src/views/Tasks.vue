@@ -174,14 +174,13 @@
       </div>
     </div>
     
-    <!-- Table View - Takes remaining space, drawer shown on top when task selected -->
+    <!-- Table View - Takes remaining space, drawer shown on top when task selected.
+         Table uses allTasks only; TaskFilters (button + chips) apply to card view list only. -->
     <div v-if="viewMode === 'table'" class="flex-1 flex flex-col overflow-hidden min-w-0 relative">
       <TasksTableView
-        :tasks="filteredTasks"
+        :tasks="allTasks"
         :current-task-id="drawerTask?.compositeId"
         :highlight-id="highlightId"
-        :active-filters="activeFilters"
-        :sort-option="sortOption"
         :show-closed="showClosed"
         :show-mobile-close="false"
         :open-menu-id="openCardMenu"
@@ -193,8 +192,6 @@
         @select="selectTask"
         @menu-click="toggleCardMenu"
         @menu-close="openCardMenu = null"
-        @filter-change="activeFilters = $event"
-        @sort-change="handleSortChange"
         @toggle-closed="showClosed = $event"
         @reassign="reassignTask"
         @close="handleBackToTaskList"
@@ -209,14 +206,14 @@
       :show="showTaskDrawer" 
       @close="closeTaskDrawer"
     >
-      <!-- TaskDetailView in Drawer -->
+      <!-- TaskDetailView in Drawer (uses allTasks for prev/next; table is independent of TaskFilters) -->
       <TaskDetailView
         v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
         :task="drawerTask"
         :management-widget="drawerManagementWidget"
         :store-adapter="drawerStoreAdapter"
         :add-new-config="drawerAddNewConfig"
-        :filtered-tasks="filteredTasks"
+        :filtered-tasks="allTasks"
         :is-drawer-view="true"
         @task-navigate="handleDrawerTaskNavigate"
         @close="closeTaskDrawer"
@@ -333,8 +330,8 @@ const handleViewChange = (newViewMode, searchQuery = '') => {
 }
 
 
-const activeFilters = ref(['lead']) // Array of active filter keys: ['lead', 'due-in-24h', etc.] - default to leads only
-const sortOption = ref('none') // 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
+const activeFilters = ref([]) // Array of active filter keys: ['lead', 'due-in-24h', etc.] - no filters by default
+const sortOption = ref('') // '', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team', 'recent-first'
 const showClosed = ref(false) // Toggle to show/hide closed (disqualified) leads
 const openCardMenu = ref(null)
 const showTaskListMobile = ref(false)

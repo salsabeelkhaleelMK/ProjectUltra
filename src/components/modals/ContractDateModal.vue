@@ -2,47 +2,46 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Set Contract Signing Date</DialogTitle>
-          <DialogDescription>Record when the contract was signed to track delivery timeline</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Contract Date -->
-      <div>
-        <label class="block label-upper mb-2">Contract Date</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Contract Date</Label>
+        <Input 
           type="date"
           v-model="contractDate"
           :max="maxDate"
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Contract Time -->
-      <div>
-        <label class="block label-upper mb-2">Time (Optional)</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Time (Optional)</Label>
+        <Input 
           type="time"
           v-model="contractTime"
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Notes -->
-      <div>
-        <label class="block label-upper mb-2">Notes (Optional)</label>
-        <textarea 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Notes (Optional)</Label>
+        <Textarea 
           v-model="notes"
-          rows="3"
+          rows="4"
           placeholder="Add any relevant notes about the contract signing..."
-          class="input resize-none"
-        ></textarea>
+          class="w-full min-h-[100px] resize-none"
+        />
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -66,11 +65,15 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Input,
+  Label,
+  Textarea
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

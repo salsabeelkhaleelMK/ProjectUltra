@@ -2,12 +2,9 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Send Email</DialogTitle>
-          <DialogDescription>
-            Send an email to the customer
-          </DialogDescription>
         </DialogHeader>
 
         <EmailForm 
@@ -23,7 +20,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogPortal,

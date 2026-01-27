@@ -1,15 +1,16 @@
 <template>
   <div>
-    <!-- Call Action Buttons Row (always visible; next steps show below) -->
-    <div class="flex gap-2 items-center mb-4">
+    <!-- Call Action Buttons Row (hidden when hideButton is true or call is already active) -->
+    <div v-if="!hideButton && !isCallActive" class="flex gap-2 items-center mb-4">
       <!-- Primary: Call Button -->
       <button
         @click="$emit('start-call')"
+        :disabled="isCallActive"
         :class="[
           'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
           isCallActive 
-            ? 'bg-brand-red text-white border-brand-red' 
-            : 'bg-surface hover:bg-surfaceSecondary border-E5E7EB text-body'
+            ? 'bg-surface border-E5E7EB text-body opacity-60 cursor-not-allowed' 
+            : 'bg-primary hover:bg-primary/90 border-primary text-white'
         ]"
       >
         <i class="fa-solid fa-phone text-xs"></i>
@@ -27,9 +28,19 @@
             <i class="fa-solid fa-waveform-lines text-blue-400 animate-pulse"></i>
             <span class="text-xs font-bold uppercase tracking-wider">TRANSCRIBING</span>
           </div>
-          <div class="flex items-center gap-2 text-red-400">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span class="text-xs font-mono">REC {{ formattedCallDuration }}</span>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 text-red-400">
+              <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              <span class="text-xs font-mono">REC {{ formattedCallDuration }}</span>
+            </div>
+            <!-- Stop Call Button in Header -->
+            <button
+              @click="$emit('end-call')"
+              class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <i class="fa-solid fa-stop"></i>
+              Stop Call
+            </button>
           </div>
         </div>
         
@@ -67,21 +78,10 @@
             rows="3"
           ></textarea>
         </div>
-        
-        <!-- End Call Button -->
-        <div class="mt-4 flex justify-end">
-          <Button
-            label="End Call"
-            variant="primary"
-            size="small"
-            @click="$emit('end-call')"
-            class="!bg-red-600 !hover:bg-red-700 !text-white !border-red-600"
-          />
-        </div>
       </div>
       
       <!-- Call Ended Section -->
-      <div v-if="callEnded && !isCallActive" class="bg-blue-50 border border-blue-200 rounded-card p-4">
+      <div v-if="callEnded && !isCallActive" class="bg-blue-50 rounded-card p-4">
         <div class="flex items-center justify-between">
           <div>
             <h4 class="font-bold text-heading mb-1 text-sm">Call Ended</h4>
@@ -136,6 +136,10 @@ defineProps({
   maxContactAttempts: {
     type: Number,
     required: true
+  },
+  hideButton: {
+    type: Boolean,
+    default: false
   }
 })
 

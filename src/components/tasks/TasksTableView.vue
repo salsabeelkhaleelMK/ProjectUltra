@@ -10,32 +10,38 @@
           
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
-            <!-- View Toggle -->
+            <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
             <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
-              <button
-                @click="$emit('view-change', 'table')"
-                :class="[
-                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
-                  viewMode === 'table' 
-                    ? 'bg-brand-gray text-heading shadow-sm' 
-                    : 'text-sub hover:text-heading'
-                ]"
-                title="Table View"
-              >
-                <Table :size="14" />
-              </button>
-              <button
+              <Button
+                variant="secondary"
+                size="icon"
                 @click="$emit('view-change', 'card')"
                 :class="[
-                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
-                  viewMode === 'card' 
-                    ? 'bg-brand-gray text-heading shadow-sm' 
+                  'h-7 w-7',
+                  viewMode === 'card'
+                    ? 'bg-brand-gray text-heading shadow-sm'
                     : 'text-sub hover:text-heading'
                 ]"
                 title="Card View"
+                :aria-pressed="viewMode === 'card'"
               >
                 <LayoutGrid :size="14" />
-              </button>
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                @click="$emit('view-change', 'table')"
+                :class="[
+                  'h-7 w-7',
+                  viewMode === 'table'
+                    ? 'bg-brand-gray text-heading shadow-sm'
+                    : 'text-sub hover:text-heading'
+                ]"
+                title="Table View"
+                :aria-pressed="viewMode === 'table'"
+              >
+                <Table :size="14" />
+              </Button>
             </div>
             
             <!-- Show Closed Toggle -->
@@ -65,6 +71,7 @@
             v-model:globalFilter="globalFilter"
             v-model:sorting="sorting"
             v-model:columnFilters="columnFilters"
+            v-model:columnVisibility="columnVisibility"
             :paginationOptions="{
               rowCount: filteredTasks.length
             }"
@@ -87,9 +94,10 @@
 </template>
 
 <script setup>
-import { ref, computed, h, watch } from 'vue'
+import { ref, computed, h } from 'vue'
 import { Table, LayoutGrid } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
+import { Button } from '@motork/component-library/future/primitives'
 import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
@@ -99,8 +107,6 @@ const props = defineProps({
   tasks: { type: Array, required: true },
   currentTaskId: { type: String, default: null },
   highlightId: { type: String, default: null },
-  activeFilters: { type: Array, default: () => [] },
-  sortOption: { type: String, default: 'recent-first' },
   showClosed: { type: Boolean, default: false },
   showMobileClose: { type: Boolean, default: false },
   openMenuId: { type: [Number, String], default: null },
@@ -112,15 +118,7 @@ const props = defineProps({
   getStageBadgeClass: { type: Function, required: true }
 })
 
-const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change', 'sort-change', 'toggle-closed', 'reassign', 'close', 'view-change'])
-
-const handleFilterChange = (filters) => {
-  emit('filter-change', filters)
-}
-
-const handleSortChange = (sort) => {
-  emit('sort-change', sort)
-}
+const emit = defineEmits(['select', 'menu-click', 'menu-close', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
 const settingsStore = useSettingsStore()
 const searchQuery = ref('')
@@ -133,59 +131,13 @@ const pagination = ref({
 
 const globalFilter = ref('')
 const sorting = ref([])
-// Initialize with default Type filter based on activeFilters
-const getInitialColumnFilters = () => {
-  const filters = []
-  // If activeFilters has a type filter, apply it to columnFilters
-  const typeFilter = props.activeFilters.find(f => f === 'lead' || f === 'opportunity')
-  if (typeFilter) {
-    filters.push({
-      id: 'type',
-      value: typeFilter,
-      operator: 'eq'
-    })
-  }
-  return filters
-}
-
-const columnFilters = ref(getInitialColumnFilters())
+const columnFilters = ref([])
 const columnVisibility = ref({})
 
-// Watch activeFilters to sync with columnFilters
-watch(() => props.activeFilters, (newFilters) => {
-  const typeFilter = newFilters.find(f => f === 'lead' || f === 'opportunity')
-  const existingTypeFilter = columnFilters.value.find(f => f.id === 'type')
-  
-  if (typeFilter) {
-    if (existingTypeFilter) {
-      existingTypeFilter.value = typeFilter
-    } else {
-      columnFilters.value.push({
-        id: 'type',
-        value: typeFilter,
-        operator: 'eq'
-      })
-    }
-  } else {
-    // Remove type filter if no type filter in activeFilters
-    const index = columnFilters.value.findIndex(f => f.id === 'type')
-    if (index > -1) {
-      columnFilters.value.splice(index, 1)
-    }
-  }
-}, { immediate: true })
-
-// Use filter definitions composable
-// Extract type filters from activeFilters for backward compatibility
-const typeFilters = computed(() => {
-  return props.activeFilters.filter(f => f === 'lead' || f === 'opportunity')
-})
+// Table has its own filters (column filters); TaskFilters button/chips apply to card view only.
 const { filterDefinitions } = useTasksTableFilters({
-  typeFilter: computed(() => {
-    // Return first type filter or 'all' if none
-    return typeFilters.value.length > 0 ? typeFilters.value[0] : 'all'
-  }),
-  showTypeFilter: computed(() => typeFilters.value.length > 0 || props.activeFilters.length === 0),
+  typeFilter: computed(() => 'all'),
+  showTypeFilter: computed(() => true),
   tasks: computed(() => props.tasks)
 })
 
@@ -249,9 +201,16 @@ const getRequestType = (task) => {
   return task.requestType || 'Opportunity'
 }
 
-// DataTable columns configuration
+// Helper to get car price (requestedCar or vehicle)
+const getCarPrice = (task) => {
+  const vehicle = task.type === 'lead' ? task.requestedCar : (task.vehicle || task.requestedCar)
+  return vehicle?.price
+}
+
+// DataTable columns configuration (order: type, customer, carInfo, dueDate, price, leadSource, contactAttempts, assignee, createdAt, status, urgency)
 const columns = computed(() => [
   {
+    id: 'type',
     accessorKey: 'type',
     header: 'Task type',
     meta: {
@@ -267,11 +226,10 @@ const columns = computed(() => [
     }
   },
   {
+    id: 'customer',
     accessorKey: 'customer',
     header: 'Customer',
-    meta: {
-      title: 'Customer'
-    },
+    meta: { title: 'Customer' },
     cell: ({ row }) => {
       const task = row.original
       return h('div', { class: 'flex items-center gap-2 md:gap-3' }, [
@@ -286,63 +244,77 @@ const columns = computed(() => [
     }
   },
   {
+    id: 'carInfo',
     accessorKey: 'carInfo',
     header: 'Car Info',
-    meta: {
-      title: 'Car Info'
-    },
+    meta: { title: 'Car Info' },
     cell: ({ row }) => {
       const task = row.original
       const vehicleInfo = getVehicleInfo(task)
       const carStatus = getCarStatus(task)
       const requestType = getRequestType(task)
-      
-      // Get vehicle object to access condition and kilometers
       const vehicle = task.type === 'lead' ? task.requestedCar : (task.vehicle || task.requestedCar)
-      
+
       if (vehicleInfo === 'No vehicle specified') {
         return h('span', { class: 'text-meta' }, 'N/A')
       }
-      
-      // Get condition (Used/New)
+
       const condition = vehicle?.condition ? vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1).toLowerCase() : null
-      // Get mileage
       const mileage = vehicle?.kilometers ? `${vehicle.kilometers.toLocaleString()} km` : null
-      
-      // Get quotation number if available
       const quotationNumber = task.quotationNumber || task.quotation || null
-      
-      // Only show requestType if it's not "Quotation" or if quotation number exists
       const shouldShowRequestType = requestType && requestType !== 'N/A' && (requestType !== 'Quotation' || quotationNumber)
-      
+
       return h('div', { class: 'flex flex-col gap-1' }, [
         h('div', { class: 'flex items-center gap-2' }, [
           h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
           h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
         ]),
         h('div', { class: 'flex items-center gap-2 flex-wrap' }, [
-          // Stock info first
-          h('span', {
-            class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}`
-          }, carStatus.status),
-          // Condition (Used/New)
-          condition && h('span', {
-            class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700'
-          }, condition),
-          // Mileage
+          h('span', { class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}` }, carStatus.status),
+          condition && h('span', { class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700' }, condition),
           mileage && h('span', { class: 'text-meta text-xs' }, mileage),
-          // Request type (only show if not "Quotation" or if quotation number exists)
           shouldShowRequestType && h('span', { class: 'text-meta text-xs' }, requestType)
         ])
       ])
     }
   },
   {
+    id: 'dueDate',
+    accessorKey: 'nextActionDue',
+    header: 'Due Date',
+    meta: { title: 'Due Date' },
+    cell: ({ row }) => {
+      const task = row.original
+      const date = task.nextActionDue
+      if (!date) {
+        return h('span', { class: 'text-meta' }, 'Not set')
+      }
+      const status = getDeadlineStatus(date)
+      return h('span', {
+        class: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${status.bgClass} ${status.textClass} ${status.borderClass}`
+      }, getDateDisplay(date))
+    }
+  },
+  {
+    id: 'price',
+    accessorKey: 'price',
+    accessorFn: (row) => getCarPrice(row) ?? 0,
+    header: 'Price',
+    meta: { title: 'Price' },
+    cell: ({ row }) => {
+      const task = row.original
+      const price = getCarPrice(task)
+      if (price == null || price === '') {
+        return h('span', { class: 'text-meta' }, '—')
+      }
+      return h('span', { class: 'text-content font-medium text-heading' }, `€ ${formatCurrency(price)}`)
+    }
+  },
+  {
+    id: 'source',
     accessorKey: 'source',
-    header: 'Source',
-    meta: {
-      title: 'Source'
-    },
+    header: 'Lead Source',
+    meta: { title: 'Lead Source' },
     cell: ({ row }) => {
       const task = row.original
       return h('span', {
@@ -351,11 +323,21 @@ const columns = computed(() => [
     }
   },
   {
+    id: 'contactAttempts',
+    accessorKey: 'contactAttempts',
+    header: 'Contact Attempts',
+    meta: { title: 'Contact Attempts' },
+    cell: ({ row }) => {
+      const task = row.original
+      const attempts = task.contactAttempts?.length || 0
+      return h('span', { class: 'text-content font-medium text-heading' }, attempts)
+    }
+  },
+  {
+    id: 'assignee',
     accessorKey: 'assignee',
     header: 'Assignee',
-    meta: {
-      title: 'Assignee'
-    },
+    meta: { title: 'Assignee' },
     cell: ({ row }) => {
       const task = row.original
       const owner = props.getOwnerInfo(task)
@@ -368,11 +350,10 @@ const columns = computed(() => [
     }
   },
   {
+    id: 'createdAt',
     accessorKey: 'createdAt',
     header: 'Creation Date',
-    meta: {
-      title: 'Creation Date'
-    },
+    meta: { title: 'Creation Date' },
     cell: ({ row }) => {
       const task = row.original
       if (!task.createdAt) return h('span', { class: 'text-meta' }, 'N/A')
@@ -380,23 +361,10 @@ const columns = computed(() => [
     }
   },
   {
-    accessorKey: 'contactAttempts',
-    header: 'Contact Attempts',
-    meta: {
-      title: 'Contact Attempts'
-    },
-    cell: ({ row }) => {
-      const task = row.original
-      const attempts = task.contactAttempts?.length || 0
-      return h('span', { class: 'text-content font-medium text-heading' }, attempts)
-    }
-  },
-  {
+    id: 'status',
     accessorKey: 'status',
     header: 'Status',
-    meta: {
-      title: 'Status'
-    },
+    meta: { title: 'Status' },
     cell: ({ row }) => {
       const task = row.original
       const stageStatus = task.type === 'lead' ? task.status : (task.displayStage || task.stage)
@@ -406,36 +374,26 @@ const columns = computed(() => [
       }, stageStatus)
     }
   },
-  // Urgency level column (only show for leads when urgency is enabled)
-  ...(typeFilters.value.includes('lead') && settingsStore.getSetting('urgencyEnabled') !== false ? [{
+  ...(settingsStore.getSetting('urgencyEnabled') !== false ? [{
     id: 'urgencyLevel',
     accessorKey: 'urgencyLevel',
     header: 'Urgency',
-    meta: {
-      title: 'Urgency'
-    },
+    meta: { title: 'Urgency' },
     cell: ({ row }) => {
       const task = row.original
       if (task.type !== 'lead') {
         return h('span', { class: 'text-meta' }, '—')
       }
-      
-      // Calculate urgency if not already calculated
       let urgencyLevel = task.urgencyLevel
       if (!urgencyLevel) {
         const urgencyResult = calculateLeadUrgency(task)
         urgencyLevel = urgencyResult.level
       }
-      
       const colorClass = getUrgencyColorClass(urgencyLevel)
       const icon = getUrgencyIcon(urgencyLevel)
-      
       return h('span', {
         class: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${colorClass}`
-      }, [
-        h('span', {}, icon),
-        h('span', {}, urgencyLevel)
-      ])
+      }, [h('span', {}, icon), h('span', {}, urgencyLevel)])
     }
   }] : [])
 ])
@@ -520,7 +478,6 @@ const tableMeta = computed(() => ({
 /* Frame panel - should have gray background */
 :deep([data-slot="frame-panel"]) {
   background-color: rgba(245, 245, 245, 1) !important;
-  padding: 1rem !important;
 }
 
 /* Pagination dropdown - transparent in footer */

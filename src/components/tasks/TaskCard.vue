@@ -17,15 +17,23 @@
     <!-- Card Menu Dropdown -->
     <div 
       v-if="openMenuId === item.id && showMenu"
-      class="absolute right-2 top-7 z-50"
+      class="absolute right-2 top-7 z-50 w-40 bg-white border border-black/10 rounded-lg shadow-lg py-1"
       v-click-outside="() => $emit('menu-close')"
+      @click.stop
     >
-      <DropdownMenu v-if="menuItems && menuItems.length > 0" :items="menuItems" className="w-40 text-xs" />
+      <button
+        v-for="menuItem in menuItems"
+        :key="menuItem.key"
+        @click="menuItem.onClick"
+        class="w-full px-3 py-2 text-left text-xs text-heading hover:bg-surfaceSecondary flex items-center gap-2"
+      >
+        {{ menuItem.label }}
+      </button>
     </div>
 
     <div class="flex flex-col min-w-0 flex-1 pr-4">
       <div class="flex items-center gap-1 mb-0.5">
-        <h3 class="font-bold text-heading text-fluid-base truncate">{{ actionTitle }}</h3>
+        <h3 v-if="actionTitle" class="font-bold text-heading text-fluid-base truncate">{{ actionTitle }}</h3>
         <span 
           v-if="deadline"
           class="flex items-center gap-1 text-[10px] font-bold uppercase leading-none shrink-0"
@@ -52,13 +60,16 @@
         >
           {{ item.type === 'lead' ? 'Lead' : 'Opportunity' }}
         </span>
+        
+        <!-- Single status badge -->
         <span 
-          v-if="item.displayStage || item.stage"
+          v-if="getDisplayStage(item)"
           class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border leading-none"
           :class="stageColorClass"
         >
-          {{ item.displayStage || item.stage }}
+          {{ getDisplayStage(item) }}
         </span>
+        
         <span 
           v-if="item.priority === 'Hot'"
           class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200 leading-none"
@@ -72,9 +83,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { DropdownMenu } from '@motork/component-library/future/primitives'
 import { formatDueDate, getDeadlineStatus } from '@/utils/formatters'
-import { getStageColor } from '@/utils/stageMapper'
+import { getStageColor, getDisplayStage as getCalculatedDisplayStageFromMapper } from '@/utils/stageMapper'
 import { getTaskActionTitle } from '@/utils/taskActionTitle'
 
 const props = defineProps({
@@ -136,10 +146,133 @@ const cardClass = computed(() => {
     : props.unselectedClass
 })
 
+const getBaseStage = (item) => {
+  if (!item) return ''
+  return item.stage || item.currentStage || 'New'
+}
+
+const getCalculatedDisplayStage = (item) => {
+  if (!item || item.type !== 'opportunity') return null
+  try {
+    return getCalculatedDisplayStageFromMapper(item, 'opportunity')
+  } catch (e) {
+    return item.displayStage || item.stage || null
+  }
+}
+
+const getDisplayStage = (item) => {
+  if (!item) return ''
+  
+  // For opportunities, extract substatus if available for better readability
+  if (item.type === 'opportunity') {
+    const displayStage = getCalculatedDisplayStage(item) || item.stage || item.currentStage || 'New'
+    const baseStage = getBaseStage(item)
+    
+    // If display stage contains substatus (e.g., "In Negotiation - Contract Pending"),
+    // show just the substatus part (e.g., "Contract Pending") for better readability
+    const substatus = getSubstatus(item)
+    if (substatus && substatus !== displayStage) {
+      return substatus
+    }
+    
+    return displayStage
+  }
+  
+  return item.stage || item.currentStage || item.displayStage || 'New'
+}
+
+const hasTwoStatuses = (item) => {
+  if (!item || item.type !== 'opportunity') return false
+  const baseStage = getBaseStage(item)
+  const displayStage = getCalculatedDisplayStage(item)
+  
+  // Show two statuses when display stage contains the base stage with a substatus
+  // (e.g., "In Negotiation - Contract Pending" should show as "In Negotiation" + "Contract Pending")
+  if (displayStage && baseStage && displayStage !== baseStage) {
+    // Check if display stage starts with base stage followed by " - " (case-insensitive)
+    const baseStageLower = baseStage.toLowerCase().trim()
+    const displayStageLower = displayStage.toLowerCase().trim()
+    
+    // If display stage starts with base stage followed by " - ", show two badges
+    // This handles cases like "In Negotiation - Contract Pending" or "In Negotiation - Offer Feedback"
+    if (displayStageLower.startsWith(baseStageLower + ' - ')) {
+      return true
+    }
+    
+    // For other cases where they differ, also show two badges
+    return true
+  }
+  
+  return false
+}
+
+const getSubstatus = (item) => {
+  if (!item || item.type !== 'opportunity') return ''
+  const baseStage = getBaseStage(item)
+  const displayStage = getCalculatedDisplayStage(item)
+  
+  if (!displayStage || !baseStage) return displayStage || ''
+  
+  // Extract substatus from display stage (everything after " - ")
+  const baseStageLower = baseStage.toLowerCase().trim()
+  const displayStageLower = displayStage.toLowerCase().trim()
+  
+  if (displayStageLower.startsWith(baseStageLower + ' - ')) {
+    // Extract the part after " - "
+    const prefix = baseStage + ' - '
+    if (displayStage.startsWith(prefix)) {
+      return displayStage.substring(prefix.length)
+    }
+  }
+  
+  // Fallback: return full display stage if no substatus pattern found
+  return displayStage
+}
+
+const getStageColorForStage = (stage, entityType = 'opportunity') => {
+  if (!stage) return 'bg-gray-50 text-gray-700 border-gray-200'
+  try {
+    const baseColor = getStageColor(stage, entityType)
+    // Add border color that matches the theme
+    // Map background colors to border colors
+    if (baseColor.includes('blue')) return baseColor + ' border-blue-200'
+    if (baseColor.includes('purple')) return baseColor + ' border-purple-200'
+    if (baseColor.includes('yellow')) return baseColor + ' border-yellow-200'
+    if (baseColor.includes('pink')) return baseColor + ' border-pink-200'
+    if (baseColor.includes('indigo')) return baseColor + ' border-indigo-200'
+    if (baseColor.includes('emerald')) return baseColor + ' border-emerald-200'
+    if (baseColor.includes('green')) return baseColor + ' border-green-200'
+    if (baseColor.includes('red')) return baseColor + ' border-red-200'
+    if (baseColor.includes('gray')) return baseColor + ' border-gray-200'
+    return baseColor + ' border-gray-200'
+  } catch (e) {
+    // Fallback colors
+    const stageLower = stage.toLowerCase()
+    if (stageLower.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
+    if (stageLower.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
+    if (stageLower.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
+    if (stageLower.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+    return 'bg-gray-50 text-gray-700 border-gray-200'
+  }
+}
+
 const stageColorClass = computed(() => {
-  const stage = props.item.displayStage || props.item.stage
-  if (!stage) return 'bg-gray-100 text-gray-700'
-  return getStageColor(stage, props.item.type || 'opportunity')
+  const item = props.item
+  if (!item) return 'bg-gray-50 text-gray-700 border-gray-200'
+  
+  // For opportunities, use the stage mapper color
+  if (item.type === 'opportunity') {
+    const displayStage = getCalculatedDisplayStage(item) || getBaseStage(item)
+    return getStageColorForStage(displayStage, 'opportunity')
+  }
+  
+  // Fallback for leads or other types
+  const stage = getDisplayStage(item).toLowerCase()
+  if (stage.includes('new')) return 'bg-blue-50 text-blue-600 border-blue-200'
+  if (stage.includes('qualif')) return 'bg-green-50 text-green-600 border-green-200'
+  if (stage.includes('negotiat')) return 'bg-purple-50 text-purple-600 border-purple-200'
+  if (stage.includes('close')) return 'bg-surfaceSecondary text-body border-black/5'
+  return 'bg-blue-50 text-blue-600 border-blue-200'
 })
 
 const actionTitle = computed(() => getTaskActionTitle(props.item))

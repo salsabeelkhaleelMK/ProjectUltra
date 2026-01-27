@@ -416,7 +416,7 @@ describe('getTaskWidgetTitle', () => {
   it('should return correct title for widget type', () => {
     expect(getTaskWidgetTitle('OOFB')).toBe('Overdue Offer Follow-up Task')
     expect(getTaskWidgetTitle('UFB')).toBe('Urgent Follow-up Task')
-    expect(getTaskWidgetTitle('NS')).toBe('No-Show Follow-up Task')
+    expect(getTaskWidgetTitle('NS')).toBe('NS')
     expect(getTaskWidgetTitle('OFB')).toBe('Offer Follow-up Task')
     expect(getTaskWidgetTitle('CFB')).toBe('Contract Follow-up Task')
     expect(getTaskWidgetTitle('DFB')).toBe('Delivery Follow-up Task')

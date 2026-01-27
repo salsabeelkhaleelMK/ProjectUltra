@@ -2,15 +2,13 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ getActivityTitle() }}</DialogTitle>
-          <DialogDescription>
-            {{ getActivityDescription() }}
-          </DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
+          <div class="space-y-4 w-full">
           <!-- Activity Metadata -->
           <div class="flex items-center gap-4 text-sm text-greys-500">
             <div class="flex items-center gap-2">
@@ -91,11 +89,11 @@
               <p class="text-sm text-greys-900 whitespace-pre-line">
                 {{ activity?.message || activity?.content || activity?.action || 'No details available' }}
               </p>
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter class="flex-shrink-0">
           <Button
             label="Close"
             variant="outline"
@@ -115,7 +113,6 @@ import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

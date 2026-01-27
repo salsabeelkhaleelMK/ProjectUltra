@@ -20,14 +20,8 @@
    Font Declarations
    ======================================== */
 
-/* Note: Using Figtree variable font - adjust if using different fonts */
-@font-face {
-  font-family: 'Figtree';
-  src: url('/fonts/Figtree-VariableFont_wght.ttf') format('truetype');
-  font-weight: 300 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* Note: Using Figtree variable font from Google Fonts (loaded in index.html) */
+/* Font weights 300-900 available via variable font */
 
 /* ========================================
    CSS Custom Properties
@@ -1056,173 +1050,11 @@ button[data-state="active"][role="tab"]:not(.no-indicator)::after {
 }
 
 /* ========================================
-   DataTable Styling - Match Reference Project
+   DataTable Styling - Minimal Overrides
    ======================================== */
 
-/* DataTable container */
-[data-slot="table-container"],
-.table-wrapper {
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: var(--base-card, #fff);
-  box-shadow: var(--mk-dashboard-card-shadow);
-}
-
-/* Table header styling */
-[data-slot="table"] thead {
-  background-color: var(--base-muted, #f5f5f5);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-[data-slot="table"] thead th {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-heading, #0a0a0a);
-  padding: 0.75rem 1rem;
-  text-align: left;
-}
-
-/* Table body styling */
-[data-slot="table"] tbody {
-  background-color: var(--base-card, #fff);
-}
-
-[data-slot="table"] tbody tr {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: background-color 0.15s ease;
-}
-
-[data-slot="table"] tbody tr:hover {
-  background-color: var(--base-muted, #f5f5f5);
-}
-
-[data-slot="table"] tbody tr:last-child {
-  border-bottom: none;
-}
-
-[data-slot="table"] tbody td {
-  padding: 1rem;
-  font-size: var(--text-sm);
-  color: var(--text-body, #3f3f46);
-}
-
-/* Table pagination footer */
-[data-slot="table-pagination"],
-footer[class*="items-center justify-between"] {
-  background-color: var(--base-muted, #f5f5f5) !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 0.75rem 1rem;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-/* Table frame panel (top section with filters) */
-div[data-slot='frame-panel'] {
-  background-color: var(--base-muted, #f5f5f5) !important;
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 10px !important;
-  padding: 1rem;
-}
-
-/* Badge styles in tables */
-[data-slot="table"] .badge,
-[data-slot="table"] [class*="badge"],
-[data-slot="table"] span[class*="bg-"][class*="text-"] {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-/* DataTable specific component overrides */
-.relative.bg-clip-padding[data-slot='frame-panel'] {
-  background-color: var(--base-muted, #f5f5f5) !important;
-}
-
-table[data-slot="table"] {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Table cell content styling */
-[data-slot="table"] .text-content {
-  font-size: var(--text-sm);
-  line-height: 1.25rem;
-}
-
-[data-slot="table"] .text-meta {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--text-sub, #71717a);
-}
-
-[data-slot="table"] .text-heading {
-  color: var(--text-heading, #0a0a0a);
-}
-
-/* Search and filter inputs in DataTable */
-[data-slot="table-search"] input,
-[data-slot="table-filter"] select,
-[data-slot="table-filter"] input {
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  font-size: var(--text-sm);
-  color: var(--text-heading, #0a0a0a);
-  transition: all 0.15s ease;
-}
-
-[data-slot="table-search"] input:focus,
-[data-slot="table-filter"] select:focus,
-[data-slot="table-filter"] input:focus {
-  outline: none;
-  border-color: #0470e9;
-  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
-}
-
-/* Pagination buttons */
-[data-slot="table-pagination"] button {
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
-  padding: 0.375rem 0.75rem;
-  font-size: var(--text-sm);
-  color: var(--text-heading, #0a0a0a);
-  transition: all 0.15s ease;
-}
-
-[data-slot="table-pagination"] button:hover:not(:disabled) {
-  background-color: var(--base-muted, #f5f5f5);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-slot="table-pagination"] button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-[data-slot="table-pagination"] button[data-active="true"] {
-  background-color: #0470e9;
-  color: white;
-  border-color: #0470e9;
-}
-
-/* Sort indicators */
-[data-slot="table"] th button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 600;
-  color: var(--text-heading, #0a0a0a);
-}
-
-[data-slot="table"] th button:hover {
-  color: #0470e9;
-}
+/* Note: DataTable styling is mostly handled by Motork component library */
+/* Component-specific overrides are in individual .vue files using :deep() */
 
 /* Empty state styling for DataTables */
 .empty-state {
@@ -1259,141 +1091,6 @@ table[data-slot="table"] {
   color: var(--text-sub, #71717a);
   max-width: 24rem;
   margin: 0 auto;
-}
-
-/* DataTable row selection styles */
-[data-slot="table"] tbody tr[data-selected="true"],
-[data-slot="table"] tbody tr[aria-selected="true"] {
-  background-color: rgba(4, 112, 233, 0.05) !important;
-}
-
-[data-slot="table"] tbody tr[data-selected="true"]:hover,
-[data-slot="table"] tbody tr[aria-selected="true"]:hover {
-  background-color: rgba(4, 112, 233, 0.08) !important;
-}
-
-/* DataTable loading state */
-[data-slot="table"] .loading-skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--base-muted, #f5f5f5) 0%,
-    #e5e5e5 50%,
-    var(--base-muted, #f5f5f5) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
-  border-radius: 4px;
-  height: 1rem;
-}
-
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* DataTable action buttons (in cells) */
-[data-slot="table"] .action-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: var(--base-card, #fff);
-  color: var(--text-sub, #71717a);
-  transition: all 0.15s ease;
-  cursor: pointer;
-}
-
-[data-slot="table"] .action-button:hover {
-  background-color: var(--base-muted, #f5f5f5);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-heading, #0a0a0a);
-}
-
-/* DataTable column resize handle */
-[data-slot="table"] .resize-handle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  cursor: col-resize;
-  user-select: none;
-  touch-action: none;
-  background-color: transparent;
-}
-
-[data-slot="table"] .resize-handle:hover,
-[data-slot="table"] .resize-handle.is-resizing {
-  background-color: #0470e9;
-}
-
-/* DataTable filter popover */
-[data-slot="table-filter-popover"] {
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 0.75rem;
-  min-width: 12rem;
-}
-
-/* DataTable global search */
-[data-slot="table"] input[type="search"],
-[data-slot="table"] input[placeholder*="Search"] {
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-  font-size: var(--text-sm);
-  width: 100%;
-  max-width: 20rem;
-  transition: all 0.15s ease;
-}
-
-[data-slot="table"] input[type="search"]:focus,
-[data-slot="table"] input[placeholder*="Search"]:focus {
-  outline: none;
-  border-color: #0470e9;
-  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
-}
-
-/* DataTable row actions menu */
-[data-slot="table"] .row-actions-menu {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  margin-top: 0.25rem;
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  min-width: 10rem;
-  z-index: 50;
-  overflow: hidden;
-}
-
-[data-slot="table"] .row-actions-menu button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: var(--text-sm);
-  color: var(--text-heading, #0a0a0a);
-  border: none;
-  background: transparent;
-  text-align: left;
-  transition: background-color 0.15s ease;
-}
-
-[data-slot="table"] .row-actions-menu button:hover {
-  background-color: var(--base-muted, #f5f5f5);
 }
 
 /* ========================================
@@ -1477,6 +1174,18 @@ select:focus {
   color: var(--text-sub, #71717a);
   transition: all 0.15s ease;
   cursor: pointer;
+  padding: 0;
+}
+
+/* Ensure icon is perfectly centered with no margins */
+.filter-dropdown-button i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .filter-dropdown-button:hover {
@@ -1497,43 +1206,60 @@ select:focus {
   border: 2px solid var(--base-background, #fff);
 }
 
-/* Filter Chip (removable badge) */
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.625rem;
-  border-radius: 8px;
-  background-color: var(--base-muted, #f5f5f5);
-  color: var(--text-heading, #0a0a0a);
-  font-size: var(--text-xs, 0.75rem);
-  font-weight: 500;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.15s ease;
+/* Task Filter Badge - Matches TaskCard badges exactly */
+.task-filter-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.15rem !important;
+  padding: 0 0.2rem !important;
+  border-radius: 9999px !important;
+  background-color: var(--base-muted, #f5f5f5) !important;
+  color: var(--text-heading, #0a0a0a) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.15s ease !important;
+  height: 1rem !important;
+  min-height: 0 !important;
 }
 
-.filter-chip:hover {
-  background-color: #efefef;
+.task-filter-badge span {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  height: 100% !important;
 }
 
-.filter-chip-remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background-color: transparent;
-  color: var(--text-sub, #71717a);
-  transition: all 0.15s ease;
-  cursor: pointer;
-  border: none;
-  padding: 0;
+.task-filter-badge:hover {
+  background-color: #e8e8e8 !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
-.filter-chip-remove:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-heading, #0a0a0a);
+.task-filter-badge-remove {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: transparent !important;
+  color: var(--text-sub, #71717a) !important;
+  transition: color 0.15s ease !important;
+  cursor: pointer !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+.task-filter-badge-remove:hover {
+  color: var(--text-heading, #0a0a0a) !important;
+}
+
+.task-filter-badge-remove i {
+  font-size: 8px !important;
+  line-height: 1 !important;
 }
 
 /* Filter Dropdown Menu Container */
@@ -1548,27 +1274,26 @@ select:focus {
 .filter-dropdown-wrapper [class*="item"] {
   font-size: var(--text-sm, 0.875rem) !important;
   position: relative;
-  padding-left: 2.5rem !important;
 }
 
 /* Selected menu item background */
 .filter-item-selected,
 .sort-item-selected {
   background-color: var(--base-muted, #f5f5f5) !important;
+  padding-right: 2rem !important;
 }
 
-/* Selection indicator dot for active filters/sorts */
-.filter-item-selected::before,
-.sort-item-selected::before {
-  content: '';
+/* Selection indicator checkmark for active filters/sorts */
+.filter-item-selected::after,
+.sort-item-selected::after {
+  content: '\2713';
   position: absolute;
-  left: 1rem;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 50%;
-  background-color: #0a0a0a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0a0a0a;
 }
 
 /* Dropdown menu transitions */
@@ -1675,6 +1400,89 @@ select:focus {
 /* Keep FullCalendar styles as they're library-specific */
 .fc {
   /* FullCalendar will be styled separately if needed */
+}
+
+/* ========================================
+   Modal/Dialog Styling - Adaptive Width & Scroll
+   ======================================== */
+
+/* Ensure all dialogs have proper max-height and scrolling */
+[data-slot="dialog-content"],
+[role="dialog"] {
+  max-height: calc(100vh - 4rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Dialog content scrollable area */
+.dialog-content-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 16rem);
+  width: 100%;
+}
+
+/* Ensure content consumes full width */
+.dialog-content-full-width {
+  width: 100%;
+}
+
+/* Scrollable content with padding */
+.dialog-scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+/* Header and footer stay fixed */
+[data-slot="dialog-header"],
+[data-slot="dialog-footer"] {
+  flex-shrink: 0 !important;
+}
+
+/* Adaptive width utilities for modals */
+.dialog-sm {
+  width: 100%;
+  max-width: 28rem; /* 448px */
+}
+
+.dialog-md {
+  width: 100%;
+  max-width: 32rem; /* 512px */
+}
+
+.dialog-lg {
+  width: 100%;
+  max-width: 42rem; /* 672px */
+}
+
+.dialog-xl {
+  width: 100%;
+  max-width: 56rem; /* 896px */
+}
+
+.dialog-2xl {
+  width: 100%;
+  max-width: 64rem; /* 1024px */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  [data-slot="dialog-content"],
+  [role="dialog"] {
+    max-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  .dialog-scroll-area,
+  .dialog-content-scroll {
+    max-height: calc(100vh - 12rem);
+  }
 }
 
 /* ========================================

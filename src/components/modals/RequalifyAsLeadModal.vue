@@ -2,14 +2,12 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Requalify as Lead</DialogTitle>
-          <DialogDescription>This will convert the opportunity back to a lead. Some data will be lost.</DialogDescription>
         </DialogHeader>
 
-        <!-- Body with scrollable content -->
-        <div class="space-y-6 max-h-screen-60 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <div class="flex items-start gap-4 mb-6">
         <div class="flex-shrink-0">
           <div class="w-12 h-12 rounded-sm bg-yellow-100 flex items-center justify-center border border-yellow-200">
@@ -77,9 +75,9 @@
           This action cannot be undone. The opportunity will be permanently removed and replaced with a new lead.
         </p>
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -105,7 +103,6 @@ import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

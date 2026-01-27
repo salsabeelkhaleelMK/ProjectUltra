@@ -1,15 +1,15 @@
 <template>
-  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col mb-6 bg-surfaceSecondary">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-lightbulb text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Customer Insights</h2>
+        <h2 class="text-sm font-semibold text-heading leading-5">Customer Insights</h2>
       </div>
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-card p-2 shadow-nsc-card flex flex-col">
       <div class="divide-y divide-gray-100">
         <!-- Summary Section -->
         <div class="p-3">
@@ -30,7 +30,7 @@
               :key="index"
               class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surfaceSecondary text-heading text-xs font-semibold uppercase tracking-wider rounded border border-black/5"
             >
-              <i :class="pref.icon" class="text-xs text-brand-blue"></i>
+              <i :class="pref.icon" class="text-xs text-primary"></i>
               {{ pref.label }}
             </span>
           </div>

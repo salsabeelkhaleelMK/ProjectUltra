@@ -1,41 +1,37 @@
 <template>
   <div class="flex-1 flex flex-col overflow-hidden h-full">
     <!-- Header - Contact Card (Full Width) -->
-    <header class="bg-surface border-b border-black/5 shrink-0">
-      <!-- Contact Info Header (only shown for customer view, not tasks) -->
-      <div v-if="!isTasksView">
-        <CustomerContactHeader
-          :initials="task.customer.initials"
-          :name="task.customer.name"
-          :email="task.customer.email"
-          :phone="task.customer.phone"
-          :third-field-value="task.customer.address"
-          :avatar-color-class="getAvatarColorClass"
-          :task-type="type"
-          :customer-id="task.customer?.id || task.customerId || task.id"
-          :tags="task.tags || []"
-          :show-close-button="showCloseButton"
-          email-label="Email"
-          phone-label="Phone"
-          third-field-label="Address"
-          @action="handleContactInfoAction"
-          @add-tag="showAddTagModal = true"
-          @close="$emit('close')"
+    <!-- Contact Info Header (only shown for customer view, not tasks) -->
+    <CustomerContactHeader
+      v-if="!isTasksView"
+      :initials="task.customer.initials"
+      :name="task.customer.name"
+      :email="task.customer.email"
+      :phone="task.customer.phone"
+      :third-field-value="task.customer.address"
+      :avatar-color-class="getAvatarColorClass"
+      :task-type="type"
+      :customer-id="task.customer?.id || task.customerId || task.id"
+      :tags="task.tags || []"
+      :show-close-button="showCloseButton"
+      email-label="Email"
+      phone-label="Phone"
+      third-field-label="Address"
+      @add-tag="showAddTagModal = true"
+      @close="$emit('close')"
+    >
+      <template #name-action>
+        <button
+          v-if="isTasksView"
+          @click="openCustomerPage"
+          class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
+          title="Open in new page"
+          aria-label="Open customer page"
         >
-          <template #name-action>
-            <button
-              v-if="isTasksView"
-              @click="openCustomerPage"
-              class="w-6 h-6 flex items-center justify-center bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-600 hover:text-blue-700 transition-colors shrink-0"
-              title="Open in new page"
-              aria-label="Open customer page"
-            >
-              <i class="fa-solid fa-external-link text-xs"></i>
-            </button>
-          </template>
-        </CustomerContactHeader>
-      </div>
-    </header>
+          <i class="fa-solid fa-external-link text-xs"></i>
+        </button>
+      </template>
+    </CustomerContactHeader>
 
     <!-- DEFAULT VIEW: Two-column layout with Tabs+Content | Activity Timeline (only for customer view) -->
     <div v-if="!isTasksView" class="flex-1 flex flex-row overflow-hidden">
@@ -135,7 +131,7 @@
               >
                 <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
                 <div class="flex justify-between items-center mb-4">
-                  <h5 class="text-fluid-sm font-semibold text-heading">Add Appointment</h5>
+                  <h5 class="text-sm font-semibold text-heading">Add Appointment</h5>
                   <button
                     type="button"
                     @click="showInlineAppointmentForm = false"
@@ -319,7 +315,7 @@
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-clock text-heading"></i>
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Activity Summary</h2>
+                <h2 class="text-sm font-semibold text-heading leading-5">Activity Summary</h2>
               </div>
             </div>
             
@@ -331,7 +327,7 @@
                 
                 <div v-if="allActivities.length === 0" class="text-center py-6 text-sub">
                   <i class="fa-solid fa-clock text-2xl mb-2"></i>
-                  <p class="text-fluid-sm">No activities yet</p>
+                  <p class="text-sm text-sub">No activities yet</p>
                 </div>
                 
                 <div v-else class="space-y-6 h-full overflow-y-auto pr-2">
@@ -340,16 +336,16 @@
                       class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
                       :class="getActivityIconClass(activity.type)"
                     >
-                      <i :class="getActivityIcon(activity.type)" class="text-fluid-sm"></i>
+                      <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <div class="text-fluid-sm text-slate-700 leading-snug">
+                      <div class="text-sm text-body leading-snug">
                         <span class="font-bold">{{ activity.user }}</span> {{ activity.action }}
                       </div>
-                      <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-fluid-sm text-body">
+                      <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-sm text-body">
                         {{ activity.content }}
                       </div>
-                      <div class="text-fluid-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
+                      <div class="text-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
                     </div>
                   </div>
                 </div>
@@ -422,8 +418,8 @@
           <!-- Empty State -->
           <div v-else-if="!enrichWidgetType" class="text-center py-12 text-sub">
             <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
-            <p class="text-fluid-sm">No enrichment data yet</p>
-            <p class="text-fluid-xs mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
+            <p class="text-sm text-sub">No enrichment data yet</p>
+            <p class="text-xs text-sub mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
           </div>
         </div>
 
@@ -434,7 +430,7 @@
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-comments text-heading"></i>
-                <h2 class="text-fluid-sm font-medium text-heading leading-5">Communicate</h2>
+                <h2 class="text-sm font-semibold text-heading leading-5">Communicate</h2>
               </div>
             </div>
             
@@ -453,10 +449,10 @@
                 <div class="space-y-2 max-h-52 overflow-y-auto">
                   <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
                     <div class="flex items-center gap-2 mb-1">
-                      <span class="text-fluid-xs font-semibold text-heading">{{ comm.type }}</span>
-                      <span class="text-fluid-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                      <span class="text-xs font-semibold text-heading">{{ comm.type }}</span>
+                      <span class="text-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
                     </div>
-                    <p class="text-fluid-sm text-body">{{ comm.content }}</p>
+                    <p class="text-sm text-body">{{ comm.content }}</p>
                   </div>
                 </div>
               </div>
@@ -508,6 +504,7 @@
       :task-type="type"
       :task-id="task.id"
       :requested-car="type === 'lead' ? task.requestedCar : null"
+      :customer="task.customer"
       :recommended-cars="[]"
       @save="handleOverviewModalSave"
       @close="closeOverviewModal"
@@ -567,6 +564,12 @@
       @close="showEmailModal = false"
     />
     
+    <ComingSoonModal
+      :show="showComingSoonModal"
+      title="Call Feature"
+      @close="showComingSoonModal = false"
+    />
+    
     <!-- Create Appointment Modal (contact card + button) -->
     <CreateEventModal
       v-if="showCreateAppointmentModal"
@@ -616,6 +619,7 @@ import AddTagModal from '@/components/modals/AddTagModal.vue'
 import AddWhatsAppModal from '@/components/modals/AddWhatsAppModal.vue'
 import AddSMSModal from '@/components/modals/AddSMSModal.vue'
 import AddEmailModal from '@/components/modals/AddEmailModal.vue'
+import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import { getTabForItemTypeDefault as getTabForItemType } from '@/composables/useTaskTabs'
 import { useTaskInlineWidgets } from '@/composables/useTaskInlineWidgets'
@@ -998,6 +1002,7 @@ const showAttachmentModal = ref(false)
 const showWhatsAppModal = ref(false)
 const showSMSModal = ref(false)
 const showEmailModal = ref(false)
+const showComingSoonModal = ref(false)
 
 // Activity card state
 const expandedSummaries = ref({})
@@ -1077,6 +1082,12 @@ const handleContactInfoAction = (action) => {
   // For appointments, open CreateEventModal
   if (action === 'appointment') {
     showCreateAppointmentModal.value = true
+    return
+  }
+  
+  // For call, show ComingSoonModal
+  if (action === 'call') {
+    showComingSoonModal.value = true
     return
   }
   

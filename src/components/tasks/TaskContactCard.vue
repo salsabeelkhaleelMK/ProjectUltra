@@ -8,7 +8,19 @@
       box-shadow: var(--nsc-card-shadow);
     "
   >
-    <h3 class="text-base font-medium text-heading mb-4 leading-6">Customer information</h3>
+    <div class="flex items-center justify-between gap-2 mb-4">
+      <h3 class="text-base font-medium text-heading leading-6">Customer information</h3>
+      <Button
+        v-if="task.customer?.id"
+        variant="ghost"
+        size="icon"
+        @click="openCustomerProfileInNewTab"
+        :class="'h-7 w-7'"
+        title="Open customer profile in new tab"
+      >
+        <ExternalLink :size="14" class="text-sub" />
+      </Button>
+    </div>
     
     <!-- Card Content --><div class="flex flex-col">
       <!-- Contact Details -->
@@ -156,6 +168,14 @@ const copyToClipboard = async (text, field) => {
 const openCustomerPage = () => {
   if (props.customerId) {
     router.push(`/customer/${props.customerId}`)
+  }
+}
+
+const openCustomerProfileInNewTab = () => {
+  const customerId = props.task.customer?.id || props.customerId
+  if (customerId) {
+    const url = router.resolve(`/customer/${customerId}`).href
+    window.open(url, '_blank')
   }
 }
 

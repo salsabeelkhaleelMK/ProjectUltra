@@ -3,38 +3,52 @@
     <div class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-body mb-1">Start date</label>
-          <input type="date" v-model="financingData.startDate" class="input">
+          <Label class="text-xs font-medium text-body mb-1">Start date</Label>
+          <Input type="date" v-model="financingData.startDate" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-body mb-1">Expiration date</label>
-          <input type="date" v-model="financingData.expDate" class="input">
+          <Label class="text-xs font-medium text-body mb-1">Expiration date</Label>
+          <Input type="date" v-model="financingData.expDate" />
         </div>
       </div>
       <div>
-        <label class="block text-xs font-medium text-body mb-1">Financial product name</label>
-        <input type="text" v-model="financingData.productName" class="input">
+        <Label class="text-xs font-medium text-body mb-1">Financial product name</Label>
+        <Input type="text" v-model="financingData.productName" placeholder="Enter product name" />
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-medium text-body mb-1">Deposit</label>
-          <input type="number" v-model="financingData.deposit" class="input">
+          <Label class="text-xs font-medium text-body mb-1">Deposit</Label>
+          <Input type="number" v-model="financingData.deposit" placeholder="0" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-body mb-1">Total loan amount</label>
-          <input type="number" v-model="financingData.loanAmount" class="input">
+          <Label class="text-xs font-medium text-body mb-1">Total loan amount</Label>
+          <Input type="number" v-model="financingData.loanAmount" placeholder="0" />
         </div>
       </div>
     </div>
-    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-gray-100 pt-4">
-      <button @click="$emit('cancel')" class="text-xs font-medium text-sub hover:text-body px-3 py-2 rounded-lg hover:bg-surfaceSecondary transition-colors">Cancel</button>
-      <button @click="handleSave" :disabled="!financingData.productName" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors shadow-sm shadow-blue-200">Save</button>
+    <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-E5E7EB pt-4">
+      <Button
+        label="Cancel"
+        variant="outline"
+        size="small"
+        class="rounded-sm"
+        @click="$emit('cancel')"
+      />
+      <Button
+        label="Save"
+        variant="primary"
+        size="small"
+        class="rounded-sm !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+        :disabled="!financingData.productName"
+        @click="handleSave"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { Button, Input, Label } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   item: {

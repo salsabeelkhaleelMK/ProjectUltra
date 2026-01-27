@@ -7,7 +7,7 @@
       size === 'small' ? 'px-3 py-1.5 text-fluid-xs' : 'px-4 py-2 text-fluid-sm'
     ]"
     :disabled="disabled"
-    style="background: linear-gradient(to right, #9333EA, #A855F7, #C084FC);"
+    style="background: linear-gradient(135deg, #6B21A8, #9333EA, #A855F7);"
     @click="$emit('click', $event)"
   >
     <Sparkles :size="size === 'small' ? 14 : 16" class="text-white shrink-0" />

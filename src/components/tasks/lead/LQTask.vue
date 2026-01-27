@@ -140,7 +140,7 @@
           @start-call="startCall"
           @end-call="endCallFromComposable"
           @log-manual-call="logManualCall"
-          @extract-information="extractInformationFromComposable"
+          @extract-information="showComingSoonModal = true"
           @update:call-notes="updateCallNotes"
           @copy-number="copyNumber"
         />
@@ -283,11 +283,12 @@
                 </Button>
                 <Button
                   variant="outline"
-                  @click="rescheduleTime = 'monday'"
-                  class="px-4 py-2 text-sm font-medium"
+                  @click="handleAISuggestionClick"
+                  class="px-4 py-2 text-sm font-medium flex items-center gap-1.5"
                   :style="rescheduleTime === 'monday' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
                 >
-                  Monday
+                  <i class="fa-solid fa-sparkles text-xs" :style="rescheduleTime === 'monday' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  AI suggestion
                 </Button>
                 <Button
                   variant="outline"
@@ -298,6 +299,21 @@
                   Select time
                 </Button>
               </div>
+              <!-- AI Suggestion Details -->
+              <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start gap-2">
+                  <i class="fa-solid fa-lightbulb text-blue-600 text-sm mt-0.5"></i>
+                  <div class="flex-1">
+                    <p class="text-sm font-semibold text-heading mb-1">
+                      {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}
+                    </p>
+                    <p class="text-xs text-sub">
+                      {{ aiSuggestionData.reason }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Custom Time Selection -->
               <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
                 <div>
                   <Label class="block text-sm font-medium text-body mb-1.5">Date</Label>
@@ -322,53 +338,21 @@
                 class="w-full"
               />
             </div>
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <div class="mb-4">
-                <Label class="block text-sm font-medium text-body mb-1.5">Category</Label>
-                <div class="flex gap-4">
-                  <Label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      v-model="disqualifyCategory"
-                      value="Not Valid"
-                      class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
-                    >
-                    <span class="text-sm text-body">Not Valid</span>
-                  </Label>
-                  <Label class="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      v-model="disqualifyCategory"
-                      value="Not Interested"
-                      class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
-                    >
-                    <span class="text-sm text-body">Not Interested</span>
-                  </Label>
-                </div>
-              </div>
-              <div>
-                <Label class="block text-sm font-medium text-body mb-1.5">Failure Reason</Label>
-                <Select v-model="disqualifyReason">
-                  <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select a reason..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Data cleanup">Data cleanup</SelectItem>
-                    <SelectItem value="Unreachable">Unreachable</SelectItem>
-                    <SelectItem value="Purchase postponed">Purchase postponed</SelectItem>
-                    <SelectItem value="Vehicle sold">Vehicle sold</SelectItem>
-                    <SelectItem value="Out of budget">Out of budget</SelectItem>
-                    <SelectItem value="Financing rejected">Financing rejected</SelectItem>
-                    <SelectItem value="Duplicate">Duplicate</SelectItem>
-                    <SelectItem value="Bought elsewhere">Bought elsewhere</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <CloseAsLostForm
+              :preselected-reason="disqualifyReason"
+              close-button-label="Close"
+              @close="handleCloseFromForm"
+              @cancel="cancelOutcome"
+            />
           </div>
 
       <!-- Interested (Inline) -->
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
+            <!-- Info note -->
+            <div class="text-xs text-sub px-2">
+              <span class="text-red-600">*</span> Required fields
+            </div>
+            
             <!-- When did you call field -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
               <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
@@ -508,7 +492,7 @@
 
             <!-- Qualification method -->
             <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-sm mb-3">Qualification method</h5>
+              <h5 class="font-semibold text-heading text-sm mb-3">Qualification method <span class="text-red-600">*</span></h5>
               <div class="space-y-2">
                 <label
                   class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
@@ -544,59 +528,61 @@
               <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
                 <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to</h5>
                 
-                <!-- Teams -->
-                <div class="mb-4">
-                  <Label class="block text-sm font-medium text-body mb-1.5">Select Team</Label>
-                  <SelectMenu
-                    v-model="selectedTeamId"
-                    :items="teamSelectOptions"
-                    placeholder="Search and select team..."
-                    value-key="id"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <div class="flex items-center gap-2">
-                        <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                        <span class="text-sub">→</span>
-                        <span class="font-medium text-heading">{{ item.name }}</span>
-                      </div>
-                    </template>
-                  </SelectMenu>
-                </div>
-
-                <!-- People -->
-                <div v-if="qualificationSelectedTeam" class="mb-4">
-                  <Label class="block text-sm font-medium text-body mb-1.5">Select Salesperson (Optional)</Label>
-                  <p class="text-sm text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
-                  <SelectMenu
-                    v-model="selectedSalesmanId"
-                    :items="salespersonSelectOptions"
-                    placeholder="Search and select salesperson..."
-                    value-key="id"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <div class="flex items-center gap-2">
-                        <div
-                          class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
-                          :class="getRoleAvatarClass(item.role)"
-                        >
-                          {{ getInitials(item.name) }}
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Team -->
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Team <span class="text-red-600">*</span></Label>
+                    <SelectMenu
+                      v-model="selectedTeamId"
+                      :items="teamSelectOptions"
+                      placeholder="Search and select team..."
+                      value-key="id"
+                      class="w-full"
+                    >
+                      <template #item="{ item }">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sub">{{ item.dealership || 'No location' }}</span>
+                          <span class="text-sub">→</span>
+                          <span class="font-medium text-heading">{{ item.name }}</span>
                         </div>
-                        <span class="font-medium text-heading">{{ item.name }}</span>
-                      </div>
-                    </template>
-                  </SelectMenu>
+                      </template>
+                    </SelectMenu>
+                  </div>
+
+                  <!-- Salesperson -->
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Salesperson <span class="text-sub text-xs">(optional)</span></Label>
+                    <SelectMenu
+                      v-model="selectedSalesmanId"
+                      :items="salespersonSelectOptions"
+                      :disabled="!qualificationSelectedTeam"
+                      placeholder="Search and select salesperson..."
+                      value-key="id"
+                      class="w-full"
+                    >
+                      <template #item="{ item }">
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
+                            :class="getRoleAvatarClass(item.role)"
+                          >
+                            {{ getInitials(item.name) }}
+                          </div>
+                          <span class="font-medium text-heading">{{ item.name }}</span>
+                        </div>
+                      </template>
+                    </SelectMenu>
+                  </div>
                 </div>
 
-                <!-- Notes for sellers -->
+                <!-- Notes for assignee -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Note for sellers</Label>
+                  <Label class="block text-sm font-medium text-body mb-1.5">Notes for assignee</Label>
                   <Textarea 
                     v-model="noteForSellers"
                     rows="4" 
                     class="w-full"
-                    placeholder="Add any notes or instructions for the sellers..."
+                    placeholder="Add any notes or instructions for the assignee..."
                   />
                 </div>
               </div>
@@ -609,128 +595,75 @@
             >
               <!-- Step 1: Event Type Selection (FIRST STEP) -->
               <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <h5 class="font-semibold text-heading text-sm mb-4">Event type</h5>
-                <div class="mb-4">
-                  <Label class="block text-sm font-medium text-body mb-1.5">{{ t('forms.schedule.eventType.label') }}</Label>
-                  <SelectMenu
-                    v-model="qualificationEventType"
-                    :items="qualificationEventTypeOptionsForSelect"
-                    :placeholder="t('forms.schedule.eventType.placeholder')"
-                    value-key="value"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <span>{{ item.label }}</span>
-                    </template>
-                  </SelectMenu>
-                </div>
-                
-                <!-- Duration Selection -->
-                <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">{{ t('forms.schedule.duration.label') }}</Label>
-                  <div class="flex gap-2">
-                    <button 
-                      @click="handleQualificationDurationSelect(15)"
-                      class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                      :class="qualificationDurationMinutes === 15 
-                        ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                        : 'border-black/5 text-body hover:border-[#0470e9]/30'"
-                    >
-                      {{ t('forms.schedule.duration.15min') }}
-                    </button>
-                    <button 
-                      @click="handleQualificationDurationSelect(30)"
-                      class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                      :class="qualificationDurationMinutes === 30 
-                        ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                        : 'border-black/5 text-body hover:border-[#0470e9]/30'"
-                    >
-                      {{ t('forms.schedule.duration.30min') }}
-                    </button>
-                    <button 
-                      @click="handleQualificationDurationSelect(60)"
-                      class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                      :class="qualificationDurationMinutes === 60 
-                        ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                        : 'border-black/5 text-body hover:border-[#0470e9]/30'"
-                    >
-                      {{ t('forms.schedule.duration.60min') }}
-                    </button>
-                    <button 
-                      @click="handleQualificationDurationSelect(90)"
-                      class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                      :class="qualificationDurationMinutes === 90 
-                        ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                        : 'border-black/5 text-body hover:border-[#0470e9]/30'"
-                    >
-                      {{ t('forms.schedule.duration.90min') }}
-                    </button>
-                    <Input
-                      v-model="qualificationCustomDuration"
-                      type="number"
-                      min="1"
-                      :placeholder="t('forms.schedule.duration.custom')"
-                      class="w-24 h-10 min-h-10"
-                      @input="qualificationDurationMinutes = null"
-                      @focus="qualificationDurationMinutes = null"
-                    />
-                  </div>
-                </div>
+                <Label class="block text-sm font-medium text-body mb-2">Event type <span class="text-red-600">*</span></Label>
+                <SelectMenu
+                  v-model="qualificationEventType"
+                  :items="qualificationEventTypeOptionsForSelect"
+                  :placeholder="t('forms.schedule.eventType.placeholder')"
+                  value-key="value"
+                  class="w-full"
+                >
+                  <template #item="{ item }">
+                    <span>{{ item.label }}</span>
+                  </template>
+                </SelectMenu>
               </div>
 
               <!-- Step 2: Assign appointment to (show when event type selected) -->
               <div v-if="qualificationEventType" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
                 <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to</h5>
                 
-                <!-- Teams -->
-                <div class="mb-4">
-                  <Label class="block text-sm font-medium text-body mb-1.5">Select Team</Label>
-                  <SelectMenu
-                    v-model="selectedTeamId"
-                    :items="teamSelectOptions"
-                    placeholder="Search and select team..."
-                    value-key="id"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <div class="flex items-center gap-2">
-                        <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                        <span class="text-sub">→</span>
-                        <span class="font-medium text-heading">{{ item.name }}</span>
-                      </div>
-                    </template>
-                  </SelectMenu>
-                </div>
-
-                <!-- People -->
-                <div v-if="qualificationSelectedTeam">
-                  <Label class="block text-sm font-medium text-body mb-1.5">Select Salesperson (Optional)</Label>
-                  <p class="text-sm text-sub mb-2">You can proceed without selecting a salesperson - the appointment will be assigned to the team.</p>
-                  <SelectMenu
-                    v-model="selectedSalesmanId"
-                    :items="salespersonSelectOptions"
-                    placeholder="Search and select salesperson..."
-                    value-key="id"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <div class="flex items-center gap-2">
-                        <div
-                          class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
-                          :class="getRoleAvatarClass(item.role)"
-                        >
-                          {{ getInitials(item.name) }}
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Team -->
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Team</Label>
+                    <SelectMenu
+                      v-model="selectedTeamId"
+                      :items="teamSelectOptions"
+                      placeholder="Search and select team..."
+                      value-key="id"
+                      class="w-full"
+                    >
+                      <template #item="{ item }">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sub">{{ item.dealership || 'No location' }}</span>
+                          <span class="text-sub">→</span>
+                          <span class="font-medium text-heading">{{ item.name }}</span>
                         </div>
-                        <span class="font-medium text-heading">{{ item.name }}</span>
-                      </div>
-                    </template>
-                  </SelectMenu>
+                      </template>
+                    </SelectMenu>
+                  </div>
+
+                  <!-- Salesperson -->
+                  <div>
+                    <Label class="block text-sm font-medium text-body mb-1.5">Salesperson (optional)</Label>
+                    <SelectMenu
+                      v-model="selectedSalesmanId"
+                      :items="salespersonSelectOptions"
+                      :disabled="!qualificationSelectedTeam"
+                      placeholder="Search and select salesperson..."
+                      value-key="id"
+                      class="w-full"
+                    >
+                      <template #item="{ item }">
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
+                            :class="getRoleAvatarClass(item.role)"
+                          >
+                            {{ getInitials(item.name) }}
+                          </div>
+                          <span class="font-medium text-heading">{{ item.name }}</span>
+                        </div>
+                      </template>
+                    </SelectMenu>
+                  </div>
                 </div>
               </div>
 
               <!-- Step 3: Schedule (Calendar and Time Slots) - only show if event type and team selected -->
               <div v-if="qualificationEventType && qualificationSelectedTeam" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <h5 class="font-semibold text-heading text-sm mb-4">{{ t('forms.schedule.title') }}</h5>
+                <h5 class="font-semibold text-heading text-sm mb-4">{{ t('forms.schedule.title') }} <span class="text-red-600">*</span></h5>
                 
                 <!-- Calendar and Time Slots - Two Column Layout -->
                 <div class="bg-white border border-black/5 rounded-lg overflow-hidden">
@@ -858,7 +791,8 @@
         </div>
         
         <!-- Unified Action Buttons at Bottom Right of Gray Wrapper -->
-        <div v-if="selectedOutcome && !successState" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <!-- Hide buttons for "not-valid" outcome since CloseAsLostForm has its own buttons -->
+        <div v-if="selectedOutcome && !successState && selectedOutcome !== 'not-valid'" class="flex justify-end gap-2 px-4 pb-4 pt-3">
           <Button
             variant="secondary"
             @click="cancelOutcome"
@@ -928,6 +862,13 @@
       @save="handleVehicleSave"
     />
 
+    <!-- Coming Soon Modal -->
+    <ComingSoonModal
+      :show="showComingSoonModal"
+      title="AI Information Extraction"
+      @close="showComingSoonModal = false"
+    />
+
   </div>
 </template>
 
@@ -963,6 +904,7 @@ import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentMod
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
 import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
+import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 import { useTradeInVehicle } from '@/composables/useTradeInVehicle'
 import CommunicationSelector from '@/components/shared/communication/CommunicationSelector.vue'
 import { useUsersStore } from '@/stores/users'
@@ -978,6 +920,7 @@ import { useLQWidgetHandlers } from '@/composables/useLQWidgetHandlers'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
 import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
 import AppointmentCommunications from '@/components/shared/communication/AppointmentCommunications.vue'
+import CloseAsLostForm from '@/components/shared/CloseAsLostForm.vue'
 import { getAvailabilityForAssignee } from '@/services/availabilityService'
 
 const props = defineProps({
@@ -1028,6 +971,7 @@ const noteWidgetRef = ref(null)
 const showAssignmentModal = ref(false)
 const showFinancingModal = ref(false)
 const showVehicleModal = ref(false)
+const showComingSoonModal = ref(false)
 
 // Static data that stays in component
 const assignableUsers = computed(() => usersStore.assignableUsers)
@@ -1513,9 +1457,25 @@ watch(() => assignment.value?.assignee, (newAssignee) => {
   }
 })
 
-// Watch for qualificationSelectedTeam changes to reset salesman selection
-watch(qualificationSelectedTeam, () => {
+// Watch for qualificationSelectedTeam changes to reset salesman selection and auto-select availability
+watch(qualificationSelectedTeam, (newTeam) => {
   qualificationSelectedSalesman.value = null
+  
+  // Auto-select soonest availability for team
+  if (newTeam && qualificationEventType.value) {
+    selectSoonestAvailability(`team-${newTeam.id}`)
+  }
+})
+
+// Watch for salesman changes to update availability
+watch(qualificationSelectedSalesman, (newSalesman) => {
+  // Auto-select soonest availability for salesperson
+  if (newSalesman) {
+    selectSoonestAvailability(`user-${newSalesman.id}`)
+  } else if (qualificationSelectedTeam.value) {
+    // If salesman is cleared, go back to team availability
+    selectSoonestAvailability(`team-${qualificationSelectedTeam.value.id}`)
+  }
 })
 
 // Watch for date changes to reset slot selection
@@ -1523,10 +1483,45 @@ watch(qualificationSelectedDate, () => {
   qualificationSelectedSlot.value = ''
 })
 
-// Watch for salesman changes to reset slot selection
-watch(qualificationSelectedSalesman, () => {
-  qualificationSelectedSlot.value = ''
-})
+// Helper function to find and select the soonest available date and time slot
+const selectSoonestAvailability = (assigneeId) => {
+  // Start from today and look for the next 30 days
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  for (let i = 0; i < 30; i++) {
+    const checkDate = new Date(today)
+    checkDate.setDate(today.getDate() + i)
+    
+    // Skip weekends
+    if (checkDate.getDay() === 0 || checkDate.getDay() === 6) {
+      continue
+    }
+    
+    const dateStr = checkDate.toISOString().split('T')[0]
+    const availableSlots = getAvailabilityForAssignee(assigneeId, dateStr)
+    
+    if (availableSlots && availableSlots.length > 0) {
+      // Found first available date with slots
+      qualificationSelectedDate.value = checkDate
+      
+      // Update calendar to show this month
+      qualificationCurrentMonth.value = checkDate.getMonth()
+      qualificationCurrentYear.value = checkDate.getFullYear()
+      
+      // Select the first available time slot
+      // Wait for next tick to ensure availableScheduleSlots is updated
+      setTimeout(() => {
+        const filteredSlots = qualificationScheduleSlotOptions.value.filter(slot => availableSlots.includes(slot))
+        if (filteredSlots.length > 0) {
+          qualificationSelectedSlot.value = filteredSlots[0]
+        }
+      }, 0)
+      
+      break
+    }
+  }
+}
 
 
 // Check if everything is selected for "Send and postpone" button
@@ -1772,8 +1767,19 @@ const canQualify = computed(() => {
 })
 
 const canCloseAsNotValid = computed(() => {
-  return !!(disqualifyCategory.value && disqualifyReason.value)
+  return !!disqualifyReason.value
 })
+
+// Handle close from CloseAsLostForm
+function handleCloseFromForm(reason) {
+  disqualifyReason.value = reason
+  // Set a default category based on the reason if needed
+  if (!disqualifyCategory.value) {
+    // Default to "Not Valid" for lead disqualification
+    disqualifyCategory.value = 'Not Valid'
+  }
+  handleNotValidConfirm()
+}
 
 const actionButtonLabel = computed(() => {
   if (selectedOutcome.value === 'no-answer') {

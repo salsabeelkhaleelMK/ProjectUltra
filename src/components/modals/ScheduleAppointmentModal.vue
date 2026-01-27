@@ -2,12 +2,12 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-4xl">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-4xl max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle class="text-fluid-lg">Schedule Appointment</DialogTitle>
         </DialogHeader>
 
-        <div class="space-y-6">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
           <!-- Assignment Options -->
           <div class="space-y-3">
             <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
@@ -164,7 +164,7 @@
           </div>
         </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 mt-6">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 mt-6">
           <Button
             label="Cancel"
             variant="outline"

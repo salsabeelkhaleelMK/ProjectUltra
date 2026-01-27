@@ -3,31 +3,28 @@
   <Dialog v-if="modal" :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ item ? 'Edit Note' : 'Add Note' }}</DialogTitle>
-          <DialogDescription v-if="!item">
-            Add a note to document important information
-          </DialogDescription>
         </DialogHeader>
 
-        <form @submit.prevent="handleSave" class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
           <!-- Note Content -->
-          <div>
-            <label class="block label-upper mb-2">
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">
               Note <span class="text-brand-red">*</span>
-            </label>
-            <textarea 
+            </Label>
+            <Textarea 
               v-model="noteText"
-              class="input" 
-              rows="6" 
+              rows="8" 
               placeholder="Type your note here..."
               required
-            ></textarea>
+              class="w-full min-h-[200px] resize-none"
+            />
           </div>
-        </form>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -87,11 +84,14 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Label,
+  Textarea
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

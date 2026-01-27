@@ -2,15 +2,20 @@
   <div class="space-y-4">
     <div>
       <label class="block label-upper mb-2">Event Type</label>
-      <select v-model="localEvent.type" class="input">
-        <option value="test-drive">Test Drive</option>
-        <option value="appointment">Dealership Visit</option>
-        <option value="offsite">Offsite Visit</option>
-        <option value="workshop">Workshop</option>
-        <option value="call">Call</option>
-        <option value="delivery">Delivery</option>
-        <option value="meeting">Meeting</option>
-      </select>
+      <Select v-model="localEvent.type">
+        <SelectTrigger class="w-full h-10 min-h-10">
+          <SelectValue placeholder="Select event type..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="test-drive">Test Drive</SelectItem>
+          <SelectItem value="appointment">Dealership Visit</SelectItem>
+          <SelectItem value="offsite">Offsite Visit</SelectItem>
+          <SelectItem value="workshop">Workshop</SelectItem>
+          <SelectItem value="call">Call</SelectItem>
+          <SelectItem value="delivery">Delivery</SelectItem>
+          <SelectItem value="meeting">Meeting</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <div>
@@ -55,22 +60,22 @@
 
     <div>
       <label class="block label-upper mb-2">Assign to</label>
-      <select
+      <Select
         v-model="localEvent.assignee"
-        class="input"
         :disabled="disabledFields.includes('assignee')"
       >
-        <optgroup label="Teams">
-          <option v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
+        <SelectTrigger class="w-full h-10 min-h-10">
+          <SelectValue placeholder="Select assignee..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
             {{ team.name }} Team
-          </option>
-        </optgroup>
-        <optgroup label="Users">
-          <option v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
+          </SelectItem>
+          <SelectItem v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
             {{ user.name }}{{ user.id === userStore.currentUser?.id ? ' (Me)' : '' }}
-          </option>
-        </optgroup>
-      </select>
+          </SelectItem>
+        </SelectContent>
+      </Select>
       <p v-if="isTeamSelected" class="text-fluid-xs text-sub mt-1">
         <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
       </p>
@@ -78,10 +83,14 @@
 
     <div>
       <label class="block label-upper mb-2">Dealership</label>
-      <select v-model="localEvent.dealership" class="input">
-        <option value="">Select dealership...</option>
-        <option v-for="d in dealerships" :key="d" :value="d">{{ d }}</option>
-      </select>
+      <Select v-model="localEvent.dealership">
+        <SelectTrigger class="w-full h-10 min-h-10">
+          <SelectValue placeholder="Select dealership..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem v-for="d in dealerships" :key="d" :value="d">{{ d }}</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <div v-if="showActions" class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 pt-2">
@@ -105,7 +114,14 @@
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 import { useUsersStore } from '@/stores/users'
 

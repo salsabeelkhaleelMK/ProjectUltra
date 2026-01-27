@@ -41,20 +41,23 @@
           ></textarea>
           
           <!-- Select dropdown -->
-          <select
+          <Select
             v-else-if="question.type === 'select'"
             v-model="responses[question.key]"
-            class="input text-fluid-sm py-2 px-3 w-full"
           >
-            <option value="">Select an option...</option>
-            <option
-              v-for="option in question.options"
-              :key="option"
-              :value="option"
-            >
-              {{ option }}
-            </option>
-          </select>
+            <SelectTrigger class="w-full h-10 min-h-10">
+              <SelectValue placeholder="Select an option..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="option in question.options"
+                :key="option"
+                :value="option"
+              >
+                {{ option }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
           
           <!-- Radio buttons -->
           <div
@@ -106,7 +109,14 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   questions: {

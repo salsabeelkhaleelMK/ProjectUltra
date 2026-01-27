@@ -1,21 +1,21 @@
 <template>
-  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-card flex flex-col mb-6 bg-surfaceSecondary">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-clock-rotate-left text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Recent Activities</h2>
+        <h2 class="text-sm font-semibold text-heading leading-5">Recent Activities</h2>
       </div>
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-card p-2 shadow-nsc-card flex flex-col">
       <div class="divide-y divide-gray-100">
         <!-- Next Appointment -->
         <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-calendar-check text-brand-blue text-sm"></i>
+            <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-calendar-check text-primary text-sm"></i>
             </div>
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Next Appointment</div>
@@ -25,7 +25,7 @@
           </div>
           <button
             @click="viewAppointmentDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-primary/30 text-sub hover:text-primary transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -35,8 +35,8 @@
         <!-- Last Communication -->
         <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-brand-slate/10 flex items-center justify-center shrink-0">
-              <i :class="getCommunicationIcon(lastCommunication.type)" class="text-brand-slate text-sm"></i>
+            <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center shrink-0">
+              <i :class="getCommunicationIcon(lastCommunication.type)" class="text-slate-600 text-sm"></i>
             </div>
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Last Communication</div>
@@ -46,7 +46,7 @@
           </div>
           <button
             @click="viewCommunicationDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-slate/30 text-sub hover:text-brand-slate transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-slate-300 text-sub hover:text-slate-600 transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -77,8 +77,8 @@
         <!-- Active Opportunity Next Action -->
         <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-surfaceSecondary transition-colors rounded-md group">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-brand-blue/10 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-handshake text-brand-blue text-sm"></i>
+            <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-handshake text-primary text-sm"></i>
             </div>
             <div class="min-w-0">
               <div class="text-xs font-semibold text-heading uppercase tracking-wider mb-0.5">Active Opportunity</div>
@@ -88,7 +88,7 @@
           </div>
           <button
             @click="viewOpportunityDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0"
+            class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-primary/30 text-sub hover:text-primary transition-all shrink-0"
             title="View Details"
           >
             <i class="fa-solid fa-arrow-right text-xs"></i>

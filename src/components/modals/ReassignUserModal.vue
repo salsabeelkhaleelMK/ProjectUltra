@@ -2,17 +2,18 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle class="text-fluid-lg">{{ title || 'Reassign' }}</DialogTitle>
         </DialogHeader>
 
-        <p class="text-fluid-xs text-body mb-4">
-          Select a user or team to assign:
-        </p>
-        
-        <!-- Search Input -->
-        <div class="mb-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
+          <p class="text-fluid-xs text-body mb-4">
+            Select a user or team to assign:
+          </p>
+          
+          <!-- Search Input -->
+          <div class="mb-4 w-full">
           <input
             v-model="searchQuery"
             type="text"
@@ -51,9 +52,10 @@
             <i class="fa-solid fa-search text-3xl text-sub mb-2"></i>
             <p class="text-fluid-sm text-sub">No users or teams found</p>
           </div>
+          </div>
         </div>
         
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"

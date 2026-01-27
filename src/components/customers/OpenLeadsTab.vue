@@ -171,7 +171,6 @@ onMounted(async () => {
 /* Frame panel - should have gray background */
 :deep([data-slot="frame-panel"]) {
   background-color: rgba(245, 245, 245, 1) !important;
-  padding: 1rem !important;
 }
 
 /* Pagination dropdown - transparent in footer */

@@ -2,19 +2,18 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-2xl p-0">
-        <DialogHeader class="p-6 pb-4 border-b border">
+      <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col p-0">
+        <DialogHeader class="flex-shrink-0 p-6 pb-4 border-b border">
           <DialogTitle>Create Offer</DialogTitle>
-          <DialogDescription>Create a purchase offer for the customer</DialogDescription>
         </DialogHeader>
 
-        <div class="p-6">
+        <div class="flex-1 overflow-y-auto p-6 w-full">
           <OfferWidget
             :item="item"
             :task-type="taskType"
             :task-id="taskId"
-            :requested-car="requestedCar"
-            :recommended-cars="recommendedCars"
+            :selected-vehicle="requestedCar"
+            :customer="customer"
             :hide-header="true"
             :hide-actions="true"
             ref="widgetRef"
@@ -23,7 +22,7 @@
           />
         </div>
 
-        <DialogFooter class="p-6 pt-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
+        <DialogFooter class="flex-shrink-0 p-6 pt-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <Button
             label="Cancel"
             variant="outline"
@@ -51,7 +50,6 @@ import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,
@@ -84,6 +82,10 @@ const props = defineProps({
   recommendedCars: {
     type: Array,
     default: () => []
+  },
+  customer: {
+    type: Object,
+    default: null
   }
 })
 

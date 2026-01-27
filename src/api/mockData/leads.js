@@ -1,6 +1,6 @@
 export const mockLeads = [
   {
-    id: 1,
+    id: 1001,
     customerId: 1,
     status: 'Open',
     priority: 'Hot',
@@ -51,7 +51,7 @@ export const mockLeads = [
   },
   // GROUP A: Validated Stage Leads
   {
-    id: 4,
+    id: 1004,
     customerId: 4,
     status: 'Open',
     priority: 'Hot',
@@ -126,7 +126,7 @@ export const mockLeads = [
     ]
   },
   {
-    id: 5,
+    id: 1005,
     customerId: 5,
     status: 'Open',
     priority: 'Normal',
@@ -201,7 +201,7 @@ export const mockLeads = [
   },
   // GROUP B: Disqualified States
   {
-    id: 6,
+    id: 1006,
     customerId: 6,
     status: 'Disqualified',
     priority: 'Normal',
@@ -248,7 +248,7 @@ export const mockLeads = [
     contactAttempts: []
   },
   {
-    id: 7,
+    id: 1007,
     customerId: 7,
     status: 'Disqualified',
     priority: 'Normal',
@@ -307,7 +307,7 @@ export const mockLeads = [
     ]
   },
   {
-    id: 8,
+    id: 1008,
     customerId: 1, // Same customer as Lead 1 - making it a duplicate
     status: 'Disqualified',
     priority: 'Normal',
@@ -355,7 +355,7 @@ export const mockLeads = [
     contactAttempts: []
   },
   {
-    id: 10,
+    id: 1010,
     customerId: 10,
     status: 'Open',
     priority: 'Normal',
@@ -449,7 +449,7 @@ export const mockLeads = [
   },
   // Lead 11 - Open Lead with 1 contact attempt (no answer)
   {
-    id: 11,
+    id: 1011,
     customerId: 11,
     status: 'Open',
     priority: 'Normal',
@@ -515,7 +515,7 @@ export const mockLeads = [
   },
   // Lead 12 - Open Lead with 2 contact attempts (close to auto-disqualify threshold)
   {
-    id: 12,
+    id: 1012,
     customerId: 12,
     status: 'Open',
     priority: 'Normal',
@@ -589,7 +589,7 @@ export const mockLeads = [
   },
   // Additional leads for showcasing carousel - Customer 1 (Josh Adams)
   {
-    id: 13,
+    id: 1013,
     customerId: 1,
     status: 'Open',
     priority: 'Hot',
@@ -640,7 +640,7 @@ export const mockLeads = [
   },
   // Customer 2 (Emma Watson) - Lead
   {
-    id: 14,
+    id: 1014,
     customerId: 2,
     status: 'Open',
     priority: 'Normal',
@@ -701,7 +701,7 @@ export const mockLeads = [
   },
   // Customer 3 (Liam Johnson) - Lead
   {
-    id: 15,
+    id: 1015,
     customerId: 3,
     status: 'Open',
     priority: 'Hot',
@@ -750,7 +750,7 @@ export const mockLeads = [
   },
   // Customer 4 (Sophie Mueller) - Lead
   {
-    id: 16,
+    id: 1016,
     customerId: 4,
     status: 'Open',
     priority: 'Hot',
@@ -811,7 +811,7 @@ export const mockLeads = [
   },
   // Customer 5 (Marco Rossi) - Lead
   {
-    id: 17,
+    id: 1017,
     customerId: 5,
     status: 'Open',
     priority: 'Normal',
@@ -860,7 +860,7 @@ export const mockLeads = [
   },
   // Customer 11 (Laura Zimmermann) - Lead
   {
-    id: 18,
+    id: 1018,
     customerId: 11,
     status: 'Open',
     priority: 'Urgent',
@@ -909,7 +909,7 @@ export const mockLeads = [
   },
   // Customer 13 (Nina Keller) - Lead
   {
-    id: 19,
+    id: 1019,
     customerId: 13,
     status: 'Open',
     priority: 'Hot',
@@ -958,7 +958,7 @@ export const mockLeads = [
   },
   // Customer 18 (Dr. Andreas Werner) - Lead
   {
-    id: 20,
+    id: 1020,
     customerId: 18,
     status: 'Open',
     priority: 'Hot',
@@ -1007,7 +1007,7 @@ export const mockLeads = [
   },
   // Lead 21 - To be called back with OVERDUE callback
   {
-    id: 21,
+    id: 1021,
     customerId: 9,
     status: 'Open',
     priority: 'Normal',
@@ -1087,7 +1087,7 @@ export const mockLeads = [
   },
   // Lead 22 - To be called back with URGENT upcoming callback
   {
-    id: 22,
+    id: 1022,
     customerId: 14,
     status: 'Open',
     priority: 'Hot',
@@ -1156,7 +1156,7 @@ export const mockLeads = [
   },
   // Lead 23 - Validated with multiple contact attempts before validation
   {
-    id: 23,
+    id: 1023,
     customerId: 15,
     status: 'Open',
     priority: 'Normal',
@@ -1252,7 +1252,7 @@ export const mockLeads = [
   },
   // Lead 24 - Closed - Invalid with contact attempts showing why it's invalid
   {
-    id: 24,
+    id: 1024,
     customerId: 19,
     status: 'Disqualified',
     priority: 'Normal',
@@ -1323,7 +1323,7 @@ export const mockLeads = [
   },
   // Lead 25 - Closed - Not Interested with conversation history
   {
-    id: 25,
+    id: 1025,
     customerId: 20,
     status: 'Disqualified',
     priority: 'Normal',
@@ -1405,7 +1405,7 @@ export const mockLeads = [
   },
   // Lead 26 - New lead with upcoming deadline (not urgent, not overdue)
   {
-    id: 26,
+    id: 1026,
     customerId: 21,
     status: 'Open',
     priority: 'Normal',
@@ -1456,7 +1456,7 @@ export const mockLeads = [
   },
   // Lead 27 - New lead with no deadline yet (very fresh, just created)
   {
-    id: 27,
+    id: 1027,
     customerId: 22,
     status: 'Open',
     priority: 'Normal',
@@ -1503,7 +1503,7 @@ export const mockLeads = [
   },
   // Lead for customer 2
   {
-    id: 28,
+    id: 1028,
     customerId: 2,
     status: 'Open',
     priority: 'Normal',
@@ -1554,7 +1554,7 @@ export const mockLeads = [
   },
   // Lead for customer 8
   {
-    id: 30,
+    id: 1030,
     customerId: 8,
     status: 'Open',
     priority: 'Normal',
@@ -1605,7 +1605,7 @@ export const mockLeads = [
   },
   // Lead for customer 16
   {
-    id: 31,
+    id: 1031,
     customerId: 16,
     status: 'Open',
     priority: 'Normal',
@@ -1656,7 +1656,7 @@ export const mockLeads = [
   },
   // Lead for customer 17
   {
-    id: 32,
+    id: 1032,
     customerId: 17,
     status: 'Open',
     priority: 'Normal',
@@ -1707,7 +1707,7 @@ export const mockLeads = [
   },
   // Lead 33 - Auto-Disqualified after reaching maximum contact attempts (unreachable)
   {
-    id: 33,
+    id: 1033,
     customerId: 23,
     status: 'Disqualified',
     priority: 'Normal',

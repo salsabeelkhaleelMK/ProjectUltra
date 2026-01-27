@@ -2,10 +2,10 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md p-0">
+      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col p-0">
         <!-- Custom header with event type styling -->
         <div
-          class="px-6 py-5 border-b border flex items-center justify-between bg-surface"
+          class="flex-shrink-0 px-6 py-5 border-b border flex items-center justify-between bg-surface"
           :class="getEventTypeHeaderClass(event?.type)"
         >
           <div class="flex-1 min-w-0 pr-4">
@@ -33,11 +33,11 @@
         </div>
 
         <!-- Event Details -->
-        <div class="p-6">
+        <div class="flex-1 overflow-y-auto p-6 w-full">
           <CalendarEventDetails v-if="event" :event="event" />
         </div>
 
-        <DialogFooter class="px-6 py-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
+        <DialogFooter class="flex-shrink-0 px-6 py-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <button
             v-if="event?.id"
             @click="$emit('delete', event.id)"

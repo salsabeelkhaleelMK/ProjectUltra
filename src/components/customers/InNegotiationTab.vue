@@ -34,6 +34,7 @@ import { DataTable } from '@motork/component-library/future/components'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { useCustomersTable } from '@/composables/useCustomersTable'
+import { getDisplayStage } from '@/utils/stageMapper'
 
 const opportunitiesStore = useOpportunitiesStore()
 
@@ -78,7 +79,7 @@ const rows = computed(() => {
         assigneeInitials: opp.assignee ? opp.assignee.slice(0,2).toUpperCase() : 'NA',
         createdAt: formatDate(opp.createdAt),
         lastAppointment: lastAppointment ? formatDate(lastAppointment) : 'N/A',
-        status: opp.stage,
+        status: getDisplayStage(opp, 'opportunity'),
         statusClass: 'bg-orange-100 text-orange-700',
         priority: opp.priority || 'Normal'
       }
@@ -158,7 +159,6 @@ onMounted(async () => {
 /* Frame panel - should have gray background */
 :deep([data-slot="frame-panel"]) {
   background-color: rgba(245, 245, 245, 1) !important;
-  padding: 1rem !important;
 }
 
 /* Pagination dropdown - transparent in footer */

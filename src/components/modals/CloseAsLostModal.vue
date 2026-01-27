@@ -2,43 +2,44 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Close as Lost</DialogTitle>
-          <DialogDescription>Document why this opportunity didn't close</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Reason Dropdown -->
-      <div>
-        <label class="block label-upper mb-2">Reason</label>
-        <select 
-          v-model="selectedReason"
-          class="input"
-        >
-          <option value="">Select a reason...</option>
-          <option value="Not interested">Not interested</option>
-          <option value="Budget constraints">Budget constraints</option>
-          <option value="Found better price">Found better price at competitor</option>
-          <option value="No response">Customer not responding</option>
-          <option value="Wrong timing">Timing not right</option>
-          <option value="Other">Other</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Reason</Label>
+        <Select v-model="selectedReason">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select a reason..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Multiple no shows">Multiple no shows</SelectItem>
+            <SelectItem value="Not interested">Not interested</SelectItem>
+            <SelectItem value="Budget constraints">Budget constraints</SelectItem>
+            <SelectItem value="Found better price">Found better price at competitor</SelectItem>
+            <SelectItem value="No response">Customer not responding</SelectItem>
+            <SelectItem value="Wrong timing">Timing not right</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <!-- Notes -->
-      <div>
-        <label class="block label-upper mb-2">Additional Notes</label>
-        <textarea 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Additional Notes</Label>
+        <Textarea 
           v-model="notes"
-          rows="4"
+          rows="5"
           placeholder="Add any relevant details about why this opportunity was lost..."
-          class="input resize-none"
-        ></textarea>
+          class="w-full min-h-[120px] resize-none"
+        />
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -62,11 +63,19 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Label,
+  Textarea,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,
@@ -78,6 +87,10 @@ const props = defineProps({
   show: {
     type: Boolean,
     required: true
+  },
+  preselectedReason: {
+    type: String,
+    default: ''
   }
 })
 
@@ -86,11 +99,22 @@ const emit = defineEmits(['confirm', 'cancel'])
 const selectedReason = ref('')
 const notes = ref('')
 
-// Reset form when modal opens
+// Reset form when modal opens, or set preselected reason
 watch(() => props.show, (newVal) => {
   if (newVal) {
-    selectedReason.value = ''
+    if (props.preselectedReason) {
+      selectedReason.value = props.preselectedReason
+    } else {
+      selectedReason.value = ''
+    }
     notes.value = ''
+  }
+})
+
+// Watch for preselectedReason changes
+watch(() => props.preselectedReason, (newReason) => {
+  if (newReason && props.show) {
+    selectedReason.value = newReason
   }
 })
 

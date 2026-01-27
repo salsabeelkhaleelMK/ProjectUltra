@@ -2,31 +2,27 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Add Tag</DialogTitle>
         </DialogHeader>
 
-        <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-body mb-2">
-          Tag Name
-        </label>
-        <input
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Tag Name</Label>
+        <Input
           v-model="tagName"
           @keyup.enter="handleAdd"
           type="text"
           placeholder="Enter tag name"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          class="w-full h-10"
           autofocus
         />
       </div>
       
       <!-- Existing tags -->
-      <div v-if="existingTags.length > 0">
-        <label class="block text-sm font-medium text-body mb-2">
-          Existing Tags
-        </label>
+      <div v-if="existingTags.length > 0" class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Existing Tags</Label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="tag in existingTags"
@@ -38,9 +34,9 @@
           </button>
         </div>
       </div>
-    </div>
+        </div>
     
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -64,7 +60,11 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Input,
+  Label
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,

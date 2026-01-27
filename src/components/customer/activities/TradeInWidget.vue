@@ -9,119 +9,119 @@
       <button @click="$emit('cancel')" class="text-sub hover:text-body"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
-    <form @submit.prevent="handleSave" class="space-y-4">
+    <div class="space-y-4">
       <!-- Vehicle Information -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Brand <span class="text-brand-red">*</span></label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">Brand <span class="text-brand-red">*</span></Label>
+          <Input 
             v-model="vehicleData.brand"
             type="text" 
             placeholder="e.g., Volkswagen" 
-            class="input"
             required
-          >
+          />
         </div>
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Model <span class="text-brand-red">*</span></label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">Model <span class="text-brand-red">*</span></Label>
+          <Input 
             v-model="vehicleData.model"
             type="text" 
             placeholder="e.g., ID.4" 
-            class="input"
             required
-          >
+          />
         </div>
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Year <span class="text-brand-red">*</span></label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">Year <span class="text-brand-red">*</span></Label>
+          <Input 
             v-model="vehicleData.year"
             type="number" 
             placeholder="e.g., 2024" 
-            class="input"
             min="1900"
             :max="new Date().getFullYear() + 1"
             required
-          >
+          />
         </div>
       </div>
 
       <!-- Version/Trim -->
       <div>
-        <label class="block text-fluid-xs font-medium text-body mb-1">Version/Trim</label>
-        <input 
+        <Label class="text-xs font-medium text-body mb-1">Version/Trim</Label>
+        <Input 
           v-model="vehicleData.version"
           type="text" 
           placeholder="e.g., Premium Plus" 
-          class="input"
-        >
+        />
       </div>
 
       <!-- Identification -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">VIN</label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">VIN</Label>
+          <Input 
             v-model="vehicleData.vin"
             type="text" 
             placeholder="Vehicle Identification Number" 
-            class="input"
-          >
+          />
         </div>
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Plates</label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">Plates</Label>
+          <Input 
             v-model="vehicleData.plates"
             type="text" 
             placeholder="License plate number" 
-            class="input"
-          >
+          />
         </div>
       </div>
 
       <!-- Vehicle Details -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Fuel Type</label>
-          <select v-model="vehicleData.fuelType" class="input">
-            <option value="">Select fuel type...</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Electric">Electric</option>
-            <option value="Hybrid">Hybrid</option>
-            <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-          </select>
+          <Label class="text-xs font-medium text-body mb-1">Fuel Type</Label>
+          <Select v-model="vehicleData.fuelType">
+            <SelectTrigger class="w-full h-10">
+              <SelectValue placeholder="Select fuel type..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Petrol">Petrol</SelectItem>
+              <SelectItem value="Diesel">Diesel</SelectItem>
+              <SelectItem value="Electric">Electric</SelectItem>
+              <SelectItem value="Hybrid">Hybrid</SelectItem>
+              <SelectItem value="Plug-in Hybrid">Plug-in Hybrid</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Gear Type</label>
-          <select v-model="vehicleData.gearType" class="input">
-            <option value="">Select gear type...</option>
-            <option value="Manual">Manual</option>
-            <option value="Automatic">Automatic</option>
-            <option value="CVT">CVT</option>
-          </select>
+          <Label class="text-xs font-medium text-body mb-1">Gear Type</Label>
+          <Select v-model="vehicleData.gearType">
+            <SelectTrigger class="w-full h-10">
+              <SelectValue placeholder="Select gear type..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Manual">Manual</SelectItem>
+              <SelectItem value="Automatic">Automatic</SelectItem>
+              <SelectItem value="CVT">CVT</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
-          <label class="block text-fluid-xs font-medium text-body mb-1">Mileage (km)</label>
-          <input 
+          <Label class="text-xs font-medium text-body mb-1">Mileage (km)</Label>
+          <Input 
             v-model.number="vehicleData.kilometers"
             type="number" 
             placeholder="0" 
-            class="input"
             min="0"
-          >
+          />
         </div>
       </div>
 
       <!-- Registration -->
       <div>
-        <label class="block text-fluid-xs font-medium text-body mb-1">Registration Year/Month</label>
-        <input 
+        <Label class="text-xs font-medium text-body mb-1">Registration Year/Month</Label>
+        <Input 
           v-model="vehicleData.registration"
           type="text" 
           placeholder="MM/YYYY (e.g., 01/2024)" 
-          class="input"
-        >
+        />
       </div>
 
       <!-- Valuation Card (collapsed by default) -->
@@ -143,79 +143,81 @@
         <div v-if="showValuation" class="px-4 pb-4 space-y-4 border-t border-E5E7EB pt-4">
           <!-- Trade-In Price -->
           <div>
-            <label class="block text-fluid-xs font-medium text-body mb-1">Trade-In Price (€)</label>
-            <input 
+            <Label class="text-xs font-medium text-body mb-1">Trade-In Price (€)</Label>
+            <Input 
               v-model.number="valuationData.tradeInPrice"
               type="number" 
               placeholder="0.00" 
-              class="input"
               min="0"
               step="0.01"
-            >
+            />
           </div>
 
           <!-- Evaluation Range -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Evaluation Range - Low (€)</label>
-              <input 
+              <Label class="text-xs font-medium text-body mb-1">Evaluation Range - Low (€)</Label>
+              <Input 
                 v-model.number="valuationData.evaluationRangeLow"
                 type="number" 
                 placeholder="0.00" 
-                class="input"
                 min="0"
                 step="0.01"
-              >
+              />
             </div>
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Evaluation Range - High (€)</label>
-              <input 
+              <Label class="text-xs font-medium text-body mb-1">Evaluation Range - High (€)</Label>
+              <Input 
                 v-model.number="valuationData.evaluationRangeHigh"
                 type="number" 
                 placeholder="0.00" 
-                class="input"
                 min="0"
                 step="0.01"
-              >
+              />
             </div>
           </div>
 
           <!-- Provider and Evaluation Date -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Provider</label>
-              <select v-model="valuationData.provider" class="input">
-                <option value="">Select provider...</option>
-                <option value="Eurotax">Eurotax</option>
-                <option value="Infocar">Infocar</option>
-                <option value="Manual">Manual</option>
-                <option value="Other">Other</option>
-              </select>
+              <Label class="text-xs font-medium text-body mb-1">Provider</Label>
+              <Select v-model="valuationData.provider">
+                <SelectTrigger class="w-full h-10">
+                  <SelectValue placeholder="Select provider..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Eurotax">Eurotax</SelectItem>
+                  <SelectItem value="Infocar">Infocar</SelectItem>
+                  <SelectItem value="Manual">Manual</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <label class="block text-fluid-xs font-medium text-body mb-1">Evaluation Date</label>
-              <input 
+              <Label class="text-xs font-medium text-body mb-1">Evaluation Date</Label>
+              <Input 
                 v-model="valuationData.evaluationDate"
                 type="date" 
-                class="input"
-              >
+              />
             </div>
           </div>
         </div>
       </div>
-    </form>
+    </div>
 
     <div v-if="!hideActions" class="flex justify-end gap-2 mt-6 border-t border-E5E7EB pt-4">
       <Button
         label="Cancel"
         variant="outline"
         size="small"
+        class="rounded-sm"
         @click="$emit('cancel')"
       />
       <Button
         label="Save"
         variant="primary"
         size="small"
+        class="rounded-sm !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
         :disabled="!isValid"
         @click="handleSave"
       />
@@ -225,7 +227,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { 
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   item: {
