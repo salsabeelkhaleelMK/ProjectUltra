@@ -16,6 +16,14 @@
         
         <div class="flex gap-3 flex-wrap">
           <slot name="actions" />
+          <button
+            v-if="showPostpone"
+            @click="$emit('postpone')"
+            class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted"
+          >
+            <i class="fa-solid fa-clock"></i>
+            <span>Postpone</span>
+          </button>
         </div>
         
         <slot name="survey" />
@@ -39,8 +47,14 @@ defineProps({
     type: Object,
     required: false,
     default: () => ({ background: '', border: '' })
+  },
+  showPostpone: {
+    type: Boolean,
+    default: true
   }
 })
+
+defineEmits(['postpone'])
 </script>
 
 

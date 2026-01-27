@@ -1798,6 +1798,177 @@ export const mockLeads = [
         transcription: null
       }
     ]
+  },
+  // ============================================
+  // ACCOUNT-LEVEL LEADS (for nested relationship demo)
+  // ============================================
+  
+  // Lead for Ferrari Dealership Group (account-level, references Marco Rossini)
+  {
+    id: 2001,
+    customerId: 100, // Account ID
+    account_id: 100,
+    accountId: 100,
+    contactId: 101, // Marco Rossini (master contact)
+    contactName: 'Marco Rossini',
+    status: 'Open',
+    priority: 'Hot',
+    requestedCar: {
+      brand: 'Ferrari',
+      model: 'Roma',
+      year: 2024,
+      price: 250000,
+      image: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&auto=format&fit=crop&q=60',
+      vin: 'FERRARI2024ROMA001',
+      kilometers: 0,
+      status: 'New',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      registration: 'New',
+      dealership: 'Bologna',
+      stockDays: 0
+    },
+    carStatus: 'In Stock',
+    requestType: 'Fleet Purchase',
+    source: 'Corporate',
+    fiscalEntity: 'MotorK',
+    sourceDetails: 'Account Lead',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: '2025-03-20T10:00:00',
+    lastActivity: '2025-03-25T14:00:00',
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 2)
+      return date.toISOString()
+    })(),
+    tags: ['Corporate', 'Fleet', 'Premium'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        type: 'email',
+        timestamp: '2025-03-20T10:00:00',
+        result: 'sent',
+        notes: 'Initial proposal sent to Marco Rossini'
+      },
+      {
+        type: 'call',
+        timestamp: '2025-03-22T14:00:00',
+        result: 'answered',
+        notes: 'Discussed fleet requirements with Marco'
+      }
+    ]
+  },
+  
+  // Lead for Tech Solutions GmbH (account-level, references Thomas Schneider)
+  {
+    id: 2002,
+    customerId: 300, // Account ID
+    account_id: 300,
+    accountId: 300,
+    contactId: 301, // Thomas Schneider (master contact)
+    contactName: 'Thomas Schneider',
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: {
+      brand: 'BMW',
+      model: '7 Series',
+      year: 2024,
+      price: 95000,
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
+      vin: 'BMW2024SERIES001',
+      kilometers: 0,
+      status: 'New',
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      registration: 'New',
+      dealership: 'Berlin',
+      stockDays: 0
+    },
+    carStatus: 'In Stock',
+    requestType: 'Fleet Purchase',
+    source: 'Corporate',
+    fiscalEntity: 'MotorK',
+    sourceDetails: 'Account Lead',
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: '2025-03-18T09:00:00',
+    lastActivity: '2025-03-24T16:00:00',
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 5)
+      return date.toISOString()
+    })(),
+    tags: ['Corporate', 'Fleet'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        type: 'email',
+        timestamp: '2025-03-18T09:00:00',
+        result: 'sent',
+        notes: 'Fleet proposal sent to Thomas Schneider'
+      }
+    ]
+  },
+  
+  // Lead for Ferrari Dealership Group (account-level, references Anna Ferrari)
+  {
+    id: 2003,
+    customerId: 100, // Account ID
+    account_id: 100,
+    accountId: 100,
+    contactId: 103, // Anna Ferrari (marketing manager)
+    contactName: 'Anna Ferrari',
+    status: 'Open',
+    priority: 'Normal',
+    requestedCar: {
+      brand: 'Ferrari',
+      model: 'Portofino',
+      year: 2024,
+      price: 220000,
+      image: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&auto=format&fit=crop&q=60',
+      vin: 'FERRARI2024PORTO001',
+      kilometers: 0,
+      status: 'New',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      registration: 'New',
+      dealership: 'Bologna',
+      stockDays: 0
+    },
+    carStatus: 'In Stock',
+    requestType: 'Promotional Vehicle',
+    source: 'Corporate',
+    fiscalEntity: 'MotorK',
+    sourceDetails: 'Account Lead',
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: '2025-03-15T11:00:00',
+    lastActivity: '2025-03-23T11:00:00',
+    nextActionDue: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 7)
+      return date.toISOString()
+    })(),
+    tags: ['Corporate', 'Marketing'],
+    stage: 'Open Lead',
+    isDisqualified: false,
+    disqualifyReason: null,
+    scheduledAppointment: null,
+    contactAttempts: [
+      {
+        type: 'whatsapp',
+        timestamp: '2025-03-15T11:00:00',
+        result: 'sent',
+        notes: 'Initial inquiry from Anna Ferrari via WhatsApp'
+      }
+    ]
   }
 ]
 

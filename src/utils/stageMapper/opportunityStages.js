@@ -80,8 +80,8 @@ export function checkNegotiationSubstatusTransition(opportunity) {
   const daysSinceOffer = calculateDaysSince(mostRecentOffer.createdAt)
   
   if (daysSinceOffer >= 3) {
-    // Auto-transition to Offer Feedback
-    return 'Offer Feedback'
+    // Auto-transition to Offer Under Review
+    return 'Offer Under Review'
   }
   
   return opportunity.negotiationSubstatus
@@ -124,12 +124,23 @@ export function calculateOpportunityDisplayStage(opportunity) {
     
     // Check negotiationSubstatus if present
     if (opportunity.negotiationSubstatus) {
-      // Offer Accepted → In Negotiation - Contract Pending
+      // Offer Accepted - show as standalone "Offer Accepted" status (not "In Negotiation - Offer Accepted")
+      // This is a distinct stage between "Offer Under Review" and "Contract Pending"
       if (opportunity.negotiationSubstatus === 'Offer Accepted') {
-        return OPPORTUNITY_STAGES.CONTRACT_PENDING
+        return 'Offer Accepted'
       }
       
-      // Offer Feedback - show as "In Negotiation - Offer Feedback"
+      // Offer Under Review - show as "In Negotiation - Offer Under Review"
+      if (opportunity.negotiationSubstatus === 'Offer Under Review') {
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
+      }
+      
+      // Backward compatibility: old "Awaiting Response" substatus
+      if (opportunity.negotiationSubstatus === 'Awaiting Response') {
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
+      }
+      
+      // Offer Feedback - show as "In Negotiation - Offer Feedback" (backward compatibility)
       if (opportunity.negotiationSubstatus === 'Offer Feedback') {
         return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Feedback`
       }
@@ -168,7 +179,7 @@ export function calculateOpportunityDisplayStage(opportunity) {
   
   // Backward compatibility: old "Awaiting Response" data
   if (apiStatus === 'Awaiting Response') {
-    return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
+    return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
   }
   
   // Qualified and early stages
@@ -239,6 +250,7 @@ export function mapOpportunityStageToApiStatus(displayStage) {
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: API_STATUSES.IN_NEGOTIATION,
+    'Offer Accepted': API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CLOSED_WON]: API_STATUSES.CLOSED_WON,
     [OPPORTUNITY_STAGES.CLOSED_LOST]: API_STATUSES.CLOSED_LOST,
@@ -284,15 +296,21 @@ export function getOpportunityTransitions() {
     ],
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: [
       OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP,
+      'Offer Accepted',
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: [
+      'Offer Accepted',
       OPPORTUNITY_STAGES.CONTRACT_PENDING,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
+    ],
+    ['Offer Accepted']: [
+      OPPORTUNITY_STAGES.CONTRACT_PENDING,
+      OPPORTUNITY_STAGES.CLOSED_LOST
     ],
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: [
       OPPORTUNITY_STAGES.CLOSED_WON,

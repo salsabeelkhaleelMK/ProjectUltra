@@ -40,7 +40,7 @@
         <!-- Content area with feed -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
           <!-- Tabs -->
-          <div class="mb-4">
+          <div class="mb-2 -mt-2">
             <Tabs 
               v-model="activeTab"
               :tabs="tabs"

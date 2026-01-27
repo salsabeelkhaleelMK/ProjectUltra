@@ -21,10 +21,10 @@ import NFUTask from '@/components/tasks/opportunity/NFUTask.vue'
 import OFBTask from '@/components/tasks/opportunity/OFBTask.vue'
 import CFBTask from '@/components/tasks/opportunity/CFBTask.vue'
 import DFBTask from '@/components/tasks/opportunity/DFBTask.vue'
-import NSTask from '@/components/tasks/opportunity/NSTask.vue'
 import AbandonedTask from '@/components/tasks/opportunity/AbandonedTask.vue'
 
 // Map widget types to components
+// Note: NS task widgets (NS1/NS2/NS3) are handled inline in OpportunityManagementWidget, not as task widgets
 const TASK_WIDGET_COMPONENTS = {
   'OOFB': OOFBTask,
   'UFB': UFBTask,
@@ -32,7 +32,6 @@ const TASK_WIDGET_COMPONENTS = {
   'OFB': OFBTask,
   'CFB': CFBTask,
   'DFB': DFBTask,
-  'NS': NSTask,
   'ABANDONED': AbandonedTask
 }
 

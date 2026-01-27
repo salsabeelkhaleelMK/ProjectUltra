@@ -788,7 +788,7 @@ export const mockOpportunities = [
     source: 'Google Ads',
     createdAt: '2024-12-01T09:00:00',
     lastActivity: '2024-12-22T16:00:00',
-    contractDate: '2024-12-22T16:00:00' // Contract signed date - perfect for CFB
+    contractDate: '2024-12-22T16:00:00', // Contract signed date - perfect for CFB
     // Closed Won (contract signed) but not delivered yet - perfect for CFB
   },
   {
@@ -830,7 +830,7 @@ export const mockOpportunities = [
     source: 'Google Ads',
     createdAt: '2024-12-05T10:00:00',
     lastActivity: '2024-12-15T11:00:00', // 10+ days in negotiation (UFB criteria)
-    contractDate: null // No contract date - perfect for UFB (In Negotiation)
+    contractDate: null, // No contract date - perfect for UFB (In Negotiation)
     // In Negotiation for 10+ days without contract - perfect for UFB
   },
   {
@@ -872,7 +872,7 @@ export const mockOpportunities = [
     source: 'Google Ads',
     createdAt: '2024-12-10T09:00:00',
     lastActivity: '2024-12-20T14:00:00',
-    contractDate: '2024-12-20T14:00:00' // Has contract date - stage mapper will show "Contract Pending"
+    contractDate: '2024-12-20T14:00:00', // Has contract date - stage mapper will show "Contract Pending"
     // In Negotiation with contract date - stage mapper calculates to "Contract Pending"
   },
   // REMOVED ID 12 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)

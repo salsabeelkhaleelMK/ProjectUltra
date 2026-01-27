@@ -119,10 +119,42 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     loading.value = true
     error.value = null
     try {
+      const currentOpp = currentOpportunity.value?.id === id ? currentOpportunity.value : opportunities.value.find(o => o.id === id)
+      
+      // Check if contract is being deleted (contractDate cleared)
+      if (updates.contractDate === null && currentOpp?.contractDate) {
+        // Contract deletion detected - revert offer status if auto-accepted
+        const wasAutoAccepted = currentOpp.offerAcceptanceMethod === 'auto_via_contract'
+        const hasAcceptedOffer = currentOpp.negotiationSubstatus === 'Offer Accepted' || 
+                                (currentOpp.offers && currentOpp.offers.some(o => o.acceptance_method === 'auto_via_contract'))
+        
+        if (wasAutoAccepted || hasAcceptedOffer) {
+          // Revert offer acceptance
+          if (currentOpp.offers) {
+            const autoAcceptedOffers = currentOpp.offers.filter(o => o.acceptance_method === 'auto_via_contract')
+            for (const offer of autoAcceptedOffers) {
+              offer.status = 'active'
+              offer.acceptance_status = 'pending'
+              offer.acceptance_date = null
+              offer.acceptance_method = null
+              offer.accepted_by_user_id = null
+            }
+            updates.offers = currentOpp.offers
+          }
+          
+          // Revert negotiation substatus
+          updates.negotiationSubstatus = 'Offer Under Review'
+          updates.offerAcceptanceDate = null
+          updates.offerAcceptanceMethod = null
+          updates.acceptedByUserId = null
+          
+          // Note: Audit log will be added after update completes (see below)
+        }
+      }
+      
       // Check if opportunity is being closed and auto-close is enabled
       const settingsStore = useSettingsStore()
       const autoCloseEnabled = settingsStore.getSetting('autoCloseWidgetsOnClose')
-      const currentOpp = currentOpportunity.value?.id === id ? currentOpportunity.value : opportunities.value.find(o => o.id === id)
       
       // Check if stage is changing to Closed Won or Closed Lost
       if (autoCloseEnabled && updates.stage && (updates.stage === 'Closed Won' || updates.stage === 'Closed Lost')) {
@@ -159,6 +191,25 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       if (currentOpportunity.value?.id === id) {
         currentOpportunity.value = updated
       }
+      
+      // Add audit log for contract deletion if needed
+      if (updates.contractDate === null && currentOpp?.contractDate && 
+          (currentOpp.offerAcceptanceMethod === 'auto_via_contract' || 
+           currentOpp.negotiationSubstatus === 'Offer Accepted')) {
+        await addActivity(id, {
+          type: 'contract-deletion',
+          user: 'System',
+          action: 'contract deleted',
+          content: 'Contract deleted, offer reverted to Offer Under Review',
+          data: {
+            wasAutoAccepted: currentOpp.offerAcceptanceMethod === 'auto_via_contract',
+            previousSubstatus: currentOpp.negotiationSubstatus,
+            previousStage: currentOpp.stage
+          },
+          timestamp: new Date().toISOString()
+        })
+      }
+      
       return updated
     } catch (err) {
       error.value = err.message
@@ -262,31 +313,14 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
   }
 
   // Mark offer as accepted
-  const markOfferAccepted = async (opportunityId, offerId) => {
+  const markOfferAccepted = async (opportunityId, offerId, metadata = {}) => {
     loading.value = true
     error.value = null
     try {
-      await opportunitiesApi.markOfferAccepted(opportunityId, offerId)
+      await opportunitiesApi.markOfferAccepted(opportunityId, offerId, metadata)
       
-      // Update local state
-      const opp = opportunities.value.find(o => o.id === opportunityId)
-      if (opp && opp.offers) {
-        const offer = opp.offers.find(o => o.id === offerId)
-        if (offer) {
-          offer.status = 'accepted'
-        }
-        opp.negotiationSubstatus = 'Offer Accepted'
-        opp.stage = 'In Negotiation'
-      }
-      
-      if (currentOpportunity.value?.id === opportunityId && currentOpportunity.value.offers) {
-        const offer = currentOpportunity.value.offers.find(o => o.id === offerId)
-        if (offer) {
-          offer.status = 'accepted'
-        }
-        currentOpportunity.value.negotiationSubstatus = 'Offer Accepted'
-        currentOpportunity.value.stage = 'In Negotiation'
-      }
+      // Reload opportunity to get updated data with metadata
+      await fetchOpportunityById(opportunityId)
     } catch (err) {
       error.value = err.message
       throw err
@@ -427,6 +461,23 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
 
+  // Delete contract (clear contractDate and revert offer status if auto-accepted)
+  const deleteContract = async (opportunityId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.deleteContract(opportunityId)
+      
+      // Reload opportunity to get updated data
+      await fetchOpportunityById(opportunityId)
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     opportunities,
     currentOpportunity,
@@ -447,6 +498,7 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     addOffer,
     markOfferAccepted,
     deleteOffer,
+    deleteContract,
     updateNegotiationSubstatus
   }
 })

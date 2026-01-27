@@ -2,10 +2,21 @@
   <div class="space-y-4">
     <!-- Title and Description Card -->
     <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-      <h4 class="font-bold text-foreground text-sm mb-1">Offer Feedback Task</h4>
-      <p class="text-sm text-muted-foreground">
-        This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Follow up with customer to get feedback and move forward.
-      </p>
+      <div class="flex justify-between items-start mb-1">
+        <div class="flex-1">
+          <h4 class="font-bold text-foreground text-sm mb-1">Offer Feedback Task</h4>
+          <p class="text-sm text-muted-foreground">
+            This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Follow up with customer to get feedback and move forward.
+          </p>
+        </div>
+        <button
+          @click="$emit('postpone', 'ofb')"
+          class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted ml-4"
+        >
+          <i class="fa-solid fa-clock"></i>
+          <span>Postpone</span>
+        </button>
+      </div>
     </div>
 
     <!-- Offers Carousel -->
@@ -108,7 +119,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['offer-accepted', 'offer-deleted', 'view-offer', 'send-message'])
+const emit = defineEmits(['offer-accepted', 'offer-deleted', 'view-offer', 'send-message', 'postpone'])
 
 const communicationChannel = ref(null)
 const message = ref('')

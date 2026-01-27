@@ -788,7 +788,7 @@ export const mockOpportunities = [
     source: 'Google Ads',
     createdAt: '2024-12-01T09:00:00',
     lastActivity: '2024-12-22T16:00:00',
-    contractDate: '2024-12-22T16:00:00' // Contract signed date - perfect for CFB
+    contractDate: '2024-12-22T16:00:00', // Contract signed date - perfect for CFB
     // Closed Won (contract signed) but not delivered yet - perfect for CFB
   },
   {
@@ -830,50 +830,8 @@ export const mockOpportunities = [
     source: 'Google Ads',
     createdAt: '2024-12-05T10:00:00',
     lastActivity: '2024-12-15T11:00:00', // 10+ days in negotiation (UFB criteria)
-    contractDate: null // No contract date - perfect for UFB (In Negotiation)
+    contractDate: null, // No contract date - perfect for UFB (In Negotiation)
     // In Negotiation for 10+ days without contract - perfect for UFB
-  },
-  {
-    id: 27,
-    customerId: 35,
-    requestedCar: { 
-      brand: 'BMW', 
-      model: 'iX3', 
-      year: 2024,
-      price: 68000,
-      image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
-      dealership: 'Firenze',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 22,
-      requestMessage: 'Interessato a iX3. Quali sono i termini di garanzia?'
-    },
-    vehicle: { 
-      brand: 'BMW', 
-      model: 'iX3', 
-      year: 2024,
-      price: 68000,
-      image: 'https://images.unsplash.com/photo-1546518071-fddcdda7580a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWVyY2VkZXN8ZW58MHx8MHx8fDA%3D',
-      dealership: 'Firenze',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 22,
-      requestMessage: 'Interessato a iX3. Quali sono i termini di garanzia?'
-    },
-    stage: 'In Negotiation',
-    tags: ['Automation'],
-    value: 68000,
-    expectedCloseDate: '2025-04-20',
-    assignee: 'Michael Thomas',
-    source: 'Google Ads',
-    createdAt: '2024-12-10T09:00:00',
-    lastActivity: '2024-12-20T14:00:00',
-    contractDate: '2024-12-20T14:00:00' // Has contract date - stage mapper will show "Contract Pending"
-    // In Negotiation with contract date - stage mapper calculates to "Contract Pending"
   },
   // REMOVED ID 12 - Duplicate of Awaiting Response stage (keeping ID 7 for this stage)
   // REMOVED ID 13 - Duplicate of Qualified stage (ID 1)
@@ -1264,65 +1222,6 @@ export const mockOpportunities = [
     })()
     // STAGE: Contract Pending (has contractDate but stage is In Negotiation - will be calculated by stageMapper)
   },
-  {
-    id: 26,
-    customerId: 25,
-    requestedCar: { 
-      brand: 'Tesla', 
-      model: 'Model Y', 
-      year: 2024,
-      price: 55000,
-      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      dealership: 'Firenze',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 6,
-      requestMessage: 'Interessato a Model Y. Consegna programmata.'
-    },
-    vehicle: { 
-      brand: 'Tesla', 
-      model: 'Model Y', 
-      year: 2024,
-      price: 55000,
-      image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      dealership: 'Firenze',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 6,
-      requestMessage: 'Interessato a Model Y. Consegna programmata.'
-    },
-    stage: 'Closed Won',
-    tags: [],
-    value: 55000,
-    expectedCloseDate: '2025-03-30',
-    assignee: 'David Miller',
-    source: 'Google Ads',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 30)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 3)
-      return date.toISOString()
-    })(),
-    contractDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 10)
-      return date.toISOString()
-    })(),
-    deliveryDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 5) // Delivery scheduled for 5 days from now
-      return date.toISOString()
-    })()
-    // STAGE: Closed Won - Awaiting Delivery (has deliveryDate but no delivery activity - substatus will be calculated)
-  },
   // Opportunity for customer 3
   {
     id: 100,
@@ -1361,48 +1260,6 @@ export const mockOpportunities = [
     lastActivity: (() => {
       const date = new Date()
       date.setHours(date.getHours() - 2)
-      return date.toISOString()
-    })(),
-    scheduledAppointment: null
-  },
-  // Opportunity for customer 5
-  {
-    id: 101,
-    customerId: 5,
-    requestedCar: {
-      brand: 'Audi',
-      model: 'Q4 e-tron',
-      year: 2024,
-      price: 55000,
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
-      dealership: 'Firenze',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 12,
-      requestMessage: 'Cerco veicolo familiare con buon consumo di carburante.'
-    },
-    vehicle: null,
-    selectedVehicle: null,
-    stage: 'Qualified',
-    tags: [],
-    value: 55000,
-    expectedCloseDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 35)
-      return date.toISOString().split('T')[0]
-    })(),
-    assignee: 'Salsabeel Khaleel',
-    source: 'Facebook',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 3)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setHours(date.getHours() - 4)
       return date.toISOString()
     })(),
     scheduledAppointment: null

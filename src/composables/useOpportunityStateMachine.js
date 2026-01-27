@@ -30,6 +30,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -98,6 +104,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         description: 'Choose a vehicle for this opportunity'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -137,6 +149,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         icon: 'fa-solid fa-calendar-xmark'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -165,6 +183,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -177,7 +201,20 @@ export const OPPORTUNITY_STATE_CONFIG = {
     primaryAction: (context) => {
       const substatus = context.opportunity?.negotiationSubstatus
       
-      // Offer Feedback substatus (3+ days since offer)
+      // Offer Under Review substatus (3+ days since offer)
+      if (substatus === 'Offer Under Review' || substatus === 'Awaiting Response') {
+        return {
+          key: 'mark-offer-accepted',
+          title: 'Mark Offer as Accepted',
+          description: 'Customer has accepted the offer (verbally or via contract). Mark it as accepted to proceed to contract phase.',
+          label: 'Mark as Accepted',
+          icon: 'fa-solid fa-check-circle',
+          buttonClass: 'bg-green-600 hover:bg-green-700 text-white',
+          colorScheme: { background: 'bg-green-50/50', border: 'border-green-100' }
+        }
+      }
+      
+      // Offer Feedback substatus (backward compatibility)
       if (substatus === 'Offer Feedback') {
         return {
           key: 'request-feedback',
@@ -208,13 +245,33 @@ export const OPPORTUNITY_STATE_CONFIG = {
         key: 'mark-offer-accepted',
         label: 'Mark Offer Accepted',
         icon: 'fa-solid fa-check-circle',
-        description: 'Mark an offer as accepted and move to In Negotiation - Contract Pending',
+        description: 'Mark an offer as accepted and move to Offer Accepted status',
         conditional: 'has-offers'
       },
       {
         key: 'add-offer',
-        label: 'Add Another Offer',
-        icon: 'fa-solid fa-file-invoice-dollar'
+        label: 'Create Another Offer',
+        icon: 'fa-solid fa-file-invoice-dollar',
+        description: 'Create an additional offer if terms need adjustment'
+      },
+      {
+        key: 'request-decision',
+        label: 'Request Decision from Prospect',
+        icon: 'fa-solid fa-circle-question',
+        description: 'Follow up to get the customer\'s yes/no answer on the offer',
+        conditional: 'negotiation-offer-under-review-substatus'
+      },
+      {
+        key: 'add-contract',
+        label: 'Add Contract',
+        icon: 'fa-solid fa-file-contract',
+        description: 'Customer accepted - add contract to proceed'
+      },
+      {
+        key: 'reassign',
+        label: 'Reassign',
+        icon: 'fa-solid fa-user-group',
+        description: 'Assign this opportunity to another sales rep'
       },
       {
         key: 'schedule-appointment',
@@ -223,13 +280,19 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
       }
     ],
     taskWidgets: [
-      { type: 'OFB', condition: 'negotiation-5-plus-days-no-contract-has-offers' },
+      // OFB task removed from primary task widgets - now shown in expanded view of NegotiationManagementSection
       { type: 'NFU', condition: 'negotiation-offer-feedback-5-plus-days-no-appointment' }
     ]
   },
@@ -263,6 +326,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
+        key: 'extend-expected-close-date',
+        label: 'Extend Expected Close Date',
+        icon: 'fa-solid fa-calendar-day',
+        description: 'Extend the expected close date for this opportunity'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -272,6 +341,33 @@ export const OPPORTUNITY_STATE_CONFIG = {
       { type: 'OFB', condition: 'negotiation-5-plus-days-no-contract-has-offers' },
       { type: 'NFU', condition: 'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers' }
     ]
+  },
+
+  'Offer Accepted': {
+    primaryAction: {
+      key: 'create-contract',
+      title: 'Create Contract',
+      description: 'Customer has accepted the offer. Create a contract to finalize the deal.',
+      label: 'Create Contract',
+      icon: 'fa-solid fa-file-contract',
+      buttonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+      colorScheme: { background: 'bg-emerald-50/50', border: 'border-emerald-100' }
+    },
+    secondaryActions: [
+      {
+        key: 'add-offer',
+        label: 'Create Another Offer',
+        icon: 'fa-solid fa-file-invoice-dollar',
+        description: 'Create an additional offer if terms need adjustment'
+      },
+      {
+        key: 'close-lost',
+        label: 'Close as Lost',
+        icon: 'fa-solid fa-xmark',
+        description: 'End negotiation if customer changes mind'
+      }
+    ],
+    taskWidgets: []
   },
 
   'In Negotiation - Contract Pending': {
@@ -370,8 +466,7 @@ export const OPPORTUNITY_STATE_CONFIG = {
     ],
     taskWidgets: [
       { type: 'CFB', condition: 'contract-7-plus-days-no-delivery' },
-      { type: 'DFB', condition: 'delivery-date-set' },
-      { type: 'DFB', condition: 'delivery-3-plus-days' }
+      { type: 'DFB', condition: 'delivery-feedback-required' }
     ]
   },
 

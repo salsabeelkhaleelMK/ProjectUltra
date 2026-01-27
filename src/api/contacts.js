@@ -135,30 +135,83 @@ export const convertContactToOpportunity = async (contactId) => {
   return newOpp
 }
 
-// Fetch all leads associated with a customer
-export const fetchLeadsByCustomerId = async (customerId) => {
+// Fetch all leads associated with a customer or account
+export const fetchLeadsByCustomerId = async (customerId, accountId = null) => {
   await delay()
-  // Match by customerId (leads now have customerId field)
-  const leads = mockLeads.filter(lead => lead.customerId === parseInt(customerId))
-  return { data: leads, total: leads.length }
+  let leads = []
+  
+  if (accountId) {
+    // Fetch leads by account_id (leads linked to account)
+    leads = mockLeads.filter(lead => {
+      const leadAccountId = lead.account_id || lead.accountId
+      return leadAccountId && parseInt(leadAccountId) === parseInt(accountId)
+    })
+  } else {
+    // Match by customerId (leads now have customerId field)
+    leads = mockLeads.filter(lead => lead.customerId === parseInt(customerId))
+  }
+  
+  // Enrich leads with contact reference info if available
+  const enrichedLeads = leads.map(lead => ({
+    ...lead,
+    contactReference: lead.contactId ? {
+      id: lead.contactId,
+      name: lead.contactName || 'Unknown Contact'
+    } : null
+  }))
+  
+  return { data: enrichedLeads, total: enrichedLeads.length }
 }
 
-// Fetch all opportunities associated with a customer
-export const fetchOpportunitiesByCustomerId = async (customerId) => {
+// Fetch all opportunities associated with a customer or account
+export const fetchOpportunitiesByCustomerId = async (customerId, accountId = null) => {
   await delay()
-  // Match by customerId (opportunities now have customerId field)
-  const opportunities = mockOpportunities.filter(opp => opp.customerId === parseInt(customerId))
-  return { data: opportunities, total: opportunities.length }
+  let opportunities = []
+  
+  if (accountId) {
+    // Fetch opportunities by account_id (opportunities linked to account)
+    opportunities = mockOpportunities.filter(opp => {
+      const oppAccountId = opp.account_id || opp.accountId
+      return oppAccountId && parseInt(oppAccountId) === parseInt(accountId)
+    })
+  } else {
+    // Match by customerId (opportunities now have customerId field)
+    opportunities = mockOpportunities.filter(opp => opp.customerId === parseInt(customerId))
+  }
+  
+  // Enrich opportunities with contact reference info if available
+  const enrichedOpportunities = opportunities.map(opp => ({
+    ...opp,
+    contactReference: opp.contactId ? {
+      id: opp.contactId,
+      name: opp.contactName || 'Unknown Contact'
+    } : null
+  }))
+  
+  return { data: enrichedOpportunities, total: enrichedOpportunities.length }
 }
 
-// Fetch all cars associated with a customer (requested, offered, drove, purchased)
+// Fetch leads by account ID
+export const fetchLeadsByAccountId = async (accountId) => {
+  return await fetchLeadsByCustomerId(null, accountId)
+}
+
+// Fetch opportunities by account ID
+export const fetchOpportunitiesByAccountId = async (accountId) => {
+  return await fetchOpportunitiesByCustomerId(null, accountId)
+}
+
+// Fetch all cars associated with a customer or account (requested, offered, drove, purchased, owned)
 export const fetchCustomerCars = async (customerId) => {
   await delay()
   const cars = []
   
-  // Get customer from mockCustomers
+  // Get customer/account from mockCustomers
   const customer = mockCustomers.find(c => c.id === parseInt(customerId))
   const contactId = customer?.id || customerId
+  
+  // Check if this is an account (has company field) - accounts own vehicles
+  const isAccount = customer?.company && customer.company !== ''
   
   // 1. Requested cars - from leads/contacts requestedCar field
   const leads = mockLeads.filter(lead => lead.customerId === parseInt(customerId))
@@ -235,21 +288,55 @@ export const fetchCustomerCars = async (customerId) => {
     }
   })
   
-  // 5. Owned vehicles - from customer's vehicles array
-  if (customer?.vehicles && Array.isArray(customer.vehicles)) {
+  // 5. Owned vehicles - from account's vehicles array (accounts own vehicles)
+  if (isAccount && customer?.vehicles && Array.isArray(customer.vehicles)) {
     customer.vehicles.forEach(vehicle => {
-      if (vehicle.type === 'owned') {
+      if (vehicle.type === 'owned' || !vehicle.type) {
         cars.push({
           ...vehicle,
           id: vehicle.id || `owned-${customer.id}-${Date.now()}`,
           type: 'owned',
-          customerId: customer.id
+          accountId: customer.id
+        })
+      }
+    })
+  }
+  
+  // 6. If fetching for account, also get vehicles from related contacts (driven vehicles)
+  if (isAccount) {
+    const accountId = customer.id
+    const relatedContacts = getContacts().filter(c => {
+      const contactAccountId = c.account_id || c.accountId
+      return contactAccountId && parseInt(contactAccountId) === parseInt(accountId)
+    })
+    
+    // Get driven vehicles from related contacts
+    relatedContacts.forEach(contact => {
+      if (contact.vehicles && Array.isArray(contact.vehicles)) {
+        contact.vehicles.forEach(vehicle => {
+          if (vehicle.type === 'driven') {
+            cars.push({
+              ...vehicle,
+              id: vehicle.id || `driven-${contact.id}-${Date.now()}`,
+              type: 'driven',
+              contactId: contact.id,
+              contactName: contact.name,
+              accountId: accountId
+            })
+          }
         })
       }
     })
   }
   
   return { data: cars, total: cars.length }
+}
+
+// Fetch vehicles by account ID (vehicles owned by accounts)
+export const fetchVehiclesByAccountId = async (accountId) => {
+  await delay()
+  // Use the same logic as fetchCustomerCars but specifically for accounts
+  return await fetchCustomerCars(accountId)
 }
 
 // Add vehicle to customer
@@ -316,4 +403,16 @@ export const fetchTasksByOpportunityId = async (opportunityId) => {
   await delay()
   const tasks = mockTasks.filter(task => task.opportunityId === parseInt(opportunityId))
   return { data: tasks, total: tasks.length }
+}
+
+// Fetch all contacts associated with an account
+export const fetchContactsByAccountId = async (accountId) => {
+  await delay()
+  const contacts = getContacts()
+  // Filter contacts where account_id matches
+  const relatedContacts = contacts.filter(contact => {
+    const contactAccountId = contact.account_id || contact.accountId
+    return contactAccountId && parseInt(contactAccountId) === parseInt(accountId)
+  })
+  return { data: relatedContacts, total: relatedContacts.length }
 }

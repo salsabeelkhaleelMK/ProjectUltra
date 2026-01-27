@@ -21,554 +21,108 @@
       
       <!-- Primary action -->
       <!-- Show appointment management card if appointment is scheduled -->
-      <div
+      <AppointmentManagementSection
         v-if="!opportunityState.isClosed.value && scheduledAppointment && scheduledAppointment.start"
-        class="rounded-lg flex flex-col bg-muted"
-      >
-        <div class="pt-1 px-1">
-          <div
-            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          >
-          <div class="p-6">
-            <div class="mb-3">
-              <h4 class="font-bold text-foreground text-sm">Manage Appointment</h4>
-              <p class="text-sm text-muted-foreground mt-0.5">
-                Appointment scheduled for {{ scheduledAppointment?.start ? formatDateTime(scheduledAppointment.start) : 'TBD' }}
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-3 items-center">
-              <Button
-                v-if="scheduledAppointment?.status === 'pending_confirmation'"
-                variant="outline"
-                @click="handleConfirmAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 cursor-pointer"
-              >
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>Confirm appointment</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleRescheduleAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showRescheduleSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Reschedule</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleMarkNoShow"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showNsTaskSection ? 'border-orange-500 bg-orange-50 text-orange-700' : ''"
-              >
-                <i class="fa-solid fa-user-slash"></i>
-                <span>Mark as No-Show</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleMarkShowedUp"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showOfferAssignmentSection ? 'border-green-500 bg-green-50 text-green-700' : ''"
-              >
-                <i class="fa-solid fa-user-check"></i>
-                <span>Mark as Showed Up</span>
-              </Button>
-              
-              <!-- Secondary Actions Dropdown - Inline with management buttons -->
-              <SecondaryActionsDropdown
-                v-if="opportunityState.secondaryActions.value && opportunityState.secondaryActions.value.length > 0"
-                :actions="opportunityState.secondaryActions.value"
-                @action-selected="handleSecondaryAction"
-              />
-            </div>
-          </div>
-          </div>
-        </div>
-        
-        <!-- Unified schedule/reschedule form (same component, mode + initialAppointment) -->
-        <transition name="expand">
-          <div v-if="showRescheduleSection" class="mt-4 px-4">
-            <OpportunityScheduleForm
-              ref="scheduleFormRef"
-              :opportunity="opportunity"
-              mode="reschedule"
-              :initial-appointment="scheduledAppointment"
-              @submit="(p) => handleScheduleFormSubmit(p, 'reschedule')"
-              @cancel="cancelRescheduleForm"
-            />
-          </div>
-        </transition>
-        
-        <!-- Inline NS Task Section -->
-        <transition name="expand">
-          <div v-if="showNsTaskSection" class="mt-4">
-            <NS1Task
-              v-if="nsTaskCount === 1"
-              ref="ns1TaskRef"
-              :opportunity="opportunity"
-              :scheduled-appointment="scheduledAppointment"
-              @assigned="handleNsAssigned"
-              @cancel="handleCancelNsTask"
-            />
-            <NS2Task
-              v-else-if="nsTaskCount === 2"
-              ref="ns2TaskRef"
-              :opportunity="opportunity"
-              :scheduled-appointment="scheduledAppointment"
-              @assigned="handleNsAssigned"
-              @cancel="handleCancelNsTask"
-            />
-            <NS3Task
-              v-else-if="nsTaskCount >= 3"
-              ref="ns3TaskRef"
-              :opportunity="opportunity"
-              :scheduled-appointment="scheduledAppointment"
-              @close-as-lost="handleNsCloseAsLost"
-              @cancel="handleCancelNsTask"
-            />
-          </div>
-        </transition>
-        
-        <!-- Unified NS Task Buttons -->
-        <div v-if="showNsTaskSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-          <Button
-            variant="secondary"
-            @click="handleCancelNsTask"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            :disabled="!canSubmitNsTask"
-            @click="handleConfirmNsTask"
-            class="bg-primary"
-          >
-            {{ nsTaskButtonLabel }}
-          </Button>
-        </div>
-        
-        <!-- Inline Offer Assignment Task Section -->
-        <transition name="expand">
-          <div v-if="showOfferAssignmentSection" class="mt-4">
-            <OfferAssignmentTask
-              ref="offerAssignmentTaskRef"
-              :opportunity="opportunity"
-              :scheduled-appointment="scheduledAppointment"
-              @offer-created="handleOfferAssignmentCreated"
-              @cancel="handleCancelOfferAssignment"
-            />
-          </div>
-        </transition>
-        
-        <!-- Unified Offer Assignment Buttons -->
-        <div v-if="showOfferAssignmentSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-          <Button
-            variant="secondary"
-            @click="handleCancelOfferAssignment"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            :disabled="!canCreateOffer"
-            @click="handleConfirmOfferAssignment"
-            class="bg-primary"
-          >
-            Create Offer
-          </Button>
-        </div>
-      </div>
+        ref="appointmentManagementSectionRef"
+        :opportunity="opportunity"
+        :scheduled-appointment="scheduledAppointment"
+        :show-reschedule-section="showRescheduleSection"
+        :show-ns-task-section="showNsTaskSection"
+        :show-offer-assignment-section="showOfferAssignmentSection"
+        :ns-task-count="nsTaskCount"
+        :can-submit-ns-task="canSubmitNsTask"
+        :ns-task-button-label="nsTaskButtonLabel"
+        :can-create-offer="canCreateOffer"
+        :secondary-actions="opportunityState.secondaryActions.value || []"
+        :format-date-time="formatDateTime"
+        :customer-name="customerName"
+        :customer-profile-url="customerProfileUrl"
+        :is-appointment-today="isAppointmentToday"
+        @confirm-appointment="handleConfirmAppointment"
+        @update:show-reschedule-section="showRescheduleSection = $event"
+        @update:show-ns-task-section="showNsTaskSection = $event"
+        @update:show-offer-assignment-section="showOfferAssignmentSection = $event"
+        @mark-no-show="handleMarkNoShow"
+        @mark-showed-up="handleMarkShowedUp"
+        @reschedule-submit="(p) => handleScheduleFormSubmit(p, 'reschedule')"
+        @reschedule-cancel="cancelRescheduleForm"
+        @ns-assigned="handleNsAssigned"
+        @ns-cancel="handleCancelNsTask"
+        @ns-confirm="handleConfirmNsTask"
+        @ns-close-as-lost="handleNsCloseAsLost"
+        @offer-assignment-created="handleOfferAssignmentCreated"
+        @offer-assignment-cancel="handleCancelOfferAssignment"
+        @offer-assignment-confirm="handleConfirmOfferAssignment"
+        @secondary-action="handleSecondaryAction"
+        @customer-click="handleCustomerClick"
+      />
       
       <!-- In Negotiation Management Section (exclude Contract Pending / Offer Accepted) -->
-      <div
-        v-if="!opportunityState.isClosed.value && opportunity.stage === 'In Negotiation' && opportunity.negotiationSubstatus !== 'Offer Accepted' && opportunity.offers && opportunity.offers.length > 0"
-        class="rounded-lg flex flex-col bg-muted"
-      >
-        <div class="pt-1 px-1">
-          <div
-            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          >
-          <div class="p-6">
-            <div class="mb-3">
-              <h4 class="font-bold text-foreground text-sm">Manage Offers & Follow Up</h4>
-              <p class="text-sm text-muted-foreground mt-0.5">
-                {{ opportunity.negotiationSubstatus === 'Offer Feedback' ? 'Request feedback on pending offers' : 'Follow up with customer about offers' }}
-              </p>
-            </div>
-            <!-- Offers Carousel (before action buttons) -->
-            <div class="mb-4">
-              <OfferCarousel
-                :offers="opportunity.offers"
-                :opportunity-id="opportunity.id"
-                @offer-accepted="handleOfferAccepted"
-              />
-            </div>
-            <div class="flex flex-wrap gap-3 items-center">
-              <Button
-                variant="outline"
-                @click="handleFollowUpOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showNegotiationSection ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : ''"
-              >
-                <i class="fa-solid fa-phone-volume"></i>
-                <span>{{ opportunity.negotiationSubstatus === 'Offer Feedback' ? 'Request Feedback' : 'Follow Up' }}</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleAddAnotherOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showAddOfferSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-plus"></i>
-                <span>Add Offer</span>
-              </Button>
-              
-              <!-- Secondary Actions Dropdown -->
-              <SecondaryActionsDropdown
-                v-if="opportunityState.secondaryActions.value && opportunityState.secondaryActions.value.length > 0"
-                :actions="opportunityState.secondaryActions.value"
-                @action-selected="handleSecondaryAction"
-              />
-            </div>
-          </div>
-          </div>
-        </div>
-        
-        <!-- Inline Follow Up Section -->
-        <transition name="expand">
-          <div v-if="showNegotiationSection" class="mt-4 space-y-4">
-            <!-- Communication Options -->
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <h5 class="font-semibold text-foreground text-sm mb-4">Contact Customer</h5>
-              
-              <!-- Channel Selection -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'call'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'call' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-phone text-xs"></i>
-                  <span>Call</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'whatsapp'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'whatsapp' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-brands fa-whatsapp text-xs"></i>
-                  <span>WhatsApp</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'sms'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'sms' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-message text-xs"></i>
-                  <span>SMS</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'email'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'email' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-envelope text-xs"></i>
-                  <span>Email</span>
-                </Button>
-              </div>
-              
-              <!-- Message Composer -->
-              <div v-if="negotiationChannel" class="space-y-3">
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Select offer to reference</Label>
-                  <SelectMenu
-                    v-model="negotiationSelectedOfferId"
-                    :items="offerSelectOptions"
-                    placeholder="Select an offer..."
-                    value-key="id"
-                    class="w-full"
-                  >
-                    <template #item="{ item }">
-                      <div class="flex items-center justify-between gap-2">
-                        <span>{{ item.label }}</span>
-                        <span class="text-muted-foreground text-xs">€ {{ formatCurrency(item.price) }}</span>
-                      </div>
-                    </template>
-                  </SelectMenu>
-                </div>
-                
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Message</Label>
-                  <Textarea
-                    v-model="negotiationMessage"
-                    rows="4"
-                    placeholder="Type your message here..."
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </transition>
-        
-        <!-- Unified Negotiation Buttons -->
-        <div v-if="showNegotiationSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-          <Button
-            variant="secondary"
-            @click="handleCancelNegotiation"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            :disabled="!canSendNegotiationMessage"
-            @click="handleSendNegotiationMessage"
-            class="bg-primary"
-          >
-            Send Message
-          </Button>
-        </div>
-        
-        <!-- Inline Add Offer Section -->
-        <transition name="expand">
-          <div v-if="showAddOfferSection" class="mt-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <OfferWidget
-                ref="addOfferWidgetRef"
-                :task-id="opportunity.id"
-                :task-type="'opportunity'"
-                :customer="opportunity.customer"
-                :selected-vehicle="opportunity.selectedVehicle || opportunity.vehicle || opportunity.requestedCar"
-                hide-header
-                hide-actions
-                @save="handleInlineOfferCreated"
-                @cancel="handleCancelAddOffer"
-              />
-            </div>
-          </div>
-        </transition>
-        
-        <!-- Unified Add Offer Buttons -->
-        <div v-if="showAddOfferSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-          <Button
-            variant="secondary"
-            @click="handleCancelAddOffer"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            :disabled="!canCreateInlineOffer"
-            @click="handleConfirmAddOffer"
-            class="bg-primary"
-          >
-            Create Offer
-          </Button>
-        </div>
-      </div>
+      <NegotiationManagementSection
+        v-if="isInNegotiation"
+        ref="negotiationManagementSectionRef"
+        :opportunity="opportunity"
+        :show-negotiation-section="showNegotiationSection"
+        :show-add-offer-section="showAddOfferSection"
+        :negotiation-channel="negotiationChannel"
+        :negotiation-message="negotiationMessage"
+        :negotiation-selected-offer-id="negotiationSelectedOfferId"
+        :offer-select-options="offerSelectOptions"
+        :can-send-negotiation-message="canSendNegotiationMessage"
+        :can-create-inline-offer="canCreateInlineOffer"
+        :secondary-actions="opportunityState.secondaryActions.value || []"
+        @update:show-negotiation-section="showNegotiationSection = $event"
+        @update:show-add-offer-section="showAddOfferSection = $event"
+        @update:negotiation-channel="negotiationChannel = $event"
+        @update:negotiation-message="negotiationMessage = $event"
+        @update:negotiation-selected-offer-id="negotiationSelectedOfferId = $event"
+        @reset-negotiation-form="negotiationChannel = null; negotiationMessage = ''; negotiationSelectedOfferId = null"
+        @send-negotiation-message="handleSendNegotiationMessage"
+        @cancel-negotiation="handleCancelNegotiation"
+        @offer-created="handleInlineOfferCreated"
+        @cancel-add-offer="handleCancelAddOffer"
+        @confirm-add-offer="handleConfirmAddOffer"
+        @offer-accepted="handleOfferAccepted"
+        @mark-offer-accepted="handleMarkOfferAccepted"
+        @ofb-postpone="handleTaskPostpone"
+        @generate-pdf="handleOfferPDFGenerate"
+        @secondary-action="handleSecondaryAction"
+      />
       
       <!-- Contract Pending Management Section -->
-      <div
-        v-if="!opportunityState.isClosed.value && opportunity.stage === 'In Negotiation' && (opportunity.negotiationSubstatus === 'Offer Accepted' || opportunityState.displayStage.value === 'In Negotiation - Contract Pending')"
-        class="rounded-lg flex flex-col bg-muted"
-      >
-        <div class="pt-1 px-1">
-          <div
-            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          >
-          <div class="p-6">
-            <div class="mb-3">
-              <h4 class="font-bold text-foreground text-sm">Collect e-signatures, finalize contract</h4>
-              <p class="text-sm text-muted-foreground mt-0.5">
-                Get the formal contract signed electronically by the customer. Finalize all contractual terms and conditions. Ensure all required signatures are collected. Set the official Contract Date when customer signs.
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-3 items-center">
-              <!-- Primary Action Button -->
-              <Button
-                variant="outline"
-                @click="handleFinalizeContract"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showFinalizeContractSection ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : ''"
-              >
-                <i class="fa-solid fa-file-signature"></i>
-                <span>Collect Signatures</span>
-              </Button>
-              
-              <!-- More Actions Dropdown -->
-              <SecondaryActionsDropdown
-                :actions="contractPendingActions"
-                @action-selected="handleContractPendingAction"
-              />
-            </div>
-          </div>
-          </div>
-        </div>
-        
-        <!-- Inline Finalize Contract Section -->
-        <transition name="expand">
-          <div v-if="showFinalizeContractSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <h5 class="font-semibold text-foreground text-sm mb-4">Set Contract Signing Date</h5>
-              
-              <div class="space-y-4">
-                <!-- Contract Date -->
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Contract Date <span class="text-red-600">*</span></Label>
-                  <Input 
-                    type="date"
-                    v-model="contractPendingForm.contractDate"
-                    :max="maxContractDate"
-                    class="w-full"
-                  />
-                </div>
-                
-                <!-- Contract Time -->
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Time (Optional)</Label>
-                  <Input 
-                    type="time"
-                    v-model="contractPendingForm.contractTime"
-                    class="w-full"
-                  />
-                </div>
-                
-                <!-- Notes -->
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Notes (Optional)</Label>
-                  <Textarea 
-                    v-model="contractPendingForm.notes"
-                    rows="4"
-                    placeholder="Add any relevant notes about the contract signing..."
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <!-- Finalize Contract Buttons -->
-            <div class="flex justify-end gap-2 mt-4">
-              <Button
-                variant="secondary"
-                @click="handleCancelFinalizeContract"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                :disabled="!canSubmitFinalizeContract"
-                @click="handleConfirmFinalizeContract"
-                class="bg-primary"
-              >
-                Set Contract Date
-              </Button>
-            </div>
-          </div>
-        </transition>
-        
-        <!-- Inline Add Offer Section -->
-        <transition name="expand">
-          <div v-if="showAddOfferContractPendingSection" class="mt-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <OfferWidget
-                ref="addOfferContractPendingRef"
-                :task-id="opportunity.id"
-                :task-type="'opportunity'"
-                :customer="opportunity.customer"
-                :selected-vehicle="opportunity.selectedVehicle || opportunity.vehicle || opportunity.requestedCar"
-                hide-header
-                hide-actions
-                @save="handleInlineOfferCreatedContractPending"
-                @cancel="handleCancelAddOfferContractPending"
-              />
-            </div>
-          </div>
-        </transition>
-        
-        <!-- Unified Add Offer Buttons -->
-        <div v-if="showAddOfferContractPendingSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-          <Button
-            variant="secondary"
-            @click="handleCancelAddOfferContractPending"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            :disabled="!canCreateInlineOfferContractPending"
-            @click="handleConfirmAddOfferContractPending"
-            class="bg-primary"
-          >
-            Create Offer
-          </Button>
-        </div>
-        
-        <!-- Inline Extend Deadline Section -->
-        <transition name="expand">
-          <div v-if="showExtendDeadlineSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <h5 class="font-semibold text-foreground text-sm mb-4">Extend Deadline</h5>
-              
-              <div class="space-y-4">
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">New Deadline Date <span class="text-red-600">*</span></Label>
-                  <Input 
-                    type="date"
-                    v-model="extendDeadlineForm.newDeadline"
-                    :min="minDeadlineDate"
-                    class="w-full"
-                  />
-                </div>
-                
-                <div>
-                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Reason (Optional)</Label>
-                  <Textarea 
-                    v-model="extendDeadlineForm.reason"
-                    rows="3"
-                    placeholder="Reason for extending the deadline..."
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <!-- Extend Deadline Buttons -->
-            <div class="flex justify-end gap-2 mt-4">
-              <Button
-                variant="secondary"
-                @click="handleCancelExtendDeadline"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                :disabled="!canSubmitExtendDeadline"
-                @click="handleConfirmExtendDeadline"
-                class="bg-primary"
-              >
-                Extend Deadline
-              </Button>
-            </div>
-          </div>
-        </transition>
-        
-        <!-- Inline Schedule Appointment Section -->
-        <transition name="expand">
-          <div v-if="showScheduleAppointmentContractPendingSection" class="mt-4 px-4 pb-4">
-            <OpportunityScheduleForm
-              ref="scheduleAppointmentContractPendingFormRef"
-              :opportunity="opportunity"
-              mode="schedule"
-              @submit="(p) => handleScheduleAppointmentContractPendingSubmit(p)"
-              @cancel="handleCancelScheduleAppointmentContractPending"
-            />
-          </div>
-        </transition>
-      </div>
+      <ContractPendingManagementSection
+        v-if="!opportunityActions.isClosed.value && opportunity.stage === 'In Negotiation' && (opportunity.negotiationSubstatus === 'Offer Accepted' || getDisplayStage(opportunity, 'opportunity') === 'In Negotiation - Contract Pending')"
+        ref="contractPendingManagementSectionRef"
+        :opportunity="opportunity"
+        :show-finalize-contract-section="showFinalizeContractSection"
+        :show-add-offer-contract-pending-section="showAddOfferContractPendingSection"
+        :show-extend-deadline-section="showExtendDeadlineSection"
+        :show-schedule-appointment-contract-pending-section="showScheduleAppointmentContractPendingSection"
+        :contract-pending-form="contractPendingForm"
+        :extend-deadline-form="extendDeadlineForm"
+        :contract-pending-actions="contractPendingActions"
+        :can-submit-finalize-contract="canSubmitFinalizeContract"
+        :can-submit-extend-deadline="canSubmitExtendDeadline"
+        :can-create-inline-offer-contract-pending="canCreateInlineOfferContractPending"
+        :max-contract-date="maxContractDate"
+        :min-deadline-date="minDeadlineDate"
+        @update:show-finalize-contract-section="showFinalizeContractSection = $event"
+        @update:show-add-offer-contract-pending-section="showAddOfferContractPendingSection = $event"
+        @update:show-extend-deadline-section="showExtendDeadlineSection = $event"
+        @update:show-schedule-appointment-contract-pending-section="showScheduleAppointmentContractPendingSection = $event"
+        @update:contract-pending-form="contractPendingForm = $event"
+        @update:extend-deadline-form="extendDeadlineForm = $event"
+        @confirm-finalize-contract="handleConfirmFinalizeContract"
+        @cancel-finalize-contract="handleCancelFinalizeContract"
+        @offer-created-contract-pending="handleInlineOfferCreatedContractPending"
+        @cancel-add-offer-contract-pending="handleCancelAddOfferContractPending"
+        @confirm-add-offer-contract-pending="handleConfirmAddOfferContractPending"
+        @confirm-extend-deadline="handleConfirmExtendDeadline"
+        @cancel-extend-deadline="handleCancelExtendDeadline"
+        @schedule-appointment-contract-pending-submit="handleScheduleAppointmentContractPendingSubmit"
+        @cancel-schedule-appointment-contract-pending="handleCancelScheduleAppointmentContractPending"
+        @contract-pending-action="handleContractPendingAction"
+      />
       
       <!-- Regular primary action widget -->
       <PrimaryActionWidget
@@ -643,103 +197,325 @@
         </div>
       </div>
 
-      <!-- Post-Delivery Survey Section -->
+      <!-- Closed Won Delivery Management Section -->
       <div
-        v-if="shouldShowPostDeliverySurvey"
+        v-if="shouldShowDeliveryManagement"
         class="rounded-lg flex flex-col bg-muted"
       >
         <div class="pt-1 px-1">
           <div
-            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+            class="bg-white rounded-lg shadow-nsc-card overflow-visible"
           >
           <div class="p-6">
             <div class="mb-3">
-              <h4 class="font-bold text-foreground text-sm">Post-Delivery Customer Satisfaction Survey</h4>
+              <h4 class="font-bold text-foreground text-sm">{{ deliveryManagementTitle }}</h4>
               <p class="text-sm text-muted-foreground mt-0.5">
-                Collect feedback from the customer about their delivery experience
+                {{ deliveryManagementDescription }}
               </p>
             </div>
             <div class="flex flex-wrap gap-3 items-center">
-              <Button
-                variant="outline"
-                @click="showPostDeliverySurveySection = !showPostDeliverySurveySection"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showPostDeliverySurveySection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-clipboard-list"></i>
-                <span>Complete Survey</span>
-              </Button>
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  v-if="!hasDeliveryDate"
+                  variant="outline"
+                  :model-value="showScheduleDeliverySection"
+                  @update:model-value="(p) => { 
+                    showScheduleDeliverySection = p
+                    if (p) {
+                      showConfirmDeliverySection = false
+                      // Initialize form with today's date
+                      if (!deliveryScheduleForm.value.deliveryDate) {
+                        const today = new Date()
+                        deliveryScheduleForm.value.deliveryDate = today.toISOString().split('T')[0]
+                      }
+                    }
+                  }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-truck"></i>
+                  <span>Schedule Delivery</span>
+                </Toggle>
+                <Toggle
+                  v-if="hasDeliveryDate && !isDelivered"
+                  variant="outline"
+                  :model-value="showConfirmDeliverySection"
+                  @update:model-value="(p) => { 
+                    showConfirmDeliverySection = p
+                    if (p) {
+                      showScheduleDeliverySection = false
+                      // Initialize form with today's date
+                      if (!deliveryConfirmForm.value.actualDeliveryDate) {
+                        const today = new Date()
+                        deliveryConfirmForm.value.actualDeliveryDate = today.toISOString().split('T')[0]
+                      }
+                    }
+                  }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-calendar-check"></i>
+                  <span>Confirm Delivery</span>
+                </Toggle>
+              </div>
               
-              <!-- Reopen Opportunity Button (only for Closed Won) -->
+              <!-- Reopen Opportunity Button -->
               <Button
-                v-if="isClosedWon"
                 variant="outline"
                 @click="handleReopen"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 hover:bg-green-100 cursor-pointer"
+                class="inline-flex items-center gap-2 cursor-pointer"
               >
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>Reopen Opportunity</span>
               </Button>
               
-              <!-- Actions Dropdown -->
-              <div class="relative">
-                <button 
-                  @click.stop="showPostDeliverySurveyDropdown = !showPostDeliverySurveyDropdown"
-                  class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap cursor-pointer"
-                >
-                  <span>More actions</span>
-                  <i 
-                    class="fa-solid fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0"
-                    :class="{ 'rotate-180': showPostDeliverySurveyDropdown }"
-                  ></i>
-                </button>
-
-                <!-- Dropdown menu -->
-                <div 
-                  v-if="showPostDeliverySurveyDropdown && postDeliverySurveyMenuItems.length > 0"
-                  class="absolute top-full right-0 mt-2 z-50 dropdown-menu-small"
-                  v-click-outside="() => showPostDeliverySurveyDropdown = false"
-                >
-                  <DropdownMenu 
-                    :items="postDeliverySurveyMenuItems" 
-                    className="w-56" 
-                  />
-                </div>
-              </div>
+              <!-- Secondary Actions Dropdown -->
+              <SecondaryActionsDropdown
+                v-if="opportunityState.secondaryActions.value && opportunityState.secondaryActions.value.length > 0"
+                :actions="opportunityState.secondaryActions.value"
+                @action-selected="handleSecondaryAction"
+              />
             </div>
           </div>
           </div>
         </div>
         
-        <!-- Survey Form (Collapsible) -->
-        <transition name="expand">
-          <div v-if="showPostDeliverySurveySection" class="mt-4 px-4 pb-4">
-            <PostDeliverySurvey
-              ref="postDeliverySurveyRef"
-              :opportunity="opportunity"
-              @submit="handleSurveySubmit"
-              @cancel="showPostDeliverySurveySection = false"
-            />
+        <div class="px-4 py-4 space-y-4">
+        <!-- Schedule Delivery Section -->
+        <div v-if="showScheduleDeliverySection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <h5 class="font-semibold text-foreground text-sm mb-4">Schedule Delivery</h5>
             
-            <!-- Survey Action Buttons -->
-            <div class="flex justify-end gap-2 mt-4">
-              <Button
-                variant="secondary"
-                @click="handleCancelSurvey"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                :disabled="!canSubmitSurvey"
-                @click="handleConfirmSurvey"
-                class="bg-primary"
-              >
-                Submit Survey
-              </Button>
+            <div class="space-y-4">
+              <!-- Delivery Date -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Delivery Date <span class="text-red-600">*</span></Label>
+                <Input 
+                  type="date"
+                  v-model="deliveryScheduleForm.deliveryDate"
+                  :min="minDeliveryDate"
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Delivery Time -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Time (Optional)</Label>
+                <Input 
+                  type="time"
+                  v-model="deliveryScheduleForm.deliveryTime"
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Delivery Location -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Delivery Location</Label>
+                <Select v-model="deliveryScheduleForm.deliveryLocation">
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select location..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Dealership">At Dealership</SelectItem>
+                    <SelectItem value="Customer Address">Customer Address</SelectItem>
+                    <SelectItem value="Other">Other Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <!-- Notes -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Notes (Optional)</Label>
+                <Textarea 
+                  v-model="deliveryScheduleForm.notes"
+                  rows="4"
+                  placeholder="Add any relevant delivery details..."
+                  class="w-full"
+                />
+              </div>
             </div>
           </div>
-        </transition>
+          
+          <!-- Schedule Delivery Buttons -->
+          <div class="flex justify-end gap-2 mt-4">
+            <Button
+              variant="secondary"
+              @click="handleCancelScheduleDelivery"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              :disabled="!canSubmitScheduleDelivery"
+              @click="handleConfirmScheduleDelivery"
+            >
+              Schedule Delivery
+            </Button>
+          </div>
+        </div>
+        
+        <!-- Confirm Delivery Section -->
+        <div v-if="showConfirmDeliverySection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <h5 class="font-semibold text-foreground text-sm mb-4">Confirm Delivery</h5>
+            <p class="text-sm text-muted-foreground mb-4">
+              Delivery was scheduled for {{ formatDateTime(opportunity.deliveryDate) }}. Confirm that the delivery has been completed.
+            </p>
+            <div class="space-y-4">
+              <!-- Delivery Date (read-only, showing scheduled date) -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Scheduled Delivery Date</Label>
+                <Input 
+                  type="text"
+                  :value="formatDateTime(opportunity.deliveryDate)"
+                  disabled
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Actual Delivery Date -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Actual Delivery Date <span class="text-red-600">*</span></Label>
+                <Input 
+                  type="date"
+                  v-model="deliveryConfirmForm.actualDeliveryDate"
+                  :max="maxDeliveryDate"
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Delivery Time -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Time (Optional)</Label>
+                <Input 
+                  type="time"
+                  v-model="deliveryConfirmForm.deliveryTime"
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Delivery Location -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Delivery Location</Label>
+                <Select v-model="deliveryConfirmForm.deliveryLocation">
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select location..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Dealership">At Dealership</SelectItem>
+                    <SelectItem value="Customer Address">Customer Address</SelectItem>
+                    <SelectItem value="Other">Other Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <!-- Notes -->
+              <div>
+                <Label class="block text-sm font-medium text-muted-foreground mb-2">Delivery Notes (Optional)</Label>
+                <Textarea 
+                  v-model="deliveryConfirmForm.notes"
+                  rows="4"
+                  placeholder="Add any relevant delivery details, customer feedback, etc..."
+                  class="w-full"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Confirm Delivery Buttons -->
+          <div class="flex justify-end gap-2 mt-4">
+            <Button
+              variant="secondary"
+              @click="handleCancelConfirmDelivery"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              :disabled="!canSubmitConfirmDelivery"
+              @click="handleConfirmDelivery"
+            >
+              Mark as Delivered
+            </Button>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Closed Lost Management Section -->
+      <div
+        v-if="isClosedLost"
+        class="rounded-lg flex flex-col bg-muted"
+      >
+        <div class="pt-1 px-1">
+          <div
+            class="bg-white rounded-lg shadow-nsc-card overflow-visible"
+          >
+          <div class="p-6">
+            <div class="mb-3">
+              <h4 class="font-bold text-foreground text-sm">Opportunity Closed as Lost</h4>
+              <p class="text-sm text-muted-foreground mt-0.5">
+                This opportunity was closed as lost. You can reopen it to continue the sales process or requalify it as a lead.
+              </p>
+              <!-- Loss Reason Display -->
+              <div v-if="opportunity.lossReason" class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-start gap-2">
+                  <i class="fa-solid fa-info-circle text-red-600 text-sm mt-0.5"></i>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-red-900">Loss Reason</p>
+                    <p class="text-sm text-red-700 mt-1">{{ opportunity.lossReason }}</p>
+                    <p v-if="opportunity.lossNotes" class="text-sm text-red-600 mt-2">{{ opportunity.lossNotes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3 items-center">
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showReopenSection"
+                  @update:model-value="(p) => (showReopenSection = p)"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-rotate-left"></i>
+                  <span>Reopen Opportunity</span>
+                </Toggle>
+              </div>
+              
+              <!-- Secondary Actions Dropdown -->
+              <SecondaryActionsDropdown
+                v-if="opportunityState.secondaryActions.value && opportunityState.secondaryActions.value.length > 0"
+                :actions="opportunityState.secondaryActions.value"
+                @action-selected="handleSecondaryAction"
+              />
+            </div>
+          </div>
+          </div>
+        </div>
+        
+        <div class="px-4 py-4 space-y-4">
+          <!-- Reopen Confirmation Section -->
+          <div v-if="showReopenSection">
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Reopen Opportunity</h5>
+              <p class="text-sm text-muted-foreground mb-4">
+                Reopening this opportunity will restore it to an active state. The opportunity will return to the appropriate stage based on its current state (e.g., if it has offers, it will return to "In Negotiation").
+              </p>
+              <div class="flex justify-end gap-2 pt-3">
+                <Button
+                  variant="secondary"
+                  @click="showReopenSection = false"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="default"
+                  @click="handleReopen"
+                >
+                  Reopen Opportunity
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Regular Task Widgets -->
@@ -756,6 +532,9 @@
           @close="handleTaskWidgetClose"
           @set-callback="handleSetCallback"
           @auto-close-lost="handleAutoCloseLost"
+          @survey-submitted="handleTaskWidgetSurveySubmitted"
+          @survey-cancelled="handleTaskWidgetClose"
+          @postpone="handleTaskPostpone"
         />
       </div>
     </template>
@@ -856,13 +635,64 @@
       @save="handleSaveAppointment"
       @cancel="showEditAppointment = false"
     />
+
+    <!-- PDF Generation Modals -->
+    <PDFGenerationModal
+      v-if="showPDFGenerationModal"
+      :show="showPDFGenerationModal"
+      :opportunity-id="opportunity.id"
+      :document-type="pdfGenerationDocumentType"
+      :offer-id="pdfGenerationOfferId"
+      :available-offers="availableOffersForPDF"
+      @close="showPDFGenerationModal = false"
+      @generate="handlePDFGenerate"
+      @preview="handlePDFPreview"
+    />
+
+    <PDFPreviewModal
+      v-if="showPDFPreviewModal"
+      :show="showPDFPreviewModal"
+      :pdf-url="previewPDFUrl"
+      :pdf-id="previewPDFId"
+      :loading="isPreviewingPDF"
+      :error="pdfPreviewError"
+      @close="showPDFPreviewModal = false"
+      @regenerate="handlePDFRegenerate"
+      @download="handlePDFDownload"
+      @email="handlePDFEmail"
+      @print="handlePDFPrint"
+    />
+
+  <PostponeTaskDialog
+    :show="showPostponeTaskDialog"
+    :task-type="postponeTaskType || ''"
+    @close="handlePostponeTaskCancel"
+    @confirm="handlePostponeTaskConfirm"
+  />
+
+  <EditExpectedCloseDateModal
+    :show="showEditExpectedCloseDateModal"
+    :opportunity="opportunity"
+    @close="handleCancelExtendExpectedCloseDate"
+    @confirm="handleExtendExpectedCloseDate"
+  />
+
+  <EmailPDFModal
+    v-if="showEmailPDFModal"
+      :show="showEmailPDFModal"
+      :pdf-id="emailPDFId"
+      :recipient-email="emailRecipient"
+      :default-subject="emailSubject"
+      @close="showEmailPDFModal = false"
+      @sent="handlePDFEmailSent"
+    />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, toRef, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Button, Label, Textarea, Input, DropdownMenu } from '@motork/component-library/future/primitives'
+import { Button, Label, Textarea, Input, DropdownMenu, Toggle, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUsersStore } from '@/stores/users'
@@ -871,6 +701,7 @@ import { fetchVehicles } from '@/api/vehicles'
 import { getDisplayStage, OPPORTUNITY_STAGES } from '@/utils/stageMapper'
 import { useOpportunityActions } from '@/composables/useOpportunityActions'
 import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
+import { useContractPDF } from '@/composables/useContractPDF'
 import { createCalendarEvent } from '@/api/calendar'
 
 // Components
@@ -889,14 +720,21 @@ import RequalifyAsLeadModal from '@/components/modals/RequalifyAsLeadModal.vue'
 import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 import QuickViewEventModal from '@/components/modals/QuickViewEventModal.vue'
 import EditEventModal from '@/components/modals/EditEventModal.vue'
+import PDFGenerationModal from '@/components/modals/PDFGenerationModal.vue'
+import PDFPreviewModal from '@/components/modals/PDFPreviewModal.vue'
+import EmailPDFModal from '@/components/modals/EmailPDFModal.vue'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
+import PostponeTaskDialog from '@/components/tasks/shared/PostponeTaskDialog.vue'
+import EditExpectedCloseDateModal from '@/components/tasks/opportunity/EditExpectedCloseDateModal.vue'
 import OpportunityScheduleForm from '@/components/tasks/opportunity/OpportunityScheduleForm.vue'
 import NS1Task from '@/components/tasks/opportunity/NS1Task.vue'
 import NS2Task from '@/components/tasks/opportunity/NS2Task.vue'
 import NS3Task from '@/components/tasks/opportunity/NS3Task.vue'
 import OfferAssignmentTask from '@/components/tasks/opportunity/OfferAssignmentTask.vue'
 import OfferCarousel from '@/components/shared/OfferCarousel.vue'
-import PostDeliverySurvey from '@/components/tasks/opportunity/PostDeliverySurvey.vue'
+import AppointmentManagementSection from '@/components/tasks/opportunity/AppointmentManagementSection.vue'
+import NegotiationManagementSection from '@/components/tasks/opportunity/NegotiationManagementSection.vue'
+import ContractPendingManagementSection from '@/components/tasks/opportunity/ContractPendingManagementSection.vue'
 
 const props = defineProps({
   opportunity: {
@@ -953,6 +791,50 @@ const isAppointmentPast = computed(() => {
   return appointmentDate < now && scheduledAppointment.value.status !== 'completed'
 })
 
+// Check if appointment is today (same day)
+const isAppointmentToday = computed(() => {
+  if (!scheduledAppointment.value || !scheduledAppointment.value.start) return false
+  const appointmentDate = new Date(scheduledAppointment.value.start)
+  const today = new Date()
+  
+  // Compare year, month, and day only (ignore time)
+  return appointmentDate.getFullYear() === today.getFullYear() &&
+         appointmentDate.getMonth() === today.getMonth() &&
+         appointmentDate.getDate() === today.getDate()
+})
+
+// Customer name and profile URL
+const customerName = computed(() => {
+  if (props.opportunity.customer) {
+    return typeof props.opportunity.customer === 'string' 
+      ? props.opportunity.customer 
+      : props.opportunity.customer.name
+  }
+  return 'Customer'
+})
+
+const customerProfileUrl = computed(() => {
+  const customerId = props.opportunity.customerId || 
+                     (props.opportunity.customer && typeof props.opportunity.customer === 'object' 
+                      ? props.opportunity.customer.id 
+                      : null)
+  if (customerId) {
+    return router.resolve(`/customer/${customerId}`).href
+  }
+  return '#'
+})
+
+const handleCustomerClick = (event) => {
+  event.preventDefault()
+  const customerId = props.opportunity.customerId || 
+                     (props.opportunity.customer && typeof props.opportunity.customer === 'object' 
+                      ? props.opportunity.customer.id 
+                      : null)
+  if (customerId) {
+    window.open(router.resolve(`/customer/${customerId}`).href, '_blank')
+  }
+}
+
 // Check if opportunity is Closed Won
 const isClosedWon = computed(() => {
   const opp = props.opportunity
@@ -960,9 +842,15 @@ const isClosedWon = computed(() => {
   return opp.stage === 'Closed Won' || displayStage === 'Closed Won'
 })
 
-// Show Post-Delivery Survey for Closed Won opportunities or those with delivery dates
-// Note: We show it for Closed Won (not Closed Lost), so we check stage specifically
-const shouldShowPostDeliverySurvey = computed(() => {
+// Check if opportunity is Closed Lost
+const isClosedLost = computed(() => {
+  const opp = props.opportunity
+  const displayStage = opportunityState.displayStage.value
+  return opp.stage === 'Closed Lost' || displayStage === 'Closed Lost'
+})
+
+// Show Delivery Management for Closed Won opportunities (when not delivered yet)
+const shouldShowDeliveryManagement = computed(() => {
   const opp = props.opportunity
   const displayStage = opportunityState.displayStage.value
   const isClosedLost = opp.stage === 'Closed Lost' || displayStage === 'Closed Lost'
@@ -970,9 +858,35 @@ const shouldShowPostDeliverySurvey = computed(() => {
   // Don't show for Closed Lost
   if (isClosedLost) return false
   
-  // Only show for Closed Won opportunities
-  // Don't show for Qualified, Awaiting Appointment, In Negotiation, etc.
-  return isClosedWon.value
+  // Only show for Closed Won opportunities that are not yet delivered
+  if (!isClosedWon.value) return false
+  
+  // Show if deliverySubstatus is null (None) or 'Awaiting Delivery', but not 'Delivered'
+  const deliverySubstatus = opp.deliverySubstatus
+  return deliverySubstatus !== 'Delivered'
+})
+
+// Computed properties for delivery management
+const hasDeliveryDate = computed(() => {
+  return !!props.opportunity.deliveryDate
+})
+
+const isDelivered = computed(() => {
+  return props.opportunity.deliverySubstatus === 'Delivered'
+})
+
+const deliveryManagementTitle = computed(() => {
+  if (!hasDeliveryDate.value) {
+    return 'Schedule Delivery'
+  }
+  return 'Confirm Delivery'
+})
+
+const deliveryManagementDescription = computed(() => {
+  if (!hasDeliveryDate.value) {
+    return 'Contract signed! Schedule vehicle delivery with the customer'
+  }
+  return 'Delivery scheduled. Confirm that the delivery has been completed'
 })
 
 // Call state management
@@ -1014,7 +928,9 @@ const logManualCall = () => {
   }
 }
 
-const scheduleFormRef = ref(null)
+// Template refs - now accessed through appointmentManagementSectionRef
+const appointmentManagementSectionRef = ref(null)
+const scheduleFormRef = computed(() => appointmentManagementSectionRef.value?.scheduleFormRef)
 
 const cancelRescheduleForm = () => {
   showRescheduleSection.value = false
@@ -1136,11 +1052,15 @@ const showNsTaskSection = ref(false)
 const showOfferAssignmentSection = ref(false)
 const nsCloseReason = ref('')
 
-// Template refs for child task components
-const ns1TaskRef = ref(null)
-const ns2TaskRef = ref(null)
-const ns3TaskRef = ref(null)
-const offerAssignmentTaskRef = ref(null)
+// Template refs for child task components - accessed through section refs
+// appointmentManagementSectionRef is declared earlier in the file (line 913)
+const negotiationManagementSectionRef = ref(null)
+const contractPendingManagementSectionRef = ref(null)
+const ns1TaskRef = computed(() => appointmentManagementSectionRef.value?.ns1TaskRef)
+const ns2TaskRef = computed(() => appointmentManagementSectionRef.value?.ns2TaskRef)
+const ns3TaskRef = computed(() => appointmentManagementSectionRef.value?.ns3TaskRef)
+const offerAssignmentTaskRef = computed(() => appointmentManagementSectionRef.value?.offerAssignmentTaskRef)
+const addOfferWidgetRef = computed(() => negotiationManagementSectionRef.value?.addOfferWidgetRef)
 
 // In Negotiation section state
 const showNegotiationSection = ref(false)
@@ -1148,12 +1068,31 @@ const showAddOfferSection = ref(false)
 const negotiationChannel = ref(null)
 const negotiationMessage = ref('')
 const negotiationSelectedOfferId = ref(null)
-const addOfferWidgetRef = ref(null)
+// addOfferWidgetRef is now accessed through negotiationManagementSectionRef
 
-// Post-Delivery Survey section state
-const showPostDeliverySurveySection = ref(false)
-const postDeliverySurveyRef = ref(null)
-const showPostDeliverySurveyDropdown = ref(false)
+// Delivery Management section state
+const showScheduleDeliverySection = ref(false)
+const showConfirmDeliverySection = ref(false)
+const deliveryScheduleForm = ref({
+  deliveryDate: '',
+  deliveryTime: '',
+  deliveryLocation: '',
+  notes: ''
+})
+const deliveryConfirmForm = ref({
+  actualDeliveryDate: '',
+  deliveryTime: '',
+  deliveryLocation: '',
+  notes: ''
+})
+
+// Closed Lost section state
+const showReopenSection = ref(false)
+
+// Dropdown visibility states
+const showSecondaryActionsDropdown = ref(false)
+const showSecondaryActionsDropdownNegotiation = ref(false)
+const showContractPendingDropdown = ref(false)
 
 // Contract Pending Management section state
 const showFinalizeContractSection = ref(false)
@@ -1166,7 +1105,8 @@ const showScheduleAppointmentContractPendingSection = ref(false)
 const contractPendingForm = ref({
   contractDate: '',
   contractTime: '',
-  notes: ''
+  notes: '',
+  autoMarkOfferAccepted: true // Default: checked
 })
 
 const extendDeadlineForm = ref({
@@ -1174,27 +1114,18 @@ const extendDeadlineForm = ref({
   reason: ''
 })
 
-// Template refs
-const addOfferContractPendingRef = ref(null)
-const scheduleAppointmentContractPendingFormRef = ref(null)
-
-// Post-Delivery Survey actions dropdown menu items
-const postDeliverySurveyMenuItems = computed(() => {
-  return [
-    {
-      key: 'schedule-appointment',
-      label: 'Schedule Appointment',
-      onClick: () => {
-        showPostDeliverySurveyDropdown.value = false
-        showCreateAppointment.value = true
-      }
-    }
-    // Can add more actions here in the future
-  ]
-})
+// Template refs - accessed through contractPendingManagementSectionRef
+// contractPendingManagementSectionRef is declared earlier (line 1039)
+const addOfferContractPendingRef = computed(() => contractPendingManagementSectionRef.value?.addOfferContractPendingRef)
+const scheduleAppointmentContractPendingFormRef = computed(() => contractPendingManagementSectionRef.value?.scheduleAppointmentContractPendingFormRef)
 
 const contractPendingActions = computed(() => {
   return [
+    {
+      key: 'generate-pdf',
+      label: 'Generate PDF',
+      handler: () => openPDFGenerationModal('contract')
+    },
     {
       key: 'add-offer',
       label: 'Add offer',
@@ -1220,10 +1151,39 @@ const contractPendingActions = computed(() => {
   ]
 })
 
+// Menu items for dropdowns
+const secondaryActionsMenuItems = computed(() => {
+  return (opportunityState.secondaryActions.value || []).map(action => ({
+    key: action.key,
+    label: action.label,
+    disabled: !!action.disabled,
+    onClick: () => {
+      showSecondaryActionsDropdown.value = false
+      showSecondaryActionsDropdownNegotiation.value = false
+      handleSecondaryAction(action)
+    }
+  }))
+})
+
+const contractPendingMenuItems = computed(() => {
+  return (contractPendingActions.value || []).map(action => ({
+    key: action.key,
+    label: action.label,
+    disabled: !!action.disabled,
+    onClick: () => {
+      showContractPendingDropdown.value = false
+      if (action.handler) {
+        action.handler()
+      }
+    }
+  }))
+})
+
 function handleContractPendingAction(action) {
   // The handler is already called by SecondaryActionsDropdown
   // This is just for any additional logic if needed
 }
+
 
 // Computed for NS task count - this represents which NS task to show (1, 2, or 3)
 const nsTaskCount = computed(() => {
@@ -1231,22 +1191,10 @@ const nsTaskCount = computed(() => {
   // When showing the NS section, if the count is 0, it means we're about to mark
   // as no-show for the first time, so show NS1Task
   if (currentCount === 0 && showNsTaskSection.value) {
-    console.log('[OpportunityManagementWidget] nsTaskCount computed: returning 1 (first no-show)')
     return 1
   }
   // Otherwise use the actual count
-  console.log('[OpportunityManagementWidget] nsTaskCount computed: returning', currentCount)
   return currentCount
-})
-
-// Watch for changes in section visibility
-watch([showRescheduleSection, showNsTaskSection, showOfferAssignmentSection], ([reschedule, ns, offer]) => {
-  console.log('[OpportunityManagementWidget] Section visibility changed:', {
-    showRescheduleSection: reschedule,
-    showNsTaskSection: ns,
-    showOfferAssignmentSection: offer,
-    nsTaskCount: nsTaskCount.value
-  })
 })
 
 // NS Task validation
@@ -1257,7 +1205,7 @@ const canSubmitNsTask = computed(() => {
     3: ns3TaskRef
   }
   const ref = taskRefs[nsTaskCount.value]
-  return ref.value?.canSubmit || false
+  return ref?.value?.canSubmit || false
 })
 
 const nsTaskButtonLabel = computed(() => {
@@ -1267,7 +1215,7 @@ const nsTaskButtonLabel = computed(() => {
 
 // Offer assignment validation
 const canCreateOffer = computed(() => {
-  return offerAssignmentTaskRef.value?.canSubmit || false
+  return offerAssignmentTaskRef?.value?.canSubmit || false
 })
 
 // In Negotiation computed properties
@@ -1298,6 +1246,23 @@ const showComingSoonModal = ref(false)
 const showViewAppointment = ref(false)
 const showEditAppointment = ref(false)
 const recommendedCars = ref([])
+
+// PDF Generation state
+const showPDFGenerationModal = ref(false)
+const showPDFPreviewModal = ref(false)
+const showEmailPDFModal = ref(false)
+const showPostponeTaskDialog = ref(false)
+const postponeTaskType = ref(null)
+const showEditExpectedCloseDateModal = ref(false)
+const pdfGenerationDocumentType = ref(null) // 'contract' | 'offer' | null
+const pdfGenerationOfferId = ref(null)
+const previewPDFUrl = ref(null)
+const previewPDFId = ref(null)
+const isPreviewingPDF = ref(false)
+const pdfPreviewError = ref(null)
+const emailPDFId = ref(null)
+const emailRecipient = ref('')
+const emailSubject = ref('Contract/Offer Document')
 
 // Helper function for formatting currency
 function formatCurrency(value) {
@@ -1358,8 +1323,28 @@ const actionHandlers = {
   'follow-up-offer': () => { showComingSoonModal.value = true },
   'request-decision': () => { showComingSoonModal.value = true },
   'finalize-contract': () => { showContractDateModal.value = true },
-  'schedule-delivery': () => { showDeliveryModal.value = true },
-  'confirm-delivery': () => { showDeliveryModal.value = true },
+  'schedule-delivery': () => { 
+    if (shouldShowDeliveryManagement.value) {
+      showScheduleDeliverySection.value = true
+      showConfirmDeliverySection.value = false
+      // Initialize form with today's date
+      if (!deliveryScheduleForm.value.deliveryDate) {
+        const today = new Date()
+        deliveryScheduleForm.value.deliveryDate = today.toISOString().split('T')[0]
+      }
+    }
+  },
+  'confirm-delivery': () => { 
+    if (shouldShowDeliveryManagement.value) {
+      showConfirmDeliverySection.value = true
+      showScheduleDeliverySection.value = false
+      // Initialize form with today's date
+      if (!deliveryConfirmForm.value.actualDeliveryDate) {
+        const today = new Date()
+        deliveryConfirmForm.value.actualDeliveryDate = today.toISOString().split('T')[0]
+      }
+    }
+  },
   'collect-feedback': () => { showComingSoonModal.value = true },
   'reschedule': () => { showEditAppointment.value = true },
   'cancel-appointment': () => {
@@ -1368,7 +1353,13 @@ const actionHandlers = {
   'close-won': () => { showContractDateModal.value = true },
   'add-offer': () => { showOfferModal.value = true },
   'add-contract': () => { showContractDateModal.value = true },
+  'mark-offer-accepted': () => { handleMarkOfferAccepted() },
+  'create-contract': () => { 
+    // For Offer Accepted status, show contract creation
+    showFinalizeContractSection.value = true
+  },
   'extend-deadline': () => { showComingSoonModal.value = true },
+  'extend-expected-close-date': () => { showEditExpectedCloseDateModal.value = true },
   'close-lost': () => { showCloseAsLostModal.value = true },
   'reopen': () => { handleReopen() },
   'requalify': () => { showRequalifyModal.value = true }
@@ -1383,23 +1374,45 @@ const opportunityActions = useOpportunityActions(
   formatDateTime
 )
 
-// Create opportunityState wrapper to match leadState pattern
-const opportunityState = {
-  isClosed: opportunityActions.isClosed,
-  primaryAction: computed(() => {
-    // Don't show primary action when showing inline call/schedule interface
-    if (shouldShowScheduleForm.value) {
-      return null
-    }
-    // Don't show primary action widget when we have a scheduled appointment (we show management card instead)
-    if (scheduledAppointment.value && scheduledAppointment.value.start && 
-        (opportunityState.displayStage.value === OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED || 
-         opportunityState.displayStage.value === OPPORTUNITY_STAGES.AWAITING_APPOINTMENT)) {
-      return null
-    }
-    return opportunityActions.primaryAction.value
-  }),
-  secondaryActions: opportunityActions.secondaryActions,
+  // Create opportunityState wrapper to match leadState pattern
+  const opportunityState = {
+    isClosed: opportunityActions.isClosed,
+    primaryAction: computed(() => {
+      // Don't show primary action when showing inline call/schedule interface
+      if (shouldShowScheduleForm.value) {
+        return null
+      }
+      // Don't show primary action widget when we have a scheduled appointment (we show management card instead)
+      if (scheduledAppointment.value && scheduledAppointment.value.start && 
+          (opportunityState.displayStage.value === OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED || 
+           opportunityState.displayStage.value === OPPORTUNITY_STAGES.AWAITING_APPOINTMENT)) {
+        return null
+      }
+      // For closed opportunities, we show them in dedicated sections, not as primary action widget
+      if (opportunityActions.isClosed.value) {
+        return null
+      }
+      return opportunityActions.primaryAction.value
+    }),
+    secondaryActions: computed(() => {
+      // Always include "close as lost" in secondary actions
+      const baseActions = opportunityActions.secondaryActions.value || []
+      const hasCloseAsLost = baseActions.some(action => action.key === 'close-lost')
+      
+      if (!hasCloseAsLost && !opportunityActions.isClosed.value) {
+        return [
+          ...baseActions,
+          {
+            key: 'close-lost',
+            label: 'Close as Lost',
+            handler: () => {
+              showCloseAsLostModal.value = true
+            }
+          }
+        ]
+      }
+      return baseActions
+    }),
   activeTaskWidget: computed(() => {
     // Don't show regular task widgets when showing awaiting appointment view
     if (shouldShowScheduleForm.value) {
@@ -1414,17 +1427,34 @@ const opportunityState = {
   }),
   taskWidgetTitle: opportunityActions.taskWidgetTitle,
   displayStage: computed(() => {
-    const stage = getDisplayStage(props.opportunity, 'opportunity')
-    if (!stage) {
-      console.warn('No display stage calculated for opportunity:', props.opportunity?.id)
-    }
-    return stage
+    return getDisplayStage(props.opportunity, 'opportunity')
   }),
   showDeadlineBanner: computed(() => {
     // Show deadline banner if opportunity has nextActionDue and is not closed
     return !opportunityActions.isClosed.value && !!props.opportunity?.nextActionDue
   })
 }
+
+// Check if opportunity is in In Negotiation stage (any substatus except Offer Accepted)
+// Defined after opportunityActions to avoid circular dependency
+const isInNegotiation = computed(() => {
+  const opp = props.opportunity
+  if (!opp) return false
+  
+  // Check if closed
+  if (opportunityActions.isClosed.value) return false
+  
+  // Must be in In Negotiation stage
+  if (opp.stage !== 'In Negotiation') return false
+  
+  // Exclude Offer Accepted and Contract Pending
+  const displayStage = getDisplayStage(opp, 'opportunity')
+  if (displayStage === 'In Negotiation - Contract Pending') return false
+  if (opp.negotiationSubstatus === 'Offer Accepted') return false
+  
+  // Include Offer Sent, Offer Under Review (formerly Awaiting Response), Offer Feedback (backward compatibility), and null (which means Offer Sent)
+  return true
+})
 
 // Helper function (kept for backward compatibility)
 function calculateDaysSince(dateString) {
@@ -1447,6 +1477,83 @@ const handleOwnerReassigned = async (assignee) => {
 
 function handleTaskWidgetClose() {
   // Handle task widget close if needed
+}
+
+function handleTaskWidgetSurveySubmitted(data) {
+  // Survey submission is already handled in DFBTask component
+  // This is just for any additional handling if needed
+}
+
+async function handleTaskPostpone(taskType) {
+  postponeTaskType.value = taskType.toLowerCase()
+  showPostponeTaskDialog.value = true
+}
+
+async function handlePostponeTaskConfirm(data) {
+  try {
+    const opp = getCurrentOpportunity()
+    const postponedTasks = opp.postponedTasks || {}
+    postponedTasks[data.taskType] = data.dateTime
+    
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      postponedTasks: postponedTasks
+    })
+    
+    // Create activity log
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'task-postponed',
+      user: userStore.currentUser?.name || 'You',
+      action: 'postponed task',
+      content: `Task ${data.taskType.toUpperCase()} postponed to ${new Date(data.dateTime).toLocaleString()}${data.reason ? `: ${data.reason}` : ''}`,
+      data: {
+        taskType: data.taskType,
+        dateTime: data.dateTime,
+        reason: data.reason
+      },
+      timestamp: new Date().toISOString()
+    })
+    
+    showPostponeTaskDialog.value = false
+    postponeTaskType.value = null
+  } catch (error) {
+    console.error('Failed to postpone task:', error)
+  }
+}
+
+function handlePostponeTaskCancel() {
+  showPostponeTaskDialog.value = false
+  postponeTaskType.value = null
+}
+
+async function handleExtendExpectedCloseDate(data) {
+  try {
+    const opp = getCurrentOpportunity()
+    
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      expectedCloseDate: data.expectedCloseDate
+    })
+    
+    // Create activity log
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'expected-close-date-extension',
+      user: userStore.currentUser?.name || 'You',
+      action: 'extended expected close date',
+      content: `Expected close date extended to ${new Date(data.expectedCloseDate).toLocaleDateString()}${data.reason ? `: ${data.reason}` : ''}`,
+      data: {
+        expectedCloseDate: data.expectedCloseDate,
+        reason: data.reason
+      },
+      timestamp: new Date().toISOString()
+    })
+    
+    showEditExpectedCloseDateModal.value = false
+  } catch (error) {
+    console.error('Failed to extend expected close date:', error)
+  }
+}
+
+function handleCancelExtendExpectedCloseDate() {
+  showEditExpectedCloseDateModal.value = false
 }
 
 function handleVehicleSelected(vehicleData) {
@@ -1517,15 +1624,132 @@ function handleContractSet(contractData) {
   })
 }
 
-function handleDelivered(deliveryData) {
+async function handleDelivered(deliveryData) {
   showDeliveryModal.value = false
-  // Log delivery activity
-  opportunitiesStore.addActivity(props.opportunity.id, {
-    type: 'delivery',
-    user: 'You',
-    action: 'marked as delivered',
-    data: deliveryData
-  })
+  
+  try {
+    const opp = getCurrentOpportunity()
+    
+    // Update opportunity with delivery date and set substatus to 'Delivered'
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      deliveryDate: deliveryData.deliveryDate,
+      deliverySubstatus: 'Delivered',
+      actualDeliveryDate: deliveryData.deliveryDate,
+      deliveryLocation: deliveryData.location,
+      deliveryNotes: deliveryData.notes
+    })
+    
+    // Log delivery activity
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'delivery',
+      user: userStore.currentUser?.name || 'You',
+      action: 'marked as delivered',
+      content: `Delivery confirmed on ${new Date(deliveryData.deliveryDate).toLocaleString()} at ${deliveryData.location || 'N/A'}`,
+      data: deliveryData,
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    console.error('Failed to mark as delivered:', error)
+  }
+}
+
+// Delivery Management handlers
+function handleCancelScheduleDelivery() {
+  showScheduleDeliverySection.value = false
+  deliveryScheduleForm.value = {
+    deliveryDate: '',
+    deliveryTime: '',
+    deliveryLocation: '',
+    notes: ''
+  }
+}
+
+async function handleConfirmScheduleDelivery() {
+  if (!canSubmitScheduleDelivery.value) return
+  
+  try {
+    const opp = getCurrentOpportunity()
+    const datetime = deliveryScheduleForm.value.deliveryTime 
+      ? `${deliveryScheduleForm.value.deliveryDate}T${deliveryScheduleForm.value.deliveryTime}:00`
+      : `${deliveryScheduleForm.value.deliveryDate}T12:00:00`
+    
+    // Update opportunity with delivery date and set substatus to 'Awaiting Delivery'
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      deliveryDate: datetime,
+      deliverySubstatus: 'Awaiting Delivery',
+      deliveryLocation: deliveryScheduleForm.value.deliveryLocation,
+      deliveryNotes: deliveryScheduleForm.value.notes
+    })
+    
+    // Add activity
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'delivery-scheduled',
+      user: userStore.currentUser?.name || 'You',
+      action: 'scheduled delivery',
+      content: `Delivery scheduled for ${new Date(datetime).toLocaleString()} at ${deliveryScheduleForm.value.deliveryLocation}`,
+      data: {
+        deliveryDate: datetime,
+        location: deliveryScheduleForm.value.deliveryLocation,
+        notes: deliveryScheduleForm.value.notes
+      },
+      timestamp: new Date().toISOString()
+    })
+    
+    // Close section and reset form
+    handleCancelScheduleDelivery()
+  } catch (error) {
+    console.error('Failed to schedule delivery:', error)
+  }
+}
+
+function handleCancelConfirmDelivery() {
+  showConfirmDeliverySection.value = false
+  deliveryConfirmForm.value = {
+    actualDeliveryDate: '',
+    deliveryTime: '',
+    deliveryLocation: '',
+    notes: ''
+  }
+}
+
+async function handleConfirmDelivery() {
+  if (!canSubmitConfirmDelivery.value) return
+  
+  try {
+    const opp = getCurrentOpportunity()
+    const datetime = deliveryConfirmForm.value.deliveryTime 
+      ? `${deliveryConfirmForm.value.actualDeliveryDate}T${deliveryConfirmForm.value.deliveryTime}:00`
+      : `${deliveryConfirmForm.value.actualDeliveryDate}T12:00:00`
+    
+    // Update opportunity with actual delivery date and set substatus to 'Delivered'
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      deliveryDate: datetime,
+      deliverySubstatus: 'Delivered',
+      actualDeliveryDate: datetime,
+      deliveryLocation: deliveryConfirmForm.value.deliveryLocation,
+      deliveryNotes: deliveryConfirmForm.value.notes
+    })
+    
+    // Add activity
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'delivery',
+      user: userStore.currentUser?.name || 'You',
+      action: 'confirmed delivery',
+      content: `Delivery confirmed on ${new Date(datetime).toLocaleString()} at ${deliveryConfirmForm.value.deliveryLocation}`,
+      data: {
+        actualDeliveryDate: datetime,
+        scheduledDeliveryDate: opp.deliveryDate,
+        location: deliveryConfirmForm.value.deliveryLocation,
+        notes: deliveryConfirmForm.value.notes
+      },
+      timestamp: new Date().toISOString()
+    })
+    
+    // Close section and reset form
+    handleCancelConfirmDelivery()
+  } catch (error) {
+    console.error('Failed to confirm delivery:', error)
+  }
 }
 
 function handleClosedLost(data) {
@@ -1544,17 +1768,18 @@ function handleClosedLost(data) {
 
 async function handleReopen() {
   const opp = getCurrentOpportunity()
+  const wasClosedWon = opp.stage === 'Closed Won'
   const hasOffers = opp.offers && opp.offers.length > 0
   
-  if (!hasOffers) {
-    // No offers exist → return to Qualified
-    await opportunitiesStore.updateOpportunity(opp.id, {
-      stage: 'Qualified',
-      negotiationSubstatus: null
-    })
-  } else {
-    // Offers exist → return to In Negotiation with appropriate substatus
-    // Check most recent offer to determine substatus
+  // Close the reopen section if it's open
+  showReopenSection.value = false
+  
+  // Determine target stage and negotiation substatus
+  let targetStage = 'Qualified'
+  let negotiationSubstatus = null
+  
+  if (hasOffers) {
+    targetStage = 'In Negotiation'
     const mostRecentOffer = opp.offers
       .filter(o => o.status === 'active')
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
@@ -1562,18 +1787,34 @@ async function handleReopen() {
     // Check if any offer was accepted
     const hasAcceptedOffer = opp.offers.some(o => o.status === 'accepted')
     
-    let negotiationSubstatus = 'Offer Sent'
     if (hasAcceptedOffer) {
       negotiationSubstatus = 'Offer Accepted'
     } else if (mostRecentOffer) {
       const daysSinceOffer = Math.ceil((new Date() - new Date(mostRecentOffer.createdAt)) / (1000 * 60 * 60 * 24))
-      if (daysSinceOffer >= 3) {
-        negotiationSubstatus = 'Offer Feedback'
-      }
+      negotiationSubstatus = daysSinceOffer >= 3 ? 'Offer Under Review' : 'Offer Sent'
+    } else {
+      negotiationSubstatus = 'Offer Sent'
     }
-    
+  }
+  
+  // If Closed Won, prevent task re-triggering
+  if (wasClosedWon) {
     await opportunitiesStore.updateOpportunity(opp.id, {
-      stage: 'In Negotiation',
+      stage: targetStage,
+      negotiationSubstatus: negotiationSubstatus,
+      skipTaskReTrigger: true
+    })
+    
+    // Clear flag after 2 seconds (allows UI to update without re-triggering)
+    setTimeout(async () => {
+      await opportunitiesStore.updateOpportunity(opp.id, {
+        skipTaskReTrigger: false
+      })
+    }, 2000)
+  } else {
+    // Closed Lost - normal reopen (task rules will naturally re-trigger based on stage)
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      stage: targetStage,
       negotiationSubstatus: negotiationSubstatus
     })
   }
@@ -1602,18 +1843,17 @@ function handleSetCallback({ opportunity, callbackDate }) {
   })
 }
 
-// NS Assignment handler (called from NSTask component)
+// NS Assignment handler (called from NS1/NS2/NS3 components)
 function handleNsAssigned({ opportunity, assignee, note }) {
-  // Assignment is already handled in NSTask component
+  // Assignment is already handled in NS1/NS2/NS3 components
   // This is just for any additional handling if needed
-  console.log('Opportunity assigned:', { opportunity, assignee, note })
 }
 
 // Handle confirm NS task
 function handleConfirmNsTask() {
   const taskRefs = { 1: ns1TaskRef, 2: ns2TaskRef, 3: ns3TaskRef }
   const ref = taskRefs[nsTaskCount.value]
-  ref.value?.submit()
+  ref?.value?.submit()
 }
 
 // Handle cancel NS task
@@ -1649,7 +1889,7 @@ async function handleOfferAssignmentCreated({ opportunity, offerData }) {
 
 // Handle confirm offer assignment
 function handleConfirmOfferAssignment() {
-  offerAssignmentTaskRef.value?.submit()
+  offerAssignmentTaskRef?.value?.submit()
 }
 
 // Handle cancel offer assignment
@@ -1659,8 +1899,6 @@ function handleCancelOfferAssignment() {
 
 // In Negotiation handlers
 function handleFollowUpOffer() {
-  console.log('[OpportunityManagementWidget] handleFollowUpOffer called')
-  
   // Show negotiation section, hide others (mutually exclusive)
   showRescheduleSection.value = false
   showNsTaskSection.value = false
@@ -1677,8 +1915,6 @@ function handleFollowUpOffer() {
 }
 
 function handleAddAnotherOffer() {
-  console.log('[OpportunityManagementWidget] handleAddAnotherOffer called')
-  
   // Show add offer section, hide others (mutually exclusive)
   showRescheduleSection.value = false
   showNsTaskSection.value = false
@@ -1688,30 +1924,59 @@ function handleAddAnotherOffer() {
 }
 
 async function handleOfferAccepted(offer) {
-  console.log('[OpportunityManagementWidget] handleOfferAccepted called', offer)
+  await handleMarkOfferAccepted(offer)
+}
+
+async function handleMarkOfferAccepted(offer = null) {
+  const opp = getCurrentOpportunity()
+  
+  // Validation using validation utility
+  const { OpportunityValidations } = await import('@/utils/opportunityRules')
+  const validation = OpportunityValidations.canMarkOfferAccepted(opp)
+  if (!validation.valid) {
+    alert(validation.error)
+    return
+  }
+  
+  // If no specific offer provided, use the most recent active offer
+  let offerToAccept = offer
+  if (!offerToAccept) {
+    const activeOffers = opp.offers.filter(o => o.status === 'active')
+    // Get most recent active offer
+    offerToAccept = activeOffers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+  }
   
   try {
-    // Mark offer as accepted and transition to In Negotiation - Contract Pending
-    await opportunitiesStore.markOfferAccepted(opportunity.id, offer.id)
+    // Mark offer as accepted with metadata
+    const metadata = {
+      acceptanceMethod: 'manual',
+      acceptedByUserId: userStore.currentUser?.id || null
+    }
+    
+    await opportunitiesStore.markOfferAccepted(opp.id, offerToAccept.id, metadata)
     
     // Add activity for offer acceptance
-    await opportunitiesStore.addActivity(opportunity.id, {
+    await opportunitiesStore.addActivity(opp.id, {
       type: 'offer-acceptance',
       user: userStore.currentUser?.name || 'You',
       action: 'accepted offer',
-      content: `Offer accepted: ${offer.vehicleBrand} ${offer.vehicleModel} (${offer.vehicleYear}) - € ${offer.price.toLocaleString()}`,
-      data: { offerId: offer.id },
+      content: `Offer accepted: ${offerToAccept.vehicleBrand} ${offerToAccept.vehicleModel} (${offerToAccept.vehicleYear}) - € ${offerToAccept.price.toLocaleString()}`,
+      data: { 
+        offerId: offerToAccept.id,
+        acceptanceMethod: 'manual',
+        acceptedByUserId: userStore.currentUser?.id
+      },
       timestamp: new Date().toISOString()
     })
     
     showNegotiationSection.value = false
   } catch (error) {
     console.error('Failed to mark offer as accepted:', error)
+    alert('Failed to mark offer as accepted. Please try again.')
   }
 }
 
 async function handleOfferDeleted(offer) {
-  console.log('[OpportunityManagementWidget] handleOfferDeleted called', offer)
   
   try {
     await opportunitiesStore.deleteOffer(opportunity.id, offer.id)
@@ -1731,19 +1996,12 @@ async function handleOfferDeleted(offer) {
 }
 
 function handleViewOffer(offer) {
-  console.log('[OpportunityManagementWidget] handleViewOffer called', offer)
   // TODO: Open offer detail modal (Coming Soon)
   showComingSoonModal.value = true
 }
 
 async function handleSendNegotiationMessage() {
   if (!canSendNegotiationMessage.value) return
-  
-  console.log('[OpportunityManagementWidget] handleSendNegotiationMessage called', {
-    channel: negotiationChannel.value,
-    message: negotiationMessage.value,
-    offerId: negotiationSelectedOfferId.value
-  })
   
   try {
     // Add activity for communication
@@ -1784,11 +2042,10 @@ function handleCancelNegotiation() {
 
 // Add Offer inline handlers
 const canCreateInlineOffer = computed(() => {
-  return addOfferWidgetRef.value?.isValid || false
+  return addOfferWidgetRef?.value?.isValid || false
 })
 
 async function handleInlineOfferCreated(offerPayload) {
-  console.log('[OpportunityManagementWidget] handleInlineOfferCreated called', offerPayload)
   
   try {
     // Add offer to opportunity
@@ -1818,7 +2075,7 @@ async function handleInlineOfferCreated(offerPayload) {
 }
 
 function handleConfirmAddOffer() {
-  if (addOfferWidgetRef.value) {
+  if (addOfferWidgetRef?.value) {
     addOfferWidgetRef.value.submit()
   }
 }
@@ -1829,123 +2086,6 @@ function handleCancelAddOffer() {
   if (addOfferWidgetRef.value) {
     // The OfferWidget component will handle its own reset
   }
-}
-
-// Post-Delivery Survey handlers
-const canSubmitSurvey = computed(() => {
-  return postDeliverySurveyRef.value?.isValid || false
-})
-
-async function handleSurveySubmit(surveyData) {
-  console.log('[OpportunityManagementWidget] handleSurveySubmit called', surveyData)
-  
-  try {
-    const opp = getCurrentOpportunity()
-    const { responses, triggerActions } = surveyData
-    
-    // Save survey as activity
-    await opportunitiesStore.addActivity(opp.id, {
-      type: 'post-delivery-survey',
-      user: userStore.currentUser?.name || 'You',
-      action: 'completed post-delivery customer satisfaction survey',
-      content: 'Post-Delivery Customer Satisfaction Survey completed',
-      data: {
-        responses,
-        triggerActions,
-        timestamp: surveyData.timestamp
-      },
-      timestamp: surveyData.timestamp
-    })
-    
-    // Process trigger actions and send emails
-    const triggerActivityPromises = []
-    
-    if (triggerActions.negativeSatisfaction) {
-      triggerActivityPromises.push(
-        opportunitiesStore.addActivity(opp.id, {
-          type: 'survey-trigger',
-          user: userStore.currentUser?.name || 'You',
-          action: 'triggered email notification',
-          content: 'Email sent to Sales Manager + Branch Manager (Negative satisfaction)',
-          data: {
-            trigger: 'negative-satisfaction',
-            recipients: ['Sales Manager', 'Branch Manager'],
-            surveyResponse: responses.q1
-          },
-          timestamp: new Date().toISOString()
-        })
-      )
-    }
-    
-    if (triggerActions.issuesReported) {
-      triggerActivityPromises.push(
-        opportunitiesStore.addActivity(opp.id, {
-          type: 'survey-trigger',
-          user: userStore.currentUser?.name || 'You',
-          action: 'triggered email notification',
-          content: 'Email sent to Service Department (Issues reported)',
-          data: {
-            trigger: 'issues-reported',
-            recipients: ['Service Department'],
-            issueDescription: responses.q3
-          },
-          timestamp: new Date().toISOString()
-        })
-      )
-    }
-    
-    if (triggerActions.deliveryDelay) {
-      triggerActivityPromises.push(
-        opportunitiesStore.addActivity(opp.id, {
-          type: 'survey-trigger',
-          user: userStore.currentUser?.name || 'You',
-          action: 'triggered email notification',
-          content: 'Email sent to Delivery Coordinator (Major delivery delay)',
-          data: {
-            trigger: 'delivery-delay',
-            recipients: ['Delivery Coordinator'],
-            surveyResponse: responses.q4
-          },
-          timestamp: new Date().toISOString()
-        })
-      )
-    }
-    
-    if (triggerActions.highNPS) {
-      triggerActivityPromises.push(
-        opportunitiesStore.addActivity(opp.id, {
-          type: 'survey-trigger',
-          user: userStore.currentUser?.name || 'You',
-          action: 'triggered email notification',
-          content: 'Email sent to Marketing (High NPS - Definitely Yes)',
-          data: {
-            trigger: 'high-nps',
-            recipients: ['Marketing'],
-            surveyResponse: responses.q7
-          },
-          timestamp: new Date().toISOString()
-        })
-      )
-    }
-    
-    // Wait for all trigger activities to be created
-    await Promise.all(triggerActivityPromises)
-    
-    // Close the survey section
-    showPostDeliverySurveySection.value = false
-  } catch (error) {
-    console.error('Failed to submit survey:', error)
-  }
-}
-
-function handleConfirmSurvey() {
-  if (postDeliverySurveyRef.value) {
-    postDeliverySurveyRef.value.submit()
-  }
-}
-
-function handleCancelSurvey() {
-  showPostDeliverySurveySection.value = false
 }
 
 // Contract Pending Management handlers
@@ -1973,6 +2113,39 @@ const canCreateInlineOfferContractPending = computed(() => {
   return addOfferContractPendingRef.value?.isValid || false
 })
 
+// Delivery Management computed properties
+const minDeliveryDate = computed(() => {
+  const today = new Date()
+  return today.toISOString().split('T')[0]
+})
+
+const maxDeliveryDate = computed(() => {
+  const today = new Date()
+  return today.toISOString().split('T')[0]
+})
+
+const canSubmitScheduleDelivery = computed(() => {
+  return !!deliveryScheduleForm.value.deliveryDate && !!deliveryScheduleForm.value.deliveryLocation
+})
+
+const canSubmitConfirmDelivery = computed(() => {
+  return !!deliveryConfirmForm.value.actualDeliveryDate && !!deliveryConfirmForm.value.deliveryLocation
+})
+
+function onFinalizeContractToggle(p) {
+  showFinalizeContractSection.value = p
+  if (p) {
+    showAddOfferContractPendingSection.value = false
+    showExtendDeadlineSection.value = false
+    showScheduleAppointmentContractPendingSection.value = false
+    if (!contractPendingForm.value.contractDate) {
+      const today = new Date()
+      contractPendingForm.value.contractDate = today.toISOString().split('T')[0]
+      contractPendingForm.value.contractTime = today.toTimeString().slice(0, 5)
+    }
+  }
+}
+
 // Primary Action: Finalize Contract
 function handleFinalizeContract() {
   // Close other sections (mutually exclusive)
@@ -1995,7 +2168,8 @@ function handleCancelFinalizeContract() {
   contractPendingForm.value = {
     contractDate: '',
     contractTime: '',
-    notes: ''
+    notes: '',
+    autoMarkOfferAccepted: true // Reset to default
   }
 }
 
@@ -2007,6 +2181,57 @@ async function handleConfirmFinalizeContract() {
     const datetime = contractPendingForm.value.contractTime 
       ? `${contractPendingForm.value.contractDate}T${contractPendingForm.value.contractTime}:00`
       : `${contractPendingForm.value.contractDate}T12:00:00`
+    
+    // Check if this is a fast deal (contract from Offer Sent directly)
+    const isFastDeal = opp.negotiationSubstatus === 'Offer Sent' || opp.negotiationSubstatus === null
+    
+    // Validation: Check if contract can be created (unless fast deal)
+    if (!isFastDeal) {
+      const { OpportunityValidations } = await import('@/utils/opportunityRules')
+      const validation = OpportunityValidations.canCreateContract(opp, false)
+      if (!validation.valid) {
+        alert(validation.error)
+        return
+      }
+    }
+    
+    // Auto-accept offer if checkbox is checked and status is "Offer Under Review" or "Offer Sent" (fast deal path)
+    const shouldAutoAccept = contractPendingForm.value.autoMarkOfferAccepted !== false && 
+                            (opp.negotiationSubstatus === 'Offer Under Review' || 
+                             opp.negotiationSubstatus === 'Awaiting Response' || 
+                             opp.negotiationSubstatus === 'Offer Sent' ||
+                             opp.negotiationSubstatus === null)
+    
+    if (shouldAutoAccept && opp.offers && opp.offers.length > 0) {
+      // Find most recent active offer
+      const activeOffers = opp.offers.filter(o => o.status === 'active')
+      if (activeOffers.length > 0) {
+        const mostRecentOffer = activeOffers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+        
+        // Auto-accept the offer with metadata
+        const metadata = {
+          acceptanceMethod: 'auto_via_contract',
+          acceptedByUserId: userStore.currentUser?.id || null
+        }
+        
+        await opportunitiesStore.markOfferAccepted(opp.id, mostRecentOffer.id, metadata)
+        
+        // Add activity for auto-acceptance
+        await opportunitiesStore.addActivity(opp.id, {
+          type: 'offer-acceptance',
+          user: userStore.currentUser?.name || 'You',
+          action: 'auto-accepted offer via contract creation',
+          content: `Offer automatically accepted when creating contract: ${mostRecentOffer.vehicleBrand} ${mostRecentOffer.vehicleModel} (${mostRecentOffer.vehicleYear}) - € ${mostRecentOffer.price.toLocaleString()}`,
+          data: { 
+            offerId: mostRecentOffer.id,
+            acceptanceMethod: 'auto_via_contract',
+            contractDate: datetime,
+            acceptedByUserId: userStore.currentUser?.id
+          },
+          timestamp: new Date().toISOString()
+        })
+      }
+    }
     
     // Update opportunity with contract date and auto-transition to Closed Won
     await opportunitiesStore.updateOpportunity(opp.id, {
@@ -2023,7 +2248,8 @@ async function handleConfirmFinalizeContract() {
       content: `Contract date set: ${new Date(datetime).toLocaleString()}`,
       data: {
         contractDate: datetime,
-        notes: contractPendingForm.value.notes
+        notes: contractPendingForm.value.notes,
+        autoAcceptedOffer: shouldAutoAccept
       },
       timestamp: new Date().toISOString()
     })
@@ -2050,7 +2276,7 @@ function handleCancelAddOfferContractPending() {
 }
 
 function handleConfirmAddOfferContractPending() {
-  if (addOfferContractPendingRef.value) {
+  if (addOfferContractPendingRef?.value) {
     addOfferContractPendingRef.value.submit()
   }
 }
@@ -2240,14 +2466,7 @@ function handleRescheduleAppointment() {
 }
 
 function handleMarkNoShow() {
-  console.log('[OpportunityManagementWidget] handleMarkNoShow called', {
-    hasAppointment: !!scheduledAppointment.value,
-    appointmentStatus: scheduledAppointment.value?.status,
-    noShowCount: scheduledAppointment.value?.noShowCount
-  })
-  
   if (!scheduledAppointment.value) {
-    console.log('[OpportunityManagementWidget] No scheduled appointment, returning')
     return
   }
 
@@ -2255,25 +2474,16 @@ function handleMarkNoShow() {
   showRescheduleSection.value = false
   showOfferAssignmentSection.value = false
   showNsTaskSection.value = true
-  
-  console.log('[OpportunityManagementWidget] Set showNsTaskSection to true')
 
   // Update appointment status to no-show if not already marked (async, but don't wait)
   if (scheduledAppointment.value.status !== 'no-show') {
-    console.log('[OpportunityManagementWidget] Calling updateAppointmentToNoShow')
     updateAppointmentToNoShow()
   }
 }
 
 // Handle mark as showed up
 function handleMarkShowedUp() {
-  console.log('[OpportunityManagementWidget] handleMarkShowedUp called', {
-    hasAppointment: !!scheduledAppointment.value,
-    appointmentStatus: scheduledAppointment.value?.status
-  })
-  
   if (!scheduledAppointment.value) {
-    console.log('[OpportunityManagementWidget] No scheduled appointment, returning')
     return
   }
 
@@ -2281,8 +2491,6 @@ function handleMarkShowedUp() {
   showRescheduleSection.value = false
   showNsTaskSection.value = false
   showOfferAssignmentSection.value = true
-  
-  console.log('[OpportunityManagementWidget] Set showOfferAssignmentSection to true')
 }
 
 async function updateAppointmentToNoShow() {
@@ -2355,18 +2563,15 @@ function handleRescheduleFromNs(opportunity) {
 
 function handleNsSurveyCompleted({ opportunity, responses }) {
   // Handle survey completion
-  console.log('NS Survey completed:', responses)
   // You can add activity or update opportunity here
 }
 
 function handleNsSurveyRefused({ opportunity }) {
   // Handle survey refusal
-  console.log('NS Survey refused')
 }
 
 function handleNsNotResponding({ opportunity }) {
   // Handle not responding
-  console.log('NS Not responding')
 }
 
 function handleAutoCloseLost({ opportunity, reason }) {
@@ -2408,6 +2613,107 @@ function handleSecondaryAction(action) {
       handler()
     }
   }
+}
+
+// PDF Generation handlers
+const { 
+  generateContractPDF: generateContractPDFComposable, 
+  generateOfferPDF: generateOfferPDFComposable, 
+  previewContractPDF: previewContractPDFComposable, 
+  previewOfferPDF: previewOfferPDFComposable,
+  downloadPDF: downloadPDFComposable,
+  sendPDFByEmail: sendPDFByEmailComposable,
+  isLoading: isPDFLoading
+} = useContractPDF()
+
+const availableOffersForPDF = computed(() => {
+  if (!opportunity.offers || !Array.isArray(opportunity.offers)) return []
+  return opportunity.offers.filter(o => o.status === 'active' || !o.status)
+})
+
+function openPDFGenerationModal(documentType = null, offerId = null) {
+  pdfGenerationDocumentType.value = documentType
+  pdfGenerationOfferId.value = offerId
+  showPDFGenerationModal.value = true
+}
+
+async function handlePDFGenerate(payload) {
+  try {
+    let pdfInfo
+    if (payload.type === 'contract') {
+      pdfInfo = await generateContractPDFComposable(payload.opportunityId, payload.options)
+    } else {
+      pdfInfo = await generateOfferPDFComposable(payload.opportunityId, payload.offerId, payload.options)
+    }
+    // Show preview after generation
+    previewPDFUrl.value = pdfInfo.url
+    previewPDFId.value = pdfInfo.id
+    showPDFGenerationModal.value = false
+    showPDFPreviewModal.value = true
+  } catch (err) {
+    console.error('Error generating PDF:', err)
+    pdfPreviewError.value = err.message || 'Failed to generate PDF'
+  }
+}
+
+async function handlePDFPreview(payload) {
+  isPreviewingPDF.value = true
+  pdfPreviewError.value = null
+  
+  try {
+    let previewInfo
+    if (payload.type === 'contract') {
+      previewInfo = await previewContractPDFComposable(payload.opportunityId, payload.options)
+    } else {
+      previewInfo = await previewOfferPDFComposable(payload.opportunityId, payload.offerId, payload.options)
+    }
+    previewPDFUrl.value = previewInfo.previewUrl
+    previewPDFId.value = null // Preview doesn't have permanent ID
+    showPDFGenerationModal.value = false
+    showPDFPreviewModal.value = true
+  } catch (err) {
+    console.error('Error previewing PDF:', err)
+    pdfPreviewError.value = err.message || 'Failed to preview PDF'
+  } finally {
+    isPreviewingPDF.value = false
+  }
+}
+
+function handlePDFRegenerate() {
+  showPDFPreviewModal.value = false
+  showPDFGenerationModal.value = true
+}
+
+async function handlePDFDownload(pdfId) {
+  if (pdfId) {
+    try {
+      await downloadPDFComposable(pdfId)
+    } catch (err) {
+      console.error('Error downloading PDF:', err)
+      pdfPreviewError.value = err.message || 'Failed to download PDF'
+    }
+  }
+}
+
+function handlePDFEmail(payload) {
+  emailPDFId.value = payload.pdfId
+  emailRecipient.value = opportunity.customer?.email || ''
+  emailSubject.value = `${pdfGenerationDocumentType.value === 'contract' ? 'Contract' : 'Offer'} Document`
+  showPDFPreviewModal.value = false
+  showEmailPDFModal.value = true
+}
+
+function handlePDFPrint() {
+  // Print is handled in the modal component
+}
+
+function handlePDFEmailSent(payload) {
+  showEmailPDFModal.value = false
+  // Could show a success toast here
+}
+
+function handleOfferPDFGenerate(offer) {
+  openPDFGenerationModal('offer', offer.id)
 }
 
 

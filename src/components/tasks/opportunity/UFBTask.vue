@@ -3,6 +3,7 @@
     :title="'Unsold Feedback'"
     :description="`This opportunity has been open for ${daysOpen} days without any offer. This is a follow-up to ensure progress. Consider creating an offer or closing the opportunity.`"
     :color-scheme="{ background: 'bg-red-50/50', border: 'border-red-100' }"
+    @postpone="$emit('postpone', 'ufb')"
   >
     <template #actions>
       <button
@@ -36,7 +37,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-offer', 'survey-completed', 'survey-refused', 'not-responding'])
+const emit = defineEmits(['create-offer', 'survey-completed', 'survey-refused', 'not-responding', 'postpone'])
 
 const surveyQuestions = [
   {

@@ -176,76 +176,7 @@ export const mockOpportunities = [
     }
   },
 
-  // 4. Opportunity - 2nd No Show
-  {
-    id: 101,
-    customerId: 4,
-    requestedCar: { 
-      brand: 'Volkswagen', 
-      model: 'Golf', 
-      year: 2024, 
-      price: 28000,
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
-      dealership: 'Hamburg',
-      fuelType: 'Petrol',
-      gearType: 'Manual',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 15
-    },
-    vehicle: null,
-    selectedVehicle: null,
-    stage: 'Qualified',
-    negotiationSubstatus: null,
-    offers: [],
-    tags: [],
-    value: 28000,
-    expectedCloseDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 15)
-      return date.toISOString().split('T')[0]
-    })(),
-    assignee: 'Sarah Jenkins',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 15)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 4)
-      return date.toISOString()
-    })(),
-    scheduledAppointment: {
-      id: 24,
-      start: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 1)
-        date.setHours(16, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      end: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 1)
-        date.setHours(17, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      type: 'Test Drive',
-      assignee: 'Sarah Jenkins',
-      customerId: 4,
-      opportunityId: 101,
-      duration: 60,
-      status: 'confirmed',
-      noShowCount: 2,
-      lastNoShowDate: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() - 6)
-        return date.toISOString()
-      })()
-    }
-  },
-
-  // 5. Opportunity - Closed Lost
+  // 4. Opportunity - Closed Lost
   {
     id: 16,
     customerId: 5,
@@ -354,7 +285,7 @@ export const mockOpportunities = [
     scheduledAppointment: null
   },
 
-  // 7. Opportunity - In Negotiation - Offer Feedback (offer 3+ days old, no appointment)
+  // 7. Opportunity - In Negotiation - Offer Under Review (offer 3+ days old, no appointment)
   {
     id: 33,
     customerId: 7,
@@ -374,7 +305,7 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'In Negotiation',
-    negotiationSubstatus: 'Offer Feedback',
+    negotiationSubstatus: 'Offer Under Review',
     offers: [
       {
         id: 'offer-2',
@@ -419,77 +350,7 @@ export const mockOpportunities = [
     scheduledAppointment: null
   },
 
-  // 8. Opportunity - In Negotiation - Contract Pending (offer accepted, contract date set)
-  {
-    id: 27,
-    customerId: 8,
-    requestedCar: { 
-      brand: 'BMW', 
-      model: 'iX3', 
-      year: 2024, 
-      price: 68000,
-      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
-      dealership: 'Munich',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 5
-    },
-    vehicle: null,
-    selectedVehicle: null,
-    stage: 'In Negotiation',
-    negotiationSubstatus: 'Offer Accepted',
-    offers: [
-      {
-        id: 'offer-3',
-        createdAt: (() => {
-          const date = new Date()
-          date.setDate(date.getDate() - 8)
-          return date.toISOString()
-        })(),
-        vehicleBrand: 'BMW',
-        vehicleModel: 'iX3',
-        vehicleYear: 2024,
-        price: 68000,
-        status: 'accepted',
-        data: {
-          brand: 'BMW',
-          model: 'iX3',
-          year: 2024,
-          price: 68000,
-          financingType: 'financing',
-          image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60'
-        }
-      }
-    ],
-    tags: ['Premium', 'Electric'],
-    value: 68000,
-    expectedCloseDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 10)
-      return date.toISOString().split('T')[0]
-    })(),
-    assignee: 'Sarah Jenkins',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 20)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 2)
-      return date.toISOString()
-    })(),
-    contractDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 5)
-      return date.toISOString()
-    })(),
-    scheduledAppointment: null
-  },
-
-  // 9. Opportunity - In Negotiation - Contract Pending - Awaiting Contract Feedback (contract date 7+ days ago)
+  // 7. Opportunity - In Negotiation - Contract Pending - Awaiting Contract Feedback (contract date 7+ days ago)
   {
     id: 22,
     customerId: 9,
@@ -559,56 +420,7 @@ export const mockOpportunities = [
     scheduledAppointment: null
   },
 
-  // 10. Opportunity - Closed Won - Awaiting Delivery (contract signed, delivery date in future)
-  {
-    id: 26,
-    customerId: 10,
-    requestedCar: { 
-      brand: 'Tesla', 
-      model: 'Model Y', 
-      year: 2024, 
-      price: 55000,
-      image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&auto=format&fit=crop&q=60',
-      dealership: 'Berlin',
-      fuelType: 'Electric',
-      gearType: 'Automatic',
-      kilometers: 0,
-      status: 'New',
-      stockDays: 3
-    },
-    vehicle: null,
-    selectedVehicle: null,
-    stage: 'Closed Won',
-    negotiationSubstatus: null,
-    offers: [],
-    tags: ['Electric'],
-    value: 55000,
-    expectedCloseDate: null,
-    assignee: 'Sarah Jenkins',
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 45)
-      return date.toISOString()
-    })(),
-    lastActivity: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 5)
-      return date.toISOString()
-    })(),
-    closedDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 10)
-      return date.toISOString()
-    })(),
-    deliveryDate: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() + 10)
-      return date.toISOString()
-    })(),
-    scheduledAppointment: null
-  },
-
-  // 11. Opportunity - Closed Won - Delivered (contract signed, delivered, awaiting feedback)
+  // 8. Opportunity - Closed Won - Delivered (contract signed, delivered, awaiting feedback)
   {
     id: 10,
     customerId: 11,
@@ -659,6 +471,512 @@ export const mockOpportunities = [
       date.setDate(date.getDate() - 3)
       return date.toISOString()
     })(),
+    scheduledAppointment: null
+  },
+
+  // 9. Opportunity - In Negotiation - Offer Feedback (legacy, backward compatibility)
+  {
+    id: 34,
+    customerId: 8,
+    requestedCar: { 
+      brand: 'Volvo', 
+      model: 'XC90', 
+      year: 2024, 
+      price: 68000,
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Stockholm',
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 15
+    },
+    vehicle: null,
+    selectedVehicle: null,
+    stage: 'In Negotiation',
+    negotiationSubstatus: 'Offer Feedback',
+    offers: [
+      {
+        id: 'offer-3',
+        createdAt: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 5)
+          return date.toISOString()
+        })(),
+        vehicleBrand: 'Volvo',
+        vehicleModel: 'XC90',
+        vehicleYear: 2024,
+        price: 68000,
+        status: 'active',
+        data: {
+          brand: 'Volvo',
+          model: 'XC90',
+          year: 2024,
+          price: 68000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
+    tags: [],
+    value: 68000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 18)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'Sarah Jenkins',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 15)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 5)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: null
+  },
+
+  // 10. Opportunity - To be Called Back (Qualified with callbackDate)
+  {
+    id: 35,
+    customerId: 12,
+    requestedCar: { 
+      brand: 'Tesla', 
+      model: 'Model 3', 
+      year: 2024, 
+      price: 45000,
+      image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Berlin',
+      fuelType: 'Electric',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 7
+    },
+    vehicle: null,
+    selectedVehicle: null,
+    stage: 'Qualified',
+    negotiationSubstatus: null,
+    offers: [],
+    tags: ['Hot'],
+    value: 45000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 28)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'Salsabeel Khaleel',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 3)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 1)
+      return date.toISOString()
+    })(),
+    callbackDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 1)
+      date.setHours(10, 0, 0, 0)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: null
+  },
+
+  // 11. Opportunity - Needs Follow-up (In Negotiation with old offers, displays as Needs Follow-up)
+  {
+    id: 36,
+    customerId: 13,
+    requestedCar: { 
+      brand: 'Mercedes-Benz', 
+      model: 'E-Class', 
+      year: 2024, 
+      price: 62000,
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Stuttgart',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 18
+    },
+    vehicle: null,
+    selectedVehicle: null,
+    stage: 'In Negotiation',
+    negotiationSubstatus: 'Offer Under Review',
+    offers: [
+      {
+        id: 'offer-5',
+        createdAt: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 6)
+          return date.toISOString()
+        })(),
+        vehicleBrand: 'Mercedes-Benz',
+        vehicleModel: 'E-Class',
+        vehicleYear: 2024,
+        price: 62000,
+        status: 'active',
+        data: {
+          brand: 'Mercedes-Benz',
+          model: 'E-Class',
+          year: 2024,
+          price: 62000,
+          financingType: 'cash',
+          image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
+    tags: [],
+    value: 62000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 22)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'David Miller',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 20)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 6)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: null
+  },
+
+  // 12. Opportunity - Abandoned (inactive for 30+ days)
+  {
+    id: 37,
+    customerId: 14,
+    requestedCar: { 
+      brand: 'Jaguar', 
+      model: 'F-Pace', 
+      year: 2024, 
+      price: 72000,
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
+      dealership: 'London',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 25
+    },
+    vehicle: null,
+    selectedVehicle: null,
+    stage: 'Qualified',
+    negotiationSubstatus: null,
+    offers: [],
+    tags: [],
+    value: 72000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 35)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'Sarah Jenkins',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 45)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 35)
+      return date.toISOString()
+    })(),
+    scheduledAppointment: null
+  },
+
+  // 13. Opportunity - Closed Won - Awaiting Delivery (contract signed, delivery scheduled)
+  {
+    id: 38,
+    customerId: 15,
+    requestedCar: { 
+      brand: 'Audi', 
+      model: 'A6', 
+      year: 2024, 
+      price: 58000,
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Berlin',
+      fuelType: 'Diesel',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 3
+    },
+    vehicle: null,
+    selectedVehicle: null,
+    stage: 'Closed Won',
+    negotiationSubstatus: null,
+    offers: [
+      {
+        id: 'offer-6',
+        createdAt: (() => {
+          const date = new Date()
+          date.setDate(date.getDate() - 25)
+          return date.toISOString()
+        })(),
+        vehicleBrand: 'Audi',
+        vehicleModel: 'A6',
+        vehicleYear: 2024,
+        price: 58000,
+        status: 'accepted',
+        data: {
+          brand: 'Audi',
+          model: 'A6',
+          year: 2024,
+          price: 58000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
+    tags: [],
+    value: 58000,
+    expectedCloseDate: null,
+    assignee: 'Sarah Jenkins',
+    createdAt: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 50)
+      return date.toISOString()
+    })(),
+    lastActivity: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 2)
+      return date.toISOString()
+    })(),
+    closedDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    contractDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() - 10)
+      return date.toISOString()
+    })(),
+    deliveryDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 5)
+      return date.toISOString().split('T')[0]
+    })(),
+    scheduledAppointment: null
+  },
+  // ============================================
+  // ACCOUNT-LEVEL OPPORTUNITIES (for nested relationship demo)
+  // ============================================
+  
+  // Opportunity for Ferrari Dealership Group (account-level, references Marco Rossini)
+  {
+    id: 201,
+    customerId: 100, // Account ID
+    account_id: 100,
+    accountId: 100,
+    contactId: 101, // Marco Rossini (master contact)
+    contactName: 'Marco Rossini',
+    requestedCar: {
+      brand: 'Ferrari',
+      model: 'F8 Tributo',
+      year: 2024,
+      price: 280000,
+      image: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Bologna',
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 0
+    },
+    vehicle: {
+      brand: 'Ferrari',
+      model: 'F8 Tributo',
+      year: 2024,
+      price: 280000,
+      fuelType: 'Petrol',
+      gearType: 'Automatic',
+      kilometers: 0
+    },
+    selectedVehicle: {
+      brand: 'Ferrari',
+      model: 'F8 Tributo',
+      year: 2024,
+      price: 280000
+    },
+    stage: 'In Negotiation',
+    negotiationSubstatus: 'Price Discussion',
+    offers: [
+      {
+        id: 1,
+        vehicle: {
+          brand: 'Ferrari',
+          model: 'F8 Tributo',
+          year: 2024,
+          price: 280000
+        },
+        price: 280000,
+        discount: 0,
+        finalPrice: 280000,
+        timestamp: '2025-03-22T10:00:00',
+        status: 'Pending'
+      }
+    ],
+    tags: ['Corporate', 'Fleet', 'Premium'],
+    value: 280000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 15)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: '2025-03-10T10:00:00',
+    lastActivity: '2025-03-25T14:00:00',
+    scheduledAppointment: {
+      id: 'appt-201',
+      start: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 3)
+        date.setHours(14, 0, 0, 0)
+        return date.toISOString()
+      })(),
+      end: (() => {
+        const date = new Date()
+        date.setDate(date.getDate() + 3)
+        date.setHours(15, 30, 0, 0)
+        return date.toISOString()
+      })(),
+      type: 'test-drive',
+      vehicle: 'Ferrari F8 Tributo'
+    }
+  },
+  
+  // Opportunity for Tech Solutions GmbH (account-level, references Thomas Schneider)
+  {
+    id: 202,
+    customerId: 300, // Account ID
+    account_id: 300,
+    accountId: 300,
+    contactId: 301, // Thomas Schneider (master contact)
+    contactName: 'Thomas Schneider',
+    requestedCar: {
+      brand: 'BMW',
+      model: '5 Series',
+      year: 2024,
+      price: 65000,
+      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Berlin',
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 0
+    },
+    vehicle: {
+      brand: 'BMW',
+      model: '5 Series',
+      year: 2024,
+      price: 65000,
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      kilometers: 0
+    },
+    selectedVehicle: {
+      brand: 'BMW',
+      model: '5 Series',
+      year: 2024,
+      price: 65000
+    },
+    stage: 'Qualified',
+    negotiationSubstatus: null,
+    offers: [],
+    tags: ['Corporate', 'Fleet'],
+    value: 65000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 30)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'David Miller',
+    assigneeInitials: 'DM',
+    createdAt: '2025-03-15T09:00:00',
+    lastActivity: '2025-03-24T16:00:00',
+    scheduledAppointment: null
+  },
+  
+  // Opportunity for Ferrari Dealership Group (account-level, references Giovanni Rossi)
+  {
+    id: 203,
+    customerId: 100, // Account ID
+    account_id: 100,
+    accountId: 100,
+    contactId: 102, // Giovanni Rossi (finance manager)
+    contactName: 'Giovanni Rossi',
+    requestedCar: {
+      brand: 'Ferrari',
+      model: 'SF90 Stradale',
+      year: 2024,
+      price: 450000,
+      image: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&auto=format&fit=crop&q=60',
+      dealership: 'Bologna',
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      kilometers: 0,
+      status: 'New',
+      stockDays: 0
+    },
+    vehicle: {
+      brand: 'Ferrari',
+      model: 'SF90 Stradale',
+      year: 2024,
+      price: 450000,
+      fuelType: 'Hybrid',
+      gearType: 'Automatic',
+      kilometers: 0
+    },
+    selectedVehicle: {
+      brand: 'Ferrari',
+      model: 'SF90 Stradale',
+      year: 2024,
+      price: 450000
+    },
+    stage: 'In Negotiation',
+    negotiationSubstatus: 'Financing Terms',
+    offers: [
+      {
+        id: 1,
+        vehicle: {
+          brand: 'Ferrari',
+          model: 'SF90 Stradale',
+          year: 2024,
+          price: 450000
+        },
+        price: 450000,
+        discount: 10000,
+        finalPrice: 440000,
+        timestamp: '2025-03-20T10:00:00',
+        status: 'Under Review'
+      }
+    ],
+    tags: ['Corporate', 'Fleet', 'Premium', 'High-Value'],
+    value: 450000,
+    expectedCloseDate: (() => {
+      const date = new Date()
+      date.setDate(date.getDate() + 20)
+      return date.toISOString().split('T')[0]
+    })(),
+    assignee: 'Sarah Jenkins',
+    assigneeInitials: 'SJ',
+    createdAt: '2025-03-12T10:00:00',
+    lastActivity: '2025-03-24T16:00:00',
     scheduledAppointment: null
   }
 ]

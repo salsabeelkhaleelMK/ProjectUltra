@@ -34,7 +34,7 @@
           </div>
           
           <!-- Offer Details -->
-          <div class="p-2 space-y-1.5">
+          <div class="p-2 space-y-1.5" :class="{ 'pb-10': offer.status === 'accepted' || offer.acceptance_status === 'accepted' }">
             <!-- Vehicle Info -->
             <div>
               <h4 class="font-bold text-foreground text-xs leading-tight line-clamp-2 mb-0.5">
@@ -44,10 +44,21 @@
               <p class="text-xs text-muted-foreground">
                 {{ formatDate(offer.createdAt) }}
               </p>
+              <!-- Acceptance Info (inline, if accepted) -->
+              <div v-if="offer.status === 'accepted' || offer.acceptance_status === 'accepted'" class="mt-1.5 pt-1.5 border-t border-border">
+                <div class="flex items-center justify-between text-xs">
+                  <span v-if="offer.acceptance_date" class="text-muted-foreground">
+                    Accepted: {{ formatDate(offer.acceptance_date) }}
+                  </span>
+                  <span v-if="offer.acceptance_method" class="text-muted-foreground">
+                    {{ offer.acceptance_method === 'manual' ? 'Manual' : 'Auto' }}
+                  </span>
+                </div>
+              </div>
             </div>
             
-            <!-- Action: Mark as accepted only -->
-            <div v-if="offer.status === 'active'" class="pt-1">
+            <!-- Actions -->
+            <div v-if="offer.status === 'active' && offer.acceptance_status !== 'accepted'" class="pt-1 space-y-1">
               <Button
                 variant="primary"
                 size="small"
@@ -57,7 +68,41 @@
                 <i class="fa-solid fa-check text-xs mr-1"></i>
                 Mark as accepted
               </Button>
+              <Button
+                variant="outline"
+                size="small"
+                @click.stop="$emit('generate-pdf', offer)"
+                class="w-full text-xs h-7"
+              >
+                <i class="fa-solid fa-file-pdf text-xs mr-1"></i>
+                Generate PDF
+              </Button>
             </div>
+            <div v-else class="pt-1">
+              <Button
+                variant="outline"
+                size="small"
+                @click.stop="$emit('generate-pdf', offer)"
+                class="w-full text-xs h-7"
+              >
+                <i class="fa-solid fa-file-pdf text-xs mr-1"></i>
+                Generate PDF
+              </Button>
+            </div>
+          </div>
+          
+          <!-- Acceptance Badge (bottom overlay, if accepted) -->
+          <div
+            v-if="offer.status === 'accepted' || offer.acceptance_status === 'accepted'"
+            class="absolute bottom-0 left-0 right-0 z-10 bg-green-600/90 text-white text-xs font-medium px-2 py-1.5 flex items-center justify-between"
+          >
+            <span class="flex items-center gap-1">
+              <i class="fa-solid fa-check-circle"></i>
+              Accepted
+            </span>
+            <span v-if="offer.acceptance_method" class="text-xs opacity-90">
+              {{ offer.acceptance_method === 'manual' ? 'Manual' : 'Auto' }}
+            </span>
           </div>
         </div>
       </div>
@@ -86,7 +131,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['offer-accepted'])
+const emit = defineEmits(['offer-accepted', 'generate-pdf'])
 
 const formatCurrency = (value) => {
   if (!value) return '0'

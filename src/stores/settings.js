@@ -13,7 +13,12 @@ const DEFAULT_SETTINGS = {
   nfuDays: 5,
   cfbDays: 7,
   dfbDays: 3,
-  offerSentToAwaitingResponseDays: 3,
+  
+  // Opportunity Expected Close Date
+  expectedCloseDateDays: 90,
+  
+  // Task Postponement
+  postponeTaskDays: 7,
   
   // Opportunity Abandonment
   abandonedOpportunityDays: 30,
@@ -45,18 +50,8 @@ const DEFAULT_SETTINGS = {
     standard: 20
   },
   
-  // Dormant Opportunities
-  dormantOpportunityEnabled: true,
-  dormantOpportunityAfterAppointmentDays: 7,
-  dormantOpportunityAfterAppointmentHours: 0,
-  dormantOpportunityAfterOfferDays: 7,
-  dormantOpportunityAfterOfferHours: 0,
-  
   // UI Theme
   darkMode: false,
-  
-  // Task Details View Mode
-  taskDetailsViewMode: 'compact', // 'compact' | 'tabbed'
   
   // Navigation Visibility (per-item control)
   navigationVisibility: {
@@ -69,7 +64,13 @@ const DEFAULT_SETTINGS = {
     search: false,
     language: false
     // Note: Settings is always visible
-  }
+  },
+  
+  // PDF Generation Defaults
+  defaultPDFLanguage: 'en',
+  defaultPDFTemplate: 'classic', // 'classic' | 'express'
+  defaultIncludeTermsAndConditions: true,
+  defaultIncludeDisclaimerPage: true
 }
 
 // Load settings from localStorage

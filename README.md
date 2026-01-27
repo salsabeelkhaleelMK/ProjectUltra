@@ -113,12 +113,12 @@ Time-Based Task Widgets (conditional rendering):
 OOFB (Open Opportunity Feedback): Qualified stage, 7-13 days, no offers
 UFB (Unsold Feedback): Qualified stage, 14+ days, no offers
 NFU (No Follow-Up): In Negotiation, X days, no contract, no future appointment
-OFB (Offer Feedback): In Negotiation, X days, no contract
+OFB (Offer Feedback): In Negotiation (Offer Under Review only), X days, no contract (shown in expanded view, not as primary status)
 CFB (Contract Feedback): Contract date set, 7+ days, no delivery
 DFB (Delivery Feedback): 3+ days after delivery date
 Risk Warning: Shows if Qualified opportunity with appointment is taking too long
 Appointment Widget: Shows confirmed/scheduled appointments with postpone toggle
-Stages: Qualified → In Negotiation (on first offer) → Closed Won
+Stages: Qualified → In Negotiation (Offer Sent) → In Negotiation (Offer Under Review) → Offer Accepted → In Negotiation (Contract Pending) → Closed Won
 Overview Pinned: Management widget, Offers carousel (if any), Requested car
 Tabs: Overview, Notes, Communication, Attachment
 Shared Functionality
@@ -133,8 +133,12 @@ Critical Business Logic
 Offer Creation Triggers Stage Transition
 Adding any vehicle (requested, from stock, configured, or recommended) to an opportunity automatically:
 Creates an offer with that vehicle
-Transitions opportunity from "Qualified" → "In Negotiation"
-Activates negotiation-stage task widgets (OFB, NFU)
+Transitions opportunity from "Qualified" → "In Negotiation (Offer Sent)"
+After 3 days: Auto-transitions to "In Negotiation (Offer Under Review)"
+Offer Acceptance: User can manually mark offer as accepted → "Offer Accepted" status
+Contract Creation: Can auto-accept offer when creating contract (fast deal path)
+Contract Deletion: If contract was auto-accepted, reverts to "Offer Under Review"
+OFB Task: Only triggers from "Offer Under Review" status, shown in expanded view (not as primary status)
 Appointment Confirmed = Remove Schedule CTA
 If appointment status is "confirmed", hide "Schedule appointment" button
 Show AppointmentWidget in the feed instead
