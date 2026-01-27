@@ -13,70 +13,108 @@
             : 'bg-primary hover:bg-primary/90 border-primary text-white'
         ]"
       >
-        <i class="fa-solid fa-phone text-xs"></i>
+        <i class="fa-solid fa-phone text-xs cursor-pointer"></i>
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
       </button>
     </div>
 
     <!-- Inline Call Interface (shows when call is active or ended) -->
-    <div v-if="isCallActive || callEnded" class="mb-4 space-y-4 border-t border pt-4">
+    <div v-if="isCallActive || callEnded" class="mb-4 space-y-4">
       
-      <!-- Transcription Area (shows when call is active) -->
-      <div v-if="isCallActive" class="bg-slate-900 text-white rounded-card p-4">
-        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
+      <!-- Transcription Area (shows when call is active or ended) -->
+      <div v-if="isCallActive || callEnded" class="bg-slate-900 text-white rounded-card">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-waveform-lines text-blue-400 animate-pulse"></i>
-            <span class="text-xs font-bold uppercase tracking-wider">TRANSCRIBING</span>
+            <span class="text-xs font-bold uppercase tracking-wider">
+              {{ isCallActive ? 'TRANSCRIBING' : 'CALL SUMMARY' }}
+            </span>
           </div>
           <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 text-red-400">
-              <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-              <span class="text-xs font-mono">REC {{ formattedCallDuration }}</span>
+            <template v-if="isCallActive">
+              <div class="flex items-center gap-2 text-red-400">
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-mono">REC {{ formattedCallDuration }}</span>
+              </div>
+              <!-- Stop Call Button in Header -->
+              <button
+                @click="$emit('end-call')"
+                class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+              >
+                <i class="fa-solid fa-stop text-xs cursor-pointer"></i>
+                Stop Call
+              </button>
+              <button
+                type="button"
+                class="flex items-center justify-center px-3 h-8 rounded-btn border border-slate-600 bg-slate-800/80 hover:bg-slate-700 cursor-pointer"
+                @click="isExpanded = !isExpanded"
+              >
+                <i
+                  :class="[
+                    'fa-solid text-xs cursor-pointer',
+                    isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'
+                  ]"
+                ></i>
+              </button>
+            </template>
+            <template v-else>
+              <span class="text-xs font-mono text-red-200">
+                Call duration {{ formattedCallDuration }}
+              </span>
+              <button
+                type="button"
+                class="px-3 h-8 rounded-btn border border-slate-600 bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold cursor-pointer"
+                @click="isExpanded = !isExpanded"
+              >
+                See transcription
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <div v-if="isExpanded" class="p-4 space-y-4">
+          <!-- Summary when call has ended -->
+          <div v-if="callEnded && !isCallActive" class="space-y-1">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Summary</h4>
+            <p class="text-sm text-slate-100">
+              Lead confirmed their details and the call covered the main inquiry discussed in the transcript below.
+            </p>
+          </div>
+
+          <!-- Mock Transcription -->
+          <div class="space-y-3 text-sm font-mono">
+            <div>
+              <span class="text-blue-400 font-semibold">Lead:</span>
+              <span class="ml-2">{{ mockTranscription.leadLines[0] }}</span>
             </div>
-            <!-- Stop Call Button in Header -->
-            <button
-              @click="$emit('end-call')"
-              class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <i class="fa-solid fa-stop"></i>
-              Stop Call
-            </button>
+            <div>
+              <span class="text-green-400 font-semibold">Sales:</span>
+              <span class="ml-2">{{ mockTranscription.salesLines[0] }}</span>
+            </div>
+            <div v-if="callDuration >= 5">
+              <span class="text-blue-400 font-semibold">Lead:</span>
+              <span class="ml-2">{{ mockTranscription.leadLines[1] }}</span>
+            </div>
+            <div v-if="callDuration >= 8">
+              <span class="text-green-400 font-semibold">Sales:</span>
+              <span class="ml-2">{{ mockTranscription.salesLines[1] }}</span>
+            </div>
+            <div v-if="callDuration >= 12">
+              <span class="text-blue-400 font-semibold">Lead:</span>
+              <span class="ml-2">{{ mockTranscription.leadLines[2] }}</span>
+            </div>
           </div>
-        </div>
-        
-        <!-- Mock Transcription -->
-        <div class="space-y-3 text-sm font-mono">
-          <div>
-            <span class="text-blue-400 font-semibold">Lead:</span>
-            <span class="ml-2">{{ mockTranscription.leadLines[0] }}</span>
+
+          <!-- Quick Note (only while call is active) -->
+          <div v-if="isCallActive" class="pt-4 border-t border-slate-700">
+            <textarea 
+              :model-value="callNotes"
+              @update:model-value="$emit('update:call-notes', $event)"
+              placeholder="Add a quick note about this call..."
+              class="w-full p-3 bg-slate-800 border border-slate-700 rounded-btn text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+              rows="3"
+            ></textarea>
           </div>
-          <div>
-            <span class="text-green-400 font-semibold">Sales:</span>
-            <span class="ml-2">{{ mockTranscription.salesLines[0] }}</span>
-          </div>
-          <div v-if="callDuration >= 5">
-            <span class="text-blue-400 font-semibold">Lead:</span>
-            <span class="ml-2">{{ mockTranscription.leadLines[1] }}</span>
-          </div>
-          <div v-if="callDuration >= 8">
-            <span class="text-green-400 font-semibold">Sales:</span>
-            <span class="ml-2">{{ mockTranscription.salesLines[1] }}</span>
-          </div>
-          <div v-if="callDuration >= 12">
-            <span class="text-blue-400 font-semibold">Lead:</span>
-            <span class="ml-2">{{ mockTranscription.leadLines[2] }}</span>
-          </div>
-        </div>
-        
-        <!-- Quick Note -->
-        <div class="mt-4 pt-4 border-t border-slate-700">
-          <textarea 
-            :model-value="callNotes"
-            @update:model-value="$emit('update:call-notes', $event)"
-            placeholder="Add a quick note about this call..."
-            class="w-full p-3 bg-slate-800 border border-slate-700 rounded-btn text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
-            rows="3"
-          ></textarea>
         </div>
       </div>
       
@@ -101,10 +139,11 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
 import AIButton from '@/components/shared/AIButton.vue'
 
-defineProps({
+const props = defineProps({
   isCallActive: {
     type: Boolean,
     required: true
@@ -142,6 +181,22 @@ defineProps({
     default: false
   }
 })
+
+const isExpanded = ref(false)
+
+watch(
+  () => props.isCallActive,
+  (isActive, wasActive) => {
+    if (isActive && !wasActive) {
+      isExpanded.value = false
+      return
+    }
+
+    if (!isActive) {
+      isExpanded.value = false
+    }
+  }
+)
 
 defineEmits(['start-call', 'end-call', 'log-manual-call', 'extract-information', 'update:call-notes', 'copy-number'])
 </script>

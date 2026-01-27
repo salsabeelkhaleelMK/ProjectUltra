@@ -83,7 +83,7 @@
       </div>
     </div>
     
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide">
+    <div ref="scrollContainer" class="task-list-cards flex-1 overflow-y-auto px-5 space-y-3 pt-4 pb-6 scrollbar-hide">
       <TaskCard
         v-for="item in filteredItems" 
         :key="item.compositeId || `${item.type || 'task'}-${item.id}`"
@@ -198,7 +198,7 @@ const filteredItems = computed(() => {
 const isSelected = (item) => {
   if (!props.selectedId) return false
   const itemId = item.compositeId || `${item.type || 'task'}-${item.id}`
-  return itemId === props.selectedId
+  return String(itemId) === String(props.selectedId)
 }
 
 // Handle sort selection

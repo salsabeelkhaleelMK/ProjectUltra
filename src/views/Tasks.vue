@@ -17,11 +17,11 @@
         <EntityListSidebar
           title="Tasks"
           :items="filteredTasks"
-          :selected-id="currentTask?.compositeId"
+          :selected-id="currentTask ? String(currentTask.compositeId) : null"
           :view-mode="viewMode"
           :initial-search-query="cardSearchQuery"
           @view-change="handleViewChange"
-          :selected-class="(task) => task.type === 'lead' ? 'bg-surface border-2 border-blue-500 shadow-md' : 'bg-surface border-2 border-purple-500 shadow-md'"
+          :selected-class="(task) => task.type === 'lead' ? 'bg-surface border-2 border-blue-500' : 'bg-surface border-2 border-purple-500'"
           :unselected-class="getUnselectedClass"
           :open-menu-id="openCardMenu"
           :getName="(task) => {
