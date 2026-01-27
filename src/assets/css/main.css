@@ -285,6 +285,17 @@
   border-color: #fef08a !important; /* yellow-200 */
 }
 
+/* Task list cards: selected state must show visible blue/purple border (overrides global border-color) */
+.task-list-cards > .border-blue-500 {
+  border-color: #0470e9 !important;
+  border-width: 2px !important;
+}
+
+.task-list-cards > .border-purple-500 {
+  border-color: #7c3aed !important;
+  border-width: 2px !important;
+}
+
 /* White backgrounds with borders (common pattern) */
 .bg-white-bordered {
   background-color: var(--base-background, #fff);
@@ -595,10 +606,13 @@
 /* Using multiple selectors to ensure we catch all button variants */
 button[data-variant="default"],
 button[data-variant="black"],
+button[data-variant="primary"],
 button[class*="variant-default"],
 button[class*="variant-black"],
+button[class*="variant-primary"],
 button[class*="data-variant-default"],
 button[class*="data-variant-black"],
+button[class*="data-variant-primary"],
 /* Fallback: target buttons that have primary-like styling */
 button[class*="bg-brand-primary"],
 button[class*="bg-primary"] {
@@ -606,6 +620,7 @@ button[class*="bg-primary"] {
   border-radius: 8px !important;
   border: none !important;
   background: #0470e9 !important;
+  color: #fff !important;
   font-weight: 500 !important;
   box-shadow:
     0 1px 3px 0 rgba(11, 19, 36, 0.08),
@@ -619,10 +634,13 @@ button[class*="bg-primary"] {
 /* Hover state - Enhanced shadows for elevation */
 button[data-variant='default']:hover:not(:disabled),
 button[data-variant='black']:hover:not(:disabled),
+button[data-variant='primary']:hover:not(:disabled),
 button[class*='variant-default']:hover:not(:disabled),
 button[class*='variant-black']:hover:not(:disabled),
+button[class*='variant-primary']:hover:not(:disabled),
 button[class*='data-variant-default']:hover:not(:disabled),
 button[class*='data-variant-black']:hover:not(:disabled),
+button[class*='data-variant-primary']:hover:not(:disabled),
 button[class*='bg-brand-primary']:hover:not(:disabled),
 button[class*='bg-primary']:hover:not(:disabled) {
   box-shadow:
@@ -634,10 +652,13 @@ button[class*='bg-primary']:hover:not(:disabled) {
 /* Active/pressed state - Reduced shadows for pressed effect */
 button[data-variant='default']:active:not(:disabled),
 button[data-variant='black']:active:not(:disabled),
+button[data-variant='primary']:active:not(:disabled),
 button[class*='variant-default']:active:not(:disabled),
 button[class*='variant-black']:active:not(:disabled),
+button[class*='variant-primary']:active:not(:disabled),
 button[class*='data-variant-default']:active:not(:disabled),
 button[class*='data-variant-black']:active:not(:disabled),
+button[class*='data-variant-primary']:active:not(:disabled),
 button[class*='bg-brand-primary']:active:not(:disabled),
 button[class*='bg-primary']:active:not(:disabled) {
   box-shadow:
@@ -649,10 +670,13 @@ button[class*='bg-primary']:active:not(:disabled) {
 /* Disabled state */
 button[data-variant='default']:disabled,
 button[data-variant='black']:disabled,
+button[data-variant='primary']:disabled,
 button[class*='variant-default']:disabled,
 button[class*='variant-black']:disabled,
+button[class*='variant-primary']:disabled,
 button[class*='data-variant-default']:disabled,
 button[class*='data-variant-black']:disabled,
+button[class*='data-variant-primary']:disabled,
 button[class*='bg-brand-primary']:disabled,
 button[class*='bg-primary']:disabled {
   background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #4b5563 100%) !important;
@@ -715,6 +739,43 @@ button[class*="variant-outline"]:disabled {
   color: rgba(0, 0, 0, 0.3) !important;
   box-shadow: none !important;
   opacity: 0.6 !important;
+}
+
+/* ========================================
+   ToggleGroupItem pressed/selected state (Motork future primitives)
+   Blue border must show when selected, not only on hover.
+   ======================================== */
+
+[data-state="on"],
+[aria-pressed="true"],
+button[data-state="on"],
+button[data-state="on"][data-variant="outline"],
+button[data-state="on"][class*="variant-outline"],
+button[aria-pressed="true"],
+button[aria-pressed="true"][class*="variant-outline"] {
+  border: 1.5px solid #0470e9 !important;
+  background: rgba(4, 112, 233, 0.08) !important;
+  color: #0470e9 !important;
+  box-shadow: none !important;
+}
+
+[data-state="on"]:hover:not(:disabled),
+[aria-pressed="true"]:hover:not(:disabled),
+button[data-state="on"]:hover:not(:disabled),
+button[aria-pressed="true"]:hover:not(:disabled) {
+  border: 1.5px solid #0470e9 !important;
+  background: rgba(4, 112, 233, 0.12) !important;
+  color: #0470e9 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+.schedule-slot-toggle-group {
+  width: 100%;
+}
+
+.schedule-slot-toggle-group > *,
+.schedule-slot-toggle-group button {
+  width: 100%;
 }
 
 /* ========================================
@@ -1125,6 +1186,31 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
 }
 
+/* Ensure Motork SelectMenu/Command search input layout isn't affected by global input styles */
+[data-slot='command-input-wrapper'] input,
+[data-slot='command-input'] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+[data-slot='command-input']:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Focus ring on the whole search row (icon + input) */
+[data-slot='command-input-wrapper'] {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+[data-slot='command-input-wrapper']:focus-within {
+  border-color: #0470e9;
+  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
+}
+
 /* Search box pattern from reference */
 .search-box {
   background-color: var(--base-background, #fff);
@@ -1341,13 +1427,13 @@ select:focus {
   border: 1px solid transparent;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--mk-dashboard-card-shadow);
+  box-shadow: none;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .task-card:hover {
-  box-shadow: 
+  box-shadow:
     0 0 0 1px rgba(14, 63, 126, 0.06),
     0 2px 2px -1px rgba(42, 51, 69, 0.06),
     0 4px 4px -2px rgba(42, 51, 70, 0.06),
@@ -1358,6 +1444,16 @@ select:focus {
 .task-card-selected {
   border-color: var(--base-primary, #0470e9);
   border-width: 2px;
+  box-shadow: none;
+}
+
+.task-card-selected:hover {
+  box-shadow:
+    0 0 0 1px rgba(14, 63, 126, 0.06),
+    0 2px 2px -1px rgba(42, 51, 69, 0.06),
+    0 4px 4px -2px rgba(42, 51, 70, 0.06),
+    0 8px 8px -4px rgba(42, 51, 70, 0.06),
+    0 16px 16px -8px rgba(14, 63, 126, 0.06);
 }
 
 /* ========================================
@@ -1397,10 +1493,7 @@ select:focus {
    FullCalendar Custom Theme
    ======================================== */
 
-/* Keep FullCalendar styles as they're library-specific */
-.fc {
-  /* FullCalendar will be styled separately if needed */
-}
+/* Keep FullCalendar styles as they're library-specific - styled separately if needed */
 
 /* ========================================
    Modal/Dialog Styling - Adaptive Width & Scroll

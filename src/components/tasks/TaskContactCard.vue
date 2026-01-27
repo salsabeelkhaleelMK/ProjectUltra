@@ -42,11 +42,23 @@
         </div>
         
         <!-- Phone -->
-        <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center justify-between gap-2">
           <p class="text-sm text-sub leading-5 shrink-0">Phone</p>
-          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
-            {{ task.customer?.phone || 'N/A' }}
-          </p>
+          <div class="flex items-center gap-1 min-w-0 flex-1 justify-end">
+            <p class="text-sm font-medium text-heading leading-5 text-right truncate min-w-0">
+              {{ task.customer?.phone || 'N/A' }}
+            </p>
+            <Button
+              v-if="task.customer?.phone"
+              variant="ghost"
+              size="icon"
+              class="h-6 w-6 shrink-0 text-body hover:text-heading"
+              title="Copy phone number"
+              @click="copyToClipboard(task.customer.phone, 'phone')"
+            >
+              <Copy :size="14" />
+            </Button>
+          </div>
         </div>
         
         <!-- Address -->

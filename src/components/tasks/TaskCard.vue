@@ -1,9 +1,9 @@
 <template>
   <div 
     ref="cardRef"
+    class="task-card bg-white rounded-xl p-4 flex items-center justify-between cursor-pointer relative transition-all border group"
+    :class="[cardClass, selectedBorderClass]"
     @click="$emit('select', itemId)"
-    class="bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-mk-dashboard-card cursor-pointer relative transition-all border group"
-    :class="cardClass"
   >
     <!-- Menu Button -->
     <button 
@@ -98,7 +98,7 @@ const props = defineProps({
   },
   selectedClass: {
     type: [String, Function],
-    default: 'bg-white border-2 border-blue-500 shadow-md'
+    default: 'bg-white border-2 border-blue-500'
   },
   unselectedClass: {
     type: [String, Function],
@@ -144,6 +144,11 @@ const cardClass = computed(() => {
   return typeof props.unselectedClass === 'function' 
     ? props.unselectedClass(props.item) 
     : props.unselectedClass
+})
+
+const selectedBorderClass = computed(() => {
+  if (!isSelected.value) return ''
+  return props.item?.type === 'opportunity' ? 'task-card-selected task-card-selected-opportunity' : 'task-card-selected'
 })
 
 const getBaseStage = (item) => {
@@ -298,3 +303,16 @@ const deadlineDotClass = computed(() => {
 const cardRef = ref(null)
 </script>
 
+<style scoped>
+.task-card:hover {
+  box-shadow: var(--mk-dashboard-card-shadow);
+}
+
+.task-card.task-card-selected {
+  border: 2px solid #0470e9 !important;
+}
+
+.task-card.task-card-selected.task-card-selected-opportunity {
+  border-color: #7c3aed !important;
+}
+</style>

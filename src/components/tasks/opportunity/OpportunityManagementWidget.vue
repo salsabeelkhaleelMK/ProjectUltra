@@ -26,10 +26,11 @@
         class="rounded-lg flex flex-col"
         style="background-color: var(--base-muted, #f5f5f5)"
       >
-        <div
-          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          style="box-shadow: var(--nsc-card-shadow)"
-        >
+        <div class="pt-1 px-1">
+          <div
+            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+            style="box-shadow: var(--nsc-card-shadow)"
+          >
           <div class="p-4">
             <div class="mb-3">
               <h4 class="font-bold text-heading text-sm">Manage Appointment</h4>
@@ -42,7 +43,7 @@
                 v-if="scheduledAppointment?.status === 'pending_confirmation'"
                 variant="outline"
                 @click="handleConfirmAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 cursor-pointer"
               >
                 <i class="fa-solid fa-calendar-check"></i>
                 <span>Confirm appointment</span>
@@ -50,7 +51,7 @@
               <Button
                 variant="outline"
                 @click="handleRescheduleAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showRescheduleSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
               >
                 <i class="fa-solid fa-calendar-days"></i>
@@ -59,7 +60,7 @@
               <Button
                 variant="outline"
                 @click="handleMarkNoShow"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showNsTaskSection ? 'border-orange-500 bg-orange-50 text-orange-700' : ''"
               >
                 <i class="fa-solid fa-user-slash"></i>
@@ -68,7 +69,7 @@
               <Button
                 variant="outline"
                 @click="handleMarkShowedUp"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showOfferAssignmentSection ? 'border-green-500 bg-green-50 text-green-700' : ''"
               >
                 <i class="fa-solid fa-user-check"></i>
@@ -82,6 +83,7 @@
                 @action-selected="handleSecondaryAction"
               />
             </div>
+          </div>
           </div>
         </div>
         
@@ -185,10 +187,11 @@
         class="rounded-lg flex flex-col"
         style="background-color: var(--base-muted, #f5f5f5)"
       >
-        <div
-          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          style="box-shadow: var(--nsc-card-shadow)"
-        >
+        <div class="pt-1 px-1">
+          <div
+            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+            style="box-shadow: var(--nsc-card-shadow)"
+          >
           <div class="p-4">
             <div class="mb-3">
               <h4 class="font-bold text-heading text-sm">Manage Offers & Follow Up</h4>
@@ -208,7 +211,7 @@
               <Button
                 variant="outline"
                 @click="handleFollowUpOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showNegotiationSection ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : ''"
               >
                 <i class="fa-solid fa-phone-volume"></i>
@@ -217,7 +220,7 @@
               <Button
                 variant="outline"
                 @click="handleAddAnotherOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showAddOfferSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
               >
                 <i class="fa-solid fa-plus"></i>
@@ -231,6 +234,7 @@
                 @action-selected="handleSecondaryAction"
               />
             </div>
+          </div>
           </div>
         </div>
         
@@ -377,10 +381,11 @@
         class="rounded-lg flex flex-col"
         style="background-color: var(--base-muted, #f5f5f5)"
       >
-        <div
-          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          style="box-shadow: var(--nsc-card-shadow)"
-        >
+        <div class="pt-1 px-1">
+          <div
+            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+            style="box-shadow: var(--nsc-card-shadow)"
+          >
           <div class="p-4">
             <div class="mb-3">
               <h4 class="font-bold text-heading text-sm">Collect e-signatures, finalize contract</h4>
@@ -393,7 +398,7 @@
               <Button
                 variant="outline"
                 @click="handleFinalizeContract"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showFinalizeContractSection ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : ''"
               >
                 <i class="fa-solid fa-file-signature"></i>
@@ -406,6 +411,7 @@
                 @action-selected="handleContractPendingAction"
               />
             </div>
+          </div>
           </div>
         </div>
         
@@ -598,27 +604,18 @@
           class="rounded-lg flex flex-col"
           style="background-color: var(--base-muted, #f5f5f5)"
         >
-          <!-- Call Interface (always visible) -->
-          <div
-            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-            style="box-shadow: var(--nsc-card-shadow)"
-          >
+          <div class="pt-1 px-1">
+            <!-- Call Interface (always visible) -->
+            <div
+              class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+              style="box-shadow: var(--nsc-card-shadow)"
+            >
             <div class="p-4">
               <div class="mb-3">
                 <h4 class="font-bold text-heading text-sm">Call to Schedule Appointment</h4>
                 <p class="text-sm text-body mt-0.5">
                   Contact the customer to schedule an appointment
                 </p>
-              </div>
-              <div class="flex items-center gap-2 mb-3">
-                <span class="text-sm text-body font-medium">{{ opportunity.customer?.phone || 'N/A' }}</span>
-                <button
-                  @click="copyNumber"
-                  class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
-                  title="Copy phone number"
-                >
-                  <i class="fa-regular fa-copy text-sm"></i>
-                </button>
               </div>
               <CallInterface
                 :is-call-active="isCallActive"
@@ -637,6 +634,7 @@
                 @copy-number="copyNumber"
               />
             </div>
+          </div>
           </div>
 
           <!-- Unified schedule form (same as reschedule); always visible, buttons in form -->
@@ -659,10 +657,11 @@
         class="rounded-lg flex flex-col"
         style="background-color: var(--base-muted, #f5f5f5)"
       >
-        <div
-          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          style="box-shadow: var(--nsc-card-shadow)"
-        >
+        <div class="pt-1 px-1">
+          <div
+            class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+            style="box-shadow: var(--nsc-card-shadow)"
+          >
           <div class="p-4">
             <div class="mb-3">
               <h4 class="font-bold text-heading text-sm">Post-Delivery Customer Satisfaction Survey</h4>
@@ -674,7 +673,7 @@
               <Button
                 variant="outline"
                 @click="showPostDeliverySurveySection = !showPostDeliverySurveySection"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                 :class="showPostDeliverySurveySection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
               >
                 <i class="fa-solid fa-clipboard-list"></i>
@@ -686,7 +685,7 @@
                 v-if="isClosedWon"
                 variant="outline"
                 @click="handleReopen"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 hover:bg-green-100"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 hover:bg-green-100 cursor-pointer"
               >
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>Reopen Opportunity</span>
@@ -696,7 +695,7 @@
               <div class="relative">
                 <button 
                   @click.stop="showPostDeliverySurveyDropdown = !showPostDeliverySurveyDropdown"
-                  class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
+                  class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap cursor-pointer"
                 >
                   <span>More actions</span>
                   <i 
@@ -718,6 +717,7 @@
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
         

@@ -5,17 +5,23 @@
   >
     <!-- Success state (post qualify / disqualify / no-answer) -->
     <template v-if="successState">
-      <div
-        class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
-        style="box-shadow: var(--nsc-card-shadow)"
-      >
+      <div class="pt-1 px-1">
+        <div
+          class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
+          style="box-shadow: var(--nsc-card-shadow)"
+        >
         <div class="flex items-center gap-3">
           <div class="size-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
             <Check :size="16" class="text-green-600" />
           </div>
-          <p class="text-sm font-medium text-heading flex-1 pr-10">
-            {{ successState.statusText }}
-          </p>
+          <div class="flex-1 pr-10 min-w-0">
+            <p class="text-sm font-medium text-heading">
+              {{ successState.statusText }}
+            </p>
+            <p v-if="successState.reason" class="text-sm text-body mt-1">
+              {{ successState.reason }}
+            </p>
+          </div>
         </div>
         <div
           v-if="successState.meeting"
@@ -44,12 +50,13 @@
           <Button
             variant="outline"
             size="small"
-            class="flex items-center gap-2"
+            class="flex items-center gap-2 cursor-pointer"
             @click="handleReopen"
           >
             <RotateCcw :size="14" />
             Re-open
           </Button>
+        </div>
         </div>
       </div>
       <div class="px-4 py-2 flex items-center justify-between text-sm text-sub">
@@ -60,10 +67,11 @@
 
     <template v-else>
       <!-- Contact block: white card -->
-      <div
-        class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-        style="box-shadow: var(--nsc-card-shadow)"
-      >
+      <div class="pt-1 px-1">
+        <div
+          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+          style="box-shadow: var(--nsc-card-shadow)"
+        >
         <DeadlineBanner
           :next-action-due="lead.nextActionDue"
           :show-deadline-banner="showDeadlineBanner"
@@ -115,18 +123,6 @@
           </div>
         </div>
 
-        <!-- Phone Number Row -->
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm text-body font-medium">{{ lead.customer.phone }}</span>
-          <button
-            @click="copyNumber"
-            class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
-            title="Copy phone number"
-          >
-            <i class="fa-regular fa-copy text-sm"></i>
-          </button>
-        </div>
-
         <!-- Call Interface Component -->
         <CallInterface
           :is-call-active="isCallActive"
@@ -145,6 +141,7 @@
           @copy-number="copyNumber"
         />
         </div>
+        </div>
       </div>
 
       <!-- Grey outcome area: outcome selection -->
@@ -153,35 +150,35 @@
         <div v-if="!successState" class="space-y-4">
             <div>
             <p class="text-sm font-medium text-heading leading-normal mb-3">Log what is happening?</p>
-            <div class="flex flex-wrap gap-3">
-              <Button
-                variant="outline"
-                @click="selectOutcome('no-answer')"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
-                :style="selectedOutcome === 'no-answer' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              :model-value="selectedOutcome"
+              @update:model-value="selectOutcome"
+              class="outcome-toggle-group flex flex-wrap gap-3"
+            >
+              <ToggleGroupItem
+                value="no-answer"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
               >
-                <PhoneOff :size="18" class="shrink-0" :style="selectedOutcome === 'no-answer' ? { color: 'var(--brand-blue)' } : {}" />
+                <PhoneOff :size="18" class="shrink-0" />
                 <span>No answer</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="selectOutcome('not-valid')"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
-                :style="selectedOutcome === 'not-valid' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="not-valid"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
               >
-                <ThumbsDown :size="18" class="shrink-0" :style="selectedOutcome === 'not-valid' ? { color: 'var(--brand-blue)' } : {}" />
+                <ThumbsDown :size="18" class="shrink-0" />
                 <span>Not valid</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="selectOutcome('interested')"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium"
-                :style="selectedOutcome === 'interested' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="interested"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
               >
-                <Check :size="18" class="shrink-0" :style="selectedOutcome === 'interested' ? { color: 'var(--brand-blue)' } : {}" />
+                <Check :size="18" class="shrink-0" />
                 <span>Interested</span>
-              </Button>
-            </div>
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           <!-- No Answer Follow-up (Inline) -->
@@ -201,44 +198,42 @@
               <h5 class="font-semibold text-heading text-sm mb-4">Send follow-up message</h5>
               
               <!-- Channel Selection -->
-              <div class="grid grid-cols-4 gap-2 mb-4">
-                <Button
-                  variant="outline"
-                  @click="followupChannel = 'whatsapp'"
-                  class="flex items-center justify-center gap-2"
-                  :style="followupChannel === 'whatsapp' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                :model-value="followupChannel"
+                @update:model-value="setFollowupChannel"
+                class="followup-channel-toggle-group flex flex-wrap gap-2 mb-4"
+              >
+                <ToggleGroupItem
+                  value="whatsapp"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
-                  <i class="fa-brands fa-whatsapp text-xs" :style="followupChannel === 'whatsapp' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <i class="fa-brands fa-whatsapp text-xs"></i>
                   <span>WhatsApp</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="followupChannel = 'sms'"
-                  class="flex items-center justify-center gap-2"
-                  :style="followupChannel === 'sms' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="sms"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
-                  <i class="fa-solid fa-message text-xs" :style="followupChannel === 'sms' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <i class="fa-solid fa-message text-xs"></i>
                   <span>SMS</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="followupChannel = 'email'"
-                  class="flex items-center justify-center gap-2"
-                  :style="followupChannel === 'email' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="email"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
-                  <i class="fa-solid fa-envelope text-xs" :style="followupChannel === 'email' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <i class="fa-solid fa-envelope text-xs"></i>
                   <span>Email</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="followupChannel = 'dont-send'"
-                  class="flex items-center justify-center gap-2"
-                  :style="followupChannel === 'dont-send' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="dont-send"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
-                  <i class="fa-solid fa-xmark text-xs" :style="followupChannel === 'dont-send' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <i class="fa-solid fa-xmark text-xs"></i>
                   <span>Don't send</span>
-                </Button>
-              </div>
+                </ToggleGroupItem>
+              </ToggleGroup>
               
               <!-- Template and Message Preview (only show if channel selected and not 'dont-send') -->
               <div v-if="followupChannel && followupChannel !== 'dont-send'" class="space-y-3">
@@ -272,33 +267,33 @@
             <!-- Next call attempt -->
             <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
               <h5 class="font-semibold text-heading text-sm mb-4">Next call attempt</h5>
-              <div class="grid grid-cols-3 gap-2">
-                <Button
-                  variant="outline"
-                  @click="rescheduleTime = 'tomorrow-9am'"
-                  class="px-4 py-2 text-sm font-medium"
-                  :style="rescheduleTime === 'tomorrow-9am' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                :model-value="rescheduleTime"
+                @update:model-value="setRescheduleTime"
+                class="reschedule-toggle-group flex flex-wrap gap-2"
+              >
+                <ToggleGroupItem
+                  value="tomorrow-9am"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
                   Tomorrow 9:00 AM
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="handleAISuggestionClick"
-                  class="px-4 py-2 text-sm font-medium flex items-center gap-1.5"
-                  :style="rescheduleTime === 'monday' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="monday"
+                  class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
-                  <i class="fa-solid fa-sparkles text-xs" :style="rescheduleTime === 'monday' ? { color: 'var(--brand-blue)' } : {}"></i>
+                  <i class="fa-solid fa-sparkles text-xs"></i>
                   AI suggestion
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="rescheduleTime = 'custom'"
-                  class="px-4 py-2 text-sm font-medium"
-                  :style="rescheduleTime === 'custom' ? { borderColor: 'var(--brand-blue)', color: 'var(--brand-blue)' } : {}"
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="custom"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
                 >
                   Select time
-                </Button>
-              </div>
+                </ToggleGroupItem>
+              </ToggleGroup>
               <!-- AI Suggestion Details -->
               <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="flex items-start gap-2">
@@ -340,9 +335,10 @@
             </div>
             <CloseAsLostForm
               :preselected-reason="disqualifyReason"
-              close-button-label="Close"
+              close-button-label="Close as not valid"
               @close="handleCloseFromForm"
               @cancel="cancelOutcome"
+              @update:reason="setDisqualifyReason"
             />
           </div>
 
@@ -714,17 +710,22 @@
                     <div class="p-6">
                       <h6 class="text-sm font-semibold text-heading mb-4">{{ selectedQualificationDateLabel }}</h6>
                       <div v-if="qualificationSelectedDate && availableScheduleSlots.length > 0" class="space-y-2">
-                        <button 
-                          v-for="slot in availableScheduleSlots"
-                          :key="slot"
-                          @click="qualificationSelectedSlot = slot"
-                          class="w-full py-2 px-4 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                          :class="qualificationSelectedSlot === slot 
-                            ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                            : 'border-black/5 text-body hover:border-[#0470e9]/30'"
+                        <ToggleGroup
+                          type="single"
+                          variant="outline"
+                          :model-value="qualificationSelectedSlot"
+                          @update:model-value="setQualificationSelectedSlot"
+                          class="schedule-slot-toggle-group flex flex-col gap-2 w-full"
                         >
-                          {{ slot }}
-                        </button>
+                          <ToggleGroupItem
+                            v-for="slot in availableScheduleSlots"
+                            :key="slot"
+                            :value="slot"
+                            class="w-full justify-center px-4 py-2 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                          >
+                            {{ slot }}
+                          </ToggleGroupItem>
+                        </ToggleGroup>
                       </div>
                       <div v-else-if="qualificationSelectedDate && availableScheduleSlots.length === 0" class="text-sm text-sub py-4 text-center">
                         {{ t('forms.schedule.timeSlots.noSlots') }}
@@ -791,8 +792,7 @@
         </div>
         
         <!-- Unified Action Buttons at Bottom Right of Gray Wrapper -->
-        <!-- Hide buttons for "not-valid" outcome since CloseAsLostForm has its own buttons -->
-        <div v-if="selectedOutcome && !successState && selectedOutcome !== 'not-valid'" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="selectedOutcome && !successState" class="flex justify-end gap-2 px-4 pb-4 pt-3">
           <Button
             variant="secondary"
             @click="cancelOutcome"
@@ -803,7 +803,7 @@
             variant="primary"
             :disabled="!canConfirmAction"
             @click="handleConfirmAction"
-            class="bg-primary"
+            class="bg-primary text-white"
           >
             {{ actionButtonLabel }}
           </Button>
@@ -873,7 +873,7 @@
 </template>
 
 <script setup>
-import { ref, computed, toRef, watch } from 'vue'
+import { ref, computed, toRef, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { 
   Button,
@@ -884,7 +884,9 @@ import {
   SelectValue,
   Label,
   Input,
-  Textarea
+  Textarea,
+  ToggleGroup,
+  ToggleGroupItem
 } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 
@@ -1264,6 +1266,7 @@ const {
   qualificationCalendarMonth,
   qualificationSelectedDate,
   qualificationSelectedSlot,
+  setQualificationSelectedSlot,
   qualificationDateRange,
   qualificationCustomDateStart,
   qualificationCustomDateEnd,
@@ -1275,6 +1278,26 @@ const {
   suggestedTeam,
   communicationPreferences
 } = outcomeState
+
+function setFollowupChannel(v) {
+  followupChannel.value = v
+}
+
+function setRescheduleTime(v) {
+  if (!v) {
+    rescheduleTime.value = null
+    return
+  }
+  if (v === 'monday') {
+    handleAISuggestionClick()
+  } else {
+    rescheduleTime.value = v
+  }
+}
+
+function setDisqualifyReason(v) {
+  disqualifyReason.value = v
+}
 
 // Handle communications update
 const handleCommunicationsUpdate = (communications) => {
@@ -1405,16 +1428,48 @@ const selectedSalesmanId = computed({
   }
 })
 
-// Auto-select suggested team when event type is selected
-watch([qualificationEventType, suggestedTeam, assignableTeams], ([eventType, suggested, teams]) => {
-  if (eventType && suggested && teams && !qualificationSelectedTeam.value) {
-    // Find the team in assignableTeams by ID
+function resolveInitialTeamForSchedule() {
+  if (!qualificationEventType.value || qualificationSelectedTeam.value) return
+  const teams = assignableTeams.value
+  if (!teams?.length) return
+  const suggested = suggestedTeam.value
+  if (suggested) {
     const team = teams.find(t => t.id === suggested.id)
     if (team) {
       qualificationSelectedTeam.value = team
+      return
     }
   }
-}, { immediate: true })
+  if (props.lead.assignee) {
+    const assigneeTeam = teams.find(t => t.name === props.lead.assignee)
+    if (assigneeTeam) {
+      qualificationSelectedTeam.value = assigneeTeam
+    }
+  }
+}
+
+watch(
+  () => [
+    qualificationEventType.value,
+    suggestedTeam.value,
+    (assignableTeams.value ?? []).length,
+    props.lead.assignee
+  ],
+  () => {
+    resolveInitialTeamForSchedule()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => qualificationEventType.value && !qualificationSelectedTeam.value,
+  (shouldResolve) => {
+    if (shouldResolve) {
+      nextTick(resolveInitialTeamForSchedule)
+    }
+  },
+  { immediate: true }
+)
 
 // Auto-select today's date when event type is selected
 watch(qualificationEventType, (eventType) => {

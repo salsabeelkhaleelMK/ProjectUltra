@@ -1,6 +1,6 @@
 <template>
-  <div class="relative flex-1 flex flex-col min-w-0 overflow-hidden">
-    <div v-if="task" class="flex flex-col flex-1 min-w-0 overflow-hidden">
+  <div class="relative flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
+    <div v-if="task" class="flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden">
       <!-- Task Header -->
       <TaskDetailHeader
         :task="task"
@@ -12,10 +12,10 @@
       />
 
       <!-- Center + Right Panels Row -->
-      <div class="flex flex-1 overflow-hidden">
+      <div class="flex flex-1 min-h-0 overflow-hidden">
         <!-- Center Panel: Task Management Widget Only -->
-        <div class="flex-1 flex flex-col overflow-hidden bg-white min-w-0">
-          <div class="flex-1 overflow-y-auto">
+        <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white min-w-0">
+          <div class="flex-1 min-h-0 overflow-y-auto">
             <div class="p-2">
               <TaskManagementCard
                 :task="task"
@@ -30,11 +30,11 @@
 
         <!-- Right Sidebar with Tabs -->
         <div
-          class="right-sidebar flex flex-col overflow-hidden shrink-0 border-l border-black/5 bg-surface"
+          class="right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-black/5 bg-surface"
         >
-          <Tabs v-model="sidebarTab" class="flex flex-col flex-1 overflow-hidden">
+          <Tabs v-model="sidebarTab" class="flex flex-col flex-1 min-h-0 overflow-hidden">
             <!-- Sidebar Tabs -->
-            <TabsList class="flex border-b border-black/5 bg-white rounded-none w-full relative h-full">
+            <TabsList class="flex shrink-0 border-b border-black/5 bg-white rounded-none w-full relative h-full">
               <TabsTrigger 
                 value="request" 
                 class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full"
@@ -82,9 +82,9 @@
             </TabsList>
             
             <!-- Sidebar Content -->
-            <div class="flex-1 overflow-y-auto bg-[#F8F8F8]">
+            <div class="flex-1 min-h-0 flex flex-col overflow-y-auto bg-[#F8F8F8]">
               <!-- Request Tab -->
-              <TabsContent value="request" class="space-y-2 p-2 mt-0">
+              <TabsContent value="request" class="space-y-2 p-2 mt-0 flex-1 min-h-full">
                 <TaskContactCard
                   :task="task"
                   :task-type="task.type"

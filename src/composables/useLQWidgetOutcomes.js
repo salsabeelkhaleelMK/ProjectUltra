@@ -103,6 +103,10 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
   const qualificationSelectedDate = ref(null) // Will be set based on range
   const qualificationSelectedSlot = ref('')
 
+  const setQualificationSelectedSlot = (slot) => {
+    qualificationSelectedSlot.value = slot
+  }
+
   const qualificationScheduleSlotOptions = computed(() => {
     const slots = []
     for (let m = 9 * 60; m <= 18 * 60; m += 30) {
@@ -442,6 +446,7 @@ export function useLQWidgetOutcomes(lead, callDataRef, extractedDataRef, contact
     availableDatesForRange,
     qualificationSelectedDate,
     qualificationSelectedSlot,
+    setQualificationSelectedSlot,
     qualificationScheduleSlotOptions,
     qualificationDurationValue
   }

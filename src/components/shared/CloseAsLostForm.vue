@@ -47,15 +47,18 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'cancel'])
+const emit = defineEmits(['close', 'cancel', 'update:reason'])
 
 const reason = ref(props.preselectedReason || '')
 
-// Watch for prop changes
 watch(() => props.preselectedReason, (newVal) => {
   if (newVal) {
     reason.value = newVal
   }
+})
+
+watch(reason, (v) => {
+  emit('update:reason', v)
 })
 
 // Validation
