@@ -1,5 +1,5 @@
 <template>
-  <div class="app-main-container">
+  <div class="h-screen flex bg-muted">
     <!-- Left Icon Sidebar (Desktop Only) -->
     <IconSidebar />
     
@@ -14,7 +14,7 @@
           <button 
             v-if="!isMobileSidebarOpen"
             @click="isMobileSidebarOpen = true"
-            class="w-11 h-11 flex items-center justify-center text-body hover:text-brand-red hover:bg-red-50 rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
+            class="w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-brand-red hover:bg-red-50 rounded-lg transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
             aria-label="Open navigation menu"
             :aria-expanded="false"
           >

@@ -42,7 +42,7 @@
                 <i v-else class="fa-brands fa-microsoft text-blue-500"></i>
               </div>
               <div>
-                <p class="text-sm font-medium text-heading">{{ cal.email }}</p>
+                <p class="text-sm font-medium text-foreground">{{ cal.email }}</p>
                 <p class="text-xs text-green-600">
                   <i class="fa-solid fa-check-circle mr-1"></i>Connected
                 </p>
@@ -66,13 +66,13 @@
       <!-- Google Calendar -->
       <button
         @click="$emit('connect', 'google')"
-        class="w-full flex items-center gap-4 p-4 bg-surface border border-E5E7EB rounded-xl hover:border-gray-300 hover:shadow-sm transition-all group"
+        class="w-full flex items-center gap-4 p-4 bg-surface border border-border rounded-xl hover:border-gray-300 hover:shadow-sm transition-all group"
       >
         <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
           <i class="fa-brands fa-google text-xl text-red-500"></i>
         </div>
         <div class="flex-1 text-left">
-          <p class="font-semibold text-heading">Google Calendar</p>
+          <p class="font-semibold text-foreground">Google Calendar</p>
           <p class="text-xs text-gray-500">Connect your Google account</p>
         </div>
         <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all"></i>
@@ -81,13 +81,13 @@
       <!-- Microsoft Outlook -->
       <button
         @click="$emit('connect', 'microsoft')"
-        class="w-full flex items-center gap-4 p-4 bg-surface border border-E5E7EB rounded-xl hover:border-gray-300 hover:shadow-sm transition-all group"
+        class="w-full flex items-center gap-4 p-4 bg-surface border border-border rounded-xl hover:border-gray-300 hover:shadow-sm transition-all group"
       >
         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
           <i class="fa-brands fa-microsoft text-xl text-blue-500"></i>
         </div>
         <div class="flex-1 text-left">
-          <p class="font-semibold text-heading">Microsoft Outlook</p>
+          <p class="font-semibold text-foreground">Microsoft Outlook</p>
           <p class="text-xs text-gray-500">Connect your Microsoft account</p>
         </div>
         <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all"></i>

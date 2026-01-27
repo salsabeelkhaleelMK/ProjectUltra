@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-4">
     <!-- Title and Description Card -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h4 class="font-bold text-heading text-sm mb-1">Offer Feedback Task</h4>
-      <p class="text-sm text-body">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h4 class="font-bold text-foreground text-sm mb-1">Offer Feedback Task</h4>
+      <p class="text-sm text-muted-foreground">
         This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Follow up with customer to get feedback and move forward.
       </p>
     </div>
@@ -18,8 +18,8 @@
     </div>
 
     <!-- Communication Options -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Contact Customer</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Contact Customer</h5>
       
       <!-- Channel Selection -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
@@ -64,7 +64,7 @@
       <!-- Message Composer -->
       <div v-if="communicationChannel" class="space-y-3">
         <div v-if="offerSelectOptions.length > 0">
-          <Label class="block text-sm font-medium text-body mb-2">Select offer to reference</Label>
+          <Label class="block text-sm font-medium text-muted-foreground mb-2">Select offer to reference</Label>
           <SelectMenu
             v-model="selectedOfferId"
             :items="offerSelectOptions"
@@ -75,14 +75,14 @@
             <template #item="{ item }">
               <div class="flex items-center justify-between gap-2">
                 <span>{{ item.label }}</span>
-                <span class="text-sub text-xs">€ {{ formatCurrency(item.price) }}</span>
+                <span class="text-muted-foreground text-xs">€ {{ formatCurrency(item.price) }}</span>
               </div>
             </template>
           </SelectMenu>
         </div>
         
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">Message</Label>
+          <Label class="block text-sm font-medium text-muted-foreground mb-2">Message</Label>
           <Textarea
             v-model="message"
             rows="4"

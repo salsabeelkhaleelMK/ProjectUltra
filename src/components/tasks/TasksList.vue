@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="tasks-list-container border-r border-black/5 flex flex-col shrink-0 w-full lg:w-80 h-full"
+    class="tasks-list-container border-r border-border flex flex-col shrink-0 w-full lg:w-80 h-full"
   >
     <!-- Header: Title + View Toggle -->
     <header class="page-header shrink-0">
@@ -12,7 +12,7 @@
           
           <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
           <div class="page-header-actions">
-            <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -20,8 +20,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'card'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Card View"
                 :aria-pressed="viewMode === 'card'"
@@ -35,8 +35,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'table'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Table View"
                 :aria-pressed="viewMode === 'table'"
@@ -54,12 +54,12 @@
     <div class="px-5 py-3">
       <div class="flex items-center gap-2">
         <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-sub text-fluid-sm"></i>
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-muted-foreground text-sm"></i>
           <input 
             v-model="searchQuery"
             type="text" 
             :placeholder="searchPlaceholder" 
-            class="w-full bg-white border border-black/5 rounded-btn pl-9 pr-3 py-2 text-fluid-sm"
+            class="w-full bg-white border border-border rounded-btn pl-9 pr-3 py-2 text-sm"
           />
         </div>
         <TaskFilters

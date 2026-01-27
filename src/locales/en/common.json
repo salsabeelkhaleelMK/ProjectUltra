@@ -100,6 +100,13 @@
     "no": "No",
     "optional": "Optional",
     "required": "Required"
+  },
+  "assignee": {
+    "taskUnassigned": "This task is unassigned",
+    "assignToMe": "Assign to me",
+    "assignToSomeone": "Assign to someone",
+    "searchPlaceholder": "Search users or teams…",
+    "noAssigneesFound": "No assignees found"
   }
 }
 

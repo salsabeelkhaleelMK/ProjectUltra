@@ -1,16 +1,16 @@
 <template>
-  <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-    <h5 class="font-semibold text-heading text-fluid-sm mb-4">Send confirmations and reminders</h5>
+  <div class="bg-white rounded-lg p-4 shadow-nsc-card">
+    <h5 class="font-semibold text-foreground text-sm mb-4">Send confirmations and reminders</h5>
     
     <div class="space-y-4">
       <!-- Immediate Confirmation -->
       <div class="flex items-center gap-3">
-        <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+        <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
           <Checkbox
             id="immediate-confirmation"
             v-model="communications.immediateConfirmationEnabled"
           />
-          <span class="text-fluid-sm font-medium text-heading">Send immediate confirmation to customer</span>
+          <span class="text-sm font-medium text-foreground">Send immediate confirmation to customer</span>
         </Label>
         <SelectMenu
           v-if="communications.immediateConfirmationEnabled"
@@ -24,12 +24,12 @@
 
       <!-- Reminder -->
       <div class="flex items-center gap-3">
-        <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+        <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
           <Checkbox
             id="reminder"
             v-model="communications.reminderEnabled"
           />
-          <span class="text-fluid-sm font-medium text-heading">Send reminder the day before appointment</span>
+          <span class="text-sm font-medium text-foreground">Send reminder the day before appointment</span>
         </Label>
         <SelectMenu
           v-if="communications.reminderEnabled"
@@ -42,12 +42,12 @@
       </div>
 
       <!-- Salesperson/Team Notification -->
-      <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors">
+      <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors">
         <Checkbox
           id="salesperson-notification"
           v-model="communications.salespersonNotification"
         />
-        <span class="text-fluid-sm font-medium text-heading">
+        <span class="text-sm font-medium text-foreground">
           Notify {{ salesperson ? salesperson.name : (team ? team.name : 'salesperson') }} about appointment
         </span>
       </Label>

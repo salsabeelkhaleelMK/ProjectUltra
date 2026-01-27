@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-surface border border-E5E7EB rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all"
+    class="bg-surface border border-border rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition-all"
     :class="dismissing ? 'opacity-50' : ''"
   >
     <div class="flex items-center gap-2 mb-2">
@@ -13,17 +13,17 @@
       </span>
       
       <!-- Time -->
-      <span class="text-fluid-xs">{{ getTimeAgo() }}</span>
+      <span class="text-xs">{{ getTimeAgo() }}</span>
       
       <!-- Owner -->
-      <span class="text-fluid-xs">• Owner: {{ getOwnerDisplay() }}</span>
+      <span class="text-xs">• Owner: {{ getOwnerDisplay() }}</span>
       
       <!-- Dismiss Button -->
       <div class="ml-auto flex items-center gap-2">
         <button
           v-if="!showDismissConfirm"
           @click="showDismissConfirm = true"
-          class="w-7 h-7 flex items-center justify-center rounded text-sub hover:text-body hover:bg-surfaceSecondary transition-colors"
+          class="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
           title="Dismiss"
         >
           <i class="fa-solid fa-xmark text-sm"></i>
@@ -32,18 +32,18 @@
         <!-- Dismiss Confirmation -->
         <div
           v-else
-          class="bg-surface border border-E5E7EB rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
+          class="bg-surface border border-border rounded-lg shadow-lg p-1.5 flex items-center gap-1.5 z-10"
         >
-          <span class="text-fluid-xs whitespace-nowrap">Dismiss?</span>
+          <span class="text-xs whitespace-nowrap">Dismiss?</span>
           <button
             @click="handleDismiss"
-            class="px-2 py-0.5 text-fluid-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors"
+            class="px-2 py-0.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded transition-colors"
           >
             Yes
           </button>
           <button
             @click="showDismissConfirm = false"
-            class="px-2 py-0.5 text-fluid-xs font-medium text-body hover:text-heading transition-colors"
+            class="px-2 py-0.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             No
           </button>
@@ -53,7 +53,7 @@
     
     <!-- Question Text with highlighted customer name -->
     <div class="mb-2" @click="handleQuestionClick">
-      <p class="text-heading text-fluid-sm mb-1" v-html="getHighlightedQuestion()"></p>
+      <p class="text-foreground text-sm mb-1" v-html="getHighlightedQuestion()"></p>
     </div>
     
     <!-- Action Buttons -->
@@ -61,13 +61,13 @@
       <template v-if="question.type === 'appointment-followup'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-fluid-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-2xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
+          class="px-3 py-1.5 text-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           No
         </button>
@@ -76,19 +76,19 @@
       <template v-else-if="question.type === 'ns-followup'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-fluid-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-2xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
+          class="px-3 py-1.5 text-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>
@@ -97,7 +97,7 @@
       <template v-else-if="question.type === 'offer-followup'">
         <button
           @click="handleViewTask"
-          class="px-3 py-1.5 text-fluid-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-2xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
+          class="px-3 py-1.5 text-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
         >
           View Opportunity
         </button>
@@ -106,19 +106,19 @@
       <template v-else-if="question.type === 'stuck-opportunity'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-fluid-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-2xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
+          class="px-3 py-1.5 text-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>
@@ -127,19 +127,19 @@
       <template v-else-if="question.type === 'lead-qualification-urgency'">
         <button
           @click="handleYes"
-          class="px-3 py-1.5 text-fluid-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-2xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
+          class="px-3 py-1.5 text-xs font-medium !bg-brand-dark !text-white border border-brand-dark rounded-xl hover:!bg-brand-darkDarker hover:border-brand-darkDarker transition-colors"
         >
           Yes
         </button>
         <button
           @click="handleNo"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           No
         </button>
         <button
           @click="handleReassign"
-          class="px-3 py-1.5 text-fluid-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-2xl hover:brightness-95 transition-colors"
+          class="px-3 py-1.5 text-xs font-medium bg-surface text-brand-dark border border-D1D5DB rounded-xl hover:brightness-95 transition-colors"
         >
           Reassign
         </button>

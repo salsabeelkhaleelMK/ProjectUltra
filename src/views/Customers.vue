@@ -27,7 +27,7 @@
             :value="tab.key"
             class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-0.5 px-4 shrink-0"
           >
-            <span class="text-fluid-sm font-medium whitespace-nowrap">{{ tab.label }}</span>
+            <span class="text-sm font-medium whitespace-nowrap">{{ tab.label }}</span>
             <Badge
               :text="String(tab.count)"
               size="small"

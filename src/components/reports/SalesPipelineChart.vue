@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-greys-100 rounded-xl p-1 flex flex-col shrink-0" style="background-color: var(--base-muted, #f5f5f5)">
-    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+  <div class="bg-muted rounded-xl p-1 flex flex-col shrink-0">
+    <div class="bg-white rounded-lg shadow-nsc-card flex flex-col">
       <!-- Loading Skeleton -->
       <template v-if="loading">
         <div class="px-4 py-4 flex items-center justify-between shrink-0">
@@ -39,8 +39,8 @@
         <!-- Title Section -->
         <div class="px-4 py-4 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
-            <TrendingUp :size="16" class="text-heading" />
-            <h3 class="text-lg font-medium text-heading leading-5">Sales Pipeline</h3>
+            <TrendingUp :size="16" class="text-foreground" />
+            <h3 class="text-lg font-medium text-foreground leading-5">Sales Pipeline</h3>
           </div>
           <div class="flex items-center gap-2">
             <Button
@@ -64,10 +64,10 @@
               class="flex flex-col items-center text-center"
               :style="{ width: `${100 / pipeline.stages.length}%` }"
             >
-              <p class="text-fluid-sm font-medium text-greys-500 mb-1">{{ stage.name }}</p>
+              <p class="text-sm font-medium text-muted-foreground mb-1">{{ stage.name }}</p>
               <p
                 v-if="stage.percentage"
-                class="text-xl font-semibold text-greys-900 leading-none"
+                class="text-xl font-semibold text-foreground leading-none"
               >
                 {{ stage.percentage }}%
               </p>
@@ -76,7 +76,7 @@
 
           <!-- Pipeline Visualization -->
           <div
-            class="relative shrink-0 bg-greys-50 rounded-lg overflow-hidden"
+            class="relative shrink-0 bg-muted rounded-lg overflow-hidden"
             style="height: 320px"
           >
             <!-- Area Chart using SVG -->
@@ -116,20 +116,20 @@
                   'bg-gray-500': source.color === 'gray'
                 }"
               ></div>
-              <span class="text-xs text-greys-500">{{ source.name }}</span>
+              <span class="text-xs text-muted-foreground">{{ source.name }}</span>
             </div>
           </div>
 
           <!-- Average Times per Lead Source -->
-          <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-black/5">
+          <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
             <div
               v-for="source in pipeline.leadSources"
               :key="source.name"
               class="flex items-center gap-2"
             >
-              <i class="fa-regular fa-clock text-xs text-greys-500"></i>
-              <span class="text-sm font-bold text-greys-900">{{ getSourceAvgTime(source.name) }}</span>
-              <span class="text-xs text-greys-500">on avg.</span>
+              <i class="fa-regular fa-clock text-xs text-muted-foreground"></i>
+              <span class="text-sm font-bold text-foreground">{{ getSourceAvgTime(source.name) }}</span>
+              <span class="text-xs text-muted-foreground">on avg.</span>
             </div>
           </div>
         </div>

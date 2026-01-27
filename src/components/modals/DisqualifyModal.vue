@@ -10,7 +10,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Category Radio Buttons -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Category</Label>
+        <Label class="block text-sm font-semibold text-foreground">Category</Label>
         <div class="flex gap-6">
           <Label class="flex items-center gap-2 cursor-pointer">
             <input 
@@ -19,7 +19,7 @@
               value="Not Valid"
               class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
             >
-            <span class="text-sm text-body">Not Valid</span>
+            <span class="text-sm text-muted-foreground">Not Valid</span>
           </Label>
           <Label class="flex items-center gap-2 cursor-pointer">
             <input 
@@ -28,14 +28,14 @@
               value="Not Interested"
               class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
             >
-            <span class="text-sm text-body">Not Interested</span>
+            <span class="text-sm text-muted-foreground">Not Interested</span>
           </Label>
         </div>
       </div>
       
       <!-- Failure Reason Dropdown -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Failure Reason</Label>
+        <Label class="block text-sm font-semibold text-foreground">Failure Reason</Label>
         <Select v-model="failureReason">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select a reason..." />

@@ -1,64 +1,25 @@
-/* ProjectUltra Main CSS - Aligned with Reference Project */
+/* ProjectUltra Main CSS - Exceptions only: card shadow, toggle selected, layout vars */
 
 /* ========================================
    Core Imports
    ======================================== */
 
-/* Tailwind CSS v4 */
 @import 'tailwindcss';
-
-/* Animations */
 @import 'tw-animate-css';
-
-/* Motork Component Library - specify source for Tailwind v4 */
 @source '../../../node_modules/@motork/component-library/dist';
-
-/* Motork Theme */
 @import '@motork/component-library/theme';
 
 /* ========================================
-   Font Declarations
-   ======================================== */
-
-/* Note: Using Figtree variable font from Google Fonts (loaded in index.html) */
-/* Font weights 300-900 available via variable font */
-
-/* ========================================
-   CSS Custom Properties
+   Layout & Chart Tokens (app-specific, not theme overrides)
    ======================================== */
 
 :root {
-  /* Font sizes using clamp() for fluid scaling */
-  --text-xs: clamp(10px, 0.625vw, 12px);
-  --text-sm: clamp(12px, 0.875vw, 14px);
-  --text-base: clamp(14px, 1vw, 16px);
-  --text-lg: clamp(16px, 1.125vw, 18px);
-  --text-xl: clamp(18px, 1.25vw, 20px);
-  --text-2xl: clamp(20px, 1.5vw, 24px);
-
-  /* Line heights */
-  --leading-4: clamp(16px, 1.25vw, 20px);
-  --leading-5: clamp(20px, 1.5625vw, 24px);
-  --leading-6: clamp(24px, 1.875vw, 28px);
-  --leading-7: clamp(28px, 2.1875vw, 32px);
-
-  /* Responsive widths - base at 1280px */
   --sidebar-width: clamp(40px, 3.75vw, 48px);
   --lead-list-width: clamp(240px, 23.125vw, 296px);
   --activity-width: clamp(260px, 25vw, 320px);
-
-  /* Responsive spacing */
-  --spacing-1: clamp(4px, 0.3125vw, 6px);
-  --spacing-2: clamp(8px, 0.625vw, 10px);
-  --spacing-3: clamp(12px, 0.9375vw, 16px);
-  --spacing-4: clamp(16px, 1.25vw, 20px);
-  --spacing-6: clamp(24px, 1.875vw, 32px);
-
-  /* Responsive heights */
   --header-height: clamp(48px, 3.75vw, 60px);
   --topbar-height: clamp(40px, 3.125vw, 48px);
 
-  /* Chart color palette */
   --chart-color-1: #3b82f6;
   --chart-color-2: #14b8a6;
   --chart-color-3: #0ea5e9;
@@ -70,17 +31,13 @@
   --chart-color-9: #eab308;
   --chart-color-10: #84cc16;
 
-  /* Dashboard Card Shadow */
   --mk-dashboard-card-shadow:
     0 0 0 1px rgba(14, 63, 126, 0.04), 0 1px 1px -0.5px rgba(42, 51, 69, 0.04),
     0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04),
     0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
-  
-  /* Alias for reference compatibility */
   --nsc-card-shadow: var(--mk-dashboard-card-shadow);
 }
 
-/* Make leads list and activity 10% narrower on smaller screens */
 @media (max-width: 1024px) {
   :root {
     --lead-list-width: clamp(216px, 20.8125vw, 266px);
@@ -89,10 +46,9 @@
 }
 
 /* ========================================
-   Theme Color Overrides - Match Reference Project
+   Custom Navigation Sidebar (no Motork component)
    ======================================== */
 
-/* Override Motork theme variables to match reference project */
 :root {
   /* Base colors */
   --base-muted: #f5f5f5;
@@ -101,6 +57,7 @@
   --base-surface: #fff;
   --base-sidebar-foreground: #0a0a0a;
   --base-primary: #0470e9;
+  --sidebar-bg: #0a0a0a;
   
   /* Border colors - Match reference subtle borders */
   --base-border: rgba(0, 0, 0, 0.05);
@@ -144,309 +101,18 @@
 }
 
 /* ========================================
-   Text Color Utilities - Match Reference
+   Exception: Custom Card Shadow
    ======================================== */
 
-.text-heading {
-  color: var(--text-heading, #0a0a0a) !important;
-}
-
-.text-body {
-  color: var(--text-body, #3f3f46) !important;
-}
-
-.text-sub {
-  color: var(--text-sub, #71717a) !important;
-}
-
-.text-greys-900 {
-  color: var(--greys-900, #0a0a0a) !important;
-}
-
-.text-greys-500 {
-  color: var(--greys-500, #71717a) !important;
-}
-
-/* ========================================
-   Utility Classes
-   ======================================== */
-
-/* Fluid Typography Utilities */
-.text-fluid-xs { 
-  font-size: var(--text-xs); 
-  line-height: var(--leading-4); 
-}
-
-.text-fluid-sm { 
-  font-size: var(--text-sm); 
-  line-height: var(--leading-5); 
-}
-
-.text-fluid-base { 
-  font-size: var(--text-base); 
-  line-height: var(--leading-6); 
-}
-
-.text-fluid-lg { 
-  font-size: var(--text-lg); 
-  line-height: var(--leading-6); 
-}
-
-.text-fluid-xl { 
-  font-size: var(--text-xl); 
-  line-height: var(--leading-7); 
-}
-
-.text-fluid-2xl { 
-  font-size: var(--text-2xl); 
-  line-height: var(--leading-7); 
-}
-
-.w-\[--reka-popover-trigger-width\] {
-  width: var(--reka-popover-trigger-width) !important;
-}
-
-/* Dashboard Card Utility - Apply shadow to cards */
 .mk-dashboard-card {
   box-shadow: var(--mk-dashboard-card-shadow);
 }
 
-/* ========================================
-   Border Utilities - Match Reference Project
-   ======================================== */
-
-/* CRITICAL: Override default Tailwind border color to match reference */
-/* Default border class should use subtle light border, not dark */
-.border,
-[class*="border-"]:not([class*="border-none"]):not([class*="border-0"]) {
-  border-color: rgba(0, 0, 0, 0.05) !important;
+.shadow-mk-dashboard-card,
+.shadow-nsc-card {
+  box-shadow: var(--nsc-card-shadow) !important;
 }
 
-/* Specific border utilities */
-.border-base {
-  border-color: var(--base-border, rgba(0, 0, 0, 0.05)) !important;
-}
-
-.border-black\/5 {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.border-black-5 {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Specific border sides */
-.border-r,
-.border-r-black\/5 {
-  border-right-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.border-l,
-.border-l-black\/5 {
-  border-left-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.border-t,
-.border-t-black\/5 {
-  border-top-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.border-b,
-.border-b-black\/5 {
-  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Border utility for E5E7EB color */
-.border-E5E7EB {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-.border-border {
-  border-color: var(--border, rgba(0, 0, 0, 0.05)) !important;
-}
-
-/* Exception: borders that should be colored (badges, status, etc) */
-.border-blue-100,
-.border-blue-200,
-[class*="border-blue"] {
-  /* Blue borders keep their color */
-  border-color: #93c5fd !important; /* blue-200 */
-}
-
-.border-green-100,
-.border-green-200,
-[class*="border-green"] {
-  border-color: #86efac !important; /* green-200 */
-}
-
-.border-orange-100,
-.border-orange-200,
-[class*="border-orange"] {
-  border-color: #fed7aa !important; /* orange-200 */
-}
-
-.border-red-100,
-.border-red-200,
-[class*="border-red"] {
-  border-color: #fecaca !important; /* red-200 */
-}
-
-.border-purple-100,
-.border-purple-200,
-[class*="border-purple"] {
-  border-color: #e9d5ff !important; /* purple-200 */
-}
-
-.border-yellow-100,
-.border-yellow-200,
-[class*="border-yellow"] {
-  border-color: #fef08a !important; /* yellow-200 */
-}
-
-/* Task list cards: selected state must show visible blue/purple border (overrides global border-color) */
-.task-list-cards > .border-blue-500 {
-  border-color: #0470e9 !important;
-  border-width: 2px !important;
-}
-
-.task-list-cards > .border-purple-500 {
-  border-color: #7c3aed !important;
-  border-width: 2px !important;
-}
-
-/* White backgrounds with borders (common pattern) */
-.bg-white-bordered {
-  background-color: var(--base-background, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.bg-white-bordered-sm {
-  background-color: var(--base-background, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* ========================================
-   Border Radius - Match Reference Project
-   ======================================== */
-
-/* Override Tailwind rounded classes to match reference exactly */
-.rounded-lg {
-  border-radius: 8px !important;
-}
-
-.rounded-xl {
-  border-radius: 12px !important;
-}
-
-.rounded-2xl {
-  border-radius: 16px !important;
-}
-
-/* Custom rounded utilities */
-.rounded-btn {
-  border-radius: 8px;
-}
-
-.rounded-card {
-  border-radius: 10px;
-}
-
-.rounded-xl-card {
-  border-radius: 12px;
-}
-
-/* Match reference project's card radius */
-.rounded-card-lg {
-  border-radius: var(--border-radius-rounded-lg, 10px);
-}
-
-/* ========================================
-   Background Utilities - Match Reference Project
-   ======================================== */
-
-/* Override background colors to match reference */
-.bg-base-muted {
-  background-color: var(--base-muted, #f5f5f5) !important;
-}
-
-.bg-base-card {
-  background-color: var(--base-card, #fff) !important;
-}
-
-.bg-base-surface {
-  background-color: var(--base-background, #fff) !important;
-}
-
-.bg-white {
-  background-color: var(--base-background, #fff) !important;
-}
-
-.bg-sidebar-dark {
-  background-color: var(--base-sidebar-foreground, #0a0a0a) !important;
-}
-
-.bg-avatar-slate {
-  background-color: var(--brand-slate, #6B7280) !important;
-}
-
-/* Hover backgrounds */
-.hover\:bg-greys-50:hover {
-  background-color: #f9fafb !important;
-}
-
-.hover\:bg-surfaceSecondary:hover {
-  background-color: var(--base-muted, #f5f5f5) !important;
-}
-
-/* Card component styling */
-[data-slot="card"],
-.card-container {
-  background-color: var(--base-card, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  box-shadow: var(--mk-dashboard-card-shadow);
-  transition: all 0.2s ease;
-}
-
-[data-slot="card"]:hover,
-.card-container:hover {
-  box-shadow: 
-    0 0 0 1px rgba(14, 63, 126, 0.06),
-    0 2px 2px -1px rgba(42, 51, 69, 0.06),
-    0 4px 4px -2px rgba(42, 51, 70, 0.06),
-    0 8px 8px -4px rgba(42, 51, 70, 0.06),
-    0 16px 16px -8px rgba(14, 63, 126, 0.06),
-    0 32px 32px -16px rgba(14, 63, 126, 0.06);
-}
-
-/* ========================================
-   Shadow Utilities - Match Tailwind Reference
-   ======================================== */
-
-/* Override Tailwind shadows to match reference project */
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-.shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Dashboard card shadow utility */
-.shadow-mk-dashboard-card {
-  box-shadow: var(--mk-dashboard-card-shadow) !important;
-}
-
-/* Selected card shadow (from reference) */
 .shadow-selected {
   box-shadow:
     0 0 0 1px rgba(14, 63, 126, 0.04),
@@ -568,6 +234,13 @@
   margin: 0;
 }
 
+.section-header-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--foreground);
+}
+
 /* ========================================
    Layout Component Classes
    ======================================== */
@@ -581,7 +254,7 @@
 
 /* Sidebar container */
 .sidebar-container {
-  background-color: var(--base-sidebar-foreground, #0a0a0a);
+  background-color: var(--sidebar-bg, var(--base-sidebar-foreground, #0a0a0a));
   width: var(--sidebar-width);
   /* Note: fixed positioning is applied via Tailwind classes in component */
 }
@@ -600,13 +273,13 @@
 
 /* Mobile sidebar */
 .mobile-sidebar-container {
-  background-color: var(--base-sidebar-foreground, #0a0a0a);
+  background-color: var(--sidebar-bg, var(--base-sidebar-foreground, #0a0a0a));
 }
 
 /* Mobile header */
 .mobile-header {
-  background-color: var(--base-background, #fff);
-  border-color: var(--base-border, rgba(0, 0, 0, 0.05));
+  background-color: var(--background, var(--base-background, #fff));
+  border-color: var(--border, var(--base-border, rgba(0, 0, 0, 0.05)));
 }
 
 /* User avatar */
@@ -761,6 +434,7 @@ button[class*="variant-outline"]:disabled {
 }
 
 /* ========================================
+   Exception: Toggle Selected State
    ToggleGroupItem pressed/selected state (Motork future primitives)
    Blue border must show when selected, not only on hover.
    ======================================== */
@@ -772,9 +446,9 @@ button[data-state="on"][data-variant="outline"],
 button[data-state="on"][class*="variant-outline"],
 button[aria-pressed="true"],
 button[aria-pressed="true"][class*="variant-outline"] {
-  border: 1.5px solid #0470e9 !important;
-  background: rgba(4, 112, 233, 0.08) !important;
-  color: #0470e9 !important;
+  border: 1.5px solid var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
+  color: var(--primary) !important;
   box-shadow: none !important;
 }
 
@@ -782,9 +456,9 @@ button[aria-pressed="true"][class*="variant-outline"] {
 [aria-pressed="true"]:hover:not(:disabled),
 button[data-state="on"]:hover:not(:disabled),
 button[aria-pressed="true"]:hover:not(:disabled) {
-  border: 1.5px solid #0470e9 !important;
-  background: rgba(4, 112, 233, 0.12) !important;
-  color: #0470e9 !important;
+  border: 1.5px solid var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+  color: var(--primary) !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
 }
 
@@ -797,98 +471,106 @@ button[aria-pressed="true"]:hover:not(:disabled) {
   width: 100%;
 }
 
-/* ========================================
-   Ghost Button Styling
-   ======================================== */
+.outcome-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+}
 
-/* Ghost buttons - transparent background, no border */
-button[data-variant="ghost"],
-button[class*="variant-ghost"] {
-  border-radius: 8px !important;
-  border: none !important;
-  background: transparent !important;
-  color: var(--text-heading, #0a0a0a) !important;
-  font-weight: 500 !important;
+.outcome-toggle-group [data-state="on"],
+.outcome-toggle-group button[data-state="on"],
+.followup-channel-toggle-group [data-state="on"],
+.followup-channel-toggle-group button[data-state="on"],
+.schedule-slot-toggle-group [data-state="on"],
+.schedule-slot-toggle-group button[data-state="on"],
+.reschedule-toggle-group [data-state="on"],
+.reschedule-toggle-group button[data-state="on"] {
+  border: 1.5px solid var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
+  color: var(--primary) !important;
   box-shadow: none !important;
-  transition:
-    all 0.2s ease !important;
 }
 
-/* Ghost button hover state */
-button[data-variant="ghost"]:hover:not(:disabled),
-button[class*="variant-ghost"]:hover:not(:disabled) {
-  background: var(--base-muted, #f5f5f5) !important;
+.outcome-toggle-group [data-state="on"]:hover:not(:disabled),
+.outcome-toggle-group button[data-state="on"]:hover:not(:disabled),
+.followup-channel-toggle-group [data-state="on"]:hover:not(:disabled),
+.followup-channel-toggle-group button[data-state="on"]:hover:not(:disabled),
+.schedule-slot-toggle-group [data-state="on"]:hover:not(:disabled),
+.schedule-slot-toggle-group button[data-state="on"]:hover:not(:disabled),
+.reschedule-toggle-group [data-state="on"]:hover:not(:disabled),
+.reschedule-toggle-group button[data-state="on"]:hover:not(:disabled) {
+  border: 1.5px solid var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+  color: var(--primary) !important;
 }
 
-/* Ghost button active state */
-button[data-variant="ghost"]:active:not(:disabled),
-button[class*="variant-ghost"]:active:not(:disabled) {
-  background: rgba(0, 0, 0, 0.1) !important;
+.followup-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
 }
 
-/* Ghost button disabled state */
-button[data-variant="ghost"]:disabled,
-button[class*="variant-ghost"]:disabled {
-  background: transparent !important;
-  color: rgba(0, 0, 0, 0.3) !important;
-  opacity: 0.6 !important;
-}
-
-/* ========================================
-   Link Button Styling
-   ======================================== */
-
-/* Link buttons - no background, no border, just text with hover */
-button[data-variant="link"],
-button[class*="variant-link"] {
-  border-radius: 8px !important;
-  border: none !important;
-  background: transparent !important;
-  color: #0470e9 !important;
-  font-weight: 500 !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
-  transition:
-    all 0.2s ease !important;
-}
-
-/* Link button hover state */
-button[data-variant="link"]:hover:not(:disabled),
-button[class*="variant-link"]:hover:not(:disabled) {
-  color: #0359c0 !important;
-  text-decoration: underline !important;
-}
-
-/* Link button active state */
-button[data-variant="link"]:active:not(:disabled),
-button[class*="variant-link"]:active:not(:disabled) {
-  color: #024a9f !important;
-}
-
-/* Link button disabled state */
-button[data-variant="link"]:disabled,
-button[class*="variant-link"]:disabled {
-  background: transparent !important;
-  color: rgba(4, 112, 233, 0.4) !important;
-  opacity: 0.6 !important;
-  text-decoration: none !important;
+.schedule-slot-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
 }
 
 /* ========================================
-   Button Size Variants
+   Form labels (component-library-aligned)
    ======================================== */
 
-/* Small buttons */
-button[data-size="sm"],
-button[data-size="small"],
-button[class*="size-sm"],
-button[class*="size-small"] {
-  padding: 0.375rem 0.75rem !important;
-  font-size: var(--text-sm) !important;
-  line-height: 1.25rem !important;
-  height: auto !important;
-  min-height: 2rem !important;
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--foreground);
+  margin-bottom: 0.375rem;
 }
+
+.form-label.optional,
+.form-label .optional {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+/* ========================================
+   Layout Utilities (use layout vars only)
+   ======================================== */
+
+.page-container {
+  @apply w-full h-full;
+  background-color: var(--base-background, #fff);
+}
+
+/* ========================================
+   Button Sizing
+   ======================================== */
 
 /* Medium/default buttons */
 /* Only apply to buttons with explicit size attributes to avoid affecting Motork table components */
@@ -996,60 +678,38 @@ button[class*="size-icon"] > i {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.375rem; /* gap-1.5 */
-  padding: 0;
-  height: 100%;
-  border-radius: 0 !important;
-  background: transparent !important;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-sub, #737373);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none !important;
-  outline: none !important;
 }
 
-/* Remove any focus rings or borders from tab triggers */
-[role="tab"]:focus,
-[role="tab"]:focus-visible,
-.tab-trigger:focus,
-.tab-trigger:focus-visible {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* Tab label text - always same color */
-[role="tab"] > span:first-child,
-.tab-label {
-  font-size: var(--text-sm);
+.page-header-title {
+  font-size: 1.25rem;
   font-weight: 500;
-  color: var(--greys-900, #0a0a0a) !important;
-  line-height: var(--leading-5);
+  margin: 0;
+  color: var(--foreground);
 }
 
-/* Tab count badge - inactive state */
-[role="tab"]:not([data-state="active"]) .tab-count,
-[role="tab"]:not([data-state="active"]) [class*="badge"],
-.tab-count {
-  padding: 0.125rem 0.5rem; /* px-2 py-0.5 */
-  border-radius: 0.5rem; /* rounded-lg */
-  font-size: var(--text-sm);
-  font-weight: 500;
-  background-color: var(--base-muted, #f5f5f5);
-  color: var(--greys-900, #0a0a0a);
-  line-height: var(--leading-5);
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
-/* Tab count badge - active state (BLUE) */
-[role="tab"][data-state="active"] .tab-count,
-[role="tab"][data-state="active"] [class*="badge"],
-.tab-count-active {
-  padding: 0.125rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: var(--text-sm);
-  font-weight: 700 !important; /* font-bold */
-  background-color: #dbeafe !important; /* bg-blue-50 */
-  color: #2563eb !important; /* text-blue-600 */
-  line-height: var(--leading-5);
+.section-header {
+  padding: 1.5rem 0 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* Active tab indicator - BLUE underline (2px high) */
@@ -1148,377 +808,79 @@ button[data-state="active"][role="tab"]:not(.no-indicator)::after {
 
 .empty-state-icon {
   font-size: 2.5rem;
-  color: var(--text-sub, #71717a);
   margin-bottom: 1rem;
   opacity: 0.5;
+  color: var(--muted-foreground);
 }
 
 .empty-state-text {
-  font-size: var(--text-sm);
-  color: var(--text-sub, #71717a);
+  font-size: 0.875rem;
   margin: 0;
+  color: var(--muted-foreground);
 }
 
-.empty-state-title {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--text-heading, #0a0a0a);
-  margin-bottom: 0.5rem;
-}
-
-.empty-state-description {
-  font-size: var(--text-sm);
-  color: var(--text-sub, #71717a);
-  max-width: 24rem;
-  margin: 0 auto;
-}
-
-/* ========================================
-   Input & Search Box Styling
-   ======================================== */
-
-/* Standard input styling matching reference */
-input[type="text"],
-input[type="email"],
-input[type="search"],
-input[type="tel"],
-input[type="url"],
-textarea,
-select {
-  background-color: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  color: var(--text-heading, #0a0a0a);
-  font-size: var(--text-sm);
-  transition: all 0.15s ease;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="url"]:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: #0470e9;
-  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
-}
-
-/* Ensure Motork SelectMenu/Command search input layout isn't affected by global input styles */
-[data-slot='command-input-wrapper'] input,
-[data-slot='command-input'] {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-[data-slot='command-input']:focus {
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Focus ring on the whole search row (icon + input) */
-[data-slot='command-input-wrapper'] {
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-}
-
-[data-slot='command-input-wrapper']:focus-within {
-  border-color: #0470e9;
-  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
-}
-
-/* Search box pattern from reference */
-.search-box {
-  background-color: var(--base-background, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  transition: all 0.15s ease;
-}
-
-.search-box:focus-within {
-  border-color: #0470e9;
-  box-shadow: 0 0 0 3px rgba(4, 112, 233, 0.1);
-}
-
-.search-box input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-size: var(--text-sm);
-  color: var(--text-heading, #0a0a0a);
-}
-
-.search-box input::placeholder {
-  color: var(--text-sub, #71717a);
-}
-
-/* ========================================
-   Filter and Chip Components
-   ======================================== */
-
-/* Filter Dropdown Button */
-.filter-dropdown-button {
-  position: relative;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: var(--base-background, #fff);
-  color: var(--text-sub, #71717a);
-  transition: all 0.15s ease;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* Ensure icon is perfectly centered with no margins */
-.filter-dropdown-button i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  text-align: center;
-}
-
-.filter-dropdown-button:hover {
-  background-color: var(--base-muted, #f5f5f5);
-  color: var(--text-heading, #0a0a0a);
-  border-color: rgba(0, 0, 0, 0.15);
-}
-
-/* Active filter indicator dot */
-.filter-indicator {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #0a0a0a;
-  border: 2px solid var(--base-background, #fff);
-}
-
-/* Task Filter Badge - Matches TaskCard badges exactly */
-.task-filter-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0.15rem !important;
-  padding: 0 0.2rem !important;
-  border-radius: 9999px !important;
-  background-color: var(--base-muted, #f5f5f5) !important;
-  color: var(--text-heading, #0a0a0a) !important;
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  line-height: 1 !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.15s ease !important;
-  height: 1rem !important;
-  min-height: 0 !important;
-}
-
-.task-filter-badge span {
-  display: inline-flex !important;
-  align-items: center !important;
-  line-height: 1 !important;
-  height: 100% !important;
-}
-
-.task-filter-badge:hover {
-  background-color: #e8e8e8 !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-.task-filter-badge-remove {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background-color: transparent !important;
-  color: var(--text-sub, #71717a) !important;
-  transition: color 0.15s ease !important;
-  cursor: pointer !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  line-height: 1 !important;
-  flex-shrink: 0 !important;
-}
-
-.task-filter-badge-remove:hover {
-  color: var(--text-heading, #0a0a0a) !important;
-}
-
-.task-filter-badge-remove i {
-  font-size: 8px !important;
-  line-height: 1 !important;
-}
-
-/* Filter Dropdown Menu Container */
-.filter-dropdown-wrapper {
-  min-width: 14rem;
-}
-
-/* Dropdown menu items styling override for Motork DropdownMenu */
-.filter-dropdown-wrapper [role="menu"],
-.filter-dropdown-wrapper [role="menuitem"],
-.filter-dropdown-wrapper button,
-.filter-dropdown-wrapper [class*="item"] {
-  font-size: var(--text-sm, 0.875rem) !important;
-  position: relative;
-}
-
-/* Selected menu item background */
-.filter-item-selected,
-.sort-item-selected {
-  background-color: var(--base-muted, #f5f5f5) !important;
-  padding-right: 2rem !important;
-}
-
-/* Selection indicator checkmark for active filters/sorts */
-.filter-item-selected::after,
-.sort-item-selected::after {
-  content: '\2713';
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #0a0a0a;
-}
-
-/* Dropdown menu transitions */
-.dropdown-fade-enter-active,
-.dropdown-fade-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-fade-enter-from,
-.dropdown-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-
-/* ========================================
-   Common UI Patterns from Reference
-   ======================================== */
-
-/* Button-like elements with white bg and border */
-.btn-outlined {
-  background-color: var(--base-background, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: all 0.15s ease;
-}
-
-.btn-outlined:hover {
-  background-color: #f9fafb;
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-/* Panel/section separators */
-.panel-divider {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.panel-divider-r {
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-/* Lead/task card styling from reference */
 .task-card {
-  background: var(--base-background, #fff);
+  background: var(--background);
   border: 1px solid transparent;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: none;
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease;
   cursor: pointer;
 }
 
-.task-card:hover {
-  box-shadow:
-    0 0 0 1px rgba(14, 63, 126, 0.06),
-    0 2px 2px -1px rgba(42, 51, 69, 0.06),
-    0 4px 4px -2px rgba(42, 51, 70, 0.06),
-    0 8px 8px -4px rgba(42, 51, 70, 0.06),
-    0 16px 16px -8px rgba(14, 63, 126, 0.06);
-}
-
 .task-card-selected {
-  border-color: var(--base-primary, #0470e9);
+  border-color: var(--primary);
   border-width: 2px;
-  box-shadow: none;
 }
 
-.task-card-selected:hover {
-  box-shadow:
-    0 0 0 1px rgba(14, 63, 126, 0.06),
-    0 2px 2px -1px rgba(42, 51, 69, 0.06),
-    0 4px 4px -2px rgba(42, 51, 70, 0.06),
-    0 8px 8px -4px rgba(42, 51, 70, 0.06),
-    0 16px 16px -8px rgba(14, 63, 126, 0.06);
+.page-header-main {
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 4rem;
+  min-height: 4rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.page-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.page-with-sidebar {
+  padding-left: 0;
+}
+
+@media (min-width: 768px) {
+  .page-with-sidebar {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+.main-content-area {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  .main-content-area {
+    margin-left: var(--sidebar-width);
+  }
 }
 
 /* ========================================
-   Scrollbar Styling (Optional)
+   Dialog Layout (minimal, no theme overrides)
    ======================================== */
 
-/* Hide scrollbar but keep functionality */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Custom scrollbar for specific elements */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-/* ========================================
-   FullCalendar Custom Theme
-   ======================================== */
-
-/* Keep FullCalendar styles as they're library-specific - styled separately if needed */
-
-/* ========================================
-   Modal/Dialog Styling - Adaptive Width & Scroll
-   ======================================== */
-
-/* Ensure all dialogs have proper max-height and scrolling */
 [data-slot="dialog-content"],
 [role="dialog"] {
   max-height: calc(100vh - 4rem) !important;
@@ -1527,7 +889,6 @@ select:focus {
   overflow: hidden !important;
 }
 
-/* Dialog content scrollable area */
 .dialog-content-scroll {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -1536,12 +897,6 @@ select:focus {
   width: 100%;
 }
 
-/* Ensure content consumes full width */
-.dialog-content-full-width {
-  width: 100%;
-}
-
-/* Scrollable content with padding */
 .dialog-scroll-area {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -1550,39 +905,17 @@ select:focus {
   width: 100%;
 }
 
-/* Header and footer stay fixed */
 [data-slot="dialog-header"],
 [data-slot="dialog-footer"] {
   flex-shrink: 0 !important;
 }
 
-/* Adaptive width utilities for modals */
-.dialog-sm {
-  width: 100%;
-  max-width: 28rem; /* 448px */
-}
+.dialog-sm { width: 100%; max-width: 28rem; }
+.dialog-md { width: 100%; max-width: 32rem; }
+.dialog-lg { width: 100%; max-width: 42rem; }
+.dialog-xl { width: 100%; max-width: 56rem; }
+.dialog-2xl { width: 100%; max-width: 64rem; }
 
-.dialog-md {
-  width: 100%;
-  max-width: 32rem; /* 512px */
-}
-
-.dialog-lg {
-  width: 100%;
-  max-width: 42rem; /* 672px */
-}
-
-.dialog-xl {
-  width: 100%;
-  max-width: 56rem; /* 896px */
-}
-
-.dialog-2xl {
-  width: 100%;
-  max-width: 64rem; /* 1024px */
-}
-
-/* Mobile responsiveness */
 @media (max-width: 640px) {
   [data-slot="dialog-content"],
   [role="dialog"] {
@@ -1590,7 +923,6 @@ select:focus {
     margin: 0 !important;
     border-radius: 0 !important;
   }
-  
   .dialog-scroll-area,
   .dialog-content-scroll {
     max-height: calc(100vh - 12rem);
@@ -1598,7 +930,15 @@ select:focus {
 }
 
 /* ========================================
-   Print Styles
+   Reka/Motork popover width utility
+   ======================================== */
+
+.w-\[--reka-popover-trigger-width\] {
+  width: var(--reka-popover-trigger-width) !important;
+}
+
+/* ========================================
+   Print
    ======================================== */
 
 @media print {

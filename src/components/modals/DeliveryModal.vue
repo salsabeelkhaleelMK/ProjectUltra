@@ -10,7 +10,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Delivery Date -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Delivery Date</Label>
+        <Label class="block text-sm font-semibold text-foreground">Delivery Date</Label>
         <Input 
           type="date"
           v-model="deliveryDate"
@@ -21,7 +21,7 @@
       
       <!-- Delivery Time -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Time (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Time (Optional)</Label>
         <Input 
           type="time"
           v-model="deliveryTime"
@@ -31,7 +31,7 @@
       
       <!-- Delivery Location -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Delivery Location</Label>
+        <Label class="block text-sm font-semibold text-foreground">Delivery Location</Label>
         <Select v-model="deliveryLocation">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select location..." />
@@ -46,7 +46,7 @@
       
       <!-- Notes -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Delivery Notes</Label>
+        <Label class="block text-sm font-semibold text-foreground">Delivery Notes</Label>
         <Textarea 
           v-model="notes"
           rows="4"

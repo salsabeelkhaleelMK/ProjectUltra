@@ -16,7 +16,7 @@
         <div class="min-w-0 flex-1 flex flex-col justify-center">
           <!-- Top Row: Name and Tags -->
           <div class="flex items-center gap-2 -mb-2">
-            <h1 class="text-fluid-lg font-semibold text-heading truncate leading-tight mb-0">{{ name }}</h1>
+            <h1 class="text-lg font-semibold text-foreground truncate leading-tight mb-0">{{ name }}</h1>
             
             <!-- Tags (desktop only, inline with name) -->
             <div class="hidden lg:flex items-center gap-1.5 ml-2">
@@ -29,7 +29,7 @@
               />
               <button
                 @click.stop="handleAddTag"
-                class="text-xs text-sub hover:text-primary font-medium hover:underline flex items-center gap-1 transition-colors whitespace-nowrap"
+                class="text-xs text-muted-foreground hover:text-primary font-medium hover:underline flex items-center gap-1 transition-colors whitespace-nowrap"
               >
                 <i class="fa-solid fa-plus text-xs"></i>
                 <span>tag</span>
@@ -40,21 +40,21 @@
           <!-- Bottom Row: Contact Details - Better Organized -->
           <div class="flex items-center gap-4 flex-wrap -mt-2">
             <div class="flex items-center gap-1.5 group">
-              <i class="fa-regular fa-envelope text-xs text-sub"></i>
-              <span class="text-xs text-body truncate max-w-40 sm:max-w-52">{{ email }}</span>
-              <button @click.stop="copyToClipboard(email, 'email')" class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5"><i class="fa-regular fa-copy text-xs text-sub hover:text-primary"></i></button>
+              <i class="fa-regular fa-envelope text-xs text-muted-foreground"></i>
+              <span class="text-xs text-muted-foreground truncate max-w-40 sm:max-w-52">{{ email }}</span>
+              <button @click.stop="copyToClipboard(email, 'email')" class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5"><i class="fa-regular fa-copy text-xs text-muted-foreground hover:text-primary"></i></button>
             </div>
             
             <div class="flex items-center gap-1.5 group">
-              <i class="fa-solid fa-phone text-xs text-sub"></i>
-              <span class="text-xs text-body whitespace-nowrap">{{ phone }}</span>
-              <button @click.stop="copyToClipboard(phone, 'phone')" class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5"><i class="fa-regular fa-copy text-xs text-sub hover:text-primary"></i></button>
+              <i class="fa-solid fa-phone text-xs text-muted-foreground"></i>
+              <span class="text-xs text-muted-foreground whitespace-nowrap">{{ phone }}</span>
+              <button @click.stop="copyToClipboard(phone, 'phone')" class="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5"><i class="fa-regular fa-copy text-xs text-muted-foreground hover:text-primary"></i></button>
             </div>
 
             <div class="flex items-center gap-1.5">
-              <i class="fa-solid fa-map-marker-alt text-xs text-sub" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
-              <i class="fa-regular fa-calendar text-xs text-sub" v-else></i>
-              <span class="text-xs text-body truncate max-w-40 sm:max-w-52">{{ thirdFieldValue }}</span>
+              <i class="fa-solid fa-map-marker-alt text-xs text-muted-foreground" v-if="thirdFieldLabel.toLowerCase().includes('address')"></i>
+              <i class="fa-regular fa-calendar text-xs text-muted-foreground" v-else></i>
+              <span class="text-xs text-muted-foreground truncate max-w-40 sm:max-w-52">{{ thirdFieldValue }}</span>
             </div>
 
             <!-- Tags (mobile only, inline with contact) -->
@@ -68,7 +68,7 @@
               />
               <button
                 @click.stop="handleAddTag"
-                class="text-xs text-sub hover:text-primary font-medium hover:underline flex items-center gap-1 transition-colors"
+                class="text-xs text-muted-foreground hover:text-primary font-medium hover:underline flex items-center gap-1 transition-colors"
               >
                 <i class="fa-solid fa-plus text-xs"></i>
                 <span>tag</span>
@@ -86,7 +86,7 @@
           size="icon" 
           @click.stop="$emit('close')"
         >
-          <X :size="16" class="text-sub" />
+          <X :size="16" class="text-muted-foreground" />
         </Button>
       </div>
     </div>

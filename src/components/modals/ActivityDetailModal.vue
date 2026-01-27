@@ -10,14 +10,14 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
           <div class="space-y-4 w-full">
           <!-- Activity Metadata -->
-          <div class="flex items-center gap-4 text-sm text-greys-500">
+          <div class="flex items-center gap-4 text-sm text-muted-foreground">
             <div class="flex items-center gap-2">
               <component 
                 :is="getActivityIcon()" 
                 :size="16" 
                 :class="getIconClass()"
               />
-              <span class="font-medium text-greys-900">{{ activity?.user || 'Unknown User' }}</span>
+              <span class="font-medium text-foreground">{{ activity?.user || 'Unknown User' }}</span>
             </div>
             <div>{{ activity?.time || 'Unknown time' }}</div>
           </div>
@@ -29,7 +29,7 @@
           >
             <!-- Note Content -->
             <div v-if="activity?.type === 'note'">
-              <p class="text-sm text-greys-900 whitespace-pre-line">
+              <p class="text-sm text-foreground whitespace-pre-line">
                 {{ activity?.message || activity?.content || 'No content' }}
               </p>
             </div>
@@ -37,12 +37,12 @@
             <!-- Email Content -->
             <div v-else-if="activity?.type === 'email'" class="space-y-3">
               <div v-if="activity?.subject">
-                <label class="block text-xs font-medium text-greys-500 mb-1">Subject</label>
-                <p class="text-sm text-greys-900">{{ activity.subject }}</p>
+                <label class="block text-xs font-medium text-muted-foreground mb-1">Subject</label>
+                <p class="text-sm text-foreground">{{ activity.subject }}</p>
               </div>
               <div>
-                <label class="block text-xs font-medium text-greys-500 mb-1">Message</label>
-                <p class="text-sm text-greys-900 whitespace-pre-line">
+                <label class="block text-xs font-medium text-muted-foreground mb-1">Message</label>
+                <p class="text-sm text-foreground whitespace-pre-line">
                   {{ activity?.content || 'No content' }}
                 </p>
               </div>
@@ -50,14 +50,14 @@
 
             <!-- WhatsApp Content -->
             <div v-else-if="activity?.type === 'whatsapp'">
-              <p class="text-sm text-greys-900 whitespace-pre-line">
+              <p class="text-sm text-foreground whitespace-pre-line">
                 {{ activity?.content || 'No content' }}
               </p>
             </div>
 
             <!-- SMS Content -->
             <div v-else-if="activity?.type === 'sms'">
-              <p class="text-sm text-greys-900 whitespace-pre-line">
+              <p class="text-sm text-foreground whitespace-pre-line">
                 {{ activity?.content || 'No content' }}
               </p>
             </div>
@@ -65,28 +65,28 @@
             <!-- Survey Content -->
             <div v-else-if="activity?.type === 'survey'" class="space-y-2">
               <div v-for="(answer, question) in getSurveyResponses()" :key="question">
-                <label class="block text-xs font-medium text-greys-500 mb-1">{{ question }}</label>
-                <p class="text-sm text-greys-900">{{ answer }}</p>
+                <label class="block text-xs font-medium text-muted-foreground mb-1">{{ question }}</label>
+                <p class="text-sm text-foreground">{{ answer }}</p>
               </div>
             </div>
 
             <!-- AI Summary Content -->
             <div v-else-if="activity?.type === 'ai-summary'">
-              <p class="text-sm text-greys-900 whitespace-pre-line">
+              <p class="text-sm text-foreground whitespace-pre-line">
                 {{ activity?.message || activity?.content || 'No content' }}
               </p>
             </div>
 
             <!-- Call Content -->
             <div v-else-if="activity?.type === 'call'">
-              <p class="text-sm text-greys-900">
+              <p class="text-sm text-foreground">
                 {{ activity?.message || activity?.action || 'No details available' }}
               </p>
             </div>
 
             <!-- Generic Content -->
             <div v-else>
-              <p class="text-sm text-greys-900 whitespace-pre-line">
+              <p class="text-sm text-foreground whitespace-pre-line">
                 {{ activity?.message || activity?.content || activity?.action || 'No details available' }}
               </p>
         </div>

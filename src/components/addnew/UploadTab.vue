@@ -6,7 +6,7 @@
         <CardTitle>Select Source</CardTitle>
       </CardHeader>
       <CardContent class="space-y-6">
-        <p class="text-sub text-fluid-xs">
+        <p class="text-muted-foreground text-xs">
           Choose what type of data you want to import.
         </p>
         
@@ -22,12 +22,12 @@
       >
         <CardContent class="p-4">
           <div class="flex items-center gap-3 mb-1">
-            <div class="w-10 h-10 rounded-lg bg-surfaceSecondary flex items-center justify-center border border-border shrink-0">
-              <i :class="[type.icon, 'text-lg', selectedSource === type.value ? 'text-brand-primary' : 'text-sub']"></i>
+            <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0">
+              <i :class="[type.icon, 'text-lg', selectedSource === type.value ? 'text-brand-primary' : 'text-muted-foreground']"></i>
             </div>
             <div>
-              <span class="font-bold text-heading text-sm">{{ type.label }}</span>
-              <p class="text-sub text-fluid-xs">{{ type.description }}</p>
+              <span class="font-bold text-foreground text-sm">{{ type.label }}</span>
+              <p class="text-muted-foreground text-xs">{{ type.description }}</p>
             </div>
           </div>
         </CardContent>
@@ -83,14 +83,14 @@
     <Card v-if="processing" class="border-border">
       <CardContent class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-heading text-fluid-xs font-bold">Importing...</span>
-          <span class="text-sub text-fluid-xs">{{ processedCount }} / {{ totalCount }}</span>
+          <span class="text-foreground text-xs font-bold">Importing...</span>
+          <span class="text-muted-foreground text-xs">{{ processedCount }} / {{ totalCount }}</span>
         </div>
         <Progress :value="progressPercentage" class="h-1.5" />
         <Card v-if="importErrors.length > 0" class="bg-orange-50 border-orange-200">
           <CardContent class="flex items-start gap-2">
             <i class="fa-solid fa-exclamation-triangle text-orange-600 mt-0.5 text-sm"></i>
-            <span class="text-fluid-xs text-orange-700">
+            <span class="text-xs text-orange-700">
               {{ importErrors.length }} errors encountered
             </span>
           </CardContent>
@@ -103,9 +103,9 @@
       <CardContent class="space-y-2">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-check-circle text-green-600 text-base"></i>
-          <span class="font-bold text-heading text-fluid-xs">Import Successful</span>
+          <span class="font-bold text-foreground text-xs">Import Successful</span>
         </div>
-        <p class="text-body text-fluid-xs">
+        <p class="text-muted-foreground text-xs">
           Successfully imported {{ successCount }} {{ selectedSource }}.
           <span v-if="importErrors.length > 0" class="text-orange-700 font-semibold">
             {{ importErrors.length }} rows had errors.

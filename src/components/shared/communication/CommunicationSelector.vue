@@ -2,13 +2,13 @@
   <div class="space-y-3">
     <!-- Channel Selection Buttons (Always Visible) -->
     <div class="space-y-2">
-      <h5 v-if="title" class="font-semibold text-heading text-fluid-sm mb-2">{{ title }}</h5>
+      <h5 v-if="title" class="font-semibold text-foreground text-sm mb-2">{{ title }}</h5>
       <div class="grid grid-cols-4 gap-2">
         <button
           v-if="showEmail"
           @click="selectChannel('email')"
-          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
-          :class="selectedChannel === 'email' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'email' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-envelope text-xs"></i>
           <span>Email</span>
@@ -17,8 +17,8 @@
         <button
           v-if="showSMS"
           @click="selectChannel('sms')"
-          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
-          :class="selectedChannel === 'sms' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'sms' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-message text-xs"></i>
           <span>SMS</span>
@@ -27,8 +27,8 @@
         <button
           v-if="showWhatsApp"
           @click="selectChannel('whatsapp')"
-          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
-          :class="selectedChannel === 'whatsapp' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'whatsapp' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
           <i class="fa-brands fa-whatsapp text-xs"></i>
           <span>WhatsApp</span>
@@ -37,8 +37,8 @@
         <button
           v-if="showDontSend"
           @click="selectChannel('dont-send')"
-          class="flex items-center justify-center gap-2 px-3 py-1.5 text-fluid-xs font-medium rounded-lg border transition-all"
-          :class="selectedChannel === 'dont-send' ? 'border-green-600 bg-surfaceSecondary text-heading' : 'border-D1D5DB bg-white text-body hover:border-brand-dark/30'"
+          class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
+          :class="selectedChannel === 'dont-send' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
           <i class="fa-solid fa-xmark text-xs"></i>
           <span>Don't send</span>

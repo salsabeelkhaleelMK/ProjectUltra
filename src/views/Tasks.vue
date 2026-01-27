@@ -95,12 +95,13 @@
             />
             
             <!-- Urgency Badge (for leads when urgency is enabled) -->
-            <Badge
+            <span
               v-if="task && task.type === 'lead' && settingsStore.getSetting('urgencyEnabled') !== false && task.urgencyLevel"
-              :text="`${getUrgencyIcon(task.urgencyLevel)} ${task.urgencyLevel}`"
-              size="small"
-              :class="getUrgencyColorClass(task.urgencyLevel)"
-            />
+              :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border', getUrgencyColorClass(task.urgencyLevel)]"
+            >
+              <component :is="getUrgencyIconComponent(task.urgencyLevel)" class="size-3 shrink-0" />
+              {{ task.urgencyLevel }}
+            </span>
             
             <!-- Hot Badge (for leads, fallback if urgency disabled) -->
             <Badge
@@ -164,8 +165,8 @@
       <div v-if="!currentTask" class="hidden lg:flex flex-1 flex-col overflow-hidden lg:border-l border">
         <div class="flex-1 flex items-center justify-center p-8">
           <div class="text-center max-w-sm">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-card bg-surfaceSecondary flex items-center justify-center">
-              <i class="fa-solid fa-tasks text-2xl text-sub"></i>
+            <div class="w-16 h-16 mx-auto mb-4 rounded-lg bg-muted flex items-center justify-center">
+              <i class="fa-solid fa-tasks text-2xl text-muted-foreground"></i>
             </div>
             <h3 class="text-content-bold mb-2">No task selected</h3>
             <p class="text-meta">Select a task from the list to view its details and manage activities</p>
@@ -232,6 +233,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
@@ -253,6 +255,11 @@ import { getTransitionHandler } from '@/composables/useLeadStateMachine'
 import { LEAD_STAGES } from '@/utils/stageMapper'
 import { getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
+
+const urgencyIconComponents = { Flame, Sun, CheckCircle, Circle }
+function getUrgencyIconComponent(level) {
+  return urgencyIconComponents[getUrgencyIcon(level)] || Circle
+}
 
 const route = useRoute()
 const router = useRouter()

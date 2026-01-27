@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-4">
     <!-- Title and Description Card -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h4 class="font-bold text-heading text-sm mb-1">Create Offer</h4>
-      <p class="text-sm text-body">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h4 class="font-bold text-foreground text-sm mb-1">Create Offer</h4>
+      <p class="text-sm text-muted-foreground">
         Customer showed up for the appointment. Create an offer to proceed with the opportunity.
       </p>
     </div>
 
     <!-- Offer Form Section -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
       <OfferWidget
         :item="null"
         :task-type="'opportunity'"

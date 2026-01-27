@@ -4,7 +4,7 @@
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
       <DialogContent class="w-full sm:max-w-4xl max-h-[calc(100vh-4rem)] flex flex-col">
         <DialogHeader class="flex-shrink-0">
-          <DialogTitle class="text-fluid-lg">Schedule Appointment</DialogTitle>
+          <DialogTitle class="text-lg">Schedule Appointment</DialogTitle>
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
@@ -13,37 +13,37 @@
             <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
               :class="assignmentMode === 'assign-only' 
                 ? 'border-green-600 bg-green-50' 
-                : 'border-E5E7EB hover:border-green-600/30'">
+                : 'border-border hover:border-green-600/30'">
               <input 
                 type="radio" 
                 v-model="assignmentMode"
                 value="assign-only"
                 class="w-4 h-4 text-green-600 focus:ring-green-600 border-gray-300"
               />
-              <span class="text-fluid-sm font-medium text-heading">Assign only</span>
+              <span class="text-sm font-medium text-foreground">Assign only</span>
             </label>
             
             <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
               :class="assignmentMode === 'assign-and-schedule' 
                 ? 'border-green-600 bg-green-50' 
-                : 'border-E5E7EB hover:border-green-600/30'">
+                : 'border-border hover:border-green-600/30'">
               <input 
                 type="radio" 
                 v-model="assignmentMode"
                 value="assign-and-schedule"
                 class="w-4 h-4 text-green-600 focus:ring-green-600 border-gray-300"
               />
-              <span class="text-fluid-sm font-medium text-heading">Assign and schedule</span>
+              <span class="text-sm font-medium text-foreground">Assign and schedule</span>
             </label>
           </div>
 
           <!-- Schedule Section -->
-          <div v-if="assignmentMode === 'assign-and-schedule'" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-            <h5 class="font-semibold text-heading text-sm mb-4">{{ t('forms.schedule.title') }}</h5>
+          <div v-if="assignmentMode === 'assign-and-schedule'" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <h5 class="font-semibold text-foreground text-sm mb-4">{{ t('forms.schedule.title') }}</h5>
             
             <!-- Event Type -->
             <div class="mb-4">
-              <Label class="block text-sm font-medium text-body mb-1.5">{{ t('forms.schedule.eventType.label') }}</Label>
+              <Label class="block text-sm font-medium text-muted-foreground mb-1.5">{{ t('forms.schedule.eventType.label') }}</Label>
               <SelectMenu
                 v-model="appointmentType"
                 :items="eventTypeOptions"
@@ -59,14 +59,14 @@
             
             <!-- Duration -->
             <div class="mb-4">
-              <Label class="block text-sm font-medium text-body mb-1.5">{{ t('forms.schedule.duration.label') }}</Label>
+              <Label class="block text-sm font-medium text-muted-foreground mb-1.5">{{ t('forms.schedule.duration.label') }}</Label>
               <div class="flex gap-2">
                 <button 
                   @click="duration = '30min'"
                   class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
                   :class="duration === '30min' 
-                    ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                    : 'border-black/5 text-body hover:border-[#0470e9]/30'"
+                    ? 'border-primary bg-muted text-foreground' 
+                    : 'border-border text-muted-foreground hover:border-primary/30'"
                 >
                   {{ t('forms.schedule.duration.30min') }}
                 </button>
@@ -74,8 +74,8 @@
                   @click="duration = '60min'"
                   class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
                   :class="duration === '60min' 
-                    ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                    : 'border-black/5 text-body hover:border-[#0470e9]/30'"
+                    ? 'border-primary bg-muted text-foreground' 
+                    : 'border-border text-muted-foreground hover:border-primary/30'"
                 >
                   {{ t('forms.schedule.duration.60min') }}
                 </button>
@@ -83,8 +83,8 @@
                   @click="duration = 'custom'"
                   class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
                   :class="duration === 'custom' 
-                    ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                    : 'border-black/5 text-body hover:border-[#0470e9]/30'"
+                    ? 'border-primary bg-muted text-foreground' 
+                    : 'border-border text-muted-foreground hover:border-primary/30'"
                 >
                   {{ t('forms.schedule.duration.custom') }}
                 </button>
@@ -92,23 +92,23 @@
             </div>
 
             <!-- Calendar and Time Slots - Two Column Layout -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Left Column - Calendar -->
                 <div>
                   <div class="flex items-center justify-between mb-4">
                     <button 
                       @click="previousMonth"
-                      class="p-1 hover:bg-surfaceSecondary rounded transition-colors"
+                      class="p-1 hover:bg-muted rounded transition-colors"
                     >
-                      <i class="fa-solid fa-chevron-left text-sm text-body"></i>
+                      <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
                     </button>
-                    <h6 class="text-sm font-semibold text-heading">{{ currentMonthYear }}</h6>
+                    <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
                     <button 
                       @click="nextMonth"
-                      class="p-1 hover:bg-surfaceSecondary rounded transition-colors"
+                      class="p-1 hover:bg-muted rounded transition-colors"
                     >
-                      <i class="fa-solid fa-chevron-right text-sm text-body"></i>
+                      <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
                     </button>
                   </div>
                   
@@ -116,7 +116,7 @@
                   <div class="grid grid-cols-7 gap-1 mb-2">
                     <div v-for="day in calendarDayLabels" 
                       :key="day"
-                      class="text-center text-xs font-medium text-sub py-2">
+                      class="text-center text-xs font-medium text-muted-foreground py-2">
                       {{ day }}
                     </div>
                   </div>
@@ -128,8 +128,8 @@
                       @click="selectDate(day)"
                       class="aspect-square flex items-center justify-center text-sm font-medium rounded-lg cursor-pointer transition-all"
                       :class="isSelectedDate(day) 
-                        ? 'bg-[#0470e9] text-white' 
-                        : day ? 'text-body hover:bg-surfaceSecondary' : 'text-transparent'"
+                        ? 'bg-primary text-white' 
+                        : day ? 'text-muted-foreground hover:bg-muted' : 'text-transparent'"
                     >
                       {{ day }}
                     </div>
@@ -138,24 +138,24 @@
 
                 <!-- Right Column - Time Slots -->
                 <div>
-                  <h6 class="text-sm font-semibold text-heading mb-4">{{ selectedDateLabel }}</h6>
+                  <h6 class="text-sm font-semibold text-foreground mb-4">{{ selectedDateLabel }}</h6>
                   <div v-if="appointmentDate && availableSlots.length > 0" class="space-y-2">
                     <button 
                       v-for="slot in availableSlots"
                       :key="slot"
                       @click="selectedTimeSlot = slot"
-                      class="w-full py-2 px-4 bg-white border border-black/5 rounded-lg shadow-sm text-sm font-medium text-center transition-all"
+                      class="w-full py-2 px-4 bg-white border border-border rounded-lg shadow-sm text-sm font-medium text-center transition-all"
                       :class="selectedTimeSlot === slot 
-                        ? 'border-[#0470e9] bg-surfaceSecondary text-heading' 
-                        : 'text-body hover:border-[#0470e9]/30'"
+                        ? 'border-primary bg-muted text-foreground' 
+                        : 'text-muted-foreground hover:border-primary/30'"
                     >
                       {{ slot }}
                     </button>
                   </div>
-                  <div v-else-if="appointmentDate && availableSlots.length === 0" class="text-sm text-sub py-4 text-center">
+                  <div v-else-if="appointmentDate && availableSlots.length === 0" class="text-sm text-muted-foreground py-4 text-center">
                     {{ t('forms.schedule.timeSlots.noSlots') }}
                   </div>
-                  <div v-else class="text-sm text-sub py-4 text-center">
+                  <div v-else class="text-sm text-muted-foreground py-4 text-center">
                     {{ t('forms.schedule.timeSlots.selectDate') }}
                   </div>
                 </div>
@@ -169,14 +169,14 @@
             label="Cancel"
             variant="outline"
             size="small"
-            class="rounded-sm w-full sm:w-auto text-fluid-sm"
+            class="rounded-sm w-full sm:w-auto text-sm"
             @click="handleClose"
           />
           <Button
             label="Confirm Appointment"
             variant="primary"
             size="small"
-            class="rounded-sm w-full sm:w-auto text-fluid-sm !bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
+            class="rounded-sm w-full sm:w-auto text-sm !bg-brand-black !hover:bg-brand-darkDarker !text-white !border-brand-black"
             :disabled="!isValid"
             @click="handleConfirm"
           />
@@ -189,9 +189,9 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Button } from '@motork/component-library'
 import { SelectMenu } from '@motork/component-library/future/components'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogFooter,

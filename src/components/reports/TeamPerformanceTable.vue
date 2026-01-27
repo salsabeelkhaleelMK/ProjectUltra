@@ -30,8 +30,8 @@
   >
     <template #toolbar>
       <div class="flex items-center gap-2">
-        <Trophy :size="16" class="text-heading" />
-        <h3 class="text-lg font-medium text-heading leading-5">Best performers</h3>
+        <Trophy :size="16" class="text-foreground" />
+        <h3 class="text-lg font-medium text-foreground leading-5">Best performers</h3>
       </div>
       <div class="flex items-center gap-2">
         <Button variant="ghost" size="sm">
@@ -88,11 +88,11 @@ const columns = computed(() => [
       return h('div', { class: 'flex items-center gap-3' }, [
         h(Avatar, { class: 'h-8 w-8' }, {
           default: () => h(AvatarFallback, 
-            { class: 'bg-greys-300 text-greys-900 text-sm' },
+            { class: 'bg-greys-300 text-foreground text-sm' },
             () => getInitials(member.name)
           )
         }),
-        h('span', { class: 'text-fluid-sm font-medium text-greys-900' }, member.name)
+        h('span', { class: 'text-sm font-medium text-foreground' }, member.name)
       ])
     }
   },
@@ -101,7 +101,7 @@ const columns = computed(() => [
     header: () => 'Leads',
     meta: { title: 'Leads' },
     cell: ({ row }) => {
-      return h('div', { class: 'text-fluid-sm text-greys-900' }, row.original.leads)
+      return h('div', { class: 'text-sm text-foreground' }, row.original.leads)
     }
   },
   {
@@ -110,9 +110,9 @@ const columns = computed(() => [
     meta: { title: 'Qualified' },
     cell: ({ row }) => {
       const member = row.original
-      return h('div', { class: 'text-fluid-sm text-greys-900' }, [
+      return h('div', { class: 'text-sm text-foreground' }, [
         h('span', member.qualifiedLeads),
-        h('span', { class: 'text-greys-500 text-fluid-xs ml-1' }, `(${member.qualifiedPercentage}%)`)
+        h('span', { class: 'text-muted-foreground text-xs ml-1' }, `(${member.qualifiedPercentage}%)`)
       ])
     }
   },
@@ -121,7 +121,7 @@ const columns = computed(() => [
     header: () => 'Opportunities',
     meta: { title: 'Opportunities' },
     cell: ({ row }) => {
-      return h('div', { class: 'text-fluid-sm text-greys-900' }, row.original.opportunities)
+      return h('div', { class: 'text-sm text-foreground' }, row.original.opportunities)
     }
   },
   {
@@ -130,9 +130,9 @@ const columns = computed(() => [
     meta: { title: 'In Negotiation' },
     cell: ({ row }) => {
       const member = row.original
-      return h('div', { class: 'text-fluid-sm text-greys-900' }, [
+      return h('div', { class: 'text-sm text-foreground' }, [
         h('span', member.inNegotiation),
-        h('span', { class: 'text-greys-500 text-fluid-xs ml-1' }, `(${member.inNegotiationPercentage}%)`)
+        h('span', { class: 'text-muted-foreground text-xs ml-1' }, `(${member.inNegotiationPercentage}%)`)
       ])
     }
   },
@@ -142,9 +142,9 @@ const columns = computed(() => [
     meta: { title: 'Won' },
     cell: ({ row }) => {
       const member = row.original
-      return h('div', { class: 'text-fluid-sm text-greys-900' }, [
+      return h('div', { class: 'text-sm text-foreground' }, [
         h('span', member.won),
-        h('span', { class: 'text-greys-500 text-fluid-xs ml-1' }, `(${member.wonPercentage}%)`)
+        h('span', { class: 'text-muted-foreground text-xs ml-1' }, `(${member.wonPercentage}%)`)
       ])
     }
   }

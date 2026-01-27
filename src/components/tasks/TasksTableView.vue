@@ -11,7 +11,7 @@
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
             <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
-            <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -19,8 +19,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'card'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Card View"
                 :aria-pressed="viewMode === 'card'"
@@ -34,8 +34,8 @@
                 :class="[
                   'h-7 w-7',
                   viewMode === 'table'
-                    ? 'bg-brand-gray text-heading shadow-sm'
-                    : 'text-sub hover:text-heading'
+                    ? 'bg-brand-gray text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 ]"
                 title="Table View"
                 :aria-pressed="viewMode === 'table'"
@@ -47,9 +47,9 @@
             <!-- Show Closed Toggle -->
             <button
               @click="$emit('toggle-closed', !showClosed)"
-              class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 bg-surface text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+              class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
-              <i class="fa-solid fa-eye-slash text-sub group-hover:text-brand-red"></i>
+              <i class="fa-solid fa-eye-slash text-muted-foreground group-hover:text-brand-red"></i>
               <span class="hidden sm:inline">Show Closed</span>
             </button>
           </div>
@@ -123,7 +123,7 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
-import { Table, LayoutGrid } from 'lucide-vue-next'
+import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
 import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'
@@ -221,11 +221,11 @@ const getDateDisplay = (date) => {
 // Helper function to get car status
 const getCarStatus = (task) => {
   const vehicle = task.type === 'lead' ? task.requestedCar : task.vehicle
-  if (!vehicle) return { status: 'N/A', class: 'bg-surfaceSecondary text-body' }
+  if (!vehicle) return { status: 'N/A', class: 'bg-muted text-muted-foreground' }
   const isInStock = vehicle.stockDays !== undefined && vehicle.stockDays !== null
   return {
     status: isInStock ? 'In Stock' : 'Out of Stock',
-    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-surfaceSecondary text-body'
+    class: isInStock ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'
   }
 }
 
@@ -273,7 +273,7 @@ const columns = computed(() => [
           class: `w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${task.type === 'lead' ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600'}`
         }, task.customer.initials),
         h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'text-content font-semibold text-heading truncate max-w-32 md:max-w-none' }, task.customer.name),
+          h('div', { class: 'text-content font-semibold text-foreground truncate max-w-32 md:max-w-none' }, task.customer.name),
           h('div', { class: 'text-meta truncate hidden sm:block' }, task.customer.phone || 'N/A')
         ])
       ])
@@ -302,8 +302,8 @@ const columns = computed(() => [
 
       return h('div', { class: 'flex flex-col gap-1' }, [
         h('div', { class: 'flex items-center gap-2' }, [
-          h('i', { class: 'fa-brands fa-volkswagen text-sub text-sm' }),
-          h('span', { class: 'text-content font-medium text-heading truncate max-w-32' }, vehicleInfo)
+          h('i', { class: 'fa-brands fa-volkswagen text-muted-foreground text-sm' }),
+          h('span', { class: 'text-content font-medium text-foreground truncate max-w-32' }, vehicleInfo)
         ]),
         h('div', { class: 'flex items-center gap-2 flex-wrap' }, [
           h('span', { class: `inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${carStatus.class}` }, carStatus.status),
@@ -343,7 +343,7 @@ const columns = computed(() => [
       if (price == null || price === '') {
         return h('span', { class: 'text-meta' }, '—')
       }
-      return h('span', { class: 'text-content font-medium text-heading' }, `€ ${formatCurrency(price)}`)
+      return h('span', { class: 'text-content font-medium text-foreground' }, `€ ${formatCurrency(price)}`)
     }
   },
   {
@@ -354,7 +354,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       return h('span', {
-        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-surfaceSecondary text-body'
+        class: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-muted text-muted-foreground'
       }, task.source || 'N/A')
     }
   },
@@ -366,7 +366,7 @@ const columns = computed(() => [
     cell: ({ row }) => {
       const task = row.original
       const attempts = task.contactAttempts?.length || 0
-      return h('span', { class: 'text-content font-medium text-heading' }, attempts)
+      return h('span', { class: 'text-content font-medium text-foreground' }, attempts)
     }
   },
   {
@@ -379,7 +379,7 @@ const columns = computed(() => [
       const owner = props.getOwnerInfo(task)
       return h('div', { class: 'flex items-center gap-2' }, [
         h('div', {
-          class: 'w-6 h-6 rounded-full bg-surfaceSecondary flex items-center justify-center text-xs font-bold text-body shrink-0'
+          class: 'w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0'
         }, owner.initials),
         h('span', { class: 'text-meta truncate max-w-20' }, owner.name)
       ])
@@ -426,10 +426,12 @@ const columns = computed(() => [
         urgencyLevel = urgencyResult.level
       }
       const colorClass = getUrgencyColorClass(urgencyLevel)
-      const icon = getUrgencyIcon(urgencyLevel)
+      const iconName = getUrgencyIcon(urgencyLevel)
+      const urgencyIconComponents = { Flame, Sun, CheckCircle, Circle }
+      const IconComp = urgencyIconComponents[iconName] || Circle
       return h('span', {
         class: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${colorClass}`
-      }, [h('span', {}, icon), h('span', {}, urgencyLevel)])
+      }, [h(IconComp, { class: 'size-3 shrink-0' }), h('span', {}, urgencyLevel)])
     }
   }] : [])
 ])
@@ -466,7 +468,7 @@ const handleBulkDelete = () => {
 const tableMeta = computed(() => ({
   class: {
     tr: (row) => {
-      const baseClasses = 'cursor-pointer hover:bg-surfaceSecondary transition-colors'
+      const baseClasses = 'cursor-pointer hover:bg-muted transition-colors'
       const task = row.original
       if (isSelected(task)) {
         // Highlight selected/highlighted row with a subtle background and border

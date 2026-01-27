@@ -100,6 +100,13 @@
     "no": "Nee",
     "optional": "Optioneel",
     "required": "Verplicht"
+  },
+  "assignee": {
+    "taskUnassigned": "Deze taak is niet toegewezen",
+    "assignToMe": "Aan mij toewijzen",
+    "assignToSomeone": "Aan iemand toewijzen",
+    "searchPlaceholder": "Zoek gebruikers of teams…",
+    "noAssigneesFound": "Geen toegewezen personen gevonden"
   }
 }
 

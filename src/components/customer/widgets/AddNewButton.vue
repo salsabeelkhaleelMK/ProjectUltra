@@ -10,8 +10,8 @@
         @click.stop="handleButtonClick"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-xs text-body"></i>
-        <span v-if="showButtonText" class="ml-1.5 text-body">{{ buttonText }}</span>
+        <i class="fa-solid fa-plus text-xs text-muted-foreground"></i>
+        <span v-if="showButtonText" class="ml-1.5 text-muted-foreground">{{ buttonText }}</span>
       </button>
       
       <!-- Dropdown Menu (only show if there are multiple actions or it's communication tab) -->
@@ -145,11 +145,11 @@ const dropdownItems = computed(() => {
 const buttonClass = computed(() => {
   if (props.inline) {
     // Overview usage: primary brand-red button with rounded corners, icon only
-    return 'bg-surface hover:bg-surfaceSecondary text-body font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border-E5E7EB'
+    return 'bg-surface hover:bg-muted text-muted-foreground font-medium w-9 h-9 rounded-full shadow-sm transition-all flex items-center justify-center z-20 relative border border-border'
   }
   // Default usage (other tabs): white background with grey text
   // If showing text, adjust padding
-  const baseClass = 'bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border-E5E7EB'
+  const baseClass = 'bg-surface hover:bg-muted text-muted-foreground font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center z-20 relative border border-border'
   if (showButtonText.value) {
     return `${baseClass} px-4 py-2 h-9`
   }

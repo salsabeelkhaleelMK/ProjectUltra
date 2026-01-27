@@ -10,7 +10,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Contract Date -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Contract Date</Label>
+        <Label class="block text-sm font-semibold text-foreground">Contract Date</Label>
         <Input 
           type="date"
           v-model="contractDate"
@@ -21,7 +21,7 @@
       
       <!-- Contract Time -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Time (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Time (Optional)</Label>
         <Input 
           type="time"
           v-model="contractTime"
@@ -31,7 +31,7 @@
       
       <!-- Notes -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Notes (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Notes (Optional)</Label>
         <Textarea 
           v-model="notes"
           rows="4"

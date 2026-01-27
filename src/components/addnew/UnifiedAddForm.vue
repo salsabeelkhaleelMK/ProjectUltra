@@ -11,7 +11,7 @@
         <div v-if="!hideContactSelection" class="space-y-6">
           <!-- Radio: Existing vs New -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">Contact Type</Label>
+            <Label class="block text-sm font-semibold text-foreground">Contact Type</Label>
             <div class="flex gap-6">
               <Label class="flex items-center gap-2 cursor-pointer">
                 <input
@@ -20,7 +20,7 @@
                   value="new"
                   class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                 />
-                <span class="text-sm text-body">New Contact</span>
+                <span class="text-sm text-muted-foreground">New Contact</span>
               </Label>
               <Label class="flex items-center gap-2 cursor-pointer">
                 <input
@@ -29,7 +29,7 @@
                   value="existing"
                   class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                 />
-                <span class="text-sm text-body">Existing Contact</span>
+                <span class="text-sm text-muted-foreground">Existing Contact</span>
               </Label>
             </div>
           </div>
@@ -37,9 +37,9 @@
           <!-- Contact Search (if existing) -->
           <div v-if="contactMode === 'existing'" class="space-y-6">
             <div class="relative space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Search Contact</Label>
+              <Label class="block text-sm font-semibold text-foreground">Search Contact</Label>
               <div class="relative w-full">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sub text-xs z-10"></i>
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs z-10"></i>
                 <Input 
                   v-model="searchQuery"
                   @input="handleSearch"
@@ -60,23 +60,23 @@
                     v-for="contact in filteredContacts" 
                     :key="contact.id"
                     @click="selectContact(contact)"
-                    class="flex items-center gap-2 p-3 hover:bg-surfaceSecondary cursor-pointer border-b border-border last:border-b-0"
+                    class="flex items-center gap-2 p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                   >
-                    <div class="w-8 h-8 rounded-full bg-surfaceSecondary text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-muted text-primary flex items-center justify-center text-xs font-bold shrink-0">
                       {{ contact.initials }}
                     </div>
                     <div class="flex-1 min-w-0">
-                      <div class="font-semibold text-heading text-fluid-xs truncate">{{ contact.name }}</div>
-                      <div class="text-sub text-fluid-xs truncate">{{ contact.email }}</div>
+                      <div class="font-semibold text-foreground text-xs truncate">{{ contact.name }}</div>
+                      <div class="text-muted-foreground text-xs truncate">{{ contact.email }}</div>
                     </div>
-                    <i class="fa-solid fa-chevron-right text-sub text-xs"></i>
+                    <i class="fa-solid fa-chevron-right text-muted-foreground text-xs"></i>
                   </div>
                 </CardContent>
               </Card>
             </div>
             
             <!-- Selected Contact Display -->
-            <Card v-if="selectedContact" class="bg-surfaceSecondary border-border">
+            <Card v-if="selectedContact" class="bg-muted border-border">
               <CardContent class="p-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
@@ -84,8 +84,8 @@
                       {{ selectedContact.initials }}
                     </div>
                     <div>
-                      <div class="font-bold text-heading text-fluid-xs">{{ selectedContact.name }}</div>
-                      <div class="text-sub text-fluid-xs">{{ selectedContact.email }}</div>
+                      <div class="font-bold text-foreground text-xs">{{ selectedContact.name }}</div>
+                      <div class="text-muted-foreground text-xs">{{ selectedContact.email }}</div>
                     </div>
                   </div>
                   <Button
@@ -104,7 +104,7 @@
           <!-- Contact Form Fields (if new) -->
           <div v-else class="space-y-6">
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">
+              <Label class="block text-sm font-semibold text-foreground">
                 Contact Name <span class="text-brand-red">*</span>
               </Label>
               <Input 
@@ -115,12 +115,12 @@
                 :required="contactMode === 'new'"
                 :error="errors.name"
               />
-              <p v-if="errors.name" class="text-brand-red text-fluid-xs mt-1">{{ errors.name }}</p>
+              <p v-if="errors.name" class="text-brand-red text-xs mt-1">{{ errors.name }}</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">
+                <Label class="block text-sm font-semibold text-foreground">
                   Email <span class="text-brand-red">*</span>
                 </Label>
                 <Input 
@@ -131,11 +131,11 @@
                   :required="contactMode === 'new'"
                   :error="errors.email"
                 />
-                <p v-if="errors.email" class="text-brand-red text-fluid-xs mt-1">{{ errors.email }}</p>
+                <p v-if="errors.email" class="text-brand-red text-xs mt-1">{{ errors.email }}</p>
               </div>
               
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Phone</Label>
+                <Label class="block text-sm font-semibold text-foreground">Phone</Label>
                 <Input 
                   v-model="contactFormData.phone"
                   type="tel" 
@@ -146,7 +146,7 @@
             </div>
             
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Company (optional)</Label>
+              <Label class="block text-sm font-semibold text-foreground">Company (optional)</Label>
               <Input 
                 v-model="contactFormData.company"
                 type="text" 
@@ -158,15 +158,15 @@
         </div>
 
         <!-- Read-only Selected Contact Display (shown if selection is hidden) -->
-        <Card v-else-if="selectedContact" class="bg-surfaceSecondary border-border">
+        <Card v-else-if="selectedContact" class="bg-muted border-border">
           <CardContent class="p-4">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center text-xs font-bold border border-border">
                 {{ selectedContact.initials }}
               </div>
               <div>
-                <div class="font-bold text-heading text-fluid-xs">{{ selectedContact.name }}</div>
-                <div class="text-sub text-fluid-xs">{{ selectedContact.email }}</div>
+                <div class="font-bold text-foreground text-xs">{{ selectedContact.name }}</div>
+                <div class="text-muted-foreground text-xs">{{ selectedContact.email }}</div>
               </div>
             </div>
           </CardContent>
@@ -179,16 +179,16 @@
       <CardHeader>
         <CardTitle>
           Vehicle Details 
-          <span class="text-meta font-normal text-fluid-xs">(Optional)</span>
+          <span class="text-meta font-normal text-xs">(Optional)</span>
         </CardTitle>
       </CardHeader>
       <CardContent class="space-y-8">
         <!-- Basic Information -->
         <div class="space-y-4">
-          <h4 class="text-fluid-xs font-bold uppercase text-sub tracking-wider">Basic Information</h4>
+          <h4 class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Basic Information</h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Brand</Label>
+              <Label class="block text-sm font-semibold text-foreground">Brand</Label>
               <Input 
                 v-model="vehicleFormData.brand"
                 type="text" 
@@ -198,7 +198,7 @@
             </div>
             
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Model</Label>
+              <Label class="block text-sm font-semibold text-foreground">Model</Label>
               <Input 
                 v-model="vehicleFormData.model"
                 type="text" 
@@ -208,7 +208,7 @@
             </div>
             
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Year</Label>
+              <Label class="block text-sm font-semibold text-foreground">Year</Label>
               <Input 
                 v-model="vehicleFormData.year"
                 type="number" 
@@ -220,7 +220,7 @@
             </div>
             
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-heading">Price</Label>
+              <Label class="block text-sm font-semibold text-foreground">Price</Label>
               <Input 
                 v-model="vehicleFormData.price"
                 type="number" 
@@ -235,10 +235,10 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Request Details -->
           <div class="space-y-4">
-            <h4 class="text-fluid-xs font-bold uppercase text-sub tracking-wider">Request Details</h4>
+            <h4 class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Request Details</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Request Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Request Type</Label>
                 <Select v-model="vehicleFormData.requestType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select type" />
@@ -253,7 +253,7 @@
               </div>
               
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Source</Label>
+                <Label class="block text-sm font-semibold text-foreground">Source</Label>
                 <Select v-model="vehicleFormData.source">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select source" />
@@ -272,10 +272,10 @@
           
           <!-- Vehicle Specs -->
           <div class="space-y-4">
-            <h4 class="text-fluid-xs font-bold uppercase text-sub tracking-wider">Vehicle Specs</h4>
+            <h4 class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vehicle Specs</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Fuel Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
                 <Select v-model="vehicleFormData.fuelType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select fuel" />
@@ -290,7 +290,7 @@
               </div>
               
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Gear Type</Label>
+                <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
                 <Select v-model="vehicleFormData.gearType">
                   <SelectTrigger class="w-full h-10">
                     <SelectValue placeholder="Select gear" />
@@ -306,7 +306,7 @@
         </div>
 
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Request Message</Label>
+          <Label class="block text-sm font-semibold text-foreground">Request Message</Label>
           <Textarea 
             v-model="vehicleFormData.requestMessage"
             :rows="3"
@@ -318,14 +318,14 @@
     </Card>
     
     <!-- Task Creation Checkboxes -->
-    <Card class="bg-surfaceSecondary border-border mb-4">
+    <Card class="bg-muted border-border mb-4">
       <CardHeader>
         <CardTitle>Create Task (Optional)</CardTitle>
       </CardHeader>
       <CardContent class="space-y-3">
-        <p class="text-sub text-fluid-xs">
+        <p class="text-muted-foreground text-xs">
           Convert this contact to a lead or opportunity. 
-          <span class="font-semibold text-body">Requires vehicle details.</span>
+          <span class="font-semibold text-muted-foreground">Requires vehicle details.</span>
         </p>
         
         <div v-if="!forceType" class="flex flex-col md:flex-row gap-3">
@@ -341,12 +341,12 @@
               />
               <div>
                 <span 
-                  class="text-fluid-xs font-bold"
-                  :class="hasVehicleData ? 'text-heading' : 'text-sub'"
+                  class="text-xs font-bold"
+                  :class="hasVehicleData ? 'text-foreground' : 'text-muted-foreground'"
                 >
                   Mark as Lead
                 </span>
-                <p class="text-fluid-xs text-sub">New lead task</p>
+                <p class="text-xs text-muted-foreground">New lead task</p>
               </div>
             </CardContent>
           </Card>
@@ -363,12 +363,12 @@
               />
               <div>
                 <span 
-                  class="text-fluid-xs font-bold"
-                  :class="hasVehicleData ? 'text-heading' : 'text-sub'"
+                  class="text-xs font-bold"
+                  :class="hasVehicleData ? 'text-foreground' : 'text-muted-foreground'"
                 >
                   Mark as Opportunity
                 </span>
-                <p class="text-fluid-xs text-sub">New opportunity</p>
+                <p class="text-xs text-muted-foreground">New opportunity</p>
               </div>
             </CardContent>
           </Card>
@@ -379,7 +379,7 @@
           <CardContent class="flex items-center gap-3">
             <i class="fa-solid fa-info-circle text-primary text-sm"></i>
             <div>
-              <p class="text-fluid-xs font-bold text-heading">
+              <p class="text-xs font-bold text-foreground">
                 Converting to {{ forceType === 'lead' ? 'Lead' : 'Opportunity' }}
               </p>
             </div>
@@ -389,7 +389,7 @@
         <Card v-if="!hasVehicleData && !forceType" class="bg-orange-50 border-orange-200">
           <CardContent class="flex items-start gap-2">
             <i class="fa-solid fa-exclamation-triangle text-orange-600 mt-0.5 text-sm"></i>
-            <span class="text-fluid-xs text-orange-700">Fill in vehicle details to enable lead/opportunity creation</span>
+            <span class="text-xs text-orange-700">Fill in vehicle details to enable lead/opportunity creation</span>
           </CardContent>
         </Card>
       </CardContent>

@@ -11,24 +11,24 @@
         
         <!-- Search Input Container -->
         <div class="relative w-full max-w-2xl mx-4">
-          <div class="bg-white rounded-lg shadow-xl border border-black/5 overflow-hidden">
+          <div class="bg-white rounded-lg shadow-xl border border-border overflow-hidden">
             <div class="flex items-center gap-3 px-4 py-3">
-              <Search :size="20" class="text-sub shrink-0" />
+              <Search :size="20" class="text-muted-foreground shrink-0" />
               <input
                 ref="searchInput"
                 v-model="searchQuery"
                 type="text"
                 :placeholder="$t('common.search.placeholder')"
-                class="flex-1 text-lg text-heading placeholder:text-sub focus:outline-none bg-transparent"
+                class="flex-1 text-lg text-foreground placeholder:text-muted-foreground focus:outline-none bg-transparent"
                 @keyup.enter="handleSearch"
                 @keyup.esc="close"
               />
               <button
                 @click="close"
-                class="p-1 hover:bg-surfaceSecondary rounded-md transition-colors shrink-0"
+                class="p-1 hover:bg-muted rounded-md transition-colors shrink-0"
                 aria-label="Close search"
               >
-                <X :size="20" class="text-sub" />
+                <X :size="20" class="text-muted-foreground" />
               </button>
             </div>
           </div>

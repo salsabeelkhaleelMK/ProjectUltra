@@ -1,11 +1,11 @@
 <template>
   <div 
     @click="$emit('select')"
-    class="border border-E5E7EB rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-surface"
+    class="border border-border rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-surface"
     :class="{ 'border-blue-500 shadow': selected }"
   >
     <!-- Vehicle Image -->
-    <div class="w-full h-28 bg-surfaceSecondary rounded overflow-hidden mb-2">
+    <div class="w-full h-28 bg-muted rounded overflow-hidden mb-2">
       <img 
         v-if="vehicle.image" 
         :src="vehicle.image" 
@@ -13,7 +13,7 @@
         class="w-full h-full object-cover"
       />
       <div v-else class="w-full h-full flex items-center justify-center">
-        <i class="fa-solid fa-car text-sub opacity-50 text-2xl"></i>
+        <i class="fa-solid fa-car text-muted-foreground opacity-50 text-2xl"></i>
       </div>
     </div>
     
@@ -26,16 +26,16 @@
           size="small"
           :theme="badgeTheme"
         />
-        <span class="text-sm font-bold text-heading">€{{ formatPrice(vehicle.price) }}</span>
+        <span class="text-sm font-bold text-foreground">€{{ formatPrice(vehicle.price) }}</span>
       </div>
       
       <!-- Brand and Model -->
-      <h4 class="font-bold text-xs text-heading mb-0.5 line-clamp-1">
+      <h4 class="font-bold text-xs text-foreground mb-0.5 line-clamp-1">
         {{ vehicle.brand }} {{ vehicle.model }}
       </h4>
       
       <!-- Year -->
-      <p class="text-xs text-sub mb-1.5">{{ vehicle.year }}</p>
+      <p class="text-xs text-muted-foreground mb-1.5">{{ vehicle.year }}</p>
       
       <!-- Stock Status -->
       <div v-if="stockDays !== null && stockDays !== undefined" class="text-xs text-green-600 font-medium mb-2">

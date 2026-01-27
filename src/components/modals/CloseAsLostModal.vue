@@ -10,7 +10,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Reason Dropdown -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Reason</Label>
+        <Label class="block text-sm font-semibold text-foreground">Reason</Label>
         <Select v-model="selectedReason">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select a reason..." />
@@ -29,7 +29,7 @@
       
       <!-- Notes -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Additional Notes</Label>
+        <Label class="block text-sm font-semibold text-foreground">Additional Notes</Label>
         <Textarea 
           v-model="notes"
           rows="5"

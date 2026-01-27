@@ -54,7 +54,7 @@
         <!-- Vehicle Information -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Brand</Label>
+            <Label class="form-label">Brand</Label>
             <Input
               v-model="newVehicle.brand"
               type="text"
@@ -63,7 +63,7 @@
             />
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Model</Label>
+            <Label class="form-label">Model</Label>
             <Input
               v-model="newVehicle.model"
               type="text"
@@ -72,7 +72,7 @@
             />
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Year</Label>
+            <Label class="form-label">Year</Label>
             <Input
               v-model="newVehicle.year"
               type="number"
@@ -87,7 +87,7 @@
         <!-- Identification -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">VIN</Label>
+            <Label class="form-label">VIN</Label>
             <Input
               v-model="newVehicle.vin"
               type="text"
@@ -95,7 +95,7 @@
             />
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Plates</Label>
+            <Label class="form-label">Plates</Label>
             <Input
               v-model="newVehicle.plates"
               type="text"
@@ -107,7 +107,7 @@
         <!-- Vehicle Details -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Fuel Type</Label>
+            <Label class="form-label">Fuel Type</Label>
             <Select v-model="newVehicle.fuelType">
               <SelectTrigger>
                 <SelectValue placeholder="Select fuel type..." />
@@ -122,7 +122,7 @@
             </Select>
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Gear Type</Label>
+            <Label class="form-label">Gear Type</Label>
             <Select v-model="newVehicle.gearType">
               <SelectTrigger>
                 <SelectValue placeholder="Select gear type..." />
@@ -135,7 +135,7 @@
             </Select>
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Mileage (km)</Label>
+            <Label class="form-label">Mileage (km)</Label>
             <Input
               v-model.number="newVehicle.kilometers"
               type="number"
@@ -148,7 +148,7 @@
         <!-- Registration & Ownership -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Registered At</Label>
+            <Label class="form-label">Registered At</Label>
             <Input
               v-model="newVehicle.registration"
               type="text"
@@ -156,7 +156,7 @@
             />
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Owned Since</Label>
+            <Label class="form-label">Owned Since</Label>
             <Input
               v-model="newVehicle.ownedSince"
               type="text"
@@ -168,7 +168,7 @@
         <!-- Owner Information -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Owner</Label>
+            <Label class="form-label">Owner</Label>
             <Input
               v-model="newVehicle.owner"
               type="text"
@@ -176,7 +176,7 @@
             />
           </div>
           <div>
-            <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Ownership Type</Label>
+            <Label class="form-label">Ownership Type</Label>
             <Select v-model="newVehicle.ownershipType">
               <SelectTrigger>
                 <SelectValue placeholder="Select ownership type..." />
@@ -193,7 +193,7 @@
 
         <!-- Warranty -->
         <div>
-          <Label class="block mb-2 text-sub text-fluid-xs font-bold uppercase tracking-wider">Warranty Info</Label>
+          <Label class="form-label">Warranty Info</Label>
           <Textarea
             v-model="newVehicle.warrantyInfo"
             :rows="3"
@@ -393,7 +393,7 @@ const formatNumber = (value) => {
 // Table meta for row styling
 const tableMeta = computed(() => ({
   class: {
-    tr: () => 'cursor-pointer hover:bg-surfaceSecondary transition-colors'
+    tr: () => 'cursor-pointer hover:bg-muted transition-colors'
   }
 }))
 
@@ -437,8 +437,8 @@ const columns = computed(() => {
               class: 'w-16 h-16 object-cover rounded-md'
             })
           }
-          return h('div', { class: 'w-16 h-16 bg-surface border border-E5E7EB rounded-md flex items-center justify-center shrink-0' }, [
-            h('i', { class: 'fa-solid fa-car text-2xl text-sub' })
+          return h('div', { class: 'w-16 h-16 bg-surface border border-border rounded-md flex items-center justify-center shrink-0' }, [
+            h('i', { class: 'fa-solid fa-car text-2xl text-muted-foreground' })
           ])
         }
       },

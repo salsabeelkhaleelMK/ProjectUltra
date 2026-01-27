@@ -1,6 +1,6 @@
 <template>
-  <div class="overflow-hidden p-4 rounded-lg bg-white border border-black/5 shadow-sm">
-    <h3 class="text-fluid-sm font-medium mb-3 text-heading">Requested Car</h3>
+  <div class="overflow-hidden p-4 rounded-lg bg-white shadow-nsc-card">
+    <h3 class="text-base font-medium text-foreground leading-6 mb-4">Requested Car</h3>
 
     <div class="flex gap-4">
       <div
@@ -17,17 +17,17 @@
           v-else
           class="w-full h-full flex items-center justify-center"
         >
-          <Car :size="32" class="text-sub" />
+          <Car :size="32" class="text-muted-foreground" />
         </div>
       </div>
 
       <div class="min-w-0 flex-1 flex flex-col justify-center">
-        <p class="text-fluid-sm font-semibold text-heading truncate">
+        <p class="text-sm font-semibold text-foreground truncate">
           {{ vehicleNameWithYear }}
         </p>
         <div
           v-if="vehicle.price || source"
-          class="flex items-center gap-2 mt-1 text-fluid-sm text-heading flex-wrap"
+          class="flex items-center gap-2 mt-1 text-sm text-foreground flex-wrap"
         >
           <span v-if="vehicle.price" class="font-semibold">
             €{{ formatPrice(vehicle.price) }}
@@ -37,11 +37,11 @@
             class="h-3 w-px bg-border shrink-0"
             aria-hidden="true"
           />
-          <span v-if="source" class="text-sub truncate">{{ source }}</span>
+          <span v-if="source" class="text-muted-foreground truncate">{{ source }}</span>
         </div>
         <div
           v-if="vehicle.mileage || vehicle.fuelType"
-          class="flex gap-3 mt-0.5 text-fluid-xs text-sub"
+          class="flex gap-3 mt-0.5 text-xs text-muted-foreground"
         >
           <span v-if="vehicle.mileage">{{ formatMileage(vehicle.mileage) }} km</span>
           <span v-if="vehicle.fuelType">{{ vehicle.fuelType }}</span>
@@ -51,13 +51,13 @@
 
     <div
       v-if="requestMessage"
-      class="rounded-lg p-3 mt-3 bg-base-muted"
+      class="rounded-lg p-3 mt-3 bg-muted"
     >
-      <p class="text-fluid-xs text-sub mb-0.5">Request message</p>
-      <p class="text-fluid-sm text-heading">{{ requestMessage }}</p>
+      <p class="text-xs text-muted-foreground mb-0.5">Request message</p>
+      <p class="text-sm text-foreground">{{ requestMessage }}</p>
     </div>
 
-    <div class="flex gap-2 pt-3 mt-3 border-t border-black/5">
+    <div class="flex gap-2 pt-3 mt-3 border-t border-border">
       <Button
         variant="secondary"
         size="sm"

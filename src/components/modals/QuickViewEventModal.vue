@@ -37,7 +37,7 @@
           <CalendarEventDetails v-if="event" :event="event" />
         </div>
 
-        <DialogFooter class="flex-shrink-0 px-6 py-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
+        <DialogFooter class="flex-shrink-0 px-6 py-4 bg-muted flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <button
             v-if="event?.id"
             @click="$emit('delete', event.id)"

@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-6">
     <!-- Survey Questions -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Post-Delivery Customer Satisfaction Survey</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Post-Delivery Customer Satisfaction Survey</h5>
       
       <div class="space-y-6">
         <!-- Q1: Overall Satisfaction -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             How satisfied are you with your new vehicle delivery experience?
             <span class="text-red-600">*</span>
           </Label>
@@ -18,8 +18,8 @@
               class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
               :class="
                 responses.q1 === option.value
-                  ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                  : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                  ? 'border-2 border-brand-blue bg-muted/50'
+                  : 'border border-border hover:bg-muted/50'
               "
             >
               <input
@@ -28,14 +28,14 @@
                 :value="option.value"
                 class="shrink-0"
               />
-              <span class="text-sm text-heading">{{ option.label }}</span>
+              <span class="text-sm text-foreground">{{ option.label }}</span>
             </label>
           </div>
         </div>
 
         <!-- Q2: Vehicle Condition -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Is the vehicle in the condition you expected?
             <span class="text-red-600">*</span>
           </Label>
@@ -46,8 +46,8 @@
               class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
               :class="
                 responses.q2 === option.value
-                  ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                  : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                  ? 'border-2 border-brand-blue bg-muted/50'
+                  : 'border border-border hover:bg-muted/50'
               "
             >
               <input
@@ -56,14 +56,14 @@
                 :value="option.value"
                 class="shrink-0"
               />
-              <span class="text-sm text-heading">{{ option.label }}</span>
+              <span class="text-sm text-foreground">{{ option.label }}</span>
             </label>
           </div>
         </div>
 
         <!-- Q3: Follow-up on Issues (Conditional) -->
         <div v-if="showQ3">
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Please describe the issues you found:
             <span class="text-red-600">*</span>
           </Label>
@@ -77,7 +77,7 @@
 
         <!-- Q4: Delivery Timeline -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Was the vehicle delivered on the scheduled date?
           </Label>
           <div class="space-y-2">
@@ -87,8 +87,8 @@
               class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
               :class="
                 responses.q4 === option.value
-                  ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                  : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                  ? 'border-2 border-brand-blue bg-muted/50'
+                  : 'border border-border hover:bg-muted/50'
               "
             >
               <input
@@ -97,14 +97,14 @@
                 :value="option.value"
                 class="shrink-0"
               />
-              <span class="text-sm text-heading">{{ option.label }}</span>
+              <span class="text-sm text-foreground">{{ option.label }}</span>
             </label>
           </div>
         </div>
 
         <!-- Q5: Salesman Professionalism (Rating) -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             How would you rate the professionalism of our sales team during delivery?
           </Label>
           <div class="flex items-center gap-2">
@@ -117,7 +117,7 @@
             >
               ⭐
             </button>
-            <span v-if="responses.q5" class="text-sm text-body ml-2">
+            <span v-if="responses.q5" class="text-sm text-muted-foreground ml-2">
               {{ responses.q5 }} {{ responses.q5 === 1 ? 'star' : 'stars' }}
             </span>
           </div>
@@ -125,7 +125,7 @@
 
         <!-- Q6: Documentation & Keys (Multi-select) -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Did you receive all the required items?
             <span class="text-red-600">*</span>
           </Label>
@@ -133,7 +133,7 @@
             <label
               v-for="item in documentationItems"
               :key="item.value"
-              class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors"
+              class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors"
             >
               <input
                 v-model="responses.q6"
@@ -142,7 +142,7 @@
                 class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
                 style="accent-color: var(--brand-blue);"
               />
-              <span class="text-sm text-heading">{{ item.label }}</span>
+              <span class="text-sm text-foreground">{{ item.label }}</span>
             </label>
             <div class="flex items-center gap-2 mt-2">
               <input
@@ -151,7 +151,7 @@
                 class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
                 style="accent-color: var(--brand-blue);"
               />
-              <span class="text-sm text-heading">Other:</span>
+              <span class="text-sm text-foreground">Other:</span>
               <Input
                 v-if="responses.q6Other"
                 v-model="responses.q6OtherText"
@@ -164,7 +164,7 @@
 
         <!-- Q7: Would You Recommend Us? -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Would you recommend our dealership to friends and family?
           </Label>
           <div class="space-y-2">
@@ -174,8 +174,8 @@
               class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
               :class="
                 responses.q7 === option.value
-                  ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                  : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                  ? 'border-2 border-brand-blue bg-muted/50'
+                  : 'border border-border hover:bg-muted/50'
               "
             >
               <input
@@ -184,16 +184,16 @@
                 :value="option.value"
                 class="shrink-0"
               />
-              <span class="text-sm text-heading">{{ option.label }}</span>
+              <span class="text-sm text-foreground">{{ option.label }}</span>
             </label>
           </div>
         </div>
 
         <!-- Q8: Internal Notes -->
         <div>
-          <Label class="block text-sm font-medium text-body mb-2">
+          <Label class="form-label mb-2">
             Internal notes for follow-up actions:
-            <span class="text-xs text-sub ml-1">(Private - only for internal staff)</span>
+            <span class="text-xs text-muted-foreground ml-1">(Private - only for internal staff)</span>
           </Label>
           <Textarea
             v-model="responses.q8"
@@ -206,64 +206,64 @@
     </div>
 
     <!-- Trigger Actions Section -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Trigger Actions (Email Notifications)</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Trigger Actions (Email Notifications)</h5>
       
       <div class="space-y-4">
         <!-- Negative Satisfaction -->
         <div class="flex items-center gap-3">
-          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
             <Checkbox
               id="trigger-negative-satisfaction"
               v-model="triggerActions.negativeSatisfaction"
             />
-            <span class="text-sm font-medium text-heading">
+            <span class="text-sm font-medium text-foreground">
               ⚠️ Email to Sales Manager + Branch Manager
             </span>
           </Label>
-          <span class="text-xs text-sub">(Q1 = Very Unsatisfied/Unsatisfied)</span>
+          <span class="text-xs text-muted-foreground">(Q1 = Very Unsatisfied/Unsatisfied)</span>
         </div>
         
         <!-- Issues Reported -->
         <div class="flex items-center gap-3">
-          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
             <Checkbox
               id="trigger-issues"
               v-model="triggerActions.issuesReported"
             />
-            <span class="text-sm font-medium text-heading">
+            <span class="text-sm font-medium text-foreground">
               ⚠️ Email to Service Department
             </span>
           </Label>
-          <span class="text-xs text-sub">(Q3 = Issues reported)</span>
+          <span class="text-xs text-muted-foreground">(Q3 = Issues reported)</span>
         </div>
         
         <!-- Delivery Delay -->
         <div class="flex items-center gap-3">
-          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
             <Checkbox
               id="trigger-delay"
               v-model="triggerActions.deliveryDelay"
             />
-            <span class="text-sm font-medium text-heading">
+            <span class="text-sm font-medium text-foreground">
               ⚠️ Email to Delivery Coordinator
             </span>
           </Label>
-          <span class="text-xs text-sub">(Q4 = Delayed major)</span>
+          <span class="text-xs text-muted-foreground">(Q4 = Delayed major)</span>
         </div>
         
         <!-- High NPS -->
         <div class="flex items-center gap-3">
-          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-surfaceSecondary/50 transition-colors flex-1">
+          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
             <Checkbox
               id="trigger-nps"
               v-model="triggerActions.highNPS"
             />
-            <span class="text-sm font-medium text-heading">
+            <span class="text-sm font-medium text-foreground">
               ✅ Email to Marketing
             </span>
           </Label>
-          <span class="text-xs text-sub">(Q7 = Definitely Yes)</span>
+          <span class="text-xs text-muted-foreground">(Q7 = Definitely Yes)</span>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Event Type</Label>
+        <Label class="block text-sm font-semibold text-foreground">Event Type</Label>
         <Select v-model="localEvent.type">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select event type..." />
@@ -34,7 +34,7 @@
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Title</Label>
+        <Label class="block text-sm font-semibold text-foreground">Title</Label>
         <Input 
           v-model="localEvent.title"
           type="text" 
@@ -45,7 +45,7 @@
       
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Date</Label>
+          <Label class="block text-sm font-semibold text-foreground">Date</Label>
           <Input 
             v-model="localEvent.date"
             type="date" 
@@ -53,7 +53,7 @@
           />
         </div>
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">Time</Label>
+          <Label class="block text-sm font-semibold text-foreground">Time</Label>
           <Input 
             v-model="localEvent.time"
             type="time" 
@@ -63,7 +63,7 @@
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Customer</Label>
+        <Label class="block text-sm font-semibold text-foreground">Customer</Label>
         <Input 
           v-model="localEvent.customer"
           type="text" 
@@ -75,7 +75,7 @@
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Assign to</Label>
+        <Label class="block text-sm font-semibold text-foreground">Assign to</Label>
         <Select 
           v-model="localEvent.assignee"
           :disabled="disabledFields.includes('assignee')"
@@ -92,13 +92,13 @@
             </SelectItem>
           </SelectContent>
         </Select>
-        <p v-if="isTeamSelected" class="text-xs text-sub mt-1">
-          <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
+        <p v-if="isTeamSelected" class="text-xs text-muted-foreground mt-1">
+          <i class="fa-solid fa-users text-muted-foreground"></i> Any available team member will be assigned
         </p>
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+        <Label class="block text-sm font-semibold text-foreground">Vehicle</Label>
         <Input 
           v-model="localEvent.vehicle"
           type="text" 
@@ -108,7 +108,7 @@
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Dealership</Label>
+        <Label class="block text-sm font-semibold text-foreground">Dealership</Label>
         <Select v-model="localEvent.dealership">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select dealership..." />
@@ -120,7 +120,7 @@
       </div>
       
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Status</Label>
+        <Label class="block text-sm font-semibold text-foreground">Status</Label>
         <Select v-model="localEvent.status">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select status..." />

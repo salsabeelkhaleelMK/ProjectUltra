@@ -4,7 +4,7 @@
       'flex items-center gap-2 rounded-lg text-white font-medium transition-all',
       'hover:opacity-90 active:scale-95',
       disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-      size === 'small' ? 'px-3 py-1.5 text-fluid-xs' : 'px-4 py-2 text-fluid-sm'
+      size === 'small' ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'
     ]"
     :disabled="disabled"
     style="background: linear-gradient(135deg, #6B21A8, #9333EA, #A855F7);"

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container flex items-center justify-center min-h-screen bg-surfaceSecondary">
+  <div class="page-container flex items-center justify-center min-h-screen bg-muted">
     <div class="text-center max-w-md px-4">
       <!-- Icon -->
       <div class="mb-6">
@@ -22,9 +22,9 @@
       <!-- Action Button -->
       <button
         @click="goToTasks"
-        class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-4 py-2 text-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+        class="group flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
-        <i class="fa-solid fa-arrow-left text-sub group-hover:text-brand-red"></i>
+        <i class="fa-solid fa-arrow-left text-muted-foreground group-hover:text-brand-red"></i>
         Return to Tasks
       </button>
     </div>
