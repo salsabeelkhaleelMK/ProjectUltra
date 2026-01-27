@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-4">
     <!-- Title and Description Card -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h4 class="font-bold text-heading text-sm mb-1">3rd No-Show Follow-up Task</h4>
-      <p class="text-sm text-body">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h4 class="font-bold text-foreground text-sm mb-1">3rd No-Show Follow-up Task</h4>
+      <p class="text-sm text-muted-foreground">
         Appointment was scheduled for {{ appointmentDate }} but customer did not show up. {{ noShowMessage }}
       </p>
     </div>
 
     <!-- Close as Lost Form Section -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Close Opportunity as Lost</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Close Opportunity as Lost</h5>
       
       <CloseAsLostForm
         ref="closeFormRef"

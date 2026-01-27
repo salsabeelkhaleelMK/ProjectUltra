@@ -1,7 +1,7 @@
 <template>
   <div 
     :class="[
-      'sidebar-container hidden md:flex flex-col items-stretch py-2 gap-2 shrink-0 z-20 h-screen fixed left-0 top-0 border-r border-black/5'
+      'sidebar-container hidden md:flex flex-col items-stretch py-2 gap-2 shrink-0 z-20 h-screen fixed left-0 top-0 border-r border-border'
     ]"
   >
     <!-- Logo at Top -->
@@ -176,13 +176,13 @@
         <transition name="dropdown">
           <div 
             v-if="showListsMenu"
-            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-black/5 rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
+            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-border rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
             @click.stop
           >
             <router-link 
               to="/vehicles"
               @click="showListsMenu = false"
-              class="block px-4 py-3 text-fluid-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+              class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
               :class="{ 'bg-red-50 text-brand-red': isActive('/vehicles') }"
             >
               <CarFront :size="20" class="text-gray-400" :class="{ 'text-brand-red': isActive('/vehicles') }" /> Vehicles
@@ -242,14 +242,14 @@
         <transition name="dropdown">
           <div 
             v-if="showLanguageMenu"
-            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-black/5 rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
+            class="absolute left-full ml-2 bottom-0 mb-0 w-48 bg-white border border-border rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
             @click.stop
           >
             <button 
               v-for="lang in languages"
               :key="lang.code"
               @click="changeLanguage(lang.code)"
-              class="w-full text-left px-4 py-3 text-fluid-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+              class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
               :class="{ 'bg-red-50 text-brand-red': currentLocale === lang.code }"
             >
               <span class="text-base">{{ lang.flag }}</span>
@@ -302,31 +302,31 @@
         <transition name="dropdown">
           <div 
             v-if="showUserMenu"
-            class="absolute left-full ml-2 bottom-0 mb-0 w-56 bg-white border border-black/5 rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
+            class="absolute left-full ml-2 bottom-0 mb-0 w-56 bg-white border border-border rounded-md shadow-mk-dashboard-card overflow-hidden z-50"
             @click.stop
           >
-            <div class="p-3 border-b border-black/5 bg-surfaceSecondary">
-              <div class="text-sm font-semibold text-heading">{{ userStore.currentUser.name }}</div>
-              <div class="text-xs text-sub">{{ userStore.currentUser.email }}</div>
+            <div class="p-3 border-b border-border bg-muted">
+              <div class="text-sm font-semibold text-foreground">{{ userStore.currentUser.name }}</div>
+              <div class="text-xs text-muted-foreground">{{ userStore.currentUser.email }}</div>
             </div>
             <div class="p-2">
               <button 
                 @click="switchRole('manager')"
-                class="w-full text-left px-3 py-2 text-sm text-body hover:bg-red-50 hover:text-brand-red rounded-lg transition-colors flex items-center gap-2"
+                class="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-red-50 hover:text-brand-red rounded-lg transition-colors flex items-center gap-2"
                 :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'manager' }"
               >
                 <Shield :size="16" /> {{ $t('common.actions.switchRole') }} {{ $t('common.roles.manager') }}
               </button>
               <button 
                 @click="switchRole('salesman')"
-                class="w-full text-left px-3 py-2 text-sm text-body hover:bg-surfaceSecondary rounded-lg transition-colors flex items-center gap-2"
+                class="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors flex items-center gap-2"
                 :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'salesman' }"
               >
                 <User :size="16" /> {{ $t('common.actions.switchRole') }} {{ $t('common.roles.salesman') }}
               </button>
               <button 
                 @click="switchRole('operator')"
-                class="w-full text-left px-3 py-2 text-sm text-body hover:bg-surfaceSecondary rounded-lg transition-colors flex items-center gap-2"
+                class="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors flex items-center gap-2"
                 :class="{ 'bg-red-50 text-brand-red': userStore.currentUser.role === 'operator' }"
               >
                 <Headphones :size="16" /> {{ $t('common.actions.switchRole') }} {{ $t('common.roles.operator') }}
@@ -336,7 +336,7 @@
             <div class="p-2">
               <button 
                 @click="toggleDarkMode"
-                class="w-full text-left px-3 py-2 text-sm text-body hover:bg-surfaceSecondary rounded-lg transition-colors flex items-center gap-2"
+                class="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors flex items-center gap-2"
               >
                 <Moon v-if="!isDarkMode" :size="16" />
                 <Sun v-else :size="16" />
@@ -347,7 +347,7 @@
             <div class="p-2">
               <button 
                 @click="handleLogout"
-                class="w-full text-left px-3 py-2 text-sm text-body hover:bg-surfaceSecondary rounded-lg transition-colors flex items-center gap-2"
+                class="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors flex items-center gap-2"
               >
                 <LogOut :size="16" /> {{ $t('common.actions.logout') }}
               </button>

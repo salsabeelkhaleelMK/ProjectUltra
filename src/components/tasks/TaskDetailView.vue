@@ -30,59 +30,59 @@
 
         <!-- Right Sidebar with Tabs -->
         <div
-          class="right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-black/5 bg-surface"
+          class="right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-border bg-surface"
         >
           <Tabs v-model="sidebarTab" class="flex flex-col flex-1 min-h-0 overflow-hidden">
             <!-- Sidebar Tabs -->
-            <TabsList class="flex shrink-0 border-b border-black/5 bg-white rounded-none w-full relative h-full">
+            <TabsList class="flex shrink-0 border-b border-border bg-white rounded-none w-full relative h-full">
               <TabsTrigger 
                 value="request" 
                 class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full"
                 :class="sidebarTab === 'request' 
-                  ? 'text-heading' 
-                  : 'text-sub hover:text-body'"
+                  ? 'text-foreground' 
+                  : 'text-muted-foreground hover:text-muted-foreground'"
               >
                 <span>Request</span>
                 <span 
                   v-if="requestCount > 0"
-                  class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold leading-none"
+                  class="flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-xs font-bold leading-none"
                   :class="sidebarTab === 'request' 
-                    ? 'bg-[#0470e9] text-white' 
-                    : 'bg-gray-200 text-heading'"
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-200 text-foreground'"
                 >
                   {{ requestCount }}
                 </span>
                 <span 
                   v-if="sidebarTab === 'request'"
-                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0470e9] z-10"
+                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-primary z-10"
                 ></span>
               </TabsTrigger>
               <TabsTrigger 
                 value="activity" 
                 class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full"
                 :class="sidebarTab === 'activity' 
-                  ? 'text-heading' 
-                  : 'text-sub hover:text-body'"
+                  ? 'text-foreground' 
+                  : 'text-muted-foreground hover:text-muted-foreground'"
               >
                 <span>Activity</span>
                 <span 
                   v-if="activityCount > 0"
-                  class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold leading-none"
+                  class="flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-xs font-bold leading-none"
                   :class="sidebarTab === 'activity' 
-                    ? 'bg-[#0470e9] text-white' 
-                    : 'bg-gray-200 text-heading'"
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-200 text-foreground'"
                 >
                   {{ activityCount }}
                 </span>
                 <span 
                   v-if="sidebarTab === 'activity'"
-                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0470e9] z-10"
+                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-primary z-10"
                 ></span>
               </TabsTrigger>
             </TabsList>
             
             <!-- Sidebar Content -->
-            <div class="flex-1 min-h-0 flex flex-col overflow-y-auto bg-[#F8F8F8]">
+            <div class="flex-1 min-h-0 flex flex-col overflow-y-auto bg-muted">
               <!-- Request Tab -->
               <TabsContent value="request" class="space-y-2 p-2 mt-0 flex-1 min-h-full">
                 <TaskContactCard
@@ -121,11 +121,11 @@
     <!-- Empty State -->
     <div v-else class="flex-1 flex items-center justify-center bg-surface">
       <div class="text-center max-w-sm p-8">
-        <div class="w-16 h-16 mx-auto mb-4 rounded-card bg-surfaceSecondary flex items-center justify-center">
-          <i class="fa-solid fa-tasks text-2xl text-sub"></i>
+        <div class="w-16 h-16 mx-auto mb-4 rounded-lg bg-muted flex items-center justify-center">
+          <i class="fa-solid fa-tasks text-2xl text-muted-foreground"></i>
         </div>
-        <h3 class="text-fluid-lg font-bold text-heading mb-2">No task selected</h3>
-        <p class="text-fluid-sm text-sub">Select a task from the list to view its details and manage activities</p>
+        <h3 class="text-lg font-bold text-foreground mb-2">No task selected</h3>
+        <p class="text-sm text-muted-foreground">Select a task from the list to view its details and manage activities</p>
       </div>
     </div>
     
@@ -578,12 +578,12 @@ const handleAppointmentSave = async (data) => {
 }
 
 :deep([role="tab"][data-state="active"]) {
-  color: var(--color-text-heading) !important;
+  color: var(--color-text-foreground) !important;
   box-shadow: none !important;
 }
 
 :deep([role="tab"][data-state="inactive"]) {
-  color: var(--color-text-sub) !important;
+  color: var(--color-text-muted-foreground) !important;
   box-shadow: none !important;
 }
 </style>

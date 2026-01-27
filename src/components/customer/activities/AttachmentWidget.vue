@@ -11,7 +11,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
           <!-- File Selection -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">
+            <Label class="block text-sm font-semibold text-foreground">
               File <span class="text-brand-red">*</span>
             </Label>
             <div class="flex items-center gap-3">
@@ -28,8 +28,8 @@
                 class="rounded-sm"
                 @click="fileInput?.click()"
               />
-              <span v-if="selectedFileName" class="text-sm text-body truncate">{{ selectedFileName }}</span>
-              <span v-else class="text-sm text-sub">No file selected</span>
+              <span v-if="selectedFileName" class="text-sm text-muted-foreground truncate">{{ selectedFileName }}</span>
+              <span v-else class="text-sm text-muted-foreground">No file selected</span>
             </div>
           </div>
         </div>
@@ -58,15 +58,15 @@
   <!-- Inline Mode -->
   <div 
     v-else
-    class="bg-surface border border-E5E7EB rounded-xl p-5 shadow-sm mb-6 animate-fade-in relative"
+    class="bg-surface border border-border rounded-xl p-5 shadow-nsc-card mb-6 animate-fade-in relative"
   >
-    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
+    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-border rotate-45"></div>
     <div class="flex justify-between items-center mb-4">
-      <h5 class="text-fluid-sm font-semibold text-heading">{{ item ? 'Edit Attachment' : 'Add Attachment' }}</h5>
-      <button @click="handleCancel" class="text-sub hover:text-body"><i class="fa-solid fa-xmark"></i></button>
+      <h5 class="text-sm font-semibold text-foreground">{{ item ? 'Edit Attachment' : 'Add Attachment' }}</h5>
+      <button @click="handleCancel" class="text-muted-foreground hover:text-muted-foreground"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div>
-      <label class="block text-fluid-xs font-medium text-slate-700 mb-1">File</label>
+      <label class="block text-xs font-medium text-slate-700 mb-1">File</label>
       <div class="flex items-center gap-3">
         <input 
           type="file" 
@@ -80,11 +80,11 @@
           size="small"
           @click="$refs.fileInput.click()"
         />
-        <span v-if="selectedFileName" class="text-fluid-sm text-slate-600">{{ selectedFileName }}</span>
-        <span v-else class="text-fluid-sm text-sub">No file selected</span>
+        <span v-if="selectedFileName" class="text-sm text-slate-600">{{ selectedFileName }}</span>
+        <span v-else class="text-sm text-muted-foreground">No file selected</span>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-6 border-t border-E5E7EB pt-4">
+    <div class="flex justify-end gap-2 mt-6 border-t border-border pt-4">
       <Button
         label="Cancel"
         variant="outline"

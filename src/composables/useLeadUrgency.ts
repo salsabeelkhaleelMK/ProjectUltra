@@ -291,22 +291,15 @@ function calculateQualityScore(lead: any): number {
   return score
 }
 
-/**
- * Get urgency level emoji/icon
- */
+export const URGENCY_ICON_NAMES: Record<UrgencyLevel, string> = {
+  HOT: 'Flame',
+  WARM: 'Sun',
+  STANDARD: 'CheckCircle',
+  COLD: 'Circle'
+}
+
 export function getUrgencyIcon(level: UrgencyLevel): string {
-  switch (level) {
-    case 'HOT':
-      return '🔥'
-    case 'WARM':
-      return '🟡'
-    case 'STANDARD':
-      return '🟢'
-    case 'COLD':
-      return '⚪'
-    default:
-      return '⚪'
-  }
+  return URGENCY_ICON_NAMES[level] ?? 'Circle'
 }
 
 /**

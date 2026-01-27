@@ -1,23 +1,21 @@
 <template>
   <div
     v-if="task"
-    class="rounded-lg flex flex-col"
+    class="rounded-lg flex flex-col bg-muted"
     :class="containerClass"
-    style="background-color: var(--base-muted, #f5f5f5)"
   >
     <!-- Title Section -->
     <div v-if="!hideTitle" class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-clipboard-check text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Manage next steps</h2>
+        <i class="fa-solid fa-clipboard-check text-foreground"></i>
+        <h2 class="text-sm font-medium text-foreground leading-5">Manage next steps</h2>
       </div>
     </div>
 
     <!-- Card Content -->
     <div
       class="bg-white rounded-lg p-2 flex flex-col"
-      :class="hideBorder ? 'shadow-none' : 'shadow-sm'"
-      :style="hideBorder ? undefined : { boxShadow: 'var(--nsc-card-shadow)' }"
+      :class="hideBorder ? 'shadow-none' : 'shadow-nsc-card'"
     >
       <!-- Deadline Banner (optional - leads only) -->
       <slot name="deadline-banner" />

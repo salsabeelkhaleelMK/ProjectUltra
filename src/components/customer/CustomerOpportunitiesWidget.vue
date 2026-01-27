@@ -3,8 +3,8 @@
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-4 px-1">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-briefcase text-heading"></i>
-        <h2 class="text-sm font-semibold text-heading leading-5">Opportunities</h2>
+        <i class="fa-solid fa-briefcase text-foreground"></i>
+        <h2 class="text-sm font-semibold text-foreground leading-5">Opportunities</h2>
         <Badge
           :text="String(opportunities.length)"
           size="small"
@@ -13,7 +13,7 @@
       </div>
       <button
         @click="$emit('add-opportunity')"
-        class="text-fluid-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
+        class="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Add Opportunity</span>
@@ -25,7 +25,7 @@
       <div
         v-for="opp in opportunities"
         :key="opp.id"
-        class="bg-white border border-E5E7EB rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in feed-item cursor-pointer hover:shadow-md transition-shadow"
+        class="bg-white border border-border rounded-xl p-4 shadow-nsc-card flex gap-4 animate-fade-in feed-item cursor-pointer transition-shadow"
         @click="handleOpportunityClick(opp)"
       >
         <div 
@@ -35,7 +35,7 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
-            <span class="text-xs font-bold text-heading">Opp #{{ opp.id }}</span>
+            <span class="text-xs font-bold text-foreground">Opp #{{ opp.id }}</span>
             <Badge
               :text="opp.displayStage || opp.stage"
               size="small"
@@ -44,15 +44,15 @@
             <div class="ml-auto relative">
               <button 
                 @click.stop="handleOpportunityClick(opp)"
-                class="text-gray-400 hover:text-body transition-colors p-1"
+                class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
                 title="Open in new tab"
               >
                 <i class="fa-solid fa-external-link text-sm"></i>
               </button>
             </div>
           </div>
-          <div class="text-sm text-body">
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub mb-2">
+          <div class="text-sm text-muted-foreground">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
               <span v-if="opp.assignee" class="flex items-center gap-1">
                 <i class="fa-solid fa-user text-xs"></i>
                 {{ opp.assignee }}
@@ -72,7 +72,7 @@
               <div 
                 v-for="task in getOpportunityTasks(opp)" 
                 :key="task.id"
-                class="flex items-center justify-between p-2 bg-surfaceSecondary/50 border border-black/5 rounded-md"
+                class="flex items-center justify-between p-2 bg-muted/50 border border-border rounded-md"
               >
                 <div class="flex items-center gap-2 min-w-0">
                   <Badge
@@ -80,9 +80,9 @@
                     size="small"
                     :theme="getTaskTheme(task.type)"
                   />
-                  <span class="text-xs text-body font-medium truncate">{{ task.description }}</span>
+                  <span class="text-xs text-muted-foreground font-medium truncate">{{ task.description }}</span>
                 </div>
-                <i class="fa-solid fa-chevron-right text-xs text-sub opacity-50"></i>
+                <i class="fa-solid fa-chevron-right text-xs text-muted-foreground opacity-50"></i>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@
     </div>
     
     <!-- Empty State -->
-    <div v-else class="text-center py-8 text-sub mb-6">
+    <div v-else class="text-center py-8 text-muted-foreground mb-6">
       <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
       <p class="text-xs">No opportunities associated with this customer</p>
     </div>

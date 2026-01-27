@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <!-- File Input -->
     <div class="space-y-2">
-      <Label class="block text-sm font-semibold text-heading">
+      <Label class="block text-sm font-semibold text-foreground">
         Select File <span class="text-brand-red">*</span>
       </Label>
       <div class="relative w-full">
@@ -20,18 +20,18 @@
           :class="{ 'opacity-50 cursor-not-allowed': loading, 'border-border': !loading }"
         >
           <CardContent class="text-center py-8">
-            <i class="fa-solid fa-cloud-arrow-up text-4xl text-sub mb-3"></i>
-            <p class="text-heading text-sm font-bold mb-1">
+            <i class="fa-solid fa-cloud-arrow-up text-4xl text-muted-foreground mb-3"></i>
+            <p class="text-foreground text-sm font-bold mb-1">
               {{ selectedFile ? selectedFile.name : 'Click to upload or drag and drop' }}
             </p>
-            <p class="text-sub text-fluid-xs">CSV or Excel (.csv, .xls, .xlsx) up to 10MB</p>
+            <p class="text-muted-foreground text-xs">CSV or Excel (.csv, .xls, .xlsx) up to 10MB</p>
           </CardContent>
         </Card>
       </div>
       <Card v-if="error" class="bg-red-50 border-red-200 mt-2">
         <CardContent class="flex items-start gap-2 p-3">
           <i class="fa-solid fa-exclamation-circle text-red-600 mt-0.5 text-sm"></i>
-          <span class="text-fluid-xs text-red-700">{{ error }}</span>
+          <span class="text-xs text-red-700">{{ error }}</span>
         </CardContent>
       </Card>
     </div>
@@ -46,13 +46,13 @@
       </CardHeader>
       <CardContent>
         <div class="overflow-x-auto">
-          <table class="w-full text-fluid-xs">
+          <table class="w-full text-xs">
             <thead>
               <tr class="border-b border-border">
                 <th
                   v-for="header in headers"
                   :key="header"
-                  class="text-left p-2 font-bold text-sub uppercase tracking-wider"
+                  class="text-left p-2 font-bold text-muted-foreground uppercase tracking-wider"
                 >
                   {{ header }}
                 </th>
@@ -62,12 +62,12 @@
               <tr
                 v-for="(row, index) in previewRows"
                 :key="index"
-                class="border-b border-border hover:bg-surfaceSecondary transition-colors"
+                class="border-b border-border hover:bg-muted transition-colors"
               >
                 <td
                   v-for="header in headers"
                   :key="header"
-                  class="p-2 text-body"
+                  class="p-2 text-muted-foreground"
                 >
                   {{ row[header] || '-' }}
                 </td>
@@ -76,7 +76,7 @@
           </table>
         </div>
         
-        <p v-if="parsedData.length > previewLimit" class="text-sub text-fluid-xs mt-3 text-center">
+        <p v-if="parsedData.length > previewLimit" class="text-muted-foreground text-xs mt-3 text-center">
           Showing first {{ previewLimit }} of {{ parsedData.length }} rows
         </p>
       </CardContent>

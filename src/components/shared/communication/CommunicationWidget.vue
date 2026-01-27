@@ -170,8 +170,8 @@ watch(() => props.taskId, () => {
 // Chip styling based on selected state
 const chipClass = computed(() => (channel) => {
   const baseClasses = 'bg-surface border-2 rounded-lg h-12 flex flex-col items-center justify-center gap-1 transition-all'
-  const selected = 'border-brand-dark bg-surfaceSecondary text-brand-dark shadow-sm'
-  const unselected = 'border-black/5 text-sub hover:border-brand-dark/30 hover:bg-surfaceSecondary/30 hover:text-body'
+  const selected = 'border-brand-dark bg-muted text-brand-dark shadow-nsc-card'
+  const unselected = 'border-border text-muted-foreground hover:border-brand-dark/30 hover:bg-muted/30 hover:text-muted-foreground'
   
   return `${baseClasses} ${selectedChannel.value === channel ? selected : unselected}`
 })

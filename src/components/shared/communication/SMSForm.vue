@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Template Selection -->
     <div class="space-y-2">
-      <Label class="block text-sm font-semibold text-heading">Template</Label>
+      <Label class="block text-sm font-semibold text-foreground">Template</Label>
       <Select v-model="selectedTemplate" @update:model-value="onTemplateChange">
         <SelectTrigger class="w-full h-10">
           <SelectValue placeholder="Select a template..." />
@@ -18,7 +18,7 @@
 
     <!-- Message -->
     <div class="space-y-2">
-      <Label class="block text-sm font-semibold text-heading">Message</Label>
+      <Label class="block text-sm font-semibold text-foreground">Message</Label>
       <Textarea 
         v-model="message"
         rows="5"
@@ -26,7 +26,7 @@
         maxlength="160"
         class="w-full min-h-[120px] resize-none"
       />
-      <p class="text-xs text-sub mt-1">{{ message.length }}/160 characters</p>
+      <p class="text-xs text-muted-foreground mt-1">{{ message.length }}/160 characters</p>
     </div>
     
     <!-- Action Buttons -->

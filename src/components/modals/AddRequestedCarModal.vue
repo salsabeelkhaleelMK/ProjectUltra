@@ -10,7 +10,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Brand -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Brand <span class="text-brand-red">*</span></Label>
+        <Label class="block text-sm font-semibold text-foreground">Brand <span class="text-brand-red">*</span></Label>
         <Input 
           v-model="formData.brand"
           type="text" 
@@ -22,7 +22,7 @@
       
       <!-- Model -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Model <span class="text-brand-red">*</span></Label>
+        <Label class="block text-sm font-semibold text-foreground">Model <span class="text-brand-red">*</span></Label>
         <Input 
           v-model="formData.model"
           type="text" 
@@ -34,7 +34,7 @@
       
       <!-- Year -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Year <span class="text-brand-red">*</span></Label>
+        <Label class="block text-sm font-semibold text-foreground">Year <span class="text-brand-red">*</span></Label>
         <Input 
           v-model.number="formData.year"
           type="number" 
@@ -48,9 +48,9 @@
       
       <!-- Price (Optional) -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Price (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Price (Optional)</Label>
         <div class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sub">€</span>
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
           <Input 
             v-model.number="formData.price"
             type="number" 
@@ -64,7 +64,7 @@
       
       <!-- Request Type -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Request Type</Label>
+        <Label class="block text-sm font-semibold text-foreground">Request Type</Label>
         <Select v-model="formData.requestType">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select request type..." />
@@ -79,7 +79,7 @@
       
       <!-- Request Message -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Request Message (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Request Message (Optional)</Label>
         <Textarea 
           v-model="formData.requestMessage"
           rows="5"
@@ -90,14 +90,14 @@
       
       <!-- Image URL (Optional) -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Image URL (Optional)</Label>
+        <Label class="block text-sm font-semibold text-foreground">Image URL (Optional)</Label>
         <Input 
           v-model="formData.image"
           type="url" 
           placeholder="https://example.com/car-image.jpg" 
           class="w-full h-10"
         />
-        <p class="text-xs text-sub mt-1">Enter a URL to an image of the vehicle</p>
+        <p class="text-xs text-muted-foreground mt-1">Enter a URL to an image of the vehicle</p>
       </div>
       
       <!-- Additional Details (Collapsed by default) -->
@@ -105,7 +105,7 @@
         <button 
           type="button"
           @click="showAdvanced = !showAdvanced"
-          class="flex items-center gap-2 text-sm font-medium text-body hover:text-heading transition-colors"
+          class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
           <i class="fa-solid" :class="showAdvanced ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
           Advanced Details (Optional)
@@ -114,7 +114,7 @@
         <div v-if="showAdvanced" class="mt-4 space-y-6">
           <!-- Dealership -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">Dealership</Label>
+            <Label class="block text-sm font-semibold text-foreground">Dealership</Label>
             <Input 
               v-model="formData.dealership"
               type="text" 
@@ -125,7 +125,7 @@
           
           <!-- Fuel Type -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">Fuel Type</Label>
+            <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
             <Select v-model="formData.fuelType">
               <SelectTrigger class="w-full h-10">
                 <SelectValue placeholder="Select fuel type" />
@@ -141,7 +141,7 @@
           
           <!-- Gear Type -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">Gear Type</Label>
+            <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
             <Select v-model="formData.gearType">
               <SelectTrigger class="w-full h-10">
                 <SelectValue placeholder="Select gear type" />
@@ -155,7 +155,7 @@
           
           <!-- Kilometers -->
           <div class="space-y-2">
-            <Label class="block text-sm font-semibold text-heading">Kilometers</Label>
+            <Label class="block text-sm font-semibold text-foreground">Kilometers</Label>
             <Input 
               v-model.number="formData.kilometers"
               type="number" 

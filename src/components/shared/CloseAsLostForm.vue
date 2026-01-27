@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
+  <div class="bg-white rounded-lg p-4 shadow-nsc-card">
     <div>
-      <Label class="block text-sm font-medium text-body mb-1.5">Reason</Label>
+      <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Reason</Label>
       <Select v-model="reason">
         <SelectTrigger class="w-full">
           <SelectValue placeholder="Select a reason..." />

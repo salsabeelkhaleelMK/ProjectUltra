@@ -1,48 +1,45 @@
 <template>
   <div
-    class="rounded-lg flex flex-col"
-    style="background-color: var(--base-muted, #f5f5f5)"
+    class="rounded-lg flex flex-col bg-muted"
   >
     <!-- Success state (post qualify / disqualify / no-answer) -->
     <template v-if="successState">
       <div class="pt-1 px-1">
         <div
           class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
-          style="box-shadow: var(--nsc-card-shadow)"
         >
         <div class="flex items-center gap-3">
           <div class="size-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
             <Check :size="16" class="text-green-600" />
           </div>
           <div class="flex-1 pr-10 min-w-0">
-            <p class="text-sm font-medium text-heading">
+            <p class="text-sm font-medium text-foreground">
               {{ successState.statusText }}
             </p>
-            <p v-if="successState.reason" class="text-sm text-body mt-1">
+            <p v-if="successState.reason" class="text-sm text-muted-foreground mt-1">
               {{ successState.reason }}
             </p>
           </div>
         </div>
         <div
           v-if="successState.meeting"
-          class="mt-4 bg-white rounded-lg border border-black/5 overflow-hidden shadow-sm"
-        >
+          class="mt-4 bg-white rounded-lg shadow-nsc-card overflow-hidden"        >
           <div class="grid grid-cols-2 gap-3 p-4 text-sm">
             <div>
-              <span class="text-body">Date:</span>
-              <span class="ml-2 font-medium text-heading">{{ successState.meeting.date }}</span>
+              <span class="text-muted-foreground">Date:</span>
+              <span class="ml-2 font-medium text-foreground">{{ successState.meeting.date }}</span>
             </div>
             <div>
-              <span class="text-body">Time:</span>
-              <span class="ml-2 font-medium text-heading">{{ successState.meeting.time }}</span>
+              <span class="text-muted-foreground">Time:</span>
+              <span class="ml-2 font-medium text-foreground">{{ successState.meeting.time }}</span>
             </div>
             <div>
-              <span class="text-body">Type:</span>
-              <span class="ml-2 font-medium text-heading capitalize">{{ successState.meeting.title }}</span>
+              <span class="text-muted-foreground">Type:</span>
+              <span class="ml-2 font-medium text-foreground capitalize">{{ successState.meeting.title }}</span>
             </div>
             <div>
-              <span class="text-body">Assigned to:</span>
-              <span class="ml-2 font-medium text-heading">{{ successState.meeting.location }}</span>
+              <span class="text-muted-foreground">Assigned to:</span>
+              <span class="ml-2 font-medium text-foreground">{{ successState.meeting.location }}</span>
             </div>
           </div>
         </div>
@@ -59,7 +56,7 @@
         </div>
         </div>
       </div>
-      <div class="px-4 py-2 flex items-center justify-between text-sm text-sub">
+      <div class="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground">
         <span>Updated by {{ successState.actorName || 'Unknown' }}</span>
         <span class="tabular-nums">{{ successPerformedAtLabel }}</span>
       </div>
@@ -70,7 +67,6 @@
       <div class="pt-1 px-1">
         <div
           class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-          style="box-shadow: var(--nsc-card-shadow)"
         >
         <DeadlineBanner
           :next-action-due="lead.nextActionDue"
@@ -80,8 +76,8 @@
         <div class="p-4">
           <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="font-bold text-heading text-sm">{{ dynamicTitle }}</h4>
-            <p class="text-sm text-body mt-0.5">
+            <h4 class="text-base leading-normal font-medium text-foreground">{{ dynamicTitle }}</h4>
+            <p class="text-sm leading-normal font-normal text-muted-foreground mt-0.5">
               {{ dynamicDescription }}
             </p>
           </div>
@@ -94,14 +90,14 @@
         </div>
 
         <!-- Combined Follow-up and Contact Attempts Banner -->
-        <div v-if="hasScheduledFollowUp || contactAttempts > 0" class="mb-3 bg-surfaceSecondary border border-black/5 rounded-lg p-3">
+        <div v-if="hasScheduledFollowUp || contactAttempts > 0" class="mb-3 bg-muted border border-border rounded-lg p-3">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <!-- Scheduled Follow-up Call -->
             <div v-if="hasScheduledFollowUp" class="flex items-center gap-2">
               <i class="fa-solid fa-calendar-check text-blue-600 text-sm"></i>
               <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-heading">Scheduled Follow-up Call:</span>
-                <span class="text-sm text-body">
+                <span class="text-sm font-semibold text-foreground">Scheduled Follow-up Call:</span>
+                <span class="text-sm text-muted-foreground">
                   {{ formatDate(lead.scheduledAppointment.start) }} at {{ formatTime(lead.scheduledAppointment.start) }}
                 </span>
               </div>
@@ -109,9 +105,9 @@
             
             <!-- Contact Attempts -->
             <div v-if="contactAttempts > 0" class="flex items-center gap-2">
-              <i class="fa-solid fa-phone text-body text-sm"></i>
-              <span class="text-sm font-semibold text-body">Contact Attempts:</span>
-              <span class="text-sm font-semibold text-heading">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
+              <i class="fa-solid fa-phone text-muted-foreground text-sm"></i>
+              <span class="text-sm font-semibold text-muted-foreground">Contact Attempts:</span>
+              <span class="text-sm font-semibold text-foreground">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
               <div
                 v-if="contactAttempts >= maxContactAttempts - 1"
                 class="text-sm text-orange-600 font-medium flex items-center gap-1 ml-2"
@@ -149,43 +145,43 @@
         <!-- Inline Outcome Selection -->
         <div v-if="!successState" class="space-y-4">
             <div>
-            <p class="text-sm font-medium text-heading leading-normal mb-3">Log what is happening?</p>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              :model-value="selectedOutcome"
-              @update:model-value="selectOutcome"
-              class="outcome-toggle-group flex flex-wrap gap-3"
-            >
-              <ToggleGroupItem
-                value="no-answer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+            <p class="text-sm font-medium text-foreground leading-normal mb-3">Log what is happening?</p>
+            <div class="outcome-toggle-group flex flex-wrap gap-3">
+              <Toggle
+                variant="outline"
+                :model-value="selectedOutcome === 'no-answer'"
+                @update:model-value="(p) => selectOutcome(p ? 'no-answer' : null)"
+                class="outcome-toggle-item"
               >
                 <PhoneOff :size="18" class="shrink-0" />
                 <span>No answer</span>
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="not-valid"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="selectedOutcome === 'not-valid'"
+                @update:model-value="(p) => selectOutcome(p ? 'not-valid' : null)"
+                class="outcome-toggle-item"
               >
                 <ThumbsDown :size="18" class="shrink-0" />
                 <span>Not valid</span>
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="interested"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="selectedOutcome === 'interested'"
+                @update:model-value="(p) => selectOutcome(p ? 'interested' : null)"
+                class="outcome-toggle-item"
               >
                 <Check :size="18" class="shrink-0" />
                 <span>Interested</span>
-              </ToggleGroupItem>
-            </ToggleGroup>
+              </Toggle>
+            </div>
           </div>
 
           <!-- No Answer Follow-up (Inline) -->
           <div v-if="selectedOutcome === 'no-answer'" class="space-y-4">
             <!-- When did you call field -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <Label class="form-label">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
@@ -194,52 +190,54 @@
             </div>
             
             <!-- Send follow-up message -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Send follow-up message</h5>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Send follow-up message</h5>
               
               <!-- Channel Selection -->
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                :model-value="followupChannel"
-                @update:model-value="setFollowupChannel"
-                class="followup-channel-toggle-group flex flex-wrap gap-2 mb-4"
-              >
-                <ToggleGroupItem
-                  value="whatsapp"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+              <div class="followup-channel-toggle-group flex flex-wrap gap-2 mb-4">
+                <Toggle
+                  variant="outline"
+                  :model-value="followupChannel === 'whatsapp'"
+                  @update:model-value="(p) => p && setFollowupChannel('whatsapp')"
+                  class="followup-toggle-item"
                 >
                   <i class="fa-brands fa-whatsapp text-xs"></i>
                   <span>WhatsApp</span>
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="sms"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="followupChannel === 'sms'"
+                  @update:model-value="(p) => p && setFollowupChannel('sms')"
+                  class="followup-toggle-item"
                 >
                   <i class="fa-solid fa-message text-xs"></i>
                   <span>SMS</span>
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="email"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="followupChannel === 'email'"
+                  @update:model-value="(p) => p && setFollowupChannel('email')"
+                  class="followup-toggle-item"
                 >
                   <i class="fa-solid fa-envelope text-xs"></i>
                   <span>Email</span>
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="dont-send"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="followupChannel === 'dont-send'"
+                  @update:model-value="(p) => p && setFollowupChannel('dont-send')"
+                  class="followup-toggle-item"
                 >
                   <i class="fa-solid fa-xmark text-xs"></i>
                   <span>Don't send</span>
-                </ToggleGroupItem>
-              </ToggleGroup>
+                </Toggle>
+              </div>
               
               <!-- Template and Message Preview (only show if channel selected and not 'dont-send') -->
               <div v-if="followupChannel && followupChannel !== 'dont-send'" class="space-y-3">
                 <!-- Template -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Template</Label>
+                  <Label class="form-label">Template</Label>
                   <Select v-model="selectedTemplate">
                     <SelectTrigger class="w-full h-10 min-h-10">
                       <SelectValue placeholder="Select template" />
@@ -253,11 +251,11 @@
                 
                 <!-- Message Preview -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Message preview</Label>
+                  <Label class="form-label">Message preview</Label>
                   <textarea
                     :value="messagePreview"
                     rows="4"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-body bg-white resize-none"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-muted-foreground bg-white resize-none"
                     readonly
                   ></textarea>
                 </div>
@@ -265,44 +263,44 @@
             </div>
             
             <!-- Next call attempt -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Next call attempt</h5>
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                :model-value="rescheduleTime"
-                @update:model-value="setRescheduleTime"
-                class="reschedule-toggle-group flex flex-wrap gap-2"
-              >
-                <ToggleGroupItem
-                  value="tomorrow-9am"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Next call attempt</h5>
+              <div class="reschedule-toggle-group flex flex-wrap gap-2">
+                <Toggle
+                  variant="outline"
+                  :model-value="rescheduleTime === 'tomorrow-9am'"
+                  @update:model-value="(p) => p && setRescheduleTime('tomorrow-9am')"
+                  class="followup-toggle-item"
                 >
                   Tomorrow 9:00 AM
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="monday"
-                  class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="rescheduleTime === 'monday'"
+                  @update:model-value="(p) => p && setRescheduleTime('monday')"
+                  class="followup-toggle-item"
                 >
                   <i class="fa-solid fa-sparkles text-xs"></i>
                   AI suggestion
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="custom"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="rescheduleTime === 'custom'"
+                  @update:model-value="(p) => p && setRescheduleTime('custom')"
+                  class="followup-toggle-item"
                 >
                   Select time
-                </ToggleGroupItem>
-              </ToggleGroup>
+                </Toggle>
+              </div>
               <!-- AI Suggestion Details -->
               <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="flex items-start gap-2">
                   <i class="fa-solid fa-lightbulb text-blue-600 text-sm mt-0.5"></i>
                   <div class="flex-1">
-                    <p class="text-sm font-semibold text-heading mb-1">
+                    <p class="text-sm font-semibold text-foreground mb-1">
                       {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}
                     </p>
-                    <p class="text-xs text-sub">
+                    <p class="text-xs text-muted-foreground">
                       {{ aiSuggestionData.reason }}
                     </p>
                   </div>
@@ -311,11 +309,11 @@
               <!-- Custom Time Selection -->
               <div v-if="rescheduleTime === 'custom'" class="mt-3 grid grid-cols-2 gap-3">
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Date</Label>
+                  <Label class="form-label">Date</Label>
                   <Input type="date" v-model="customDate" class="w-full" />
                 </div>
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Time</Label>
+                  <Label class="form-label">Time</Label>
                   <Input type="time" v-model="customTime" class="w-full" />
                 </div>
               </div>
@@ -325,8 +323,8 @@
           <!-- Not Valid (Inline) -->
           <div v-if="selectedOutcome === 'not-valid'" class="space-y-4">
             <!-- When did you call field -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card">
+              <Label class="form-label">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
@@ -345,13 +343,13 @@
       <!-- Interested (Inline) -->
           <div v-if="selectedOutcome === 'interested'" class="space-y-4">
             <!-- Info note -->
-            <div class="text-xs text-sub px-2">
+            <div class="text-xs text-muted-foreground px-2">
               <span class="text-red-600">*</span> Required fields
             </div>
             
             <!-- When did you call field -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <Label class="block text-sm font-medium text-body mb-1.5">When did you call?</Label>
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card">
+              <Label class="form-label">When did you call?</Label>
               <Input
                 type="datetime-local"
                 v-model="callLogDateTime"
@@ -359,12 +357,12 @@
               />
             </div>
             <!-- Enrich Lead Card -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Enrich lead</h5>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Enrich lead</h5>
               <div class="space-y-4">
                 <!-- Customer interest level -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Customer interest level?</Label>
+                  <Label class="form-label">Customer interest level?</Label>
                   <div class="flex gap-4">
                     <Label class="flex items-center gap-2 cursor-pointer">
                       <input
@@ -373,7 +371,7 @@
                         value="High"
                         class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                       />
-                      <span class="text-sm text-body">High</span>
+                      <span class="text-sm text-muted-foreground">High</span>
                     </Label>
                     <Label class="flex items-center gap-2 cursor-pointer">
                       <input
@@ -382,7 +380,7 @@
                         value="Medium"
                         class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                       />
-                      <span class="text-sm text-body">Medium</span>
+                      <span class="text-sm text-muted-foreground">Medium</span>
                     </Label>
                     <Label class="flex items-center gap-2 cursor-pointer">
                       <input
@@ -391,14 +389,14 @@
                         value="Low"
                         class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                       />
-                      <span class="text-sm text-body">Low</span>
+                      <span class="text-sm text-muted-foreground">Low</span>
                     </Label>
                   </div>
                 </div>
 
                 <!-- Expected purchase timeline -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Expected purchase timeline?</Label>
+                  <Label class="form-label">Expected purchase timeline?</Label>
                   <Select v-model="enrichLeadData.purchaseTimeline">
                     <SelectTrigger class="w-full h-10 min-h-10">
                       <SelectValue placeholder="Select timeline" />
@@ -415,7 +413,7 @@
 
                 <!-- Budget range -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Budget range (if discussed)?</Label>
+                  <Label class="form-label">Budget range (if discussed)?</Label>
                   <Select v-model="enrichLeadData.budgetRange">
                     <SelectTrigger class="w-full h-10 min-h-10">
                       <SelectValue placeholder="Select budget range" />
@@ -439,7 +437,7 @@
                       class="w-4 h-4 focus:ring-brand-blue border-gray-300 rounded"
                       style="accent-color: var(--brand-blue);"
                     />
-                    <span class="text-sm font-medium text-body">Trade in?</span>
+                    <span class="text-sm font-medium text-muted-foreground">Trade in?</span>
                   </label>
                   <Input
                     v-model="enrichLeadData.tradeInModel"
@@ -451,7 +449,7 @@
 
                 <!-- Financing -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Financing?</Label>
+                  <Label class="form-label">Financing?</Label>
                   <Select v-model="enrichLeadData.financingOption">
                     <SelectTrigger class="w-full h-10 min-h-10">
                       <SelectValue placeholder="Select financing option" />
@@ -466,7 +464,7 @@
 
                 <!-- Additional notes -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Additional notes</Label>
+                  <Label class="form-label">Additional notes</Label>
                   <Textarea 
                     v-model="enrichLeadData.additionalNotes"
                     rows="4" 
@@ -487,30 +485,30 @@
             </div>
 
             <!-- Qualification method -->
-            <div class="bg-white rounded-lg p-4 shadow-nsc-card" style="box-shadow: var(--nsc-card-shadow)">
-              <h5 class="font-semibold text-heading text-sm mb-3">Qualification method <span class="text-red-600">*</span></h5>
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card">
+              <h5 class="font-semibold text-foreground text-sm mb-3">Qualification method <span class="text-red-600">*</span></h5>
               <div class="space-y-2">
                 <label
                   class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
                   :class="
                     qualificationMethod === 'assign-only'
-                      ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                      : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                      ? 'border-2 border-brand-blue bg-muted/50'
+                      : 'border border-border hover:bg-muted/50'
                   "
                 >
                   <input v-model="qualificationMethod" type="radio" value="assign-only" class="shrink-0" />
-                  <span class="text-sm text-heading">Assign only</span>
+                  <span class="text-sm text-foreground">Assign only</span>
                 </label>
                 <label
                   class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
                   :class="
                     qualificationMethod === 'assign-and-schedule'
-                      ? 'border-2 border-brand-blue bg-surfaceSecondary/50'
-                      : 'border border-black/5 hover:bg-surfaceSecondary/50'
+                      ? 'border-2 border-brand-blue bg-muted/50'
+                      : 'border border-border hover:bg-muted/50'
                   "
                 >
                   <input v-model="qualificationMethod" type="radio" value="assign-and-schedule" class="shrink-0" />
-                  <span class="text-sm text-heading">Assign and schedule</span>
+                  <span class="text-sm text-foreground">Assign and schedule</span>
                 </label>
               </div>
             </div>
@@ -521,13 +519,13 @@
               class="space-y-4"
             >
               <!-- Assign appointment to -->
-              <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to</h5>
+              <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+                <h5 class="font-semibold text-foreground text-sm mb-4">Assign appointment to</h5>
                 
                 <div class="grid grid-cols-2 gap-4">
                   <!-- Team -->
                   <div>
-                    <Label class="block text-sm font-medium text-body mb-1.5">Team <span class="text-red-600">*</span></Label>
+                    <Label class="form-label">Team <span class="text-red-600">*</span></Label>
                     <SelectMenu
                       v-model="selectedTeamId"
                       :items="teamSelectOptions"
@@ -537,9 +535,9 @@
                     >
                       <template #item="{ item }">
                         <div class="flex items-center gap-2">
-                          <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                          <span class="text-sub">→</span>
-                          <span class="font-medium text-heading">{{ item.name }}</span>
+                          <span class="text-muted-foreground">{{ item.dealership || 'No location' }}</span>
+                          <span class="text-muted-foreground">→</span>
+                          <span class="font-medium text-foreground">{{ item.name }}</span>
                         </div>
                       </template>
                     </SelectMenu>
@@ -547,7 +545,7 @@
 
                   <!-- Salesperson -->
                   <div>
-                    <Label class="block text-sm font-medium text-body mb-1.5">Salesperson <span class="text-sub text-xs">(optional)</span></Label>
+                    <Label class="form-label">Salesperson <span class="optional">(optional)</span></Label>
                     <SelectMenu
                       v-model="selectedSalesmanId"
                       :items="salespersonSelectOptions"
@@ -564,7 +562,7 @@
                           >
                             {{ getInitials(item.name) }}
                           </div>
-                          <span class="font-medium text-heading">{{ item.name }}</span>
+                          <span class="font-medium text-foreground">{{ item.name }}</span>
                         </div>
                       </template>
                     </SelectMenu>
@@ -573,7 +571,7 @@
 
                 <!-- Notes for assignee -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-1.5">Notes for assignee</Label>
+                  <Label class="form-label">Notes for assignee</Label>
                   <Textarea 
                     v-model="noteForSellers"
                     rows="4" 
@@ -590,8 +588,8 @@
               class="space-y-4"
             >
               <!-- Step 1: Event Type Selection (FIRST STEP) -->
-              <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <Label class="block text-sm font-medium text-body mb-2">Event type <span class="text-red-600">*</span></Label>
+              <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+                <Label class="form-label mb-2">Event type <span class="text-red-600">*</span></Label>
                 <SelectMenu
                   v-model="qualificationEventType"
                   :items="qualificationEventTypeOptionsForSelect"
@@ -606,13 +604,13 @@
               </div>
 
               <!-- Step 2: Assign appointment to (show when event type selected) -->
-              <div v-if="qualificationEventType" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <h5 class="font-semibold text-heading text-sm mb-4">Assign appointment to</h5>
+              <div v-if="qualificationEventType" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+                <h5 class="font-semibold text-foreground text-sm mb-4">Assign appointment to</h5>
                 
                 <div class="grid grid-cols-2 gap-4">
                   <!-- Team -->
                   <div>
-                    <Label class="block text-sm font-medium text-body mb-1.5">Team</Label>
+                    <Label class="form-label">Team</Label>
                     <SelectMenu
                       v-model="selectedTeamId"
                       :items="teamSelectOptions"
@@ -622,9 +620,9 @@
                     >
                       <template #item="{ item }">
                         <div class="flex items-center gap-2">
-                          <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                          <span class="text-sub">→</span>
-                          <span class="font-medium text-heading">{{ item.name }}</span>
+                          <span class="text-muted-foreground">{{ item.dealership || 'No location' }}</span>
+                          <span class="text-muted-foreground">→</span>
+                          <span class="font-medium text-foreground">{{ item.name }}</span>
                         </div>
                       </template>
                     </SelectMenu>
@@ -632,7 +630,7 @@
 
                   <!-- Salesperson -->
                   <div>
-                    <Label class="block text-sm font-medium text-body mb-1.5">Salesperson (optional)</Label>
+                    <Label class="form-label">Salesperson <span class="optional">(optional)</span></Label>
                     <SelectMenu
                       v-model="selectedSalesmanId"
                       :items="salespersonSelectOptions"
@@ -649,7 +647,7 @@
                           >
                             {{ getInitials(item.name) }}
                           </div>
-                          <span class="font-medium text-heading">{{ item.name }}</span>
+                          <span class="font-medium text-foreground">{{ item.name }}</span>
                         </div>
                       </template>
                     </SelectMenu>
@@ -658,27 +656,27 @@
               </div>
 
               <!-- Step 3: Schedule (Calendar and Time Slots) - only show if event type and team selected -->
-              <div v-if="qualificationEventType && qualificationSelectedTeam" class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-                <h5 class="font-semibold text-heading text-sm mb-4">{{ t('forms.schedule.title') }} <span class="text-red-600">*</span></h5>
+              <div v-if="qualificationEventType && qualificationSelectedTeam" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+                <h5 class="font-semibold text-foreground text-sm mb-4">{{ t('forms.schedule.title') }} <span class="text-red-600">*</span></h5>
                 
                 <!-- Calendar and Time Slots - Two Column Layout -->
-                <div class="bg-white border border-black/5 rounded-lg overflow-hidden">
+                <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden">
                   <div class="grid grid-cols-1 md:grid-cols-2 divide-x divide-black/5">
                     <!-- Left Column - Calendar -->
                     <div class="p-6">
                       <div class="flex items-center justify-between mb-4">
                         <button 
                           @click="previousMonth"
-                          class="p-1 hover:bg-surfaceSecondary rounded transition-colors cursor-pointer"
+                          class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
                         >
-                          <i class="fa-solid fa-chevron-left text-sm text-body"></i>
+                          <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
                         </button>
-                        <h6 class="text-sm font-semibold text-heading">{{ currentMonthYear }}</h6>
+                        <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
                         <button 
                           @click="nextMonth"
-                          class="p-1 hover:bg-surfaceSecondary rounded transition-colors cursor-pointer"
+                          class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
                         >
-                          <i class="fa-solid fa-chevron-right text-sm text-body"></i>
+                          <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
                         </button>
                       </div>
                       
@@ -686,7 +684,7 @@
                       <div class="grid grid-cols-7 gap-1 mb-2">
                         <div v-for="day in calendarDayLabels" 
                           :key="day"
-                          class="text-center text-xs font-medium text-sub py-2">
+                          class="text-center text-xs font-medium text-muted-foreground py-2">
                           {{ day }}
                         </div>
                       </div>
@@ -698,8 +696,8 @@
                           @click="selectQualificationDate(day)"
                           class="aspect-square flex items-center justify-center text-sm font-medium rounded-lg transition-all"
                           :class="isSelectedQualificationDate(day) 
-                            ? 'bg-[#0470e9] text-white cursor-pointer' 
-                            : day ? 'text-body hover:bg-surfaceSecondary cursor-pointer' : 'text-transparent'"
+                            ? 'bg-primary text-white cursor-pointer' 
+                            : day ? 'text-muted-foreground hover:bg-muted cursor-pointer' : 'text-transparent'"
                         >
                           {{ day }}
                         </div>
@@ -708,29 +706,23 @@
 
                     <!-- Right Column - Time Slots -->
                     <div class="p-6">
-                      <h6 class="text-sm font-semibold text-heading mb-4">{{ selectedQualificationDateLabel }}</h6>
-                      <div v-if="qualificationSelectedDate && availableScheduleSlots.length > 0" class="space-y-2">
-                        <ToggleGroup
-                          type="single"
+                      <h6 class="text-sm font-semibold text-foreground mb-4">{{ selectedQualificationDateLabel }}</h6>
+                      <div v-if="qualificationSelectedDate && availableScheduleSlots.length > 0" class="schedule-slot-toggle-group flex flex-col gap-2 w-full space-y-2">
+                        <Toggle
+                          v-for="slot in availableScheduleSlots"
+                          :key="slot"
                           variant="outline"
-                          :model-value="qualificationSelectedSlot"
-                          @update:model-value="setQualificationSelectedSlot"
-                          class="schedule-slot-toggle-group flex flex-col gap-2 w-full"
+                          :model-value="qualificationSelectedSlot === slot"
+                          @update:model-value="(p) => setQualificationSelectedSlot(p ? slot : '')"
+                          class="schedule-slot-toggle-item"
                         >
-                          <ToggleGroupItem
-                            v-for="slot in availableScheduleSlots"
-                            :key="slot"
-                            :value="slot"
-                            class="w-full justify-center px-4 py-2 text-sm font-medium data-[state=on]:border-[1.5px] data-[state=on]:border-[#0470e9] data-[state=on]:bg-[rgba(4,112,233,0.08)] data-[state=on]:text-[#0470e9]"
-                          >
-                            {{ slot }}
-                          </ToggleGroupItem>
-                        </ToggleGroup>
+                          {{ slot }}
+                        </Toggle>
                       </div>
-                      <div v-else-if="qualificationSelectedDate && availableScheduleSlots.length === 0" class="text-sm text-sub py-4 text-center">
+                      <div v-else-if="qualificationSelectedDate && availableScheduleSlots.length === 0" class="text-sm text-muted-foreground py-4 text-center">
                         {{ t('forms.schedule.timeSlots.noSlots') }}
                       </div>
-                      <div v-else class="text-sm text-sub py-4 text-center">
+                      <div v-else class="text-sm text-muted-foreground py-4 text-center">
                         {{ t('forms.schedule.timeSlots.selectDate') }}
                       </div>
                     </div>
@@ -759,26 +751,26 @@
               <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-calendar-check text-blue-600"></i>
-                  <h5 class="font-semibold text-heading text-sm">Existing Appointment</h5>
+                  <h5 class="font-semibold text-foreground text-sm">Existing Appointment</h5>
                 </div>
                 <span class="text-sm font-semibold text-blue-600 uppercase">Scheduled</span>
               </div>
-              <div class="grid grid-cols-2 gap-3 text-fluid-sm mb-3">
+              <div class="grid grid-cols-2 gap-3 text-sm mb-3">
                 <div>
-                  <span class="text-body">Date:</span>
-                  <span class="ml-2 font-medium text-heading">{{ formatDate(lead.scheduledAppointment.start) }}</span>
+                  <span class="text-muted-foreground">Date:</span>
+                  <span class="ml-2 font-medium text-foreground">{{ formatDate(lead.scheduledAppointment.start) }}</span>
                 </div>
                 <div>
-                  <span class="text-body">Time:</span>
-                  <span class="ml-2 font-medium text-heading">{{ formatTime(lead.scheduledAppointment.start) }}</span>
+                  <span class="text-muted-foreground">Time:</span>
+                  <span class="ml-2 font-medium text-foreground">{{ formatTime(lead.scheduledAppointment.start) }}</span>
                 </div>
                 <div>
-                  <span class="text-body">Type:</span>
-                  <span class="ml-2 font-medium text-heading capitalize">{{ lead.scheduledAppointment.type }}</span>
+                  <span class="text-muted-foreground">Type:</span>
+                  <span class="ml-2 font-medium text-foreground capitalize">{{ lead.scheduledAppointment.type }}</span>
                 </div>
                 <div>
-                  <span class="text-body">Assigned to:</span>
-                  <span class="ml-2 font-medium text-heading">{{ lead.scheduledAppointment.assignee }}</span>
+                  <span class="text-muted-foreground">Assigned to:</span>
+                  <span class="ml-2 font-medium text-foreground">{{ lead.scheduledAppointment.assignee }}</span>
                 </div>
               </div>
               <Button
@@ -885,8 +877,7 @@ import {
   Label,
   Input,
   Textarea,
-  ToggleGroup,
-  ToggleGroupItem
+  Toggle
 } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 
@@ -1045,7 +1036,7 @@ const getRoleAvatarClass = (role) => {
     'salesman': 'bg-purple-100 text-purple-700',
     'operator': 'bg-orange-100 text-orange-700'
   }
-  return classes[role] || 'bg-surfaceSecondary text-body'
+  return classes[role] || 'bg-muted text-muted-foreground'
 }
 
 const handleAssignmentConfirm = (assignee) => {

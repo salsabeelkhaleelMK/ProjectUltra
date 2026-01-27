@@ -1,22 +1,20 @@
 <template>
   <div
-    class="rounded-card p-px flex flex-col"
+    class="rounded-lg p-px flex flex-col"
     style="background: linear-gradient(to right, #40B3E9, #8873FF, #FF8B42); height: 480px"
   >
     <div
-      class="bg-greys-100 rounded-card flex flex-col h-full overflow-hidden"
-      style="background-color: var(--base-muted, #f5f5f5)"
+      class="bg-muted rounded-lg flex flex-col h-full overflow-hidden"
     >
       <!-- Title Section -->
       <div class="px-4 py-4 flex items-center gap-2 shrink-0">
-        <Sparkles :size="16" class="text-heading" />
-        <h3 class="text-lg font-medium text-heading leading-5">AI Assistant</h3>
+        <Sparkles :size="16" class="text-foreground" />
+        <h3 class="text-lg font-medium text-foreground leading-5">AI Assistant</h3>
       </div>
 
       <!-- Card Content -->
       <div
-        class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden"
-        style="box-shadow: var(--nsc-card-shadow);"
+        class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col flex-1 min-h-0 overflow-hidden"
       >
         <div ref="chatContainer" class="flex-1 overflow-y-auto space-y-4 min-h-0 pr-2">
           <div
@@ -39,10 +37,10 @@
                 'rounded-lg px-4 py-2.5 max-w-xs md:max-w-sm',
                 message.role === 'user'
                   ? 'bg-purple-600 text-white'
-                  : 'bg-greys-50 text-greys-900 border border-black/5',
+                  : 'bg-muted text-foreground border border-border',
               ]"
             >
-              <p class="text-fluid-sm leading-relaxed whitespace-pre-wrap text-heading">
+              <p class="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
                 {{ message.content }}
               </p>
             </div>
@@ -50,12 +48,12 @@
               v-if="message.role === 'user'"
               class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0"
             >
-              <span class="text-fluid-xs font-medium text-purple-700">You</span>
+              <span class="text-xs font-medium text-purple-700">You</span>
             </div>
           </div>
         </div>
 
-        <div class="border-t border-black/5 shrink-0 pt-4">
+        <div class="border-t border-border shrink-0 pt-4">
           <div
             v-if="chatMessages.length === 0"
             class="mb-3 flex flex-wrap gap-2"
@@ -64,7 +62,7 @@
               v-for="suggestion in suggestedQuestions"
               :key="suggestion"
               @click="askQuestion(suggestion)"
-              class="px-3 py-1.5 text-fluid-sm bg-greys-50 hover:bg-greys-100 border border-black/5 rounded-lg text-greys-700 transition-colors cursor-pointer"
+              class="px-3 py-1.5 text-sm bg-muted hover:bg-muted border border-border rounded-lg text-foreground transition-colors cursor-pointer"
             >
               {{ suggestion }}
             </button>
@@ -74,17 +72,17 @@
               v-model="questionInput"
               type="text"
               placeholder="Ask anything..."
-              class="w-full pr-12 text-fluid-sm input"
+              class="w-full pr-12 text-sm input"
               @keypress="handleKeyPress"
             />
             <button
               :disabled="!questionInput.trim()"
               @click="handleAsk"
-              class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-greys-100 active:bg-greys-200"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted active:bg-muted"
               :class="
                 questionInput.trim()
                   ? 'text-purple-600'
-                  : 'text-greys-400'
+                  : 'text-muted-foreground'
               "
             >
               <Send :size="18" />

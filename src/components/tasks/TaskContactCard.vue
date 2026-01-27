@@ -9,7 +9,7 @@
     "
   >
     <div class="flex items-center justify-between gap-2 mb-4">
-      <h3 class="text-base font-medium text-heading leading-6">Customer information</h3>
+      <h3 class="text-base font-medium text-foreground leading-6">Customer information</h3>
       <Button
         v-if="task.customer?.id"
         variant="ghost"
@@ -18,7 +18,7 @@
         :class="'h-7 w-7'"
         title="Open customer profile in new tab"
       >
-        <ExternalLink :size="14" class="text-sub" />
+        <ExternalLink :size="14" class="text-muted-foreground" />
       </Button>
     </div>
     
@@ -27,32 +27,32 @@
       <div class="space-y-3">
         <!-- Customer Name -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm text-sub leading-5 shrink-0">Customer</p>
-          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-muted-foreground leading-5 shrink-0">Customer</p>
+          <p class="text-sm font-medium text-foreground leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.name || 'Unknown' }}
           </p>
         </div>
         
         <!-- Email -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm text-sub leading-5 shrink-0">Email</p>
-          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-muted-foreground leading-5 shrink-0">Email</p>
+          <p class="text-sm font-medium text-foreground leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer?.email || 'N/A' }}
           </p>
         </div>
         
         <!-- Phone -->
         <div class="flex items-center justify-between gap-2">
-          <p class="text-sm text-sub leading-5 shrink-0">Phone</p>
+          <p class="text-sm text-muted-foreground leading-5 shrink-0">Phone</p>
           <div class="flex items-center gap-1 min-w-0 flex-1 justify-end">
-            <p class="text-sm font-medium text-heading leading-5 text-right truncate min-w-0">
+            <p class="text-sm font-medium text-foreground leading-5 text-right truncate min-w-0">
               {{ task.customer?.phone || 'N/A' }}
             </p>
             <Button
               v-if="task.customer?.phone"
               variant="ghost"
               size="icon"
-              class="h-6 w-6 shrink-0 text-body hover:text-heading"
+              class="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
               title="Copy phone number"
               @click="copyToClipboard(task.customer.phone, 'phone')"
             >
@@ -63,16 +63,16 @@
         
         <!-- Address -->
         <div v-if="task.customer?.address" class="flex items-start justify-between gap-2">
-          <p class="text-sm text-sub leading-5 shrink-0">Address</p>
-          <p class="text-sm font-medium text-heading leading-5 text-right wrap-break-word min-w-0 flex-1">
+          <p class="text-sm text-muted-foreground leading-5 shrink-0">Address</p>
+          <p class="text-sm font-medium text-foreground leading-5 text-right wrap-break-word min-w-0 flex-1">
             {{ task.customer.address }}
           </p>
         </div>
       </div>
 
       <!-- Other Tasks from Same Customer (Ultra-Compact) -->
-      <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-black/5">
-        <h3 class="text-base font-medium text-heading mb-4 leading-6">Other customer requests</h3>
+      <div v-if="relatedTasks.length > 0" class="mt-4 pt-4 border-t border-border">
+        <h3 class="text-base font-medium text-foreground mb-4 leading-6">Other customer requests</h3>
         <div class="space-y-0.5">
           <div
             v-for="relatedTask in relatedTasks"
@@ -87,16 +87,16 @@
             >
               {{ relatedTask.type === 'lead' ? 'Lead' : 'Opp' }}
             </span>
-            <span class="text-sm font-medium text-heading truncate shrink-0 min-w-0">
+            <span class="text-sm font-medium text-foreground truncate shrink-0 min-w-0">
               {{ getTaskStage(relatedTask) }}
             </span>
-            <span class="text-sm text-body truncate flex-1 min-w-0">
+            <span class="text-sm text-muted-foreground truncate flex-1 min-w-0">
               {{ getVehicleDisplay(relatedTask) }}
             </span>
-            <span v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-sm font-bold text-heading shrink-0">
+            <span v-if="relatedTask.type === 'opportunity' && relatedTask.estimatedValue" class="text-sm font-bold text-foreground shrink-0">
               {{ formatCurrency(relatedTask.estimatedValue) }}
             </span>
-            <span class="text-sm text-sub shrink-0">
+            <span class="text-sm text-muted-foreground shrink-0">
               {{ formatTaskDate(relatedTask) }}
             </span>
           </div>

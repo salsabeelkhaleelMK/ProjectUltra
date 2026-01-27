@@ -8,14 +8,14 @@
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
-      <p class="text-sm text-body">
+      <p class="text-sm text-muted-foreground">
         Schedule a callback with {{ entityName }} to follow up at a convenient time.
       </p>
 
       <!-- Callback Date & Time -->
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">
+          <Label class="block text-sm font-semibold text-foreground">
             Callback Date <span class="text-brand-red">*</span>
           </Label>
           <Input 
@@ -27,7 +27,7 @@
           />
         </div>
         <div class="space-y-2">
-          <Label class="block text-sm font-semibold text-heading">
+          <Label class="block text-sm font-semibold text-foreground">
             Callback Time <span class="text-brand-red">*</span>
           </Label>
           <Input 
@@ -41,7 +41,7 @@
 
       <!-- Callback Reason -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Reason for Callback</Label>
+        <Label class="block text-sm font-semibold text-foreground">Reason for Callback</Label>
         <Select v-model="formData.reason">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Select a reason..." />
@@ -60,7 +60,7 @@
 
       <!-- Notes -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Callback Notes</Label>
+        <Label class="block text-sm font-semibold text-foreground">Callback Notes</Label>
         <Textarea 
           v-model="formData.notes"
           rows="4"
@@ -71,7 +71,7 @@
 
       <!-- Assignee (optional) -->
       <div v-if="showAssignee" class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">Assign To</Label>
+        <Label class="block text-sm font-semibold text-foreground">Assign To</Label>
         <Select v-model="formData.assigneeId">
           <SelectTrigger class="w-full h-10">
             <SelectValue placeholder="Current Owner" />
@@ -95,7 +95,7 @@
           v-model:checked="formData.setReminder"
           id="reminder"
         />
-        <Label for="reminder" class="text-sm text-body cursor-pointer">
+        <Label for="reminder" class="text-sm text-muted-foreground cursor-pointer">
           Set reminder 15 minutes before callback
         </Label>
       </div>

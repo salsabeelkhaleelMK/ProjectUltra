@@ -1,22 +1,22 @@
 <template>
-  <div class="rounded-card flex flex-col mb-6 bg-surfaceSecondary">
+  <div class="rounded-lg flex flex-col mb-6 bg-muted">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-heading"></i>
-        <h2 class="text-sm font-semibold text-heading leading-5">Customer Insights</h2>
+        <i class="fa-solid fa-lightbulb text-foreground"></i>
+        <h2 class="text-sm font-semibold text-foreground leading-5">Customer Insights</h2>
       </div>
     </div>
     
     <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-nsc-card flex flex-col">
+    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
       <div class="divide-y divide-gray-100">
         <!-- Summary Section -->
         <div class="p-3">
-          <p v-if="summary" class="text-sm text-body leading-relaxed whitespace-pre-line">
+          <p v-if="summary" class="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
             {{ summary }}
           </p>
-          <div v-else class="flex items-center gap-3 py-1 text-sub">
+          <div v-else class="flex items-center gap-3 py-1 text-muted-foreground">
             <i class="fa-solid fa-circle-info text-sm opacity-20"></i>
             <p class="text-xs italic">No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.</p>
           </div>
@@ -28,7 +28,7 @@
             <span 
               v-for="(pref, index) in preferences" 
               :key="index"
-              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surfaceSecondary text-heading text-xs font-semibold uppercase tracking-wider rounded border border-black/5"
+              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted text-foreground text-xs font-semibold uppercase tracking-wider rounded border border-border"
             >
               <i :class="pref.icon" class="text-xs text-primary"></i>
               {{ pref.label }}

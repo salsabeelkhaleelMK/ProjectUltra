@@ -2,7 +2,7 @@
   <div class="relative">
     <button 
       @click.stop="toggleDropdown"
-      class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
+      class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
     >
       <span>More actions</span>
@@ -77,13 +77,13 @@ const menuItems = computed(() => {
 .dropdown-menu-small span,
 .dropdown-menu-small li button,
 .dropdown-menu-small li a {
-  font-size: var(--text-fluid-xs, 0.75rem) !important;
+  font-size: var(--text-xs, 0.75rem) !important;
   line-height: 1.5 !important;
 }
 
 /* Target nested elements more aggressively */
 .dropdown-menu-small * {
-  font-size: var(--text-fluid-xs, 0.75rem) !important;
+  font-size: var(--text-xs, 0.75rem) !important;
 }
 </style>
 

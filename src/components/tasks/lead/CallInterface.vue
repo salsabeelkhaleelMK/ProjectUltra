@@ -2,27 +2,22 @@
   <div>
     <!-- Call Action Buttons Row (hidden when hideButton is true or call is already active) -->
     <div v-if="!hideButton && !isCallActive" class="flex gap-2 items-center mb-4">
-      <!-- Primary: Call Button -->
-      <button
-        @click="$emit('start-call')"
+      <Button
+        variant="default"
         :disabled="isCallActive"
-        :class="[
-          'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
-          isCallActive 
-            ? 'bg-surface border-E5E7EB text-body opacity-60 cursor-not-allowed' 
-            : 'bg-primary hover:bg-primary/90 border-primary text-white cursor-pointer'
-        ]"
+        class="inline-flex items-center gap-2"
+        @click="$emit('start-call')"
       >
-        <i class="fa-solid fa-phone text-xs cursor-pointer"></i>
+        <Phone :size="16" class="shrink-0" aria-hidden="true" />
         {{ contactAttempts > 0 ? 'Call Again' : 'Initiate Call' }}
-      </button>
+      </Button>
     </div>
 
     <!-- Inline Call Interface (shows when call is active or ended) -->
     <div v-if="isCallActive || callEnded" class="mb-4 space-y-4">
       
       <!-- Transcription Area (shows when call is active or ended) -->
-      <div v-if="isCallActive || callEnded" class="bg-slate-900 text-white rounded-card">
+      <div v-if="isCallActive || callEnded" class="bg-slate-900 text-white rounded-lg">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-waveform-lines text-blue-400 animate-pulse"></i>
@@ -119,10 +114,10 @@
       </div>
       
       <!-- Call Ended Section -->
-      <div v-if="callEnded && !isCallActive" class="bg-blue-50 rounded-card p-4">
+      <div v-if="callEnded && !isCallActive" class="bg-blue-50 rounded-lg p-4">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-bold text-heading mb-1 text-sm">Call Ended</h4>
+            <h4 class="font-bold text-foreground mb-1 text-sm">Call Ended</h4>
             <p class="text-xs text-gray-600">Extract information from the transcription</p>
           </div>
           <div class="flex gap-2">
@@ -141,6 +136,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
+import { Phone } from 'lucide-vue-next'
 import AIButton from '@/components/shared/AIButton.vue'
 
 const props = defineProps({

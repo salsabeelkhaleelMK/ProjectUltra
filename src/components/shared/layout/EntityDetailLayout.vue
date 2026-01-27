@@ -115,10 +115,10 @@
                   <button
                     v-if="!showInlineAppointmentForm"
                     @click.stop="showInlineAppointmentForm = true"
-                    class="bg-surface hover:bg-surfaceSecondary text-body font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center px-4 py-2 h-9 border border-E5E7EB"
+                    class="bg-surface hover:bg-muted text-muted-foreground font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center px-4 py-2 h-9 border border-border"
                   >
-                    <i class="fa-solid fa-plus text-xs text-body"></i>
-                    <span class="ml-1.5 text-body">add appointment</span>
+                    <i class="fa-solid fa-plus text-xs text-muted-foreground"></i>
+                    <span class="ml-1.5 text-muted-foreground">add appointment</span>
                   </button>
                 </div>
                 <div class="flex-grow border-t border"></div>
@@ -127,15 +127,15 @@
               <!-- Inline Add Appointment form (same form as modal, inline wrapper like NoteWidget) -->
               <div
                 v-if="showInlineAppointmentForm"
-                class="animate-fade-in relative bg-surface border border-E5E7EB rounded-xl p-5 shadow-sm mb-6"
+                class="animate-fade-in relative bg-surface border border-border rounded-xl p-5 shadow-nsc-card mb-6"
               >
-                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-E5E7EB rotate-45"></div>
+                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-border rotate-45"></div>
                 <div class="flex justify-between items-center mb-4">
-                  <h5 class="text-sm font-semibold text-heading">Add Appointment</h5>
+                  <h5 class="text-sm font-semibold text-foreground">Add Appointment</h5>
                   <button
                     type="button"
                     @click="showInlineAppointmentForm = false"
-                    class="text-sub hover:text-body"
+                    class="text-muted-foreground hover:text-muted-foreground"
                   >
                     <i class="fa-solid fa-xmark"></i>
                   </button>
@@ -215,7 +215,7 @@
       </div>
 
       <!-- Right: Activity Timeline (collapsed by default) -->
-      <div class="hidden lg:flex flex-col overflow-hidden border-l border-black/5 shrink-0 w-80 h-full">
+      <div class="hidden lg:flex flex-col overflow-hidden border-l border-border shrink-0 w-80 h-full">
         <TaskActivityCard
           :activities="allActivities"
           :expanded-summaries="expandedSummaries"
@@ -310,24 +310,24 @@
           />
 
           <!-- Activity Summary Card -->
-          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-lg flex flex-col bg-muted">
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-clock text-heading"></i>
-                <h2 class="text-sm font-semibold text-heading leading-5">Activity Summary</h2>
+                <i class="fa-solid fa-clock text-foreground"></i>
+                <h2 class="text-sm font-semibold text-foreground leading-5">Activity Summary</h2>
               </div>
             </div>
             
             <!-- Card Content -->
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1 min-h-0" style="box-shadow: var(--nsc-card-shadow);">
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col flex-1 min-h-0">
               <!-- Timeline -->
               <div class="relative flex-1 min-h-0">
                 <div v-if="allActivities.length > 0" class="absolute left-5 top-0 bottom-0 w-0.5 bg-border z-0"></div>
                 
-                <div v-if="allActivities.length === 0" class="text-center py-6 text-sub">
+                <div v-if="allActivities.length === 0" class="text-center py-6 text-muted-foreground">
                   <i class="fa-solid fa-clock text-2xl mb-2"></i>
-                  <p class="text-sm text-sub">No activities yet</p>
+                  <p class="text-sm text-muted-foreground">No activities yet</p>
                 </div>
                 
                 <div v-else class="space-y-6 h-full overflow-y-auto pr-2">
@@ -339,13 +339,13 @@
                       <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <div class="text-sm text-body leading-snug">
+                      <div class="text-sm text-muted-foreground leading-snug">
                         <span class="font-bold">{{ activity.user }}</span> {{ activity.action }}
                       </div>
-                      <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-sm text-body">
+                      <div v-if="activity.content" class="mt-2 bg-orange-50/50 border border-orange-100 p-3 rounded-lg text-sm text-muted-foreground">
                         {{ activity.content }}
                       </div>
-                      <div class="text-xs text-sub mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
+                      <div class="text-xs text-muted-foreground mt-1">{{ formatActivityTime(activity.timestamp) }}</div>
                     </div>
                   </div>
                 </div>
@@ -416,25 +416,25 @@
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="!enrichWidgetType" class="text-center py-12 text-sub">
+          <div v-else-if="!enrichWidgetType" class="text-center py-12 text-muted-foreground">
             <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
-            <p class="text-sm text-sub">No enrichment data yet</p>
-            <p class="text-xs text-sub mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
+            <p class="text-sm text-muted-foreground">No enrichment data yet</p>
+            <p class="text-xs text-muted-foreground mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
           </div>
         </div>
 
         <!-- Tab 4: Contact -->
         <!--
         <div v-if="gridMainTab === 'contact'" class="space-y-6">
-          <div class="rounded-card flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
+          <div class="rounded-lg flex flex-col bg-muted">
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-comments text-heading"></i>
-                <h2 class="text-sm font-semibold text-heading leading-5">Communicate</h2>
+                <i class="fa-solid fa-comments text-foreground"></i>
+                <h2 class="text-sm font-semibold text-foreground leading-5">Communicate</h2>
               </div>
             </div>
             
-            <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+            <div class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col">
               <CommunicationWidget
                 type="call"
                 :task-type="type"
@@ -447,12 +447,12 @@
               
               <div v-if="gridCommunications.length > 0" class="mt-6 pt-6 border-t border">
                 <div class="space-y-2 max-h-52 overflow-y-auto">
-                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-surfaceSecondary border border-E5E7EB rounded-lg">
+                  <div v-for="comm in gridCommunications" :key="comm.id" class="p-3 bg-muted border border-border rounded-lg">
                     <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xs font-semibold text-heading">{{ comm.type }}</span>
-                      <span class="text-xs text-sub">{{ formatGridDate(comm.timestamp) }}</span>
+                      <span class="text-xs font-semibold text-foreground">{{ comm.type }}</span>
+                      <span class="text-xs text-muted-foreground">{{ formatGridDate(comm.timestamp) }}</span>
                     </div>
-                    <p class="text-sm text-body">{{ comm.content }}</p>
+                    <p class="text-sm text-muted-foreground">{{ comm.content }}</p>
                   </div>
                 </div>
               </div>
@@ -1412,9 +1412,9 @@ const getActivityIcon = (type) => {
     'note': 'fa-solid fa-sticky-note text-yellow-600',
     'meeting': 'fa-solid fa-calendar text-purple-600',
     'task': 'fa-solid fa-check-circle text-indigo-600',
-    'attachment': 'fa-solid fa-paperclip text-body',
+    'attachment': 'fa-solid fa-paperclip text-muted-foreground',
     'status': 'fa-solid fa-tag text-orange-600',
-    'default': 'fa-solid fa-circle text-sub'
+    'default': 'fa-solid fa-circle text-muted-foreground'
   }
   return icons[type] || icons.default
 }
@@ -1426,9 +1426,9 @@ const getActivityIconClass = (type) => {
     'note': 'bg-yellow-100 text-yellow-600',
     'meeting': 'bg-purple-100 text-purple-600',
     'task': 'bg-indigo-100 text-indigo-600',
-    'attachment': 'bg-surfaceSecondary text-body',
+    'attachment': 'bg-muted text-muted-foreground',
     'status': 'bg-orange-100 text-orange-600',
-    'default': 'bg-surfaceSecondary text-sub'
+    'default': 'bg-muted text-muted-foreground'
   }
   return classes[type] || classes.default
 }

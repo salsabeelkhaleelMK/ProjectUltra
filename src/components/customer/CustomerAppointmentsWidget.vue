@@ -4,7 +4,7 @@
       <div
         v-for="apt in appointments"
         :key="apt.id"
-        class="bg-white border border-E5E7EB rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in feed-item cursor-pointer hover:shadow-md transition-shadow"
+        class="bg-white border border-border rounded-xl p-4 shadow-nsc-card flex gap-4 animate-fade-in feed-item cursor-pointer transition-shadow"
         @click="handleAppointmentClick(apt)"
       >
         <div 
@@ -14,20 +14,20 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
-            <span class="text-xs font-bold text-heading">{{ getCustomerInitials(apt) }}</span>
-            <span class="text-xs text-sub">scheduled</span>
-            <span class="text-xs text-sub">• {{ formatTime(apt.start) }}</span>
+            <span class="text-xs font-bold text-foreground">{{ getCustomerInitials(apt) }}</span>
+            <span class="text-xs text-muted-foreground">scheduled</span>
+            <span class="text-xs text-muted-foreground">• {{ formatTime(apt.start) }}</span>
             <div class="ml-auto relative">
               <button 
                 @click.stop="showMenu[apt.id] = !showMenu[apt.id]"
-                class="text-gray-400 hover:text-body transition-colors p-1"
+                class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
                 title="More actions"
               >
                 <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
               </button>
             </div>
           </div>
-          <div class="text-sm text-body">
+          <div class="text-sm text-muted-foreground">
             <div class="flex items-center gap-2 mb-1 flex-wrap">
               <span
                 class="text-xs px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
@@ -43,10 +43,10 @@
                 {{ apt.status }}
               </span>
             </div>
-            <div class="text-sm font-medium text-heading mb-1">
+            <div class="text-sm font-medium text-foreground mb-1">
               {{ apt.title || 'Appointment' }}
             </div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               <span class="flex items-center gap-1">
                 <i class="fa-solid fa-clock text-xs"></i>
                 {{ formatDateTime(apt.start) }}
@@ -66,7 +66,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else class="text-center py-8 text-sub">
+    <div v-else class="text-center py-8 text-muted-foreground">
       <i class="fa-solid fa-calendar-xmark text-2xl mb-2 opacity-30"></i>
       <p class="text-xs">No appointments for this customer</p>
     </div>
@@ -109,7 +109,7 @@ const getTypeBadgeClass = (type) => {
     'offsite': 'bg-slate-50 text-slate-600 border-slate-100',
     'workshop': 'bg-orange-50 text-orange-600 border-orange-100'
   }
-  return classes[type] || 'bg-surfaceSecondary text-body border-gray-100'
+  return classes[type] || 'bg-muted text-muted-foreground border-gray-100'
 }
 
 const getStatusBadgeClass = (status) => {
@@ -117,7 +117,7 @@ const getStatusBadgeClass = (status) => {
   if (s === 'confirmed') return 'bg-green-50 text-green-600'
   if (s === 'cancelled') return 'bg-red-50 text-red-600'
   if (s === 'no-show') return 'bg-amber-50 text-amber-600'
-  return 'bg-surfaceSecondary text-body'
+  return 'bg-muted text-muted-foreground'
 }
 
 const formatDateTime = (dateString) => {

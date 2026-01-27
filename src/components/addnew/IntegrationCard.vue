@@ -5,12 +5,12 @@
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
           <!-- Platform Icon (Avatar style) -->
-          <div class="w-8 h-8 rounded-lg bg-surfaceSecondary flex items-center justify-center border border-border shrink-0 group-hover:border-primary/30 transition-colors">
+          <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0 group-hover:border-primary/30 transition-colors">
             <i :class="integration.icon" class="text-base text-primary"></i>
           </div>
           <div class="min-w-0">
-            <span class="text-fluid-xs font-bold uppercase tracking-tighter text-sub block mb-0.5">Platform</span>
-            <CardTitle class="text-heading text-sm font-bold truncate leading-tight">{{ integration.name }}</CardTitle>
+            <span class="text-xs font-bold uppercase tracking-tighter text-muted-foreground block mb-0.5">Platform</span>
+            <CardTitle class="text-foreground text-sm font-bold truncate leading-tight">{{ integration.name }}</CardTitle>
           </div>
         </div>
         
@@ -31,7 +31,7 @@
 
       <!-- API Key Input -->
       <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-heading">API Key</Label>
+        <Label class="block text-sm font-semibold text-foreground">API Key</Label>
         <Input
           v-model="apiKey"
           type="password"

@@ -76,8 +76,8 @@
           </SelectItem>
         </SelectContent>
       </Select>
-      <p v-if="isTeamSelected" class="text-fluid-xs text-sub mt-1">
-        <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
+      <p v-if="isTeamSelected" class="text-xs text-muted-foreground mt-1">
+        <i class="fa-solid fa-users text-muted-foreground"></i> Any available team member will be assigned
       </p>
     </div>
 

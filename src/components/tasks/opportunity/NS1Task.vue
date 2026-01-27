@@ -1,21 +1,21 @@
 <template>
   <div class="space-y-4">
     <!-- Title and Description Card -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h4 class="font-bold text-heading text-sm mb-1">1st No-Show Follow-up Task</h4>
-      <p class="text-sm text-body">
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h4 class="font-bold text-foreground text-sm mb-1">1st No-Show Follow-up Task</h4>
+      <p class="text-sm text-muted-foreground">
         Appointment was scheduled for {{ appointmentDate }} but customer did not show up. {{ noShowMessage }}
       </p>
     </div>
 
     <!-- Assignment Section -->
-    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-      <h5 class="font-semibold text-heading text-sm mb-4">Assign to</h5>
+    <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+      <h5 class="font-semibold text-foreground text-sm mb-4">Assign to</h5>
         
         <div class="grid grid-cols-2 gap-4">
           <!-- Team -->
           <div>
-            <Label class="block text-sm font-medium text-body mb-1.5">Team <span class="text-red-600">*</span></Label>
+            <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Team <span class="text-red-600">*</span></Label>
             <SelectMenu
               v-model="selectedTeamId"
               :items="teamSelectOptions"
@@ -25,9 +25,9 @@
             >
               <template #item="{ item }">
                 <div class="flex items-center gap-2">
-                  <span class="text-sub">{{ item.dealership || 'No location' }}</span>
-                  <span class="text-sub">→</span>
-                  <span class="font-medium text-heading">{{ item.name }}</span>
+                  <span class="text-muted-foreground">{{ item.dealership || 'No location' }}</span>
+                  <span class="text-muted-foreground">→</span>
+                  <span class="font-medium text-foreground">{{ item.name }}</span>
                 </div>
               </template>
             </SelectMenu>
@@ -35,7 +35,7 @@
 
           <!-- Salesperson -->
           <div>
-            <Label class="block text-sm font-medium text-body mb-1.5">Salesperson <span class="text-sub text-xs">(optional)</span></Label>
+            <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Salesperson <span class="text-muted-foreground text-xs">(optional)</span></Label>
             <SelectMenu
               v-model="selectedSalesmanId"
               :items="salespersonSelectOptions"
@@ -52,7 +52,7 @@
                   >
                     {{ getInitials(item.name) }}
                   </div>
-                  <span class="font-medium text-heading">{{ item.name }}</span>
+                  <span class="font-medium text-foreground">{{ item.name }}</span>
                 </div>
               </template>
             </SelectMenu>
@@ -61,7 +61,7 @@
 
         <!-- Notes for assignee -->
         <div class="mt-4">
-          <Label class="block text-sm font-medium text-body mb-1.5">Notes for assignee</Label>
+          <Label class="block text-sm font-medium text-muted-foreground mb-1.5">Notes for assignee</Label>
           <Textarea 
             v-model="noteForSellers"
             rows="4" 
@@ -173,7 +173,7 @@ const getRoleAvatarClass = (role) => {
     'salesman': 'bg-purple-100 text-purple-700',
     'operator': 'bg-orange-100 text-orange-700'
   }
-  return classes[role] || 'bg-surfaceSecondary text-body'
+  return classes[role] || 'bg-muted text-muted-foreground'
 }
 
 // Validation - expose to parent

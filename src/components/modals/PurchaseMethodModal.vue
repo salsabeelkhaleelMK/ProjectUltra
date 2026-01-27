@@ -28,7 +28,7 @@
                   class="px-4 py-3 rounded-btn border-2 text-center text-sm font-medium transition-colors"
                   :class="formData.type === typeOption.value
                     ? 'border-brand-red bg-brand-red/5 text-brand-red'
-                    : 'border-D1D5DB bg-white text-body hover:border-brand-slate'"
+                    : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-slate'"
                 >
                   {{ typeOption.label }}
                 </div>
@@ -39,7 +39,7 @@
           <!-- Dynamic Form Based on Type -->
           <div v-if="formData.type" class="space-y-4">
             <!-- Section Header -->
-            <h3 class="text-h3-card text-heading mb-4">
+            <h3 class="text-h3-card text-foreground mb-4">
               {{ getTypeLabel(formData.type) }} Details
             </h3>
 
@@ -50,7 +50,7 @@
                   Monthly Instalment <span class="text-brand-red">*</span>
                 </label>
                 <div class="relative">
-                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                   <input
                     v-model.number="formData.fields.monthlyInstalment"
                     type="number"
@@ -66,7 +66,7 @@
                 <p v-if="errors.monthlyInstalment" class="text-xs text-red-600 mt-1">
                   {{ errors.monthlyInstalment }}
                 </p>
-                <p class="text-xs text-sub mt-1">Customer's desired monthly payment amount</p>
+                <p class="text-xs text-muted-foreground mt-1">Customer's desired monthly payment amount</p>
               </div>
 
               <div>
@@ -74,7 +74,7 @@
                   Down Payment <span class="text-brand-red">*</span>
                 </label>
                 <div class="relative">
-                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-body">€</span>
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                   <input
                     v-model.number="formData.fields.downPayment"
                     type="number"
@@ -90,7 +90,7 @@
                 <p v-if="errors.downPayment" class="text-xs text-red-600 mt-1">
                   {{ errors.downPayment }}
                 </p>
-                <p class="text-xs text-sub mt-1">Amount at contract signing</p>
+                <p class="text-xs text-muted-foreground mt-1">Amount at contract signing</p>
               </div>
             </div>
 
@@ -124,7 +124,7 @@
               </div>
 
                 <div class="space-y-2">
-                  <Label class="block text-sm font-semibold text-heading">Unlock Kilometers</Label>
+                  <Label class="block text-sm font-semibold text-foreground">Unlock Kilometers</Label>
                   <Input
                     v-model.number="formData.fields.mileageLimit"
                     type="number"
@@ -167,12 +167,12 @@
               </div>
 
               <!-- Calculated Total Rental Amount -->
-              <div class="bg-surfaceSecondary p-4 rounded-card border border-E5E7EB">
+              <div class="bg-muted p-4 rounded-lg border border-border">
                 <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-body">Total Rental Amount:</span>
-                  <span class="text-lg font-bold text-heading">€ {{ formatCurrency(totalRentalAmount) }}</span>
+                  <span class="text-sm font-medium text-muted-foreground">Total Rental Amount:</span>
+                  <span class="text-lg font-bold text-foreground">€ {{ formatCurrency(totalRentalAmount) }}</span>
                 </div>
-                <p class="text-xs text-sub mt-1">
+                <p class="text-xs text-muted-foreground mt-1">
                   (Monthly × Duration + Down Payment)
                 </p>
               </div>
@@ -183,7 +183,7 @@
                     id="ltr-insurance"
                     v-model:checked="formData.fields.insuranceIncluded"
                   />
-                  <Label for="ltr-insurance" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-insurance" class="text-sm text-muted-foreground cursor-pointer">
                     Insurance Included
                   </Label>
                 </div>
@@ -192,7 +192,7 @@
                     id="ltr-maintenance"
                     v-model:checked="formData.fields.maintenanceIncluded"
                   />
-                  <Label for="ltr-maintenance" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-maintenance" class="text-sm text-muted-foreground cursor-pointer">
                     Maintenance Included
                   </Label>
                 </div>
@@ -201,7 +201,7 @@
                     id="ltr-registration"
                     v-model:checked="formData.fields.registrationTaxesIncluded"
                   />
-                  <Label for="ltr-registration" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-registration" class="text-sm text-muted-foreground cursor-pointer">
                     Registration/Taxes Included
                   </Label>
                 </div>
@@ -209,9 +209,9 @@
             </template>
 
             <!-- Optional: Offer Validity Dates -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-E5E7EB">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Offer Valid From</Label>
+                <Label class="block text-sm font-semibold text-foreground">Offer Valid From</Label>
                 <Input
                   v-model="formData.offerValidFrom"
                   type="date"
@@ -219,7 +219,7 @@
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-heading">Offer Valid To</Label>
+                <Label class="block text-sm font-semibold text-foreground">Offer Valid To</Label>
                 <Input
                   v-model="formData.offerValidTo"
                   type="date"
@@ -230,7 +230,7 @@
           </div>
 
           <!-- Validation Errors Summary -->
-          <div v-if="validationErrors.length > 0" class="bg-red-50 border border-red-200 rounded-card p-4">
+          <div v-if="validationErrors.length > 0" class="bg-red-50 border border-red-200 rounded-lg p-4">
             <h4 class="text-sm font-semibold text-red-800 mb-2">Please fix the following errors:</h4>
             <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
               <li v-for="error in validationErrors" :key="error">{{ error }}</li>

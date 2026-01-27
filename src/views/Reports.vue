@@ -3,7 +3,7 @@
     <!-- Header -->
     <PageHeader title="Reports">
       <template #actions>
-        <select class="px-3 py-1.5 rounded-lg border border-black/5 bg-white text-fluid-sm font-medium text-body shadow-sm hover:bg-greys-50 transition-all cursor-pointer">
+        <select class="px-3 py-1.5 rounded-lg border border-border bg-white text-sm font-medium text-muted-foreground shadow-sm hover:bg-muted transition-all cursor-pointer">
           <option>This month</option>
           <option>Last month</option>
           <option>This quarter</option>

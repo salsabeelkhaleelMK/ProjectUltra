@@ -1,16 +1,16 @@
 <template>
-  <div class="rounded-card flex flex-col h-full" style="background-color: var(--base-muted, #f5f5f5)">
+  <div class="rounded-lg flex flex-col h-full bg-muted">
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-car text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Requested Car</h2>
+        <i class="fa-solid fa-car text-foreground"></i>
+        <h2 class="text-base font-medium text-foreground leading-6">Requested Car</h2>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-fluid-xs text-sub font-medium">Owner:</span>
+        <span class="text-xs text-muted-foreground font-medium">Owner:</span>
         <button 
           @click="$emit('reassign')"
-          class="text-fluid-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+          class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
         >
           {{ task.assignee }}
         </button>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Card Content -->
-    <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col flex-1" style="box-shadow: var(--nsc-card-shadow);">
+    <div class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col flex-1">
 
       <!-- Badges Row -->
       <div class="flex items-center gap-2 flex-wrap mb-3">
@@ -55,10 +55,10 @@
         <div class="flex items-center gap-3">
           <div class="w-16 h-12 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0">
             <img v-if="carImage" :src="carImage" alt="Car" class="w-full h-full object-cover">
-            <i v-else class="fa-solid fa-car text-2xl text-sub w-full h-full flex items-center justify-center"></i>
+            <i v-else class="fa-solid fa-car text-2xl text-muted-foreground w-full h-full flex items-center justify-center"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-heading text-fluid-sm mb-1">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
+            <div class="font-bold text-foreground text-sm mb-1">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
             <div class="flex items-center gap-2 flex-wrap">
               <div 
                 v-if="stockDays !== undefined && stockDays !== null"
@@ -75,8 +75,8 @@
             </div>
           </div>
           <div v-if="carPrice" class="text-right">
-            <div class="text-fluid-xs text-sub font-medium">Price</div>
-            <div class="font-bold text-heading text-fluid-sm">€ {{ formatCurrency(carPrice) }}</div>
+            <div class="text-xs text-muted-foreground font-medium">Price</div>
+            <div class="font-bold text-foreground text-sm">€ {{ formatCurrency(carPrice) }}</div>
           </div>
         </div>
         <div class="flex justify-end pt-2">
@@ -85,15 +85,15 @@
             variant="outline"
             size="small"
             @click="$emit('add-requested-car')"
-            class="text-fluid-xs"
+            class="text-xs"
           />
         </div>
       </div>
       
       <!-- No car message with add button -->
       <div v-else class="flex flex-col items-center justify-center py-8 text-center">
-        <i class="fa-solid fa-car text-4xl text-sub mb-3"></i>
-        <p class="text-fluid-sm text-body mb-4">No requested car added yet</p>
+        <i class="fa-solid fa-car text-4xl text-muted-foreground mb-3"></i>
+        <p class="text-sm text-muted-foreground mb-4">No requested car added yet</p>
         <Button
           label="+ Add or update"
           variant="outline"
@@ -104,18 +104,18 @@
 
       <!-- Request Details (condensed) -->
       <div class="mt-3 pt-3 space-y-2">
-        <div v-if="task.source" class="flex items-center justify-between text-fluid-xs">
-          <span class="text-sub">Source</span>
-          <span class="text-heading font-medium">{{ task.source }}</span>
+        <div v-if="task.source" class="flex items-center justify-between text-xs">
+          <span class="text-muted-foreground">Source</span>
+          <span class="text-foreground font-medium">{{ task.source }}</span>
         </div>
-        <div v-if="task.requestType || task.requestedCar?.requestType" class="flex items-center justify-between text-fluid-xs">
-          <span class="text-sub">Request Type</span>
-          <span class="text-heading font-medium">{{ task.requestType || task.requestedCar?.requestType }}</span>
+        <div v-if="task.requestType || task.requestedCar?.requestType" class="flex items-center justify-between text-xs">
+          <span class="text-muted-foreground">Request Type</span>
+          <span class="text-foreground font-medium">{{ task.requestType || task.requestedCar?.requestType }}</span>
         </div>
         <div v-if="requestMessage" class="pt-2">
-          <div class="text-fluid-xs text-sub mb-1">Message</div>
-          <div class="bg-surfaceSecondary rounded-lg p-2">
-            <p class="text-fluid-xs text-body leading-relaxed line-clamp-3">{{ requestMessage }}</p>
+          <div class="text-xs text-muted-foreground mb-1">Message</div>
+          <div class="bg-muted rounded-lg p-2">
+            <p class="text-xs text-muted-foreground leading-relaxed line-clamp-3">{{ requestMessage }}</p>
           </div>
         </div>
       </div>

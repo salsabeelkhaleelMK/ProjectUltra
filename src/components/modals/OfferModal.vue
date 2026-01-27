@@ -22,7 +22,7 @@
           />
         </div>
 
-        <DialogFooter class="flex-shrink-0 p-6 pt-4 bg-surfaceSecondary flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
+        <DialogFooter class="flex-shrink-0 p-6 pt-4 bg-muted flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 border-t border">
           <Button
             label="Cancel"
             variant="outline"

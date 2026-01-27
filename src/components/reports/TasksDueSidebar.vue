@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-greys-100 rounded-xl p-1 flex flex-col" style="background-color: var(--base-muted, #f5f5f5)">
-    <div class="bg-white rounded-lg shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
+  <div class="bg-muted rounded-xl p-1 flex flex-col">
+    <div class="bg-white rounded-lg shadow-nsc-card flex flex-col">
       <!-- Loading Skeleton -->
       <template v-if="loading">
         <div class="px-4 py-4 pb-4">
@@ -10,7 +10,7 @@
           <div
             v-for="n in 5"
             :key="`skeleton-${n}`"
-            class="flex items-start gap-4 px-4 py-3 border-b border-black/5 last:border-0"
+            class="flex items-start gap-4 px-4 py-3 border-b border-border last:border-0"
           >
             <div class="w-8 h-8 bg-gray-200 rounded-full animate-pulse shrink-0"></div>
             <div class="flex-1 min-w-0 space-y-2">
@@ -30,8 +30,8 @@
       <template v-else>
         <!-- Title Section -->
         <div class="px-4 py-4 flex items-center gap-2 shrink-0">
-          <CheckSquare :size="16" class="text-heading" />
-          <h3 class="text-lg font-medium text-heading leading-5">Tasks due</h3>
+          <CheckSquare :size="16" class="text-foreground" />
+          <h3 class="text-lg font-medium text-foreground leading-5">Tasks due</h3>
         </div>
         
         <div class="flex flex-col">
@@ -39,11 +39,11 @@
             v-for="(task, index) in tasks"
             :key="task.id"
             class="flex items-start gap-4 px-4 py-3"
-            :class="index < tasks.length - 1 ? 'border-b border-black/5' : ''"
+            :class="index < tasks.length - 1 ? 'border-b border-border' : ''"
           >
             <!-- Dealership Avatar -->
             <Avatar class="h-8 w-8 shrink-0">
-              <AvatarFallback class="bg-greys-300 text-greys-900 text-sm">
+              <AvatarFallback class="bg-greys-300 text-foreground text-sm">
                 {{ getInitials(task.dealershipName) }}
               </AvatarFallback>
             </Avatar>
@@ -51,17 +51,17 @@
             <!-- Task Details -->
             <div class="flex flex-col gap-1 min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <p class="text-sm font-semibold text-greys-900">{{ task.customerName }}</p>
+                <p class="text-sm font-semibold text-foreground">{{ task.customerName }}</p>
                 <Badge v-if="task.isExpired" variant="error" size="sm">Expired</Badge>
               </div>
-              <p class="text-sm text-greys-700">{{ task.car }}</p>
-              <p class="text-sm text-greys-500">{{ task.dealershipName }}</p>
+              <p class="text-sm text-foreground">{{ task.car }}</p>
+              <p class="text-sm text-muted-foreground">{{ task.dealershipName }}</p>
             </div>
 
             <!-- Due Time -->
             <div class="shrink-0 text-right">
-              <div class="text-sm font-medium text-greys-900">{{ task.dueTime }}</div>
-              <div class="text-xs text-greys-500">{{ formatDate(task.dueDate) }}</div>
+              <div class="text-sm font-medium text-foreground">{{ task.dueTime }}</div>
+              <div class="text-xs text-muted-foreground">{{ formatDate(task.dueDate) }}</div>
             </div>
           </div>
         </div>

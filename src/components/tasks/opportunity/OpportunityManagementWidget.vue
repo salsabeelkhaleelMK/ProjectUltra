@@ -23,18 +23,16 @@
       <!-- Show appointment management card if appointment is scheduled -->
       <div
         v-if="!opportunityState.isClosed.value && scheduledAppointment && scheduledAppointment.start"
-        class="rounded-lg flex flex-col"
-        style="background-color: var(--base-muted, #f5f5f5)"
+        class="rounded-lg flex flex-col bg-muted"
       >
         <div class="pt-1 px-1">
           <div
             class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-            style="box-shadow: var(--nsc-card-shadow)"
           >
-          <div class="p-4">
+          <div class="p-6">
             <div class="mb-3">
-              <h4 class="font-bold text-heading text-sm">Manage Appointment</h4>
-              <p class="text-sm text-body mt-0.5">
+              <h4 class="font-bold text-foreground text-sm">Manage Appointment</h4>
+              <p class="text-sm text-muted-foreground mt-0.5">
                 Appointment scheduled for {{ scheduledAppointment?.start ? formatDateTime(scheduledAppointment.start) : 'TBD' }}
               </p>
             </div>
@@ -89,7 +87,7 @@
         
         <!-- Unified schedule/reschedule form (same component, mode + initialAppointment) -->
         <transition name="expand">
-          <div v-if="showRescheduleSection" class="mt-4">
+          <div v-if="showRescheduleSection" class="mt-4 px-4">
             <OpportunityScheduleForm
               ref="scheduleFormRef"
               :opportunity="opportunity"
@@ -184,18 +182,16 @@
       <!-- In Negotiation Management Section (exclude Contract Pending / Offer Accepted) -->
       <div
         v-if="!opportunityState.isClosed.value && opportunity.stage === 'In Negotiation' && opportunity.negotiationSubstatus !== 'Offer Accepted' && opportunity.offers && opportunity.offers.length > 0"
-        class="rounded-lg flex flex-col"
-        style="background-color: var(--base-muted, #f5f5f5)"
+        class="rounded-lg flex flex-col bg-muted"
       >
         <div class="pt-1 px-1">
           <div
             class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-            style="box-shadow: var(--nsc-card-shadow)"
           >
-          <div class="p-4">
+          <div class="p-6">
             <div class="mb-3">
-              <h4 class="font-bold text-heading text-sm">Manage Offers & Follow Up</h4>
-              <p class="text-sm text-body mt-0.5">
+              <h4 class="font-bold text-foreground text-sm">Manage Offers & Follow Up</h4>
+              <p class="text-sm text-muted-foreground mt-0.5">
                 {{ opportunity.negotiationSubstatus === 'Offer Feedback' ? 'Request feedback on pending offers' : 'Follow up with customer about offers' }}
               </p>
             </div>
@@ -242,8 +238,8 @@
         <transition name="expand">
           <div v-if="showNegotiationSection" class="mt-4 space-y-4">
             <!-- Communication Options -->
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Contact Customer</h5>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Contact Customer</h5>
               
               <!-- Channel Selection -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
@@ -288,7 +284,7 @@
               <!-- Message Composer -->
               <div v-if="negotiationChannel" class="space-y-3">
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Select offer to reference</Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Select offer to reference</Label>
                   <SelectMenu
                     v-model="negotiationSelectedOfferId"
                     :items="offerSelectOptions"
@@ -299,14 +295,14 @@
                     <template #item="{ item }">
                       <div class="flex items-center justify-between gap-2">
                         <span>{{ item.label }}</span>
-                        <span class="text-sub text-xs">€ {{ formatCurrency(item.price) }}</span>
+                        <span class="text-muted-foreground text-xs">€ {{ formatCurrency(item.price) }}</span>
                       </div>
                     </template>
                   </SelectMenu>
                 </div>
                 
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Message</Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Message</Label>
                   <Textarea
                     v-model="negotiationMessage"
                     rows="4"
@@ -340,7 +336,7 @@
         <!-- Inline Add Offer Section -->
         <transition name="expand">
           <div v-if="showAddOfferSection" class="mt-4">
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
               <OfferWidget
                 ref="addOfferWidgetRef"
                 :task-id="opportunity.id"
@@ -378,18 +374,16 @@
       <!-- Contract Pending Management Section -->
       <div
         v-if="!opportunityState.isClosed.value && opportunity.stage === 'In Negotiation' && (opportunity.negotiationSubstatus === 'Offer Accepted' || opportunityState.displayStage.value === 'In Negotiation - Contract Pending')"
-        class="rounded-lg flex flex-col"
-        style="background-color: var(--base-muted, #f5f5f5)"
+        class="rounded-lg flex flex-col bg-muted"
       >
         <div class="pt-1 px-1">
           <div
             class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-            style="box-shadow: var(--nsc-card-shadow)"
           >
-          <div class="p-4">
+          <div class="p-6">
             <div class="mb-3">
-              <h4 class="font-bold text-heading text-sm">Collect e-signatures, finalize contract</h4>
-              <p class="text-sm text-body mt-0.5">
+              <h4 class="font-bold text-foreground text-sm">Collect e-signatures, finalize contract</h4>
+              <p class="text-sm text-muted-foreground mt-0.5">
                 Get the formal contract signed electronically by the customer. Finalize all contractual terms and conditions. Ensure all required signatures are collected. Set the official Contract Date when customer signs.
               </p>
             </div>
@@ -418,13 +412,13 @@
         <!-- Inline Finalize Contract Section -->
         <transition name="expand">
           <div v-if="showFinalizeContractSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Set Contract Signing Date</h5>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Set Contract Signing Date</h5>
               
               <div class="space-y-4">
                 <!-- Contract Date -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Contract Date <span class="text-red-600">*</span></Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Contract Date <span class="text-red-600">*</span></Label>
                   <Input 
                     type="date"
                     v-model="contractPendingForm.contractDate"
@@ -435,7 +429,7 @@
                 
                 <!-- Contract Time -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Time (Optional)</Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Time (Optional)</Label>
                   <Input 
                     type="time"
                     v-model="contractPendingForm.contractTime"
@@ -445,7 +439,7 @@
                 
                 <!-- Notes -->
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Notes (Optional)</Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Notes (Optional)</Label>
                   <Textarea 
                     v-model="contractPendingForm.notes"
                     rows="4"
@@ -479,7 +473,7 @@
         <!-- Inline Add Offer Section -->
         <transition name="expand">
           <div v-if="showAddOfferContractPendingSection" class="mt-4">
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
               <OfferWidget
                 ref="addOfferContractPendingRef"
                 :task-id="opportunity.id"
@@ -516,12 +510,12 @@
         <!-- Inline Extend Deadline Section -->
         <transition name="expand">
           <div v-if="showExtendDeadlineSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
-              <h5 class="font-semibold text-heading text-sm mb-4">Extend Deadline</h5>
+            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <h5 class="font-semibold text-foreground text-sm mb-4">Extend Deadline</h5>
               
               <div class="space-y-4">
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">New Deadline Date <span class="text-red-600">*</span></Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">New Deadline Date <span class="text-red-600">*</span></Label>
                   <Input 
                     type="date"
                     v-model="extendDeadlineForm.newDeadline"
@@ -531,7 +525,7 @@
                 </div>
                 
                 <div>
-                  <Label class="block text-sm font-medium text-body mb-2">Reason (Optional)</Label>
+                  <Label class="block text-sm font-medium text-muted-foreground mb-2">Reason (Optional)</Label>
                   <Textarea 
                     v-model="extendDeadlineForm.reason"
                     rows="3"
@@ -593,27 +587,25 @@
           <div class="flex items-start gap-3">
             <i class="fa-solid fa-sticky-note text-blue-600 text-sm mt-0.5"></i>
             <div class="flex-1">
-              <h5 class="font-semibold text-heading text-sm mb-1">Note from Assigner</h5>
-              <p class="text-sm text-body whitespace-pre-wrap">{{ opportunity.assignmentNote }}</p>
+              <h5 class="font-semibold text-foreground text-sm mb-1">Note from Assigner</h5>
+              <p class="text-sm text-muted-foreground whitespace-pre-wrap">{{ opportunity.assignmentNote }}</p>
             </div>
           </div>
         </div>
 
         <!-- Call and Schedule Appointment Container (matching LQTask.vue design) -->
         <div
-          class="rounded-lg flex flex-col"
-          style="background-color: var(--base-muted, #f5f5f5)"
+          class="rounded-lg flex flex-col bg-muted"
         >
           <div class="pt-1 px-1">
             <!-- Call Interface (always visible) -->
             <div
               class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-              style="box-shadow: var(--nsc-card-shadow)"
             >
-            <div class="p-4">
+            <div class="p-6">
               <div class="mb-3">
-                <h4 class="font-bold text-heading text-sm">Call to Schedule Appointment</h4>
-                <p class="text-sm text-body mt-0.5">
+                <h4 class="font-bold text-foreground text-sm">Call to Schedule Appointment</h4>
+                <p class="text-sm text-muted-foreground mt-0.5">
                   Contact the customer to schedule an appointment
                 </p>
               </div>
@@ -654,18 +646,16 @@
       <!-- Post-Delivery Survey Section -->
       <div
         v-if="shouldShowPostDeliverySurvey"
-        class="rounded-lg flex flex-col"
-        style="background-color: var(--base-muted, #f5f5f5)"
+        class="rounded-lg flex flex-col bg-muted"
       >
         <div class="pt-1 px-1">
           <div
             class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-            style="box-shadow: var(--nsc-card-shadow)"
           >
-          <div class="p-4">
+          <div class="p-6">
             <div class="mb-3">
-              <h4 class="font-bold text-heading text-sm">Post-Delivery Customer Satisfaction Survey</h4>
-              <p class="text-sm text-body mt-0.5">
+              <h4 class="font-bold text-foreground text-sm">Post-Delivery Customer Satisfaction Survey</h4>
+              <p class="text-sm text-muted-foreground mt-0.5">
                 Collect feedback from the customer about their delivery experience
               </p>
             </div>
@@ -695,7 +685,7 @@
               <div class="relative">
                 <button 
                   @click.stop="showPostDeliverySurveyDropdown = !showPostDeliverySurveyDropdown"
-                  class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap cursor-pointer"
+                  class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap cursor-pointer"
                 >
                   <span>More actions</span>
                   <i 
@@ -757,7 +747,7 @@
         <!-- Task Title Header -->
         <div class="flex items-center gap-2 pb-2 border-b border">
           <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-          <h5 class="font-semibold text-heading text-fluid-sm">{{ opportunityState.taskWidgetTitle.value }}</h5>
+          <h5 class="font-semibold text-foreground text-sm">{{ opportunityState.taskWidgetTitle.value }}</h5>
         </div>
         
         <component
