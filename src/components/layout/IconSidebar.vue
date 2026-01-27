@@ -6,12 +6,12 @@
   >
     <!-- Logo at Top -->
     <div class="w-full px-2 pt-2 pb-2">
-      <router-link to="/home" class="block">
+      <router-link :to="firstVisibleRoute" class="block">
         <div class="w-full h-8 rounded-md flex items-center justify-center">
           <img 
-            src="@/assets/images/logo.png" 
+            src="@/assets/images/logo.svg" 
             alt="ProjectUltra Logo" 
-            class="h-6 w-auto object-contain"
+            class="h-7 w-auto object-contain rounded-md"
           />
         </div>
       </router-link>
@@ -403,6 +403,22 @@ const settingsStore = useSettingsStore()
 const { isDark, toggleTheme } = useTheme()
 
 const navigationVisibility = computed(() => settingsStore.getSetting('navigationVisibility') || {})
+
+// Computed property to get the first visible route from the navbar
+const firstVisibleRoute = computed(() => {
+  const nav = navigationVisibility.value
+  
+  // Check routes in order of appearance
+  if (nav.home !== false) return '/home'
+  if (nav.tasks !== false) return '/tasks'
+  if (nav.customers !== false) return '/customers'
+  if (nav.calendar !== false) return '/calendar'
+  if (userStore.canAccessReports() && nav.reports !== false) return '/reports'
+  if (nav.lists !== false) return '/vehicles'
+  
+  // Fallback to home if all are hidden
+  return '/home'
+})
 
 const showListsMenu = ref(false)
 const showLanguageMenu = ref(false)

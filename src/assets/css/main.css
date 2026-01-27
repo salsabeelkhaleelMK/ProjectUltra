@@ -114,15 +114,33 @@
   /* Text colors - Reference project */
   --text-heading: #0a0a0a;
   --text-body: #3f3f46;
-  --text-sub: #71717a;
+  --text-sub: #737373; /* Updated from #71717a to match Figma */
   --greys-900: #0a0a0a;
-  --greys-500: #71717a;
+  --greys-500: #737373; /* Updated to match --text-sub */
   --greys-50: #f9fafb;
   
   /* Brand colors */
   --brand-primary: #0470e9;
   --brand-primary-600: #0470e9;
   --brand-primary-700: #0359c0;
+  
+  /* Figma Design System Colors */
+  --figma-cyan: #40B3E9; /* Accent color for focus states */
+  --figma-border: #E5E5E5; /* Border color for filter dropdowns and buttons */
+  --figma-ai-bg: #FBF6F9; /* AI badge background */
+  --figma-shadow-sm: 0px 1px 2px rgba(0, 0, 0, 0.05); /* Standard shadow */
+  
+  /* Table Container Spacing */
+  --table-outer-radius: 0.625rem; /* 10px - outermost container */
+  --table-inner-radius: 0.5rem; /* 8px - table/columns container */
+  --table-outer-padding: 0.25rem; /* 4px - padding between outer and inner containers */
+  --table-fixed-height: 600px; /* Fixed height for scrollable table area */
+  
+  /* Pagination Spacing */
+  --pagination-gap: 0.25rem; /* 4px gap between pagination items */
+  --pagination-item-size: 2.25rem; /* 36px - height for buttons, size for page numbers */
+  --pagination-padding-x: 1rem; /* 16px horizontal padding */
+  --pagination-padding-y: 0.5rem; /* 8px vertical padding */
 }
 
 /* ========================================
@@ -446,6 +464,7 @@
 /* Page Container - Full width and height */
 .page-container {
   @apply w-full h-full;
+  background-color: var(--base-background, #fff);
 }
 
 /* Page with proper spacing */
@@ -872,9 +891,9 @@ button[class*="size-small"] {
 }
 
 /* Medium/default buttons */
+/* Only apply to buttons with explicit size attributes to avoid affecting Motork table components */
 button[data-size="md"],
-button[data-size="medium"],
-button:not([data-size]):not([class*="size-"]) {
+button[data-size="medium"] {
   padding: 0.5rem 1rem !important;
   font-size: var(--text-sm) !important;
   line-height: 1.25rem !important;
@@ -1114,8 +1133,8 @@ button[data-state="active"][role="tab"]:not(.no-indicator)::after {
    DataTable Styling - Minimal Overrides
    ======================================== */
 
-/* Note: DataTable styling is mostly handled by Motork component library */
-/* Component-specific overrides are in individual .vue files using :deep() */
+/* Note: DataTable styling uses Motork component library's default styles */
+/* All custom table overrides have been removed to use Motork's out-of-the-box styling */
 
 /* Empty state styling for DataTables */
 .empty-state {

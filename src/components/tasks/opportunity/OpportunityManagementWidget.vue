@@ -1552,10 +1552,41 @@ function handleClosedLost(data) {
   })
 }
 
-function handleReopen() {
-  opportunitiesStore.updateOpportunity(props.opportunity.id, {
-    stage: 'Qualified'
-  })
+async function handleReopen() {
+  const opp = getCurrentOpportunity()
+  const hasOffers = opp.offers && opp.offers.length > 0
+  
+  if (!hasOffers) {
+    // No offers exist → return to Qualified
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      stage: 'Qualified',
+      negotiationSubstatus: null
+    })
+  } else {
+    // Offers exist → return to In Negotiation with appropriate substatus
+    // Check most recent offer to determine substatus
+    const mostRecentOffer = opp.offers
+      .filter(o => o.status === 'active')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+    
+    // Check if any offer was accepted
+    const hasAcceptedOffer = opp.offers.some(o => o.status === 'accepted')
+    
+    let negotiationSubstatus = 'Offer Sent'
+    if (hasAcceptedOffer) {
+      negotiationSubstatus = 'Offer Accepted'
+    } else if (mostRecentOffer) {
+      const daysSinceOffer = Math.ceil((new Date() - new Date(mostRecentOffer.createdAt)) / (1000 * 60 * 60 * 24))
+      if (daysSinceOffer >= 3) {
+        negotiationSubstatus = 'Offer Feedback'
+      }
+    }
+    
+    await opportunitiesStore.updateOpportunity(opp.id, {
+      stage: 'In Negotiation',
+      negotiationSubstatus: negotiationSubstatus
+    })
+  }
 }
 
 function handleRequalified(leadData) {
@@ -1987,10 +2018,11 @@ async function handleConfirmFinalizeContract() {
       ? `${contractPendingForm.value.contractDate}T${contractPendingForm.value.contractTime}:00`
       : `${contractPendingForm.value.contractDate}T12:00:00`
     
-    // Update opportunity with contract date
+    // Update opportunity with contract date and auto-transition to Closed Won
     await opportunitiesStore.updateOpportunity(opp.id, {
       contractDate: datetime,
-      contractNotes: contractPendingForm.value.notes
+      contractNotes: contractPendingForm.value.notes,
+      stage: 'Closed Won'
     })
     
     // Add activity

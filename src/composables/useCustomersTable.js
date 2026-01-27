@@ -4,7 +4,7 @@ import { computed, h } from 'vue'
  * Composable for Customers table configuration
  * Provides columns, filterDefinitions, and tableMeta for DataTable component
  * 
- * @param {Ref} activeTab - The active tab ('contacts', 'open-leads', etc.)
+ * @param {Ref} activeTab - The active tab ('customers', 'open-leads', etc.)
  * @param {Function} handleRowClick - Handler function for row clicks
  * @returns {Object} Object containing columns, filterDefinitions, and tableMeta
  */
@@ -12,7 +12,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
   // Filter definitions for AI-powered filtering
   const filterDefinitions = computed(() => {
     // Different filters based on active tab
-    if (activeTab.value === 'contacts') {
+    if (activeTab.value === 'customers') {
       return [
         {
           key: 'source',
@@ -96,7 +96,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
 
   // DataTable columns configuration - dynamic based on activeTab
   const columns = computed(() => {
-    if (activeTab.value === 'contacts') {
+    if (activeTab.value === 'customers') {
       // Contacts columns - unified for contacts and accounts
       return [
         {

@@ -9,7 +9,7 @@
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Form fields based on active tab -->
-      <div v-if="activeTab === 'contacts'" class="space-y-6">
+      <div v-if="activeTab === 'customers'" class="space-y-6">
         <div class="space-y-2">
           <Label class="block text-sm font-semibold text-heading">Contact Name</Label>
           <Input 
@@ -237,7 +237,7 @@ const handleOpenChange = (isOpen) => {
 
 const modalTitle = computed(() => {
   const titles = {
-    'contacts': 'Add New Contact',
+    'customers': 'Add New Customer',
     'open-leads': 'Add New Lead',
     'open-opportunities': 'Add New Opportunity',
     'in-negotiation': 'Add Opportunity in Negotiation',
@@ -249,7 +249,7 @@ const modalTitle = computed(() => {
 
 const itemType = computed(() => {
   const types = {
-    'contacts': 'Contact',
+    'customers': 'Customer',
     'open-leads': 'Lead',
     'open-opportunities': 'Opportunity',
     'in-negotiation': 'Opportunity',

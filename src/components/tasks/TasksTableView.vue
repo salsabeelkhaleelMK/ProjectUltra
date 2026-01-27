@@ -58,7 +58,7 @@
     </header>
     
     <!-- Content -->
-    <div class="flex-1 overflow-y-auto p-4 md:p-8">
+    <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
       <DataTable 
             :data="filteredTasks" 
             :columns="columns"
@@ -72,13 +72,14 @@
             v-model:sorting="sorting"
             v-model:columnFilters="columnFilters"
             v-model:columnVisibility="columnVisibility"
+            v-model:rowSelection="rowSelection"
             :paginationOptions="{
               rowCount: filteredTasks.length
             }"
             :globalFilterOptions="{
               debounce: 300,
               placeholder: 'Q Search or ask a question',
-              show: false
+              show: true
             }"
             class="h-full"
           >
@@ -86,6 +87,33 @@
               <div class="empty-state">
                 <i class="fa-solid fa-tasks empty-state-icon"></i>
                 <p class="empty-state-text">No tasks found</p>
+              </div>
+            </template>
+            <template #batch-action-bar>
+              <div v-if="hasSelection" class="flex items-center gap-2">
+                <div class="flex items-center gap-2 mr-1">
+                  <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-medium">
+                    {{ selectedCount }}
+                  </div>
+                  <span class="text-white text-fluid-sm font-medium whitespace-nowrap">Items selected</span>
+                </div>
+                <div class="h-4 w-px bg-greys-700"></div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  @click="handleBulkDelete"
+                >
+                  <i class="fa-solid fa-trash mr-2"></i>
+                  Delete
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  @click="clearSelection"
+                >
+                  <i class="fa-solid fa-x mr-2"></i>
+                  Close
+                </Button>
               </div>
             </template>
           </DataTable>
@@ -102,6 +130,9 @@ import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } fro
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
 import { useTasksTableFilters } from '@/composables/useTasksTableFilters'
+import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useLeadsStore } from '@/stores/leads'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 
 const props = defineProps({
   tasks: { type: Array, required: true },
@@ -121,7 +152,12 @@ const props = defineProps({
 const emit = defineEmits(['select', 'menu-click', 'menu-close', 'toggle-closed', 'reassign', 'close', 'view-change'])
 
 const settingsStore = useSettingsStore()
+const leadsStore = useLeadsStore()
+const opportunitiesStore = useOpportunitiesStore()
 const searchQuery = ref('')
+
+// Row selection
+const { rowSelection, selectedCount, hasSelection, getSelectedRows, clearSelection } = useTableRowSelection((row) => row.compositeId)
 
 // DataTable state management
 const pagination = ref({
@@ -405,6 +441,27 @@ const handleRowClick = (record) => {
   emit('select', record.compositeId)
 }
 
+// Bulk delete handler
+const handleBulkDelete = () => {
+  const selectedTasks = getSelectedRows(filteredTasks.value)
+  
+  if (selectedTasks.length === 0) return
+  
+  if (!confirm(`Are you sure you want to delete ${selectedTasks.length} ${selectedTasks.length === 1 ? 'task' : 'tasks'}?`)) {
+    return
+  }
+  
+  selectedTasks.forEach(task => {
+    if (task.type === 'lead') {
+      leadsStore.deleteLead(task.id)
+    } else {
+      opportunitiesStore.deleteOpportunity(task.id)
+    }
+  })
+  
+  clearSelection()
+}
+
 // Table meta with row click handler and highlighting
 const tableMeta = computed(() => ({
   class: {
@@ -423,84 +480,22 @@ const tableMeta = computed(() => ({
 </script>
 
 <style scoped>
-/* DataTable styling overrides to match reference design */
-:deep(thead),
-:deep(thead th),
-:deep(thead tr),
-:deep(thead tr th) {
-  background-color: transparent !important;
-  background: transparent !important;
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
+/* Component-specific styles only - global table styles are in main.css */
 
-:deep(div[data-slot='frame-panel'].relative.bg-clip-padding) {
-  background-color: rgba(245, 245, 245, 1) !important;
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 10px !important;
-}
-
-:deep(footer.flex.items-center.justify-between) {
-  background-color: rgba(245, 245, 245, 1) !important;
-  border-bottom-left-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
-}
-
+/* Avatar fallback - use greys-300 color */
 :deep([data-radix-avatar-fallback]),
 :deep(.avatar-fallback),
 :deep(span[class*='AvatarFallback']) {
   background-color: #d4d4d4 !important;
 }
 
-/* Table border overrides - make borders very subtle */
-:deep(table),
-:deep(tbody),
-:deep(tbody tr),
-:deep(tbody td),
-:deep(thead),
-:deep(thead th) {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
+/* Table border overrides - make borders very subtle (border-black/5) */
 :deep(tbody tr) {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
-}
-
-/* Remove any dark borders from table container */
-:deep([data-slot="table-container"]),
-:deep(.table-wrapper) {
-  border: none !important;
-}
-
-/* Frame panel - should have gray background */
-:deep([data-slot="frame-panel"]) {
-  background-color: rgba(245, 245, 245, 1) !important;
-}
-
-/* Pagination dropdown - transparent in footer */
-:deep(footer select),
-:deep(footer button[role="combobox"]) {
-  background-color: transparent !important;
-  border: none !important;
-}
-
-/* Search input - white background like reference */
-:deep(input[type="search"]),
-:deep(input[placeholder*="Search"]),
-:deep([data-slot="table-search"] input) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Filter button - white background like reference */
-:deep(button[aria-label*="filter"]),
-:deep(button[aria-label*="Filter"]),
-:deep([data-slot="table-filter"] button) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Enable horizontal and vertical scrolling */

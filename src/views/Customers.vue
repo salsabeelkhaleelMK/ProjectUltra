@@ -20,12 +20,12 @@
     <div class="p-4 md:p-8">
       <!-- Stage Tabs -->
       <Tabs v-model="activeTab">
-        <TabsList class="w-full justify-start border-b border-border bg-transparent mb-6 overflow-x-auto">
+        <TabsList class="w-full justify-start border-b border-border bg-transparent mb-0 overflow-x-auto">
           <TabsTrigger
             v-for="tab in stageTabs"
             :key="tab.key"
             :value="tab.key"
-            class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-3 px-4 shrink-0"
+            class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-0.5 px-4 shrink-0"
           >
             <span class="text-fluid-sm font-medium whitespace-nowrap">{{ tab.label }}</span>
             <Badge
@@ -146,7 +146,7 @@ const stats = computed(() => {
 
 // Set default tab - always show customers tab regardless of user type
 const getDefaultTab = () => {
-  return 'contacts'
+  return 'customers'
 }
 
 const activeTab = ref(getDefaultTab())
@@ -199,7 +199,7 @@ watch(drawerTask, (task) => {
 
 // Lazy load tab components
 const tabComponents = {
-  'contacts': defineAsyncComponent(() => import('@/components/customers/ContactsTab.vue')),
+  'customers': defineAsyncComponent(() => import('@/components/customers/CustomersTab.vue')),
   'open-leads': defineAsyncComponent(() => import('@/components/customers/OpenLeadsTab.vue')),
   'open-opportunities': defineAsyncComponent(() => import('@/components/customers/OpenOpportunitiesTab.vue')),
   'in-negotiation': defineAsyncComponent(() => import('@/components/customers/InNegotiationTab.vue')),
@@ -210,7 +210,7 @@ const tabComponents = {
 const stageTabs = computed(() => {
   const allTabs = [
     { 
-      key: 'contacts', 
+      key: 'customers', 
       label: 'Customers', 
       count: stats.value.contacts
     },
@@ -243,8 +243,8 @@ const stageTabs = computed(() => {
   
   // Filter tabs based on user role
   if (userStore.isOperator()) {
-    // Operators see "Contacts & Accounts" and "Open Leads" tabs
-    return allTabs.filter(tab => tab.key === 'contacts' || tab.key === 'open-leads')
+    // Operators see "Customers" and "Open Leads" tabs
+    return allTabs.filter(tab => tab.key === 'customers' || tab.key === 'open-leads')
   } else if (userStore.isSalesman()) {
     // Salesmen see all tabs EXCEPT "Open Leads"
     return allTabs.filter(tab => tab.key !== 'open-leads')
@@ -273,7 +273,7 @@ const handleAdd = () => {
 const getBadgeTheme = (tabKey, isActive) => {
   if (!isActive || !tabKey) return 'gray'
   const themeMap = {
-    'contacts': 'gray', // Purple not available, use gray
+    'customers': 'gray', // Purple not available, use gray
     'open-leads': 'blue',
     'open-opportunities': 'blue', // Orange not available, use blue
     'in-negotiation': 'blue',

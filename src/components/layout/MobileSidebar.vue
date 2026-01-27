@@ -16,12 +16,12 @@
     >
       <!-- Header -->
       <div class="p-3 sm:p-4 border-b border-white/10 flex items-center justify-between shrink-0">
-        <router-link to="/home" @click="$emit('close')" class="flex items-center gap-2 sm:gap-3">
+        <router-link :to="firstVisibleRoute" @click="$emit('close')" class="flex items-center gap-2 sm:gap-3">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-md flex items-center justify-center">
             <img 
-              src="@/assets/images/logo.png" 
+              src="@/assets/images/logo.svg" 
               alt="ProjectUltra Logo" 
-              class="h-7 w-auto sm:h-8 object-contain"
+              class="h-8 w-auto sm:h-9 object-contain rounded-md"
             />
           </div>
           <span class="text-white font-bold text-sm sm:text-base">Project Ultra</span>
@@ -341,6 +341,22 @@ const settingsStore = useSettingsStore()
 const { isDark, toggleTheme } = useTheme()
 
 const navigationVisibility = computed(() => settingsStore.getSetting('navigationVisibility') || {})
+
+// Computed property to get the first visible route from the navbar
+const firstVisibleRoute = computed(() => {
+  const nav = navigationVisibility.value
+  
+  // Check routes in order of appearance
+  if (nav.home !== false) return '/home'
+  if (nav.tasks !== false) return '/tasks'
+  if (nav.customers !== false) return '/customers'
+  if (nav.calendar !== false) return '/calendar'
+  if (userStore.canAccessReports() && nav.reports !== false) return '/reports'
+  if (nav.lists !== false) return '/vehicles'
+  
+  // Fallback to home if all are hidden
+  return '/home'
+})
 
 const showListsMenu = ref(false)
 const showLanguageMenu = ref(false)
