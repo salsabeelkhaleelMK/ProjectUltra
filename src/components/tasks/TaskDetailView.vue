@@ -30,7 +30,7 @@
 
         <!-- Right Sidebar with Tabs -->
         <div
-          class="right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-border bg-surface"
+          class="right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-border bg-muted"
         >
           <Tabs v-model="sidebarTab" class="flex flex-col flex-1 min-h-0 overflow-hidden">
             <!-- Sidebar Tabs -->

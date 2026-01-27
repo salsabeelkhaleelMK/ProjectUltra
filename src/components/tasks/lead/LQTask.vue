@@ -525,7 +525,7 @@
                 <div class="grid grid-cols-2 gap-4">
                   <!-- Team -->
                   <div>
-                    <Label class="form-label">Team <span class="text-red-600">*</span></Label>
+                    <Label class="form-label">Team <span class="optional">(optional)</span></Label>
                     <SelectMenu
                       v-model="selectedTeamId"
                       :items="teamSelectOptions"
@@ -549,7 +549,7 @@
                     <SelectMenu
                       v-model="selectedSalesmanId"
                       :items="salespersonSelectOptions"
-                      :disabled="!qualificationSelectedTeam"
+                      :disabled="!salespersonSelectOptions.length"
                       placeholder="Search and select salesperson..."
                       value-key="id"
                       class="w-full"
@@ -570,7 +570,7 @@
                 </div>
 
                 <!-- Notes for assignee -->
-                <div>
+                <div class="mt-6">
                   <Label class="form-label">Notes for assignee</Label>
                   <Textarea 
                     v-model="noteForSellers"
@@ -634,7 +634,7 @@
                     <SelectMenu
                       v-model="selectedSalesmanId"
                       :items="salespersonSelectOptions"
-                      :disabled="!qualificationSelectedTeam"
+                      :disabled="!salespersonSelectOptions.length"
                       placeholder="Search and select salesperson..."
                       value-key="id"
                       class="w-full"
@@ -655,12 +655,12 @@
                 </div>
               </div>
 
-              <!-- Step 3: Schedule (Calendar and Time Slots) - only show if event type and team selected -->
-              <div v-if="qualificationEventType && qualificationSelectedTeam" class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+              <!-- Step 3: Schedule (Calendar and Time Slots) - show by default when assign-and-schedule is selected -->
+              <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
                 <h5 class="font-semibold text-foreground text-sm mb-4">{{ t('forms.schedule.title') }} <span class="text-red-600">*</span></h5>
                 
                 <!-- Calendar and Time Slots - Two Column Layout -->
-                <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden">
+                <div class="bg-white rounded-lg border border-border overflow-hidden">
                   <div class="grid grid-cols-1 md:grid-cols-2 divide-x divide-black/5">
                     <!-- Left Column - Calendar -->
                     <div class="p-6">
@@ -1378,15 +1378,13 @@ const teamSelectOptions = computed(() => {
   }))
 })
 
-// Salesperson options for SelectMenu (filtered by selected team)
+// Salesperson options for SelectMenu (filtered by selected team when set, otherwise all assignable users)
 const salespersonSelectOptions = computed(() => {
-  if (!qualificationSelectedTeam.value) return []
-  
-  const team = qualificationSelectedTeam.value
-  const users = assignableUsers.value?.filter(user => 
-    user.team === team.name || user.teamId === team.id
-  ) || []
-  
+  const users = qualificationSelectedTeam.value
+    ? (assignableUsers.value?.filter(user =>
+        user.team === qualificationSelectedTeam.value.name || user.teamId === qualificationSelectedTeam.value.id
+      ) || [])
+    : (assignableUsers.value || [])
   return users.map(user => ({
     ...user,
     label: user.name,
@@ -1420,12 +1418,12 @@ const selectedSalesmanId = computed({
 })
 
 function resolveInitialTeamForSchedule() {
-  if (!qualificationEventType.value || qualificationSelectedTeam.value) return
+  if (!qualificationEventType.value || qualificationSelectedTeam.value || qualificationSelectedSalesman.value) return
   const teams = assignableTeams.value
   if (!teams?.length) return
   const suggested = suggestedTeam.value
   if (suggested) {
-    const team = teams.find(t => t.id === suggested.id)
+    const team = teams.find(t => t.id === suggested.id || t.name === suggested.name)
     if (team) {
       qualificationSelectedTeam.value = team
       return
@@ -1435,8 +1433,10 @@ function resolveInitialTeamForSchedule() {
     const assigneeTeam = teams.find(t => t.name === props.lead.assignee)
     if (assigneeTeam) {
       qualificationSelectedTeam.value = assigneeTeam
+      return
     }
   }
+  qualificationSelectedTeam.value = teams[0]
 }
 
 watch(
@@ -1787,28 +1787,17 @@ watch(qualificationEventType, (newEventType) => {
 })
 
 const canQualify = computed(() => {
-  // For "assign-only" method, require:
-  // - Event type
-  // - Team (salesperson is optional)
+  const hasAssignee = Boolean(qualificationSelectedTeam.value || qualificationSelectedSalesman.value)
   if (qualificationMethod.value === 'assign-only') {
-    return Boolean(
-      qualificationEventType.value &&
-      qualificationSelectedTeam.value
-    )
+    return hasAssignee
   }
-  
-  // For "assign-and-schedule" method, require:
-  // - Event type
-  // - Duration
-  // - Date selected
-  // - Time slot
-  // - Team (salesperson is optional)
+
   return Boolean(
     qualificationEventType.value &&
     qualificationDurationValue.value &&
     qualificationSelectedDate.value &&
     qualificationSelectedSlot.value &&
-    qualificationSelectedTeam.value
+    hasAssignee
   )
 })
 

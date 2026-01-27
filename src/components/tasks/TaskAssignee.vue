@@ -1,8 +1,10 @@
 <template>
   <div
     class="rounded-lg"
-    :class="isAssigned ? 'bg-muted' : 'bg-blue-50'"
-    :style="!isAssigned ? { borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--brand-primary)' } : undefined"
+    :class="[
+      isAssigned ? 'bg-muted' : 'bg-blue-50',
+      !isAssigned && 'border border-primary'
+    ]"
   >
     <div
       class="rounded-lg px-3 py-2 shadow-nsc-card flex items-center justify-between gap-2 flex-wrap"
@@ -40,7 +42,7 @@
       <!-- UNASSIGNED STATE: info + message left, split button group right -->
       <template v-else>
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <Info :size="14" class="shrink-0" aria-hidden="true" stroke-width="2" style="color: var(--brand-primary)" />
+          <Info :size="14" class="shrink-0 text-primary" aria-hidden="true" stroke-width="2" />
           <p class="text-sm font-medium text-foreground">{{ t('common.assignee.taskUnassigned') }}</p>
         </div>
         <ButtonGroup class="assignee-button-group flex items-stretch gap-0 rounded-lg overflow-hidden">

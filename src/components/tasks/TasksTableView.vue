@@ -11,7 +11,7 @@
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
             <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
-            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -498,6 +498,32 @@ const tableMeta = computed(() => ({
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
+}
+
+/* Remove any dark borders from table container */
+:deep([data-slot="table-container"]),
+:deep(.table-wrapper) {
+  border: none !important;
+}
+
+/* Frame panel - should have gray background */
+:deep([data-slot="frame-panel"]) {
+  background-color: rgba(245, 245, 245, 1) !important;
+}
+
+/* Pagination dropdown - transparent in footer */
+:deep(footer select),
+:deep(footer button[role="combobox"]) {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Filter button - white background like reference */
+:deep(button[aria-label*="filter"]),
+:deep(button[aria-label*="Filter"]),
+:deep([data-slot="table-filter"] button) {
+  background-color: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Enable horizontal and vertical scrolling */

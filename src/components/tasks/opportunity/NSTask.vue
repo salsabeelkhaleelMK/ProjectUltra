@@ -70,10 +70,9 @@
         <!-- Assign Button -->
         <div class="mt-4 flex justify-end">
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!selectedTeam"
             @click="handleAssignmentConfirm"
-            class="bg-primary"
           >
             Assign
           </Button>
@@ -90,11 +89,12 @@
           
           <div class="flex justify-end">
             <Button
-              label="Close Opportunity as Lost"
-              variant="primary"
+              variant="default"
               size="small"
               @click="handleCloseAsLost"
-            />
+            >
+              Close Opportunity as Lost
+            </Button>
           </div>
         </div>
       </div>

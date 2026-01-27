@@ -38,7 +38,7 @@
       <!-- Left: Tabs and Content -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
         <!-- Content area with feed -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide bg-muted">
           <!-- Tabs -->
           <div class="mb-4">
             <Tabs 
@@ -230,7 +230,7 @@
     <div v-else-if="isTasksView" class="flex-1 flex flex-row overflow-hidden">
       <!-- Left: Content area with tabs -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
-        <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide bg-muted">
         <!-- Main Tabs -->
         <Tabs 
           v-model="gridMainTab"

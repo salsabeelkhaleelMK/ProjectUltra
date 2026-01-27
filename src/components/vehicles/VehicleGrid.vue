@@ -16,10 +16,7 @@
     :paginationOptions="{
       rowCount: filteredVehicles.length
     }"
-    :globalFilterOptions="{
-      debounce: 300,
-      placeholder: 'Q Search or ask a question'
-    }"
+    :globalFilterOptions="{ debounce: 300 }"
     class="h-full"
   >
     <!-- Toolbar slot for action buttons -->
@@ -217,14 +214,6 @@ const columnFiltersModel = computed({
 :deep(footer button[role="combobox"]) {
   background-color: transparent !important;
   border: none !important;
-}
-
-/* Search input - white background like reference */
-:deep(input[type="search"]),
-:deep(input[placeholder*="Search"]),
-:deep([data-slot="table-search"] input) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Filter button - white background like reference */

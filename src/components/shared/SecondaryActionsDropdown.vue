@@ -1,16 +1,17 @@
 <template>
   <div class="relative">
-    <button 
+    <Button
+      variant="secondary"
       @click.stop="toggleDropdown"
-      class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
+      class="inline-flex items-center gap-2 cursor-pointer"
     >
       <span>More actions</span>
       <i 
-        class="fa-solid fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0"
+        class="fa-solid fa-chevron-down text-xs transition-transform duration-200 shrink-0"
         :class="{ 'rotate-180': isOpen }"
       ></i>
-    </button>
+    </Button>
 
     <!-- Dropdown menu -->
     <div 
@@ -25,7 +26,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library/future/primitives'
+import { Button, DropdownMenu } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   actions: {

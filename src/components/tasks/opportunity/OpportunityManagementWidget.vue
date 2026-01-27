@@ -41,38 +41,40 @@
                 v-if="scheduledAppointment?.status === 'pending_confirmation'"
                 variant="outline"
                 @click="handleConfirmAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 cursor-pointer"
+                class="inline-flex items-center gap-2 cursor-pointer"
               >
                 <i class="fa-solid fa-calendar-check"></i>
                 <span>Confirm appointment</span>
               </Button>
-              <Button
-                variant="outline"
-                @click="handleRescheduleAppointment"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showRescheduleSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Reschedule</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleMarkNoShow"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showNsTaskSection ? 'border-orange-500 bg-orange-50 text-orange-700' : ''"
-              >
-                <i class="fa-solid fa-user-slash"></i>
-                <span>Mark as No-Show</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleMarkShowedUp"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showOfferAssignmentSection ? 'border-green-500 bg-green-50 text-green-700' : ''"
-              >
-                <i class="fa-solid fa-user-check"></i>
-                <span>Mark as Showed Up</span>
-              </Button>
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showRescheduleSection"
+                  @update:model-value="(p) => { showRescheduleSection = p; if (p) { showNsTaskSection = false; showOfferAssignmentSection = false } }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>Reschedule</span>
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="showNsTaskSection"
+                  @update:model-value="(p) => { if (p) handleMarkNoShow(); else showNsTaskSection = false }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-user-slash"></i>
+                  <span>Mark as No-Show</span>
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="showOfferAssignmentSection"
+                  @update:model-value="(p) => { if (p) handleMarkShowedUp(); else showOfferAssignmentSection = false }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-user-check"></i>
+                  <span>Mark as Showed Up</span>
+                </Toggle>
+              </div>
               
               <!-- Secondary Actions Dropdown - Inline with management buttons -->
               <SecondaryActionsDropdown
@@ -85,24 +87,21 @@
           </div>
         </div>
         
-        <!-- Unified schedule/reschedule form (same component, mode + initialAppointment) -->
-        <transition name="expand">
-          <div v-if="showRescheduleSection" class="mt-4 px-4">
-            <OpportunityScheduleForm
-              ref="scheduleFormRef"
-              :opportunity="opportunity"
-              mode="reschedule"
-              :initial-appointment="scheduledAppointment"
-              @submit="(p) => handleScheduleFormSubmit(p, 'reschedule')"
-              @cancel="cancelRescheduleForm"
-            />
-          </div>
-        </transition>
+        <div class="px-4 py-4 space-y-4">
+        <div v-if="showRescheduleSection">
+          <OpportunityScheduleForm
+            ref="scheduleFormRef"
+            :opportunity="opportunity"
+            mode="reschedule"
+            :initial-appointment="scheduledAppointment"
+            @submit="(p) => handleScheduleFormSubmit(p, 'reschedule')"
+            @cancel="cancelRescheduleForm"
+          />
+        </div>
         
         <!-- Inline NS Task Section -->
-        <transition name="expand">
-          <div v-if="showNsTaskSection" class="mt-4">
-            <NS1Task
+        <div v-if="showNsTaskSection">
+          <NS1Task
               v-if="nsTaskCount === 1"
               ref="ns1TaskRef"
               :opportunity="opportunity"
@@ -126,11 +125,10 @@
               @close-as-lost="handleNsCloseAsLost"
               @cancel="handleCancelNsTask"
             />
-          </div>
-        </transition>
+        </div>
         
         <!-- Unified NS Task Buttons -->
-        <div v-if="showNsTaskSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="showNsTaskSection" class="flex justify-end gap-2 pt-3">
           <Button
             variant="secondary"
             @click="handleCancelNsTask"
@@ -138,30 +136,27 @@
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!canSubmitNsTask"
             @click="handleConfirmNsTask"
-            class="bg-primary"
           >
             {{ nsTaskButtonLabel }}
           </Button>
         </div>
         
         <!-- Inline Offer Assignment Task Section -->
-        <transition name="expand">
-          <div v-if="showOfferAssignmentSection" class="mt-4">
-            <OfferAssignmentTask
+        <div v-if="showOfferAssignmentSection">
+          <OfferAssignmentTask
               ref="offerAssignmentTaskRef"
               :opportunity="opportunity"
               :scheduled-appointment="scheduledAppointment"
               @offer-created="handleOfferAssignmentCreated"
               @cancel="handleCancelOfferAssignment"
             />
-          </div>
-        </transition>
+        </div>
         
         <!-- Unified Offer Assignment Buttons -->
-        <div v-if="showOfferAssignmentSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="showOfferAssignmentSection" class="flex justify-end gap-2 pt-3">
           <Button
             variant="secondary"
             @click="handleCancelOfferAssignment"
@@ -169,13 +164,13 @@
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!canCreateOffer"
             @click="handleConfirmOfferAssignment"
-            class="bg-primary"
           >
             Create Offer
           </Button>
+        </div>
         </div>
       </div>
       
@@ -204,24 +199,26 @@
               />
             </div>
             <div class="flex flex-wrap gap-3 items-center">
-              <Button
-                variant="outline"
-                @click="handleFollowUpOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showNegotiationSection ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : ''"
-              >
-                <i class="fa-solid fa-phone-volume"></i>
-                <span>{{ opportunity.negotiationSubstatus === 'Offer Feedback' ? 'Request Feedback' : 'Follow Up' }}</span>
-              </Button>
-              <Button
-                variant="outline"
-                @click="handleAddAnotherOffer"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showAddOfferSection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-plus"></i>
-                <span>Add Offer</span>
-              </Button>
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showNegotiationSection"
+                  @update:model-value="(p) => { showNegotiationSection = p; if (p) showAddOfferSection = false; else { negotiationChannel = null; negotiationMessage = ''; negotiationSelectedOfferId = null } }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-phone-volume"></i>
+                  <span>{{ opportunity.negotiationSubstatus === 'Offer Feedback' ? 'Request Feedback' : 'Follow Up' }}</span>
+                </Toggle>
+                <Toggle
+                  variant="outline"
+                  :model-value="showAddOfferSection"
+                  @update:model-value="(p) => { showAddOfferSection = p; if (p) showNegotiationSection = false }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                  <span>Add Offer</span>
+                </Toggle>
+              </div>
               
               <!-- Secondary Actions Dropdown -->
               <SecondaryActionsDropdown
@@ -234,52 +231,52 @@
           </div>
         </div>
         
+        <div class="px-4 py-4 space-y-4">
         <!-- Inline Follow Up Section -->
-        <transition name="expand">
-          <div v-if="showNegotiationSection" class="mt-4 space-y-4">
-            <!-- Communication Options -->
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <h5 class="font-semibold text-foreground text-sm mb-4">Contact Customer</h5>
-              
-              <!-- Channel Selection -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'call'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'call' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-phone text-xs"></i>
-                  <span>Call</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'whatsapp'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'whatsapp' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-brands fa-whatsapp text-xs"></i>
-                  <span>WhatsApp</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'sms'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'sms' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-message text-xs"></i>
-                  <span>SMS</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  @click="negotiationChannel = 'email'"
-                  class="flex items-center justify-center gap-2"
-                  :class="negotiationChannel === 'email' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
-                >
-                  <i class="fa-solid fa-envelope text-xs"></i>
-                  <span>Email</span>
-                </Button>
-              </div>
+        <div v-if="showNegotiationSection" class="space-y-4">
+          <!-- Communication Options -->
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <h5 class="font-semibold text-foreground text-sm mb-4">Contact Customer</h5>
+            
+            <!-- Channel Selection -->
+            <div class="followup-channel-toggle-group flex flex-wrap gap-2 mb-4">
+              <Toggle
+                variant="outline"
+                :model-value="negotiationChannel === 'call'"
+                @update:model-value="(p) => p && (negotiationChannel = 'call')"
+                class="followup-toggle-item"
+              >
+                <i class="fa-solid fa-phone text-xs"></i>
+                <span>Call</span>
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="negotiationChannel === 'whatsapp'"
+                @update:model-value="(p) => p && (negotiationChannel = 'whatsapp')"
+                class="followup-toggle-item"
+              >
+                <i class="fa-brands fa-whatsapp text-xs"></i>
+                <span>WhatsApp</span>
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="negotiationChannel === 'sms'"
+                @update:model-value="(p) => p && (negotiationChannel = 'sms')"
+                class="followup-toggle-item"
+              >
+                <i class="fa-solid fa-message text-xs"></i>
+                <span>SMS</span>
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="negotiationChannel === 'email'"
+                @update:model-value="(p) => p && (negotiationChannel = 'email')"
+                class="followup-toggle-item"
+              >
+                <i class="fa-solid fa-envelope text-xs"></i>
+                <span>Email</span>
+              </Toggle>
+            </div>
               
               <!-- Message Composer -->
               <div v-if="negotiationChannel" class="space-y-3">
@@ -312,11 +309,10 @@
                 </div>
               </div>
             </div>
-          </div>
-        </transition>
+        </div>
         
         <!-- Unified Negotiation Buttons -->
-        <div v-if="showNegotiationSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="showNegotiationSection" class="flex justify-end gap-2 pt-3">
           <Button
             variant="secondary"
             @click="handleCancelNegotiation"
@@ -324,20 +320,18 @@
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!canSendNegotiationMessage"
             @click="handleSendNegotiationMessage"
-            class="bg-primary"
           >
             Send Message
           </Button>
         </div>
         
         <!-- Inline Add Offer Section -->
-        <transition name="expand">
-          <div v-if="showAddOfferSection" class="mt-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <OfferWidget
+        <div v-if="showAddOfferSection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <OfferWidget
                 ref="addOfferWidgetRef"
                 :task-id="opportunity.id"
                 :task-type="'opportunity'"
@@ -348,12 +342,11 @@
                 @save="handleInlineOfferCreated"
                 @cancel="handleCancelAddOffer"
               />
-            </div>
           </div>
-        </transition>
+        </div>
         
         <!-- Unified Add Offer Buttons -->
-        <div v-if="showAddOfferSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="showAddOfferSection" class="flex justify-end gap-2 pt-3">
           <Button
             variant="secondary"
             @click="handleCancelAddOffer"
@@ -361,13 +354,13 @@
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!canCreateInlineOffer"
             @click="handleConfirmAddOffer"
-            class="bg-primary"
           >
             Create Offer
           </Button>
+        </div>
         </div>
       </div>
       
@@ -388,16 +381,17 @@
               </p>
             </div>
             <div class="flex flex-wrap gap-3 items-center">
-              <!-- Primary Action Button -->
-              <Button
-                variant="outline"
-                @click="handleFinalizeContract"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showFinalizeContractSection ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : ''"
-              >
-                <i class="fa-solid fa-file-signature"></i>
-                <span>Collect Signatures</span>
-              </Button>
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showFinalizeContractSection"
+                  @update:model-value="onFinalizeContractToggle"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-file-signature"></i>
+                  <span>Collect Signatures</span>
+                </Toggle>
+              </div>
               
               <!-- More Actions Dropdown -->
               <SecondaryActionsDropdown
@@ -409,10 +403,10 @@
           </div>
         </div>
         
+        <div class="px-4 py-4 space-y-4">
         <!-- Inline Finalize Contract Section -->
-        <transition name="expand">
-          <div v-if="showFinalizeContractSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+        <div v-if="showFinalizeContractSection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
               <h5 class="font-semibold text-foreground text-sm mb-4">Set Contract Signing Date</h5>
               
               <div class="space-y-4">
@@ -459,23 +453,21 @@
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 :disabled="!canSubmitFinalizeContract"
                 @click="handleConfirmFinalizeContract"
-                class="bg-primary"
               >
                 Set Contract Date
               </Button>
             </div>
           </div>
-        </transition>
+        </div>
         
         <!-- Inline Add Offer Section -->
-        <transition name="expand">
-          <div v-if="showAddOfferContractPendingSection" class="mt-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-              <OfferWidget
-                ref="addOfferContractPendingRef"
+        <div v-if="showAddOfferContractPendingSection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+            <OfferWidget
+              ref="addOfferContractPendingRef"
                 :task-id="opportunity.id"
                 :task-type="'opportunity'"
                 :customer="opportunity.customer"
@@ -485,12 +477,11 @@
                 @save="handleInlineOfferCreatedContractPending"
                 @cancel="handleCancelAddOfferContractPending"
               />
-            </div>
           </div>
-        </transition>
+        </div>
         
         <!-- Unified Add Offer Buttons -->
-        <div v-if="showAddOfferContractPendingSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
+        <div v-if="showAddOfferContractPendingSection" class="flex justify-end gap-2 pt-3">
           <Button
             variant="secondary"
             @click="handleCancelAddOfferContractPending"
@@ -498,19 +489,17 @@
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="default"
             :disabled="!canCreateInlineOfferContractPending"
             @click="handleConfirmAddOfferContractPending"
-            class="bg-primary"
           >
             Create Offer
           </Button>
         </div>
         
         <!-- Inline Extend Deadline Section -->
-        <transition name="expand">
-          <div v-if="showExtendDeadlineSection" class="mt-4 px-4 pb-4">
-            <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
+        <div v-if="showExtendDeadlineSection">
+          <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
               <h5 class="font-semibold text-foreground text-sm mb-4">Extend Deadline</h5>
               
               <div class="space-y-4">
@@ -545,30 +534,26 @@
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 :disabled="!canSubmitExtendDeadline"
                 @click="handleConfirmExtendDeadline"
-                class="bg-primary"
               >
                 Extend Deadline
               </Button>
             </div>
-          </div>
-        </transition>
+        </div>
         
         <!-- Inline Schedule Appointment Section -->
-        <transition name="expand">
-          <div v-if="showScheduleAppointmentContractPendingSection" class="mt-4 px-4 pb-4">
-            <OpportunityScheduleForm
-              ref="scheduleAppointmentContractPendingFormRef"
-              :opportunity="opportunity"
-              mode="schedule"
-              @submit="(p) => handleScheduleAppointmentContractPendingSubmit(p)"
-              @cancel="handleCancelScheduleAppointmentContractPending"
-            />
-          </div>
-        </transition>
-      </div>
+        <div v-if="showScheduleAppointmentContractPendingSection">
+          <OpportunityScheduleForm
+            ref="scheduleAppointmentContractPendingFormRef"
+            :opportunity="opportunity"
+            mode="schedule"
+            @submit="(p) => handleScheduleAppointmentContractPendingSubmit(p)"
+            @cancel="handleCancelScheduleAppointmentContractPending"
+          />
+        </div>
+        </div>
       
       <!-- Regular primary action widget -->
       <PrimaryActionWidget
@@ -583,9 +568,9 @@
       <!-- Qualified and Awaiting Appointment Schedule Form -->
       <div v-if="shouldShowScheduleForm" class="space-y-4">
         <!-- Assignment Note Card -->
-        <div v-if="opportunity.assignmentNote" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div v-if="opportunity.assignmentNote" class="bg-muted border border-border rounded-lg p-4">
           <div class="flex items-start gap-3">
-            <i class="fa-solid fa-sticky-note text-blue-600 text-sm mt-0.5"></i>
+            <i class="fa-solid fa-sticky-note text-muted-foreground text-sm mt-0.5"></i>
             <div class="flex-1">
               <h5 class="font-semibold text-foreground text-sm mb-1">Note from Assigner</h5>
               <p class="text-sm text-muted-foreground whitespace-pre-wrap">{{ opportunity.assignmentNote }}</p>
@@ -660,22 +645,24 @@
               </p>
             </div>
             <div class="flex flex-wrap gap-3 items-center">
-              <Button
-                variant="outline"
-                @click="showPostDeliverySurveySection = !showPostDeliverySurveySection"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
-                :class="showPostDeliverySurveySection ? 'border-blue-500 bg-blue-50 text-blue-700' : ''"
-              >
-                <i class="fa-solid fa-clipboard-list"></i>
-                <span>Complete Survey</span>
-              </Button>
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showPostDeliverySurveySection"
+                  @update:model-value="(p) => (showPostDeliverySurveySection = p)"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span>Complete Survey</span>
+                </Toggle>
+              </div>
               
               <!-- Reopen Opportunity Button (only for Closed Won) -->
               <Button
                 v-if="isClosedWon"
                 variant="outline"
                 @click="handleReopen"
-                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-green-500 bg-green-50 text-green-700 hover:bg-green-100 cursor-pointer"
+                class="inline-flex items-center gap-2 cursor-pointer"
               >
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>Reopen Opportunity</span>
@@ -683,16 +670,17 @@
               
               <!-- Actions Dropdown -->
               <div class="relative">
-                <button 
+                <Button
+                  variant="secondary"
                   @click.stop="showPostDeliverySurveyDropdown = !showPostDeliverySurveyDropdown"
-                  class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap cursor-pointer"
+                  class="inline-flex items-center gap-2 cursor-pointer"
                 >
                   <span>More actions</span>
                   <i 
-                    class="fa-solid fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0"
+                    class="fa-solid fa-chevron-down text-xs transition-transform duration-200 shrink-0"
                     :class="{ 'rotate-180': showPostDeliverySurveyDropdown }"
                   ></i>
-                </button>
+                </Button>
 
                 <!-- Dropdown menu -->
                 <div 
@@ -711,35 +699,34 @@
           </div>
         </div>
         
+        <div class="px-4 py-4 space-y-4">
         <!-- Survey Form (Collapsible) -->
-        <transition name="expand">
-          <div v-if="showPostDeliverySurveySection" class="mt-4 px-4 pb-4">
-            <PostDeliverySurvey
-              ref="postDeliverySurveyRef"
-              :opportunity="opportunity"
-              @submit="handleSurveySubmit"
-              @cancel="showPostDeliverySurveySection = false"
-            />
-            
-            <!-- Survey Action Buttons -->
-            <div class="flex justify-end gap-2 mt-4">
-              <Button
-                variant="secondary"
-                @click="handleCancelSurvey"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                :disabled="!canSubmitSurvey"
-                @click="handleConfirmSurvey"
-                class="bg-primary"
-              >
-                Submit Survey
-              </Button>
-            </div>
+        <div v-if="showPostDeliverySurveySection">
+          <PostDeliverySurvey
+            ref="postDeliverySurveyRef"
+            :opportunity="opportunity"
+            @submit="handleSurveySubmit"
+            @cancel="showPostDeliverySurveySection = false"
+          />
+          
+          <!-- Survey Action Buttons -->
+          <div class="flex justify-end gap-2 pt-3">
+            <Button
+              variant="secondary"
+              @click="handleCancelSurvey"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              :disabled="!canSubmitSurvey"
+              @click="handleConfirmSurvey"
+            >
+              Submit Survey
+            </Button>
           </div>
-        </transition>
+        </div>
+        </div>
       </div>
 
       <!-- Regular Task Widgets -->
@@ -862,7 +849,7 @@
 import { ref, computed, onMounted, toRef, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Button, Label, Textarea, Input, DropdownMenu } from '@motork/component-library/future/primitives'
+import { Button, Label, Textarea, Input, DropdownMenu, Toggle } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUsersStore } from '@/stores/users'
@@ -1973,16 +1960,25 @@ const canCreateInlineOfferContractPending = computed(() => {
   return addOfferContractPendingRef.value?.isValid || false
 })
 
-// Primary Action: Finalize Contract
+function onFinalizeContractToggle(p) {
+  showFinalizeContractSection.value = p
+  if (p) {
+    showAddOfferContractPendingSection.value = false
+    showExtendDeadlineSection.value = false
+    showScheduleAppointmentContractPendingSection.value = false
+    if (!contractPendingForm.value.contractDate) {
+      const today = new Date()
+      contractPendingForm.value.contractDate = today.toISOString().split('T')[0]
+      contractPendingForm.value.contractTime = today.toTimeString().slice(0, 5)
+    }
+  }
+}
+
 function handleFinalizeContract() {
-  // Close other sections (mutually exclusive)
   showAddOfferContractPendingSection.value = false
   showExtendDeadlineSection.value = false
   showScheduleAppointmentContractPendingSection.value = false
-  
   showFinalizeContractSection.value = !showFinalizeContractSection.value
-  
-  // Initialize form with today's date if opening
   if (showFinalizeContractSection.value && !contractPendingForm.value.contractDate) {
     const today = new Date()
     contractPendingForm.value.contractDate = today.toISOString().split('T')[0]
@@ -2431,23 +2427,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.expand-enter-active,
-.expand-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.expand-enter-to,
-.expand-leave-from {
-  max-height: 5000px;
-  opacity: 1;
-}
-</style>
 
