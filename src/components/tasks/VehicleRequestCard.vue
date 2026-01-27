@@ -1,81 +1,74 @@
 <template>
-  <div 
-    class="overflow-hidden p-4 rounded-card bg-white shadow-nsc-card"
-  >
-    <h3 class="text-base font-medium mb-4 text-heading -mx-4 -mt-4 px-4 pt-4 rounded-t-card">Requested Car</h3>
-    
-    <!-- Vehicle Image -->
-    <div 
-      v-if="imageUrl" 
-      class="w-full h-20 rounded-btn overflow-hidden mb-4 bg-gray-100"
-    >
-      <img 
-        :src="imageUrl" 
-        :alt="`${vehicle.brand} ${vehicle.model}`"
-        class="w-full h-full object-cover"
-        @error="handleImageError"
-      />
-    </div>
-    <div 
-      v-else
-      class="w-full h-40 rounded-btn overflow-hidden mb-4 bg-gray-100 flex items-center justify-center"
-    >
-      <Car :size="48" class="text-gray-400" />
-    </div>
-    
-    <!-- Vehicle Details -->
-    <div class="space-y-2 mb-4">
-      <div class="flex justify-between items-start gap-2">
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-heading truncate">
-            {{ vehicleName }}
-          </p>
-          <p v-if="vehicle.year" class="text-sm text-sub">
-            {{ vehicle.year }}
-          </p>
+  <div class="overflow-hidden p-4 rounded-lg bg-white border border-black/5 shadow-sm">
+    <h3 class="text-fluid-sm font-medium mb-3 text-heading">Requested Car</h3>
+
+    <div class="flex gap-4">
+      <div
+        class="w-24 shrink-0 aspect-3/2 rounded-lg overflow-hidden bg-surfaceTertiary"
+      >
+        <img
+          v-if="imageUrl && !imageError"
+          :src="imageUrl"
+          :alt="`${vehicle.brand} ${vehicle.model}`"
+          class="w-full h-full object-cover"
+          @error="handleImageError"
+        />
+        <div
+          v-else
+          class="w-full h-full flex items-center justify-center"
+        >
+          <Car :size="32" class="text-sub" />
         </div>
-        <p v-if="vehicle.price" class="text-sm font-semibold text-heading shrink-0">
-          €{{ formatPrice(vehicle.price) }}
+      </div>
+
+      <div class="min-w-0 flex-1 flex flex-col justify-center">
+        <p class="text-fluid-sm font-semibold text-heading truncate">
+          {{ vehicleNameWithYear }}
         </p>
-      </div>
-      
-      <!-- Additional vehicle details -->
-      <div v-if="vehicle.mileage || vehicle.fuelType" class="flex gap-3 text-sm text-sub">
-        <span v-if="vehicle.mileage">{{ formatMileage(vehicle.mileage) }} km</span>
-        <span v-if="vehicle.fuelType">{{ vehicle.fuelType }}</span>
+        <div
+          v-if="vehicle.price || source"
+          class="flex items-center gap-2 mt-1 text-fluid-sm text-heading flex-wrap"
+        >
+          <span v-if="vehicle.price" class="font-semibold">
+            €{{ formatPrice(vehicle.price) }}
+          </span>
+          <span
+            v-if="vehicle.price && source"
+            class="h-3 w-px bg-border shrink-0"
+            aria-hidden="true"
+          />
+          <span v-if="source" class="text-sub truncate">{{ source }}</span>
+        </div>
+        <div
+          v-if="vehicle.mileage || vehicle.fuelType"
+          class="flex gap-3 mt-0.5 text-fluid-xs text-sub"
+        >
+          <span v-if="vehicle.mileage">{{ formatMileage(vehicle.mileage) }} km</span>
+          <span v-if="vehicle.fuelType">{{ vehicle.fuelType }}</span>
+        </div>
       </div>
     </div>
-    
-    <!-- Source Badge -->
-    <div v-if="source" class="mb-4">
-      <Badge variant="secondary" class="text-sm">
-        {{ source }}
-      </Badge>
-    </div>
-    
-    <!-- Request Message -->
-    <div 
-      v-if="requestMessage" 
-      class="rounded-btn p-3 mb-4"
-      style="background-color: var(--base-muted, #f5f5f5);"
+
+    <div
+      v-if="requestMessage"
+      class="rounded-lg p-3 mt-3 bg-base-muted"
     >
-      <p class="text-sm text-sub mb-1">Request message</p>
-      <p class="text-sm text-heading">{{ requestMessage }}</p>
+      <p class="text-fluid-xs text-sub mb-0.5">Request message</p>
+      <p class="text-fluid-sm text-heading">{{ requestMessage }}</p>
     </div>
-    
-    <!-- Action Buttons -->
-    <div class="flex gap-2 pt-4 border-t border-black/5">
-      <Button 
-        variant="secondary" 
-        size="sm" 
+
+    <div class="flex gap-2 pt-3 mt-3 border-t border-black/5">
+      <Button
+        variant="secondary"
+        size="sm"
         class="flex-1"
         @click="$emit('open-ad')"
       >
         <ExternalLink :size="16" />
         <span>Open Ad</span>
       </Button>
-      <Button 
-        variant="secondary" 
+      <Button
+        variant="secondary"
         size="icon-sm"
         @click="$emit('more-actions')"
       >
@@ -87,7 +80,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button, Badge } from '@motork/component-library/future/primitives'
+import { Button } from '@motork/component-library/future/primitives'
 import { Car, ExternalLink, MoreVertical } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -115,20 +108,15 @@ const imageError = ref(false)
 
 const vehicleName = computed(() => {
   const parts = []
-  
-  if (props.vehicle.brand) {
-    parts.push(props.vehicle.brand)
-  }
-  
-  if (props.vehicle.model) {
-    parts.push(props.vehicle.model)
-  }
-  
-  if (props.vehicle.variant) {
-    parts.push(props.vehicle.variant)
-  }
-  
+  if (props.vehicle.brand) parts.push(props.vehicle.brand)
+  if (props.vehicle.model) parts.push(props.vehicle.model)
+  if (props.vehicle.variant) parts.push(props.vehicle.variant)
   return parts.join(' ') || 'Vehicle Details'
+})
+
+const vehicleNameWithYear = computed(() => {
+  const name = vehicleName.value
+  return props.vehicle.year ? `${name} (${props.vehicle.year})` : name
 })
 
 const formatPrice = (price) => {

@@ -10,7 +10,7 @@
           'border font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
           isCallActive 
             ? 'bg-surface border-E5E7EB text-body opacity-60 cursor-not-allowed' 
-            : 'bg-primary hover:bg-primary/90 border-primary text-white'
+            : 'bg-primary hover:bg-primary/90 border-primary text-white cursor-pointer'
         ]"
       >
         <i class="fa-solid fa-phone text-xs cursor-pointer"></i>

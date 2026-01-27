@@ -5,17 +5,23 @@
   >
     <!-- Success state (post qualify / disqualify / no-answer) -->
     <template v-if="successState">
-      <div
-        class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
-        style="box-shadow: var(--nsc-card-shadow)"
-      >
+      <div class="pt-1 px-1">
+        <div
+          class="bg-white rounded-lg p-4 shadow-nsc-card flex flex-col relative"
+          style="box-shadow: var(--nsc-card-shadow)"
+        >
         <div class="flex items-center gap-3">
           <div class="size-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
             <Check :size="16" class="text-green-600" />
           </div>
-          <p class="text-sm font-medium text-heading flex-1 pr-10">
-            {{ successState.statusText }}
-          </p>
+          <div class="flex-1 pr-10 min-w-0">
+            <p class="text-sm font-medium text-heading">
+              {{ successState.statusText }}
+            </p>
+            <p v-if="successState.reason" class="text-sm text-body mt-1">
+              {{ successState.reason }}
+            </p>
+          </div>
         </div>
         <div
           v-if="successState.meeting"
@@ -44,12 +50,13 @@
           <Button
             variant="outline"
             size="small"
-            class="flex items-center gap-2"
+            class="flex items-center gap-2 cursor-pointer"
             @click="handleReopen"
           >
             <RotateCcw :size="14" />
             Re-open
           </Button>
+        </div>
         </div>
       </div>
       <div class="px-4 py-2 flex items-center justify-between text-sm text-sub">
@@ -60,10 +67,11 @@
 
     <template v-else>
       <!-- Contact block: white card -->
-      <div
-        class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
-        style="box-shadow: var(--nsc-card-shadow)"
-      >
+      <div class="pt-1 px-1">
+        <div
+          class="bg-white rounded-lg shadow-nsc-card overflow-hidden"
+          style="box-shadow: var(--nsc-card-shadow)"
+        >
         <DeadlineBanner
           :next-action-due="lead.nextActionDue"
           :show-deadline-banner="showDeadlineBanner"
@@ -115,18 +123,6 @@
           </div>
         </div>
 
-        <!-- Phone Number Row -->
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm text-body font-medium">{{ lead.customer.phone }}</span>
-          <button
-            @click="copyNumber"
-            class="flex items-center justify-center rounded hover:bg-surfaceSecondary text-sub hover:text-body transition-colors w-6 h-6"
-            title="Copy phone number"
-          >
-            <i class="fa-regular fa-copy text-sm"></i>
-          </button>
-        </div>
-
         <!-- Call Interface Component -->
         <CallInterface
           :is-call-active="isCallActive"
@@ -144,6 +140,7 @@
           @update:call-notes="updateCallNotes"
           @copy-number="copyNumber"
         />
+        </div>
         </div>
       </div>
 
@@ -876,7 +873,7 @@
 </template>
 
 <script setup>
-import { ref, computed, toRef, watch } from 'vue'
+import { ref, computed, toRef, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { 
   Button,
@@ -1431,16 +1428,48 @@ const selectedSalesmanId = computed({
   }
 })
 
-// Auto-select suggested team when event type is selected
-watch([qualificationEventType, suggestedTeam, assignableTeams], ([eventType, suggested, teams]) => {
-  if (eventType && suggested && teams && !qualificationSelectedTeam.value) {
-    // Find the team in assignableTeams by ID
+function resolveInitialTeamForSchedule() {
+  if (!qualificationEventType.value || qualificationSelectedTeam.value) return
+  const teams = assignableTeams.value
+  if (!teams?.length) return
+  const suggested = suggestedTeam.value
+  if (suggested) {
     const team = teams.find(t => t.id === suggested.id)
     if (team) {
       qualificationSelectedTeam.value = team
+      return
     }
   }
-}, { immediate: true })
+  if (props.lead.assignee) {
+    const assigneeTeam = teams.find(t => t.name === props.lead.assignee)
+    if (assigneeTeam) {
+      qualificationSelectedTeam.value = assigneeTeam
+    }
+  }
+}
+
+watch(
+  () => [
+    qualificationEventType.value,
+    suggestedTeam.value,
+    (assignableTeams.value ?? []).length,
+    props.lead.assignee
+  ],
+  () => {
+    resolveInitialTeamForSchedule()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => qualificationEventType.value && !qualificationSelectedTeam.value,
+  (shouldResolve) => {
+    if (shouldResolve) {
+      nextTick(resolveInitialTeamForSchedule)
+    }
+  },
+  { immediate: true }
+)
 
 // Auto-select today's date when event type is selected
 watch(qualificationEventType, (eventType) => {

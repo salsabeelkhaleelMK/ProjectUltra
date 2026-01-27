@@ -404,7 +404,12 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
       reason: outcomeState.disqualifyReason.value
     })
 
-    successState.value = { kind: 'not-interested', statusText: 'Closed - Not interested', actorName: actorName() }
+    successState.value = {
+      kind: 'not-interested',
+      statusText: 'Closed - Not interested',
+      reason: outcomeState.disqualifyReason.value || null,
+      actorName: actorName()
+    }
     successPerformedAt.value = new Date()
     cancelOutcome()
   }
