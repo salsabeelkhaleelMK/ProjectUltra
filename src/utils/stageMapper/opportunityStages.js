@@ -53,6 +53,41 @@ function hasScheduledAppointment(opportunity, activities) {
 }
 
 /**
+ * Check and auto-transition negotiation substatus if needed
+ * Returns updated substatus if changed, or current substatus if unchanged
+ */
+export function checkNegotiationSubstatusTransition(opportunity) {
+  // Only check for opportunities in In Negotiation stage with Offer Sent substatus
+  if (opportunity.stage !== 'In Negotiation' || opportunity.negotiationSubstatus !== 'Offer Sent') {
+    return opportunity.negotiationSubstatus
+  }
+  
+  // Check if offers exist
+  if (!opportunity.offers || opportunity.offers.length === 0) {
+    return opportunity.negotiationSubstatus
+  }
+  
+  // Find most recent active offer
+  const mostRecentOffer = opportunity.offers
+    .filter(o => o.status === 'active')
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+  
+  if (!mostRecentOffer) {
+    return opportunity.negotiationSubstatus
+  }
+  
+  // Check if offer is 3+ days old
+  const daysSinceOffer = calculateDaysSince(mostRecentOffer.createdAt)
+  
+  if (daysSinceOffer >= 3) {
+    // Auto-transition to Offer Feedback
+    return 'Offer Feedback'
+  }
+  
+  return opportunity.negotiationSubstatus
+}
+
+/**
  * Calculate display stage for an opportunity
  */
 export function calculateOpportunityDisplayStage(opportunity) {
@@ -75,14 +110,37 @@ export function calculateOpportunityDisplayStage(opportunity) {
     return OPPORTUNITY_STAGES.ABANDONED
   }
   
+  // Backward compatibility: raw "Contract Pending" stage (now a substage of In Negotiation)
+  if (apiStatus === 'Contract Pending') {
+    return OPPORTUNITY_STAGES.CONTRACT_PENDING
+  }
+  
   // In Negotiation and substates
   if (apiStatus === API_STATUSES.IN_NEGOTIATION) {
-    // Contract pending
+    // Contract Pending (substage): offer accepted and/or contract date set
     if (opportunity.contractDate && !hasContract(opportunity, activities)) {
       return OPPORTUNITY_STAGES.CONTRACT_PENDING
     }
     
-    // Check if offer has been pending for 3+ days
+    // Check negotiationSubstatus if present
+    if (opportunity.negotiationSubstatus) {
+      // Offer Accepted → In Negotiation - Contract Pending
+      if (opportunity.negotiationSubstatus === 'Offer Accepted') {
+        return OPPORTUNITY_STAGES.CONTRACT_PENDING
+      }
+      
+      // Offer Feedback - show as "In Negotiation - Offer Feedback"
+      if (opportunity.negotiationSubstatus === 'Offer Feedback') {
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Feedback`
+      }
+      
+      // Offer Sent - show as "In Negotiation - Offer Sent"
+      if (opportunity.negotiationSubstatus === 'Offer Sent') {
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
+      }
+    }
+    
+    // Legacy: Check if offer has been pending for 3+ days (for old data without negotiationSubstatus)
     const lastOffer = getLastOffer(activities)
     if (lastOffer) {
       const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
@@ -120,18 +178,24 @@ export function calculateOpportunityDisplayStage(opportunity) {
       return OPPORTUNITY_STAGES.TO_BE_CALLED_BACK
     }
     
-    // Appointment scheduled - but validate it exists
+    // Check for appointment
     const hasAppointment = opportunity.scheduledAppointment || hasScheduledAppointment(opportunity, activities)
     if (hasAppointment) {
       // Ensure appointment has valid data if it's an object
       if (opportunity.scheduledAppointment && (!opportunity.scheduledAppointment.start && !opportunity.scheduledAppointment.id)) {
-        // Invalid appointment data, fall back to Qualified
-        return OPPORTUNITY_STAGES.QUALIFIED
+        // Invalid appointment data, fall back to Awaiting Appointment (no appointment)
+        return OPPORTUNITY_STAGES.AWAITING_APPOINTMENT
       }
-      return OPPORTUNITY_STAGES.AWAITING_APPOINTMENT
+      // Pending confirmation (e.g. after reschedule) → Awaiting Appointment
+      if (opportunity.scheduledAppointment?.status === 'pending_confirmation') {
+        return OPPORTUNITY_STAGES.AWAITING_APPOINTMENT
+      }
+      // Appointment exists and confirmed → Appointment Scheduled
+      return OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED
     }
     
-    return OPPORTUNITY_STAGES.QUALIFIED
+    // No appointment → Awaiting Appointment
+    return OPPORTUNITY_STAGES.AWAITING_APPOINTMENT
   }
   
   // Fallback
@@ -171,6 +235,7 @@ export function mapOpportunityStageToApiStatus(displayStage) {
   const mapping = {
     [OPPORTUNITY_STAGES.QUALIFIED]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: API_STATUSES.QUALIFIED,
+    [OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: API_STATUSES.IN_NEGOTIATION,
@@ -190,19 +255,29 @@ export function getOpportunityTransitions() {
   return {
     [OPPORTUNITY_STAGES.QUALIFIED]: [
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
+      OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,
       OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: [
+      OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,  // When appointment is scheduled
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
+    [OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED]: [
+      OPPORTUNITY_STAGES.IN_NEGOTIATION,
+      OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
+      OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,  // If appointment cancelled
+      OPPORTUNITY_STAGES.CLOSED_LOST,
+      OPPORTUNITY_STAGES.ABANDONED
+    ],
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: [
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
+      OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED

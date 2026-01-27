@@ -2,8 +2,13 @@
   "opportunity": {
     "qualified": "Qualified",
     "awaitingAppointment": "Awaiting Appointment",
+    "appointmentScheduled": "Appointment Scheduled",
     "toBeCalledBack": "To be Called Back",
     "inNegotiation": "In Negotiation",
+    "inNegotiationOfferSent": "In Negotiation - Offer Sent",
+    "inNegotiationOfferFeedback": "In Negotiation - Offer Feedback",
+    "inNegotiationOfferAccepted": "Offer Accepted",
+    "inNegotiationContractPending": "In Negotiation - Contract Pending",
     "needsFollowUp": "Needs Follow-up",
     "contractPending": "Contract Pending",
     "closedWon": "Closed Won",

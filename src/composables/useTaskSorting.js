@@ -16,12 +16,17 @@ export function useTaskSorting() {
   /**
    * Sort tasks based on sort option
    * @param {Array} tasks - Tasks to sort
-   * @param {string} sortOption - Sort option: 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team'
+   * @param {string} sortOption - Sort option: '', 'none', 'urgent-first', 'assigned-to-me', 'assigned-to-my-team', 'recent-first'
    * @returns {Array} Sorted tasks
    */
   const sortTasks = (tasks, sortOption) => {
-    if (sortOption === 'none') {
-      // Default: sort by lastActivity or createdAt (most recent first)
+    // No sort or 'none': return tasks as-is (no sorting applied)
+    if (!sortOption || sortOption === '' || sortOption === 'none') {
+      return tasks
+    }
+
+    if (sortOption === 'recent-first') {
+      // Sort by lastActivity or createdAt (most recent first)
       return [...tasks].sort((a, b) => {
         const dateA = new Date(a.lastActivity || a.createdAt || 0)
         const dateB = new Date(b.lastActivity || b.createdAt || 0)

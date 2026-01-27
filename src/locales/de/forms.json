@@ -74,6 +74,35 @@
     "disqualify": "Disqualifizieren",
     "requalifyAsLead": "Als Lead Requalifizieren",
     "comingSoon": "Demnächst"
+  },
+  "schedule": {
+    "title": "Planen",
+    "eventType": {
+      "label": "Ereignistyp",
+      "placeholder": "Ereignistyp auswählen",
+      "options": {
+        "showroomVisit": "Showroom-Besuch",
+        "testDrive": "Probefahrt",
+        "videoCall": "Videoanruf",
+        "homeVisit": "Hausbesuch",
+        "closingMeeting": "Abschlussbesprechung"
+      }
+    },
+    "duration": {
+      "label": "Dauer",
+      "15min": "15min",
+      "30min": "30min",
+      "60min": "60min",
+      "90min": "90min",
+      "custom": "Benutzerdefiniert"
+    },
+    "timeSlots": {
+      "noSlots": "Keine verfügbaren Zeitslots für dieses Datum",
+      "selectDate": "Wählen Sie ein Datum aus, um verfügbare Zeitslots anzuzeigen"
+    },
+    "calendar": {
+      "days": ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
+    }
   }
 }
 

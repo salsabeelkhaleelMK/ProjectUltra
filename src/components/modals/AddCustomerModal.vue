@@ -2,128 +2,153 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ modalTitle }}</DialogTitle>
-          <DialogDescription>Fill in the details below</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Form fields based on active tab -->
-      <div v-if="activeTab === 'contacts'">
-        <label class="block label-upper mb-2">Contact Name</label>
-        <input 
-          v-model="formData.customerName"
-          type="text" 
-          placeholder="Enter contact name..." 
-          class="input"
-        >
+      <div v-if="activeTab === 'contacts'" class="space-y-6">
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Contact Name</Label>
+          <Input 
+            v-model="formData.customerName"
+            type="text" 
+            placeholder="Enter contact name..." 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Email</label>
-        <input 
-          v-model="formData.email"
-          type="email" 
-          placeholder="contact@example.com" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Email</Label>
+          <Input 
+            v-model="formData.email"
+            type="email" 
+            placeholder="contact@example.com" 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Phone</label>
-        <input 
-          v-model="formData.phone"
-          type="tel" 
-          placeholder="+49..." 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Phone</Label>
+          <Input 
+            v-model="formData.phone"
+            type="tel" 
+            placeholder="+49..." 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Company (optional)</label>
-        <input 
-          v-model="formData.company"
-          type="text" 
-          placeholder="Company name..." 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Company (optional)</Label>
+          <Input 
+            v-model="formData.company"
+            type="text" 
+            placeholder="Company name..." 
+            class="w-full h-10"
+          />
+        </div>
       </div>
       
-      <div v-else-if="activeTab === 'open-leads'">
-        <label class="block label-upper mb-2">Customer Name</label>
-        <input 
-          v-model="formData.customerName"
-          type="text" 
-          placeholder="Enter customer name..." 
-          class="input"
-        >
+      <div v-else-if="activeTab === 'open-leads'" class="space-y-6">
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Input 
+            v-model="formData.customerName"
+            type="text" 
+            placeholder="Enter customer name..." 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Email</label>
-        <input 
-          v-model="formData.email"
-          type="email" 
-          placeholder="customer@example.com" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Email</Label>
+          <Input 
+            v-model="formData.email"
+            type="email" 
+            placeholder="customer@example.com" 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Requested Vehicle</label>
-        <input 
-          v-model="formData.vehicle"
-          type="text" 
-          placeholder="e.g., Volkswagen ID.4" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Requested Vehicle</Label>
+          <Input 
+            v-model="formData.vehicle"
+            type="text" 
+            placeholder="e.g., Volkswagen ID.4" 
+            class="w-full h-10"
+          />
+        </div>
       </div>
       
-      <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'">
-        <label class="block label-upper mb-2">Customer Name</label>
-        <input 
-          v-model="formData.customerName"
-          type="text" 
-          placeholder="Enter customer name..." 
-          class="input"
-        >
+      <div v-else-if="activeTab === 'open-opportunities' || activeTab === 'in-negotiation'" class="space-y-6">
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Input 
+            v-model="formData.customerName"
+            type="text" 
+            placeholder="Enter customer name..." 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Vehicle</label>
-        <input 
-          v-model="formData.vehicle"
-          type="text" 
-          placeholder="e.g., Porsche Taycan" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+          <Input 
+            v-model="formData.vehicle"
+            type="text" 
+            placeholder="e.g., Porsche Taycan" 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Opportunity Value</label>
-        <input 
-          v-model="formData.value"
-          type="number" 
-          placeholder="0" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Opportunity Value</Label>
+          <Input 
+            v-model="formData.value"
+            type="number" 
+            placeholder="0" 
+            class="w-full h-10"
+          />
+        </div>
       </div>
       
-      <div v-else>
-        <label class="block label-upper mb-2">Customer Name</label>
-        <input 
-          v-model="formData.customerName"
-          type="text" 
-          placeholder="Enter customer name..." 
-          class="input"
-        >
+      <div v-else class="space-y-6">
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Customer Name</Label>
+          <Input 
+            v-model="formData.customerName"
+            type="text" 
+            placeholder="Enter customer name..." 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Vehicle</label>
-        <input 
-          v-model="formData.vehicle"
-          type="text" 
-          placeholder="Vehicle model" 
-          class="input"
-        >
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+          <Input 
+            v-model="formData.vehicle"
+            type="text" 
+            placeholder="Vehicle model" 
+            class="w-full h-10"
+          />
+        </div>
         
-        <label class="block label-upper mb-2 mt-4">Reason</label>
-        <textarea 
-          v-model="formData.reason"
-          rows="3"
-          :placeholder="`Reason for ${activeTab === 'won' ? 'win' : 'loss'}...`"
-          class="input resize-none"
-        ></textarea>
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Reason</Label>
+          <Textarea 
+            v-model="formData.reason"
+            rows="4"
+            :placeholder="`Reason for ${activeTab === 'won' ? 'win' : 'loss'}...`"
+            class="w-full min-h-[100px] resize-none"
+          />
+        </div>
       </div>
-    </div>
+        </div>
     
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -146,11 +171,15 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Textarea
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

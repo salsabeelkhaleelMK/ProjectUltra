@@ -2,15 +2,12 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ isEditMode ? 'Edit Purchase Method' : 'Add Purchase Method' }}</DialogTitle>
-          <DialogDescription>
-            {{ isEditMode ? 'Update purchase method details' : 'Select purchase method type and fill in the details' }}
-          </DialogDescription>
         </DialogHeader>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
           <!-- Type Selector (Radio buttons styled as tabs) -->
           <div>
             <label class="block label-upper mb-3">Purchase Method Type</label>
@@ -100,38 +97,40 @@
             <!-- LTR-specific: Duration and Unlock Kilometers -->
             <template v-if="formData.type === 'LTR'">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block label-upper mb-2">
-                    Duration (months) <span class="text-brand-red">*</span>
-                  </label>
-                  <select
-                    v-model.number="formData.fields.duration"
-                    class="input"
-                    :class="{ 'border-red-500': errors.duration }"
-                    @change="clearError('duration')"
-                  >
-                    <option value="">Select duration...</option>
-                    <option
+              <div>
+                <label class="block label-upper mb-2">
+                  Duration (months) <span class="text-brand-red">*</span>
+                </label>
+                <Select
+                  v-model="formData.fields.duration"
+                  @update:model-value="clearError('duration')"
+                >
+                  <SelectTrigger class="w-full h-10 min-h-10" :class="{ 'border-red-500': errors.duration }">
+                    <SelectValue placeholder="Select duration..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
                       v-for="month in getDurationOptions(formData.type)"
                       :key="month"
                       :value="month"
                     >
                       {{ month }} months
-                    </option>
-                  </select>
-                  <p v-if="errors.duration" class="text-xs text-red-600 mt-1">
-                    {{ errors.duration }}
-                  </p>
-                </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p v-if="errors.duration" class="text-xs text-red-600 mt-1">
+                  {{ errors.duration }}
+                </p>
+              </div>
 
-                <div>
-                  <label class="block label-upper mb-2">Unlock Kilometers</label>
-                  <input
+                <div class="space-y-2">
+                  <Label class="block text-sm font-semibold text-heading">Unlock Kilometers</Label>
+                  <Input
                     v-model.number="formData.fields.mileageLimit"
                     type="number"
                     min="0"
                     placeholder="0"
-                    class="input"
+                    class="w-full h-10"
                     :class="{ 'border-red-500': errors.mileageLimit }"
                     @input="clearError('mileageLimit')"
                   />
@@ -149,17 +148,19 @@
                 <label class="block label-upper mb-2">
                   Customer Type <span class="text-brand-red">*</span>
                 </label>
-                <select
+                <Select
                   v-model="formData.fields.customerType"
-                  class="input"
-                  :class="{ 'border-red-500': errors.customerType }"
-                  @change="clearError('customerType')"
+                  @update:model-value="clearError('customerType')"
                 >
-                  <option value="">Select customer type...</option>
-                  <option value="Private">Private</option>
-                  <option value="Business">Business</option>
-                  <option value="Fleet">Fleet</option>
-                </select>
+                  <SelectTrigger class="w-full h-10 min-h-10" :class="{ 'border-red-500': errors.customerType }">
+                    <SelectValue placeholder="Select customer type..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Private">Private</SelectItem>
+                    <SelectItem value="Business">Business</SelectItem>
+                    <SelectItem value="Fleet">Fleet</SelectItem>
+                  </SelectContent>
+                </Select>
                 <p v-if="errors.customerType" class="text-xs text-red-600 mt-1">
                   {{ errors.customerType }}
                 </p>
@@ -176,59 +177,53 @@
                 </p>
               </div>
 
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-3">
                 <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="ltr-insurance"
-                    v-model="formData.fields.insuranceIncluded"
-                    class="w-4 h-4 rounded border-D1D5DB"
+                    v-model:checked="formData.fields.insuranceIncluded"
                   />
-                  <label for="ltr-insurance" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-insurance" class="text-sm text-body cursor-pointer">
                     Insurance Included
-                  </label>
+                  </Label>
                 </div>
                 <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="ltr-maintenance"
-                    v-model="formData.fields.maintenanceIncluded"
-                    class="w-4 h-4 rounded border-D1D5DB"
+                    v-model:checked="formData.fields.maintenanceIncluded"
                   />
-                  <label for="ltr-maintenance" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-maintenance" class="text-sm text-body cursor-pointer">
                     Maintenance Included
-                  </label>
+                  </Label>
                 </div>
                 <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="ltr-registration"
-                    v-model="formData.fields.registrationTaxesIncluded"
-                    class="w-4 h-4 rounded border-D1D5DB"
+                    v-model:checked="formData.fields.registrationTaxesIncluded"
                   />
-                  <label for="ltr-registration" class="text-sm text-body cursor-pointer">
+                  <Label for="ltr-registration" class="text-sm text-body cursor-pointer">
                     Registration/Taxes Included
-                  </label>
+                  </Label>
                 </div>
               </div>
             </template>
 
             <!-- Optional: Offer Validity Dates -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-E5E7EB">
-              <div>
-                <label class="block label-upper mb-2">Offer Valid From</label>
-                <input
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Offer Valid From</Label>
+                <Input
                   v-model="formData.offerValidFrom"
                   type="date"
-                  class="input"
+                  class="w-full h-10"
                 />
               </div>
-              <div>
-                <label class="block label-upper mb-2">Offer Valid To</label>
-                <input
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Offer Valid To</Label>
+                <Input
                   v-model="formData.offerValidTo"
                   type="date"
-                  class="input"
+                  class="w-full h-10"
                 />
               </div>
             </div>
@@ -241,9 +236,9 @@
               <li v-for="error in validationErrors" :key="error">{{ error }}</li>
             </ul>
           </div>
-        </form>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -270,11 +265,20 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Checkbox,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

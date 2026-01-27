@@ -157,16 +157,10 @@ export const useIntegrationsStore = defineStore('integrations', () => {
 
   /**
    * Toggle integration enabled state
-   * Requires entityType to be set before enabling
    */
   const toggleIntegration = (id) => {
     const integration = getIntegration(id)
     if (!integration) return
-
-    // If enabling, require entityType to be set
-    if (!integration.enabled && !integration.entityType) {
-      throw new Error('Entity type must be configured before enabling integration')
-    }
 
     integration.enabled = !integration.enabled
     

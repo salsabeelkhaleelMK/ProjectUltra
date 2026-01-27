@@ -2,111 +2,106 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Schedule Callback</DialogTitle>
         </DialogHeader>
 
-        <div class="space-y-5">
-      <p class="text-meta">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
+      <p class="text-sm text-body">
         Schedule a callback with {{ entityName }} to follow up at a convenient time.
       </p>
 
       <!-- Callback Date & Time -->
       <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">
-            Callback Date <span class="text-red-500">*</span>
-          </label>
-          <input 
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">
+            Callback Date <span class="text-brand-red">*</span>
+          </Label>
+          <Input 
             v-model="formData.date"
             type="date"
             :min="minDate"
             required
-            class="input"
+            class="w-full h-10"
           />
         </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">
-            Callback Time <span class="text-red-500">*</span>
-          </label>
-          <input 
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">
+            Callback Time <span class="text-brand-red">*</span>
+          </Label>
+          <Input 
             v-model="formData.time"
             type="time"
             required
-            class="input"
+            class="w-full h-10"
           />
         </div>
       </div>
 
       <!-- Callback Reason -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">
-          Reason for Callback
-        </label>
-        <select 
-          v-model="formData.reason"
-          class="w-full px-3 py-2 border border-E5E7EB rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="">Select a reason...</option>
-          <option value="customer-requested">Customer Requested</option>
-          <option value="follow-up-quote">Follow up on Quote</option>
-          <option value="financing-discussion">Financing Discussion</option>
-          <option value="trade-in-evaluation">Trade-in Evaluation</option>
-          <option value="vehicle-availability">Vehicle Availability Update</option>
-          <option value="general-inquiry">General Inquiry</option>
-          <option value="other">Other</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Reason for Callback</Label>
+        <Select v-model="formData.reason">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select a reason..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="customer-requested">Customer Requested</SelectItem>
+            <SelectItem value="follow-up-quote">Follow up on Quote</SelectItem>
+            <SelectItem value="financing-discussion">Financing Discussion</SelectItem>
+            <SelectItem value="trade-in-evaluation">Trade-in Evaluation</SelectItem>
+            <SelectItem value="vehicle-availability">Vehicle Availability Update</SelectItem>
+            <SelectItem value="general-inquiry">General Inquiry</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <!-- Notes -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">
-          Callback Notes
-        </label>
-        <textarea 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Callback Notes</Label>
+        <Textarea 
           v-model="formData.notes"
-          rows="3"
+          rows="4"
           placeholder="Add any relevant notes about this callback..."
-          class="w-full px-3 py-2.5 border border-E5E7EB rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-        ></textarea>
+          class="w-full min-h-[100px] resize-none"
+        />
       </div>
 
       <!-- Assignee (optional) -->
-      <div v-if="showAssignee">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">
-          Assign To
-        </label>
-        <select 
-          v-model="formData.assigneeId"
-          class="w-full px-3 py-2 border border-E5E7EB rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option :value="null">Current Owner</option>
-          <option 
-            v-for="user in availableUsers" 
-            :key="user.id" 
-            :value="user.id"
-          >
-            {{ user.name }}
-          </option>
-        </select>
+      <div v-if="showAssignee" class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Assign To</Label>
+        <Select v-model="formData.assigneeId">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Current Owner" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem :value="null">Current Owner</SelectItem>
+            <SelectItem 
+              v-for="user in availableUsers" 
+              :key="user.id" 
+              :value="user.id"
+            >
+              {{ user.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <!-- Set Reminder -->
       <div class="flex items-center gap-2">
-        <input 
-          v-model="formData.setReminder"
-          type="checkbox"
+        <Checkbox 
+          v-model:checked="formData.setReminder"
           id="reminder"
-          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
         />
-        <label for="reminder" class="text-sm text-slate-700">
+        <Label for="reminder" class="text-sm text-body cursor-pointer">
           Set reminder 15 minutes before callback
-        </label>
+        </Label>
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -134,7 +129,18 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Checkbox,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,

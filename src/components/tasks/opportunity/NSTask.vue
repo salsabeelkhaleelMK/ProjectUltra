@@ -4,36 +4,113 @@
     :description="`Appointment was scheduled for ${appointmentDate} but customer did not show up. ${noShowMessage}`"
     :color-scheme="{ background: 'bg-yellow-50/50', border: 'border-yellow-100' }"
   >
-    <template #actions>
-      <button
-        @click="handleReschedule"
-        class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
-      >
-        <i class="fa-solid fa-calendar-plus"></i> Book Another Appointment
-      </button>
-      <button
-        @click="handleContactCustomer"
-        class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors hover:bg-surfaceSecondary"
-      >
-        <i class="fa-solid fa-phone"></i> Contact Customer
-      </button>
+    <template #content>
+      <!-- Assignment Section (only for NS1 and NS2, not NS3) -->
+      <div v-if="noShowCount < 3" class="mt-4 pt-4 border-t border-black/5">
+        <h5 class="font-semibold text-heading text-sm mb-4">Assign to</h5>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Team -->
+          <div>
+            <Label class="block text-sm font-medium text-body mb-1.5">Team <span class="text-red-600">*</span></Label>
+            <SelectMenu
+              v-model="selectedTeamId"
+              :items="teamSelectOptions"
+              placeholder="Search and select team..."
+              value-key="id"
+              class="w-full"
+            >
+              <template #item="{ item }">
+                <div class="flex items-center gap-2">
+                  <span class="text-sub">{{ item.dealership || 'No location' }}</span>
+                  <span class="text-sub">→</span>
+                  <span class="font-medium text-heading">{{ item.name }}</span>
+                </div>
+              </template>
+            </SelectMenu>
+          </div>
+
+          <!-- Salesperson -->
+          <div>
+            <Label class="block text-sm font-medium text-body mb-1.5">Salesperson <span class="text-sub text-xs">(optional)</span></Label>
+            <SelectMenu
+              v-model="selectedSalesmanId"
+              :items="salespersonSelectOptions"
+              :disabled="!selectedTeam"
+              placeholder="Search and select salesperson..."
+              value-key="id"
+              class="w-full"
+            >
+              <template #item="{ item }">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-sm shrink-0"
+                    :class="getRoleAvatarClass(item.role)"
+                  >
+                    {{ getInitials(item.name) }}
+                  </div>
+                  <span class="font-medium text-heading">{{ item.name }}</span>
+                </div>
+              </template>
+            </SelectMenu>
+          </div>
+        </div>
+
+        <!-- Notes for sellers -->
+        <div class="mt-4">
+          <Label class="block text-sm font-medium text-body mb-1.5">Note for sellers</Label>
+          <Textarea 
+            v-model="noteForSellers"
+            rows="4" 
+            class="w-full"
+            placeholder="Add any notes or instructions for the sellers..."
+          />
+        </div>
+
+        <!-- Assign Button -->
+        <div class="mt-4 flex justify-end">
+          <Button
+            variant="primary"
+            :disabled="!selectedTeam"
+            @click="handleAssignmentConfirm"
+            class="bg-primary"
+          >
+            Assign
+          </Button>
+        </div>
+      </div>
+      
+      <!-- Close as Lost Section (only for NS3) -->
+      <div v-if="noShowCount >= 3" class="mt-4 pt-4 border-t border-black/5">
+        <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+          <h5 class="font-semibold text-heading text-sm mb-4">Close Opportunity as Lost</h5>
+          <p class="text-sm text-body mb-4">
+            This is the third no-show. The opportunity should be closed as lost.
+          </p>
+          
+          <div class="flex justify-end">
+            <Button
+              label="Close Opportunity as Lost"
+              variant="primary"
+              size="small"
+              @click="handleCloseAsLost"
+            />
+          </div>
+        </div>
+      </div>
     </template>
     
-    <template #survey>
-      <SurveyWidget
-        :questions="surveyQuestions"
-        @survey-completed="handleSurveyCompleted"
-        @survey-refused="handleSurveyRefused"
-        @not-responding="handleNotResponding"
-      />
-    </template>
   </BaseTaskWidget>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import BaseTaskWidget from '@/components/tasks/shared/BaseTaskWidget.vue'
-import SurveyWidget from '@/components/customer/SurveyWidget.vue'
+import { Button, Label, Textarea } from '@motork/component-library/future/primitives'
+import { SelectMenu } from '@motork/component-library/future/components'
+import { useUsersStore } from '@/stores/users'
+import { useUserStore } from '@/stores/user'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 
 const props = defineProps({
   opportunity: {
@@ -46,7 +123,183 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['contact-customer', 'reschedule', 'survey-completed', 'survey-refused', 'not-responding', 'auto-close-lost', 'set-callback'])
+const emit = defineEmits(['not-responding', 'auto-close-lost', 'set-callback', 'assigned', 'close-as-lost'])
+
+const usersStore = useUsersStore()
+const userStore = useUserStore()
+const opportunitiesStore = useOpportunitiesStore()
+
+// Assignment state (similar to LQTask.vue)
+const selectedTeam = ref(null)
+const selectedSalesman = ref(null)
+const noteForSellers = ref('')
+
+const assignableUsers = computed(() => usersStore.assignableUsers)
+const assignableTeams = computed(() => usersStore.assignableTeams)
+
+const teamSelectOptions = computed(() => {
+  return assignableTeams.value.map(team => ({
+    ...team,
+    label: `${team.dealership || 'No location'} → ${team.name}`,
+    value: team.id
+  }))
+})
+
+const salespersonSelectOptions = computed(() => {
+  if (!selectedTeam.value) return []
+  
+  const team = selectedTeam.value
+  const users = assignableUsers.value?.filter(user => 
+    user.team === team.name || user.teamId === team.id
+  ) || []
+  
+  return users.map(user => ({
+    ...user,
+    label: user.name,
+    value: user.id
+  }))
+})
+
+const selectedTeamId = computed({
+  get: () => selectedTeam.value?.id || null,
+  set: (id) => {
+    if (!id) {
+      selectedTeam.value = null
+      return
+    }
+    const team = assignableTeams.value?.find(t => t.id === id)
+    selectedTeam.value = team || null
+    // Reset salesman when team changes
+    if (team) {
+      selectedSalesman.value = null
+    }
+  }
+})
+
+const selectedSalesmanId = computed({
+  get: () => selectedSalesman.value?.id || null,
+  set: (id) => {
+    if (!id) {
+      selectedSalesman.value = null
+      return
+    }
+    const user = salespersonSelectOptions.value.find(u => u.id === id)
+    selectedSalesman.value = user || null
+  }
+})
+
+// Helper functions
+const getInitials = (name) => {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
+}
+
+const getRoleAvatarClass = (role) => {
+  const classes = {
+    'manager': 'bg-blue-100 text-blue-700',
+    'salesman': 'bg-purple-100 text-purple-700',
+    'operator': 'bg-orange-100 text-orange-700'
+  }
+  return classes[role] || 'bg-surfaceSecondary text-body'
+}
+
+// Assignment handler
+async function handleAssignmentConfirm() {
+  if (!selectedTeam.value) return
+  
+  const assigneeName = selectedSalesman.value?.name || selectedTeam.value?.name
+  
+  // Update opportunity with assignment
+  const updateData = {
+    assignee: assigneeName
+  }
+  
+  // Add assignment note if provided
+  if (noteForSellers.value) {
+    updateData.assignmentNote = noteForSellers.value
+  }
+  
+  await opportunitiesStore.updateOpportunity(props.opportunity.id, updateData)
+  
+  // Create activity for assignment
+  await opportunitiesStore.addActivity(props.opportunity.id, {
+    type: 'assignment',
+    user: userStore.currentUser?.name || 'You',
+    action: 'assigned opportunity',
+    content: `Opportunity assigned to ${assigneeName}${noteForSellers.value ? ` with note: ${noteForSellers.value}` : ''}`,
+    timestamp: new Date().toISOString()
+  })
+  
+  // Emit assignment event
+  emit('assigned', {
+    opportunity: props.opportunity,
+    assignee: assigneeName,
+    note: noteForSellers.value
+  })
+  
+  // Reset assignment form
+  selectedTeam.value = null
+  selectedSalesman.value = null
+  noteForSellers.value = ''
+}
+
+// Handle close as lost for NS3
+function handleCloseAsLost() {
+  emit('close-as-lost', {
+    opportunity: props.opportunity,
+    reason: 'Multiple no shows'
+  })
+}
+
+// Initialize assignment from current opportunity assignee
+onMounted(() => {
+  if (props.opportunity.assignee && !selectedTeam.value && !selectedSalesman.value) {
+    const assigneeUser = assignableUsers.value?.find(u => u.name === props.opportunity.assignee)
+    const assigneeTeam = assignableTeams.value?.find(t => t.name === props.opportunity.assignee)
+    
+    if (assigneeUser) {
+      const userTeam = assignableTeams.value?.find(team => 
+        team.name === assigneeUser.team || team.id === assigneeUser.teamId
+      )
+      if (userTeam) {
+        selectedTeam.value = userTeam
+        selectedSalesman.value = assigneeUser
+      }
+    } else if (assigneeTeam) {
+      selectedTeam.value = assigneeTeam
+    }
+  }
+  
+  // Pre-populate assignment note if available
+  if (props.opportunity.assignmentNote) {
+    noteForSellers.value = props.opportunity.assignmentNote
+  }
+})
+
+// Watch for opportunity assignee changes
+watch(() => props.opportunity.assignee, (newAssignee) => {
+  if (newAssignee && !selectedTeam.value && !selectedSalesman.value) {
+    const assigneeUser = assignableUsers.value?.find(u => u.name === newAssignee)
+    const assigneeTeam = assignableTeams.value?.find(t => t.name === newAssignee)
+    
+    if (assigneeUser) {
+      const userTeam = assignableTeams.value?.find(team => 
+        team.name === assigneeUser.team || team.id === assigneeUser.teamId
+      )
+      if (userTeam) {
+        selectedTeam.value = userTeam
+        selectedSalesman.value = assigneeUser
+      }
+    } else if (assigneeTeam) {
+      selectedTeam.value = assigneeTeam
+    }
+  }
+})
 
 const noShowCount = computed(() => {
   return props.scheduledAppointment?.noShowCount || 0
@@ -54,9 +307,10 @@ const noShowCount = computed(() => {
 
 const noShowTitle = computed(() => {
   const count = noShowCount.value
-  if (count === 0) return 'No-Show Follow-up'
-  if (count >= 3) return `No-Show #${count} - Final Warning`
-  return `No-Show #${count} Follow-up`
+  if (count === 0 || count === 1) return 'NS1'
+  if (count === 2) return 'NS2'
+  if (count >= 3) return 'NS3'
+  return `NS${count}`
 })
 
 const noShowMessage = computed(() => {
@@ -70,33 +324,6 @@ const noShowMessage = computed(() => {
   return 'Follow up with customer to understand the situation and book another appointment.'
 })
 
-const surveyQuestions = [
-  {
-    key: 'contactStatus',
-    label: 'Were you able to reach the customer?',
-    type: 'radio',
-    options: ['Yes', 'No', 'Left message']
-  },
-  {
-    key: 'noShowReason',
-    label: 'Reason for no-show?',
-    type: 'select',
-    options: ['Emergency', 'Forgot', 'Changed mind', 'No response', 'Schedule conflict', 'Other']
-  },
-  {
-    key: 'nextAction',
-    label: 'Next action?',
-    type: 'select',
-    options: ['Reschedule appointment', 'Customer will call back', 'Continue follow-up', 'Other']
-  },
-  {
-    key: 'notes',
-    label: 'Additional notes',
-    type: 'text',
-    placeholder: 'Document the conversation and any relevant details...'
-  }
-]
-
 const appointmentDate = computed(() => {
   if (!props.scheduledAppointment?.start) return 'unknown date'
   const date = new Date(props.scheduledAppointment.start)
@@ -109,47 +336,5 @@ const appointmentDate = computed(() => {
   })
 })
 
-const handleContactCustomer = () => {
-  emit('contact-customer', props.opportunity)
-}
-
-const handleReschedule = () => {
-  const count = noShowCount.value
-  
-  // NS3 or higher - trigger auto-close
-  if (count >= 3) {
-    emit('auto-close-lost', { 
-      opportunity: props.opportunity, 
-      reason: `Automatically closed after ${count} no-shows` 
-    })
-  } 
-  // NS1 or NS2 - set callback (transition to "To be Called Back")
-  else if (count === 1 || count === 2) {
-    // Set callback for 2 days from now
-    const callbackDate = new Date()
-    callbackDate.setDate(callbackDate.getDate() + 2)
-    
-    emit('set-callback', { 
-      opportunity: props.opportunity, 
-      callbackDate: callbackDate.toISOString() 
-    })
-  }
-  // Default - just reschedule
-  else {
-    emit('reschedule', props.opportunity)
-  }
-}
-
-const handleSurveyCompleted = (responses) => {
-  emit('survey-completed', { opportunity: props.opportunity, responses })
-}
-
-const handleSurveyRefused = () => {
-  emit('survey-refused', { opportunity: props.opportunity })
-}
-
-const handleNotResponding = () => {
-  emit('not-responding', { opportunity: props.opportunity })
-}
 </script>
 

@@ -43,8 +43,16 @@ export function useTaskFilters(showClosed) {
     })
     
     const opportunities = opportunitiesStore.opportunities.map(opp => {
+      // Calculate displayStage for opportunity
+      const displayStage = getDisplayStage(opp, 'opportunity')
+      
       // Ensure customer object is preserved
-      const task = { ...opp, type: 'opportunity', compositeId: `opportunity-${opp.id}` }
+      const task = { 
+        ...opp, 
+        type: 'opportunity', 
+        compositeId: `opportunity-${opp.id}`,
+        displayStage
+      }
       // Explicitly ensure customer is present
       if (!task.customer && opp.customer) {
         task.customer = opp.customer

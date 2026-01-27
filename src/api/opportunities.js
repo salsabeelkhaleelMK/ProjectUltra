@@ -170,6 +170,79 @@ export const createOfferForOpportunity = async (opportunityId, offerData) => {
   return { opportunity: updatedOpportunity, activity: offerActivity }
 }
 
+// Add offer to opportunity's offers array
+export const addOffer = async (opportunityId, offerData) => {
+  await delay()
+  
+  const opportunity = await opportunityService.findById(opportunityId)
+  if (!opportunity) throw new Error('Opportunity not found')
+  
+  // Initialize offers array if it doesn't exist
+  if (!opportunity.offers) opportunity.offers = []
+  
+  const newOffer = {
+    id: offerData.id || `offer-${Date.now()}`,
+    createdAt: offerData.createdAt || new Date().toISOString(),
+    vehicleBrand: offerData.vehicleBrand || '',
+    vehicleModel: offerData.vehicleModel || '',
+    vehicleYear: offerData.vehicleYear || '',
+    price: offerData.price || 0,
+    status: offerData.status || 'active',
+    data: offerData.data || {}
+  }
+  
+  opportunity.offers.push(newOffer)
+  
+  // If first offer, transition to In Negotiation with Offer Sent substatus
+  if (opportunity.offers.length === 1) {
+    opportunity.stage = 'In Negotiation'
+    opportunity.negotiationSubstatus = 'Offer Sent'
+  }
+  
+  opportunity.lastActivity = new Date().toISOString()
+  
+  await opportunityRepository.update(opportunityId, opportunity)
+  return newOffer
+}
+
+// Mark offer as accepted
+export const markOfferAccepted = async (opportunityId, offerId) => {
+  await delay()
+  
+  const opportunity = await opportunityService.findById(opportunityId)
+  if (!opportunity) throw new Error('Opportunity not found')
+  if (!opportunity.offers) throw new Error('No offers found')
+  
+  const offer = opportunity.offers.find(o => o.id === offerId)
+  if (!offer) throw new Error('Offer not found')
+  
+  offer.status = 'accepted'
+  opportunity.negotiationSubstatus = 'Offer Accepted'
+  opportunity.stage = 'In Negotiation'
+  opportunity.lastActivity = new Date().toISOString()
+  
+  await opportunityRepository.update(opportunityId, opportunity)
+  return opportunity
+}
+
+// Delete/archive offer
+export const deleteOffer = async (opportunityId, offerId) => {
+  await delay()
+  
+  const opportunity = await opportunityService.findById(opportunityId)
+  if (!opportunity) throw new Error('Opportunity not found')
+  if (!opportunity.offers) throw new Error('No offers found')
+  
+  const offer = opportunity.offers.find(o => o.id === offerId)
+  if (!offer) throw new Error('Offer not found')
+  
+  offer.status = 'archived'
+  opportunity.lastActivity = new Date().toISOString()
+  
+  await opportunityRepository.update(opportunityId, opportunity)
+  return opportunity
+}
+
 // Conversion helpers
 export const generateOpportunityId = () => {
   return opportunityRepository.generateId()

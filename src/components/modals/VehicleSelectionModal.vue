@@ -2,12 +2,12 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-6xl">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-6xl max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Select Vehicle</DialogTitle>
         </DialogHeader>
 
-        <div class="space-y-6">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Section 1: Recommended Vehicles (includes requested if available) -->
       <div v-if="allRecommendedVehicles.length">
         <h3 class="text-sm font-bold text-heading mb-3 flex items-center gap-2">
@@ -85,41 +85,41 @@
           </button>
           
           <!-- Custom Configuration Form -->
-          <div v-if="showConfigureForm" class="mt-4 space-y-3">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              <div>
-                <label class="block text-xs font-medium text-body mb-1">Brand</label>
-                <input
+          <div v-if="showConfigureForm" class="mt-4 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Brand</Label>
+                <Input
                   v-model="customVehicle.brand"
                   type="text"
-                  class="input"
+                  class="w-full h-10"
                   placeholder="e.g., Audi"
                 />
               </div>
-              <div>
-                <label class="block text-xs font-medium text-body mb-1">Model</label>
-                <input
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Model</Label>
+                <Input
                   v-model="customVehicle.model"
                   type="text"
-                  class="input"
+                  class="w-full h-10"
                   placeholder="e.g., e-tron GT"
                 />
               </div>
-              <div>
-                <label class="block text-xs font-medium text-body mb-1">Year</label>
-                <input
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Year</Label>
+                <Input
                   v-model="customVehicle.year"
                   type="number"
-                  class="input"
+                  class="w-full h-10"
                   placeholder="2024"
                 />
               </div>
-              <div>
-                <label class="block text-xs font-medium text-body mb-1">Price (€)</label>
-                <input
+              <div class="space-y-2">
+                <Label class="block text-sm font-semibold text-heading">Price (€)</Label>
+                <Input
                   v-model="customVehicle.price"
                   type="number"
-                  class="input"
+                  class="w-full h-10"
                   placeholder="98000"
                 />
               </div>
@@ -137,9 +137,9 @@
           </div>
         </div>
       </div>
-    </div>
-    
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        </div>
+
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -163,7 +163,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,

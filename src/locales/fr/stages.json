@@ -4,6 +4,7 @@
     "awaitingAppointment": "En Attente de Rendez-vous",
     "toBeCalledBack": "À Rappeler",
     "inNegotiation": "En Négociation",
+    "inNegotiationContractPending": "En Négociation - Contrat en Attente",
     "needsFollowUp": "Nécessite un Suivi",
     "contractPending": "Contrat en Attente",
     "closedWon": "Fermé Gagné",

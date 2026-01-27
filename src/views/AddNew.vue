@@ -1,48 +1,37 @@
 <template>
-  <div class="page-container">
-    <!-- Header using Motork Card -->
-    <Card class="border-b border-border rounded-none">
-      <CardHeader class="px-4 md:px-8 py-4">
-        <CardTitle>Add New Customer</CardTitle>
-      </CardHeader>
-    </Card>
+  <div class="page-container overflow-y-auto">
+    <!-- Header -->
+    <PageHeader title="Add New Customer" />
     
-    <div class="px-4 md:px-8 py-4">
+    <div class="px-4 md:px-8 py-8">
       <div class="max-w-6xl mx-auto">
-        <!-- Tabs using Motork Button components -->
-        <div class="flex gap-0 md:gap-8 text-fluid-sm font-medium text-sub py-1 mb-4 border-b border-border">
-          <Button
-            v-for="tab in tabs"
-            :key="tab.key"
-            @click="activeTab = tab.key"
-            variant="ghost"
-            size="small"
-            class="flex-1 md:flex-none pb-2 border-b-2 rounded-none"
-            :class="activeTab === tab.key 
-              ? 'border-brand-dark text-brand-darkDarker' 
-              : 'border-transparent text-sub hover:text-body hover:border-border'"
-          >
-            <div class="flex items-center justify-center gap-1.5">
-              <i :class="[getTabIcon(tab.key), 'text-sm', activeTab === tab.key ? 'text-brand-darkDarker' : 'text-sub']"></i>
-              <span class="hidden md:inline whitespace-nowrap" :class="activeTab === tab.key ? 'text-brand-darkDarker' : 'text-sub'">{{ tab.label }}</span>
-            </div>
-          </Button>
-        </div>
+        <!-- Tabs using Motork Tabs components -->
+        <Tabs v-model="activeTab" class="w-full">
+          <TabsList class="w-full justify-start border-b border-border bg-transparent mb-8">
+            <TabsTrigger
+              v-for="tab in tabs"
+              :key="tab.key"
+              :value="tab.key"
+              class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-primary data-[state=active]:text-brand-primary rounded-none pb-3 px-6 h-auto"
+            >
+              <i :class="[getTabIcon(tab.key), 'text-sm']"></i>
+              <span class="hidden md:inline whitespace-nowrap font-semibold">{{ tab.label }}</span>
+            </TabsTrigger>
+          </TabsList>
 
-        <!-- Tab Content -->
-        <div class="mt-6">
-          <div v-if="activeTab === 'manual'">
+          <!-- Tab Content -->
+          <TabsContent value="manual">
             <ManualTab ref="manualTabRef" @submit="handleSubmit" />
-          </div>
+          </TabsContent>
 
-          <div v-if="activeTab === 'upload'">
+          <TabsContent value="upload">
             <UploadTab />
-          </div>
+          </TabsContent>
 
-          <div v-if="activeTab === 'integrations'">
+          <TabsContent value="integrations">
             <IntegrationsTab />
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   </div>
@@ -54,8 +43,8 @@ import { useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
-import { Button } from '@motork/component-library'
-import { Card, CardHeader, CardTitle } from '@motork/component-library/future/primitives'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@motork/component-library/future/primitives'
+import PageHeader from '@/components/layout/PageHeader.vue'
 import ManualTab from '@/components/addnew/ManualTab.vue'
 import UploadTab from '@/components/addnew/UploadTab.vue'
 import IntegrationsTab from '@/components/addnew/IntegrationsTab.vue'

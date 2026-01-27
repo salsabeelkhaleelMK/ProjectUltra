@@ -2,95 +2,100 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ task?.requestedCar ? 'Edit Requested Car' : 'Add Requested Car' }}</DialogTitle>
         </DialogHeader>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Brand -->
-      <div>
-        <label class="block label-upper mb-2">Brand *</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Brand <span class="text-brand-red">*</span></Label>
+        <Input 
           v-model="formData.brand"
           type="text" 
           required
           placeholder="e.g., BMW, Mercedes-Benz, Audi" 
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Model -->
-      <div>
-        <label class="block label-upper mb-2">Model *</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Model <span class="text-brand-red">*</span></Label>
+        <Input 
           v-model="formData.model"
           type="text" 
           required
           placeholder="e.g., 3 Series, C-Class, A4" 
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Year -->
-      <div>
-        <label class="block label-upper mb-2">Year *</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Year <span class="text-brand-red">*</span></Label>
+        <Input 
           v-model.number="formData.year"
           type="number" 
           required
           min="1900"
           :max="new Date().getFullYear() + 1"
           placeholder="e.g., 2024" 
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Price (Optional) -->
-      <div>
-        <label class="block label-upper mb-2">Price (Optional)</label>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Price (Optional)</Label>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sub">€</span>
-          <input 
+          <Input 
             v-model.number="formData.price"
             type="number" 
             min="0"
             step="1000"
             placeholder="45000" 
-            class="input pl-8"
+            class="w-full h-10 pl-8"
           />
         </div>
       </div>
       
       <!-- Request Type -->
-      <div>
-        <label class="block label-upper mb-2">Request Type</label>
-        <select v-model="formData.requestType" class="input">
-          <option value="Quotation">Quotation</option>
-          <option value="Test Drive">Test Drive</option>
-          <option value="Generic Sales">Generic Sales</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Request Type</Label>
+        <Select v-model="formData.requestType">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select request type..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Quotation">Quotation</SelectItem>
+            <SelectItem value="Test Drive">Test Drive</SelectItem>
+            <SelectItem value="Generic Sales">Generic Sales</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <!-- Request Message -->
-      <div>
-        <label class="block label-upper mb-2">Request Message (Optional)</label>
-        <textarea 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Request Message (Optional)</Label>
+        <Textarea 
           v-model="formData.requestMessage"
-          rows="4"
+          rows="5"
           placeholder="Customer's message or notes about the vehicle request..."
-          class="input resize-none"
-        ></textarea>
+          class="w-full min-h-[120px] resize-none"
+        />
       </div>
       
       <!-- Image URL (Optional) -->
-      <div>
-        <label class="block label-upper mb-2">Image URL (Optional)</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Image URL (Optional)</Label>
+        <Input 
           v-model="formData.image"
           type="url" 
           placeholder="https://example.com/car-image.jpg" 
-          class="input"
+          class="w-full h-10"
         />
         <p class="text-xs text-sub mt-1">Enter a URL to an image of the vehicle</p>
       </div>
@@ -106,56 +111,64 @@
           Advanced Details (Optional)
         </button>
         
-        <div v-if="showAdvanced" class="mt-4 space-y-4">
+        <div v-if="showAdvanced" class="mt-4 space-y-6">
           <!-- Dealership -->
-          <div>
-            <label class="block label-upper mb-2">Dealership</label>
-            <input 
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">Dealership</Label>
+            <Input 
               v-model="formData.dealership"
               type="text" 
               placeholder="e.g., Milano, Berlin" 
-              class="input"
+              class="w-full h-10"
             />
           </div>
           
           <!-- Fuel Type -->
-          <div>
-            <label class="block label-upper mb-2">Fuel Type</label>
-            <select v-model="formData.fuelType" class="input">
-              <option value="">Select fuel type</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Electric">Electric</option>
-              <option value="Hybrid">Hybrid</option>
-            </select>
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">Fuel Type</Label>
+            <Select v-model="formData.fuelType">
+              <SelectTrigger class="w-full h-10">
+                <SelectValue placeholder="Select fuel type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Petrol">Petrol</SelectItem>
+                <SelectItem value="Diesel">Diesel</SelectItem>
+                <SelectItem value="Electric">Electric</SelectItem>
+                <SelectItem value="Hybrid">Hybrid</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <!-- Gear Type -->
-          <div>
-            <label class="block label-upper mb-2">Gear Type</label>
-            <select v-model="formData.gearType" class="input">
-              <option value="">Select gear type</option>
-              <option value="Manual">Manual</option>
-              <option value="Automatic">Automatic</option>
-            </select>
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">Gear Type</Label>
+            <Select v-model="formData.gearType">
+              <SelectTrigger class="w-full h-10">
+                <SelectValue placeholder="Select gear type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Manual">Manual</SelectItem>
+                <SelectItem value="Automatic">Automatic</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <!-- Kilometers -->
-          <div>
-            <label class="block label-upper mb-2">Kilometers</label>
-            <input 
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">Kilometers</Label>
+            <Input 
               v-model.number="formData.kilometers"
               type="number" 
               min="0"
               placeholder="e.g., 50000" 
-              class="input"
+              class="w-full h-10"
             />
           </div>
+          </div>
+          </div>
         </div>
-      </div>
-        </form>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -179,7 +192,17 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,

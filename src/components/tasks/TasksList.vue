@@ -7,36 +7,42 @@
       <div class="page-header-main">
         <div class="page-header-content">
           <div class="page-header-title-container">
-            <h1 class="page-header-title">{{ title }}</h1>
+            <h1 class="page-header-title">{{ displayTitle }}</h1>
           </div>
           
-          <!-- View Toggle -->
+          <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
           <div class="page-header-actions">
             <div class="bg-white border border-black/5 p-0.5 rounded-btn inline-flex gap-0.5">
-              <button
-                @click="$emit('view-change', 'table')"
-                :class="[
-                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
-                  viewMode === 'table' 
-                    ? 'bg-brand-gray text-heading shadow-sm' 
-                    : 'text-sub hover:text-heading'
-                ]"
-                title="Table View"
-              >
-                <Table :size="14" />
-              </button>
-              <button
+              <Button
+                variant="secondary"
+                size="icon"
                 @click="$emit('view-change', 'card')"
                 :class="[
-                  'h-7 px-2.5 rounded-md transition-all flex items-center justify-center',
-                  viewMode === 'card' 
-                    ? 'bg-brand-gray text-heading shadow-sm' 
+                  'h-7 w-7',
+                  viewMode === 'card'
+                    ? 'bg-brand-gray text-heading shadow-sm'
                     : 'text-sub hover:text-heading'
                 ]"
                 title="Card View"
+                :aria-pressed="viewMode === 'card'"
               >
                 <LayoutGrid :size="14" />
-              </button>
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                @click="$emit('view-change', 'table')"
+                :class="[
+                  'h-7 w-7',
+                  viewMode === 'table'
+                    ? 'bg-brand-gray text-heading shadow-sm'
+                    : 'text-sub hover:text-heading'
+                ]"
+                title="Table View"
+                :aria-pressed="viewMode === 'table'"
+              >
+                <Table :size="14" />
+              </Button>
             </div>
           </div>
         </div>
@@ -114,6 +120,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Table, LayoutGrid } from 'lucide-vue-next'
+import { Button } from '@motork/component-library/future/primitives'
 import TaskCard from '@/components/tasks/TaskCard.vue'
 import TaskFilters from '@/components/tasks/TaskFilters.vue'
 
@@ -138,7 +145,20 @@ const emit = defineEmits(['select', 'menu-click', 'menu-close', 'filter-change',
 
 const searchQuery = ref(props.initialSearchQuery)
 const scrollContainer = ref(null)
-const currentSort = ref('recent-first')
+const currentSort = ref('')
+
+// Ensure title is always a string (handle case where function might be passed)
+const displayTitle = computed(() => {
+  if (typeof props.title === 'string') {
+    return props.title
+  }
+  if (typeof props.title === 'function') {
+    // If a function is passed, return the default title instead
+    console.warn('TasksList: title prop received a function instead of a string. Using default title.')
+    return 'Tasks'
+  }
+  return props.title || 'Tasks'
+})
 
 // Watch for initialSearchQuery changes
 watch(() => props.initialSearchQuery, (newVal) => {

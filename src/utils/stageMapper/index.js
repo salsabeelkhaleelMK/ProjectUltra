@@ -121,7 +121,8 @@ export function getStageColor(displayStage, entityType = 'opportunity') {
   // Match styling from task status chip: bg-{color}-100 text-{color}-700 (no border in color class, border is added separately)
   const opportunityColors = {
     [OPPORTUNITY_STAGES.QUALIFIED]: 'bg-blue-100 text-blue-700',
-    [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: 'bg-purple-100 text-purple-700',
+    [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: 'bg-blue-100 text-blue-700',
+    [OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED]: 'bg-purple-100 text-purple-700',
     [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: 'bg-indigo-100 text-indigo-700',
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: 'bg-yellow-100 text-yellow-700',
     [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: 'bg-pink-100 text-pink-700',

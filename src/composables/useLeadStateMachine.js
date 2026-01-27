@@ -162,7 +162,12 @@ export const LEAD_STATE_CONFIG = {
 export function getLeadStateConfig(lead) {
   // Always calculate displayStage from the lead object to ensure correct mapping
   const displayStage = getDisplayStage(lead, 'lead')
-  return LEAD_STATE_CONFIG[displayStage] || LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
+  const config = LEAD_STATE_CONFIG[displayStage]
+  if (!config) {
+    console.warn(`No state config found for lead stage: ${displayStage}`)
+    return null
+  }
+  return config
 }
 
 // Transition handlers - define what happens when transitioning between states
@@ -312,13 +317,18 @@ export function useLeadStateMachine(lead) {
   })
   
   const stateConfig = computed(() => {
-    // Use the computed displayStage to ensure consistency with defensive logic
+    // Use the computed displayStage to ensure consistency
     const stage = displayStage.value
     if (!stage) {
-      return LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
+      console.warn('No display stage found for lead')
+      return null
     }
     const config = LEAD_STATE_CONFIG[stage]
-    return config || LEAD_STATE_CONFIG[LEAD_STAGES.NEW]
+    if (!config) {
+      console.warn(`No state config found for lead stage: ${stage}`)
+      return null
+    }
+    return config
   })
   
   const isClosedState = computed(() => {

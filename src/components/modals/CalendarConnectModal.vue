@@ -2,14 +2,14 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Connect Calendar</DialogTitle>
-          <DialogDescription>Sync your external calendars to see all events in one place.</DialogDescription>
         </DialogHeader>
 
-        <!-- Connecting State -->
-        <div v-if="connectingTo" class="text-center py-8">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
+          <!-- Connecting State -->
+          <div v-if="connectingTo" class="text-center py-8 w-full">
       <div
         class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center animate-pulse"
         :class="connectingTo === 'google' ? 'bg-red-100' : 'bg-blue-100'"
@@ -92,9 +92,10 @@
         </div>
         <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all"></i>
       </button>
-    </div>
+          </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Close"
             variant="outline"
@@ -109,11 +110,10 @@
 </template>
 
 <script setup>
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

@@ -2,61 +2,61 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Mark as Delivered</DialogTitle>
-          <DialogDescription>Record the vehicle delivery date and details</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Delivery Date -->
-      <div>
-        <label class="block label-upper mb-2">Delivery Date</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Delivery Date</Label>
+        <Input 
           type="date"
           v-model="deliveryDate"
           :max="maxDate"
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Delivery Time -->
-      <div>
-        <label class="block label-upper mb-2">Time (Optional)</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Time (Optional)</Label>
+        <Input 
           type="time"
           v-model="deliveryTime"
-          class="input"
+          class="w-full h-10"
         />
       </div>
       
       <!-- Delivery Location -->
-      <div>
-        <label class="block label-upper mb-2">Delivery Location</label>
-        <select 
-          v-model="deliveryLocation"
-          class="input"
-        >
-          <option value="">Select location...</option>
-          <option value="Dealership">At Dealership</option>
-          <option value="Customer Address">Customer Address</option>
-          <option value="Other">Other Location</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Delivery Location</Label>
+        <Select v-model="deliveryLocation">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select location..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Dealership">At Dealership</SelectItem>
+            <SelectItem value="Customer Address">Customer Address</SelectItem>
+            <SelectItem value="Other">Other Location</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <!-- Notes -->
-      <div>
-        <label class="block label-upper mb-2">Delivery Notes</label>
-        <textarea 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Delivery Notes</Label>
+        <Textarea 
           v-model="notes"
-          rows="3"
+          rows="4"
           placeholder="Add any relevant delivery details, customer feedback, etc..."
-          class="input resize-none"
-        ></textarea>
+          class="w-full min-h-[100px] resize-none"
+        />
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -80,11 +80,20 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

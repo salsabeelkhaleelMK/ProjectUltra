@@ -5,47 +5,52 @@
       <template #actions>
         <!-- Mobile Filter Button -->
         <div class="lg:hidden flex items-center gap-2">
-          <button
+          <Button
             @click="showFilterDrawer = true"
-            class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
+            variant="outline"
+            size="small"
+            class="flex items-center gap-2"
           >
-            <i class="fa-solid fa-filter text-sub group-hover:text-brand-red"></i>
+            <i class="fa-solid fa-filter text-sm"></i>
             <span class="hidden sm:inline">Filters</span>
-          </button>
-          <span 
-            v-if="activeFilterCount > 0" 
-            class="w-5 h-5 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center"
-          >
-            {{ activeFilterCount }}
-          </span>
+          </Button>
+          <Badge
+            v-if="activeFilterCount > 0"
+            :text="String(activeFilterCount)"
+            theme="primary"
+            size="small"
+          />
         </div>
         
         <!-- Connect Calendar Button (Secondary) -->
         <div class="flex items-center gap-2">
-          <button
+          <Button
             @click="showConnectModal = true"
-            class="group flex items-center gap-2 rounded-2xl border border-E5E7EB px-3 py-1.5 text-fluid-sm font-medium text-body hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
-            :class="{ 'bg-red-50 border-red-200 text-brand-red': connectedCalendars.length > 0 }"
+            variant="outline"
+            size="small"
+            class="flex items-center gap-2"
           >
-            <i class="fa-solid fa-link text-sub group-hover:text-brand-red" :class="{ 'text-brand-red': connectedCalendars.length > 0 }"></i>
+            <i class="fa-solid fa-link text-sm"></i>
             <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
-          </button>
-          <span 
-            v-if="connectedCalendars.length > 0" 
-            class="w-5 h-5 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center"
-          >
-            {{ connectedCalendars.length }}
-          </span>
+          </Button>
+          <Badge
+            v-if="connectedCalendars.length > 0"
+            :text="String(connectedCalendars.length)"
+            theme="success"
+            size="small"
+          />
         </div>
         
         <!-- New Event Button (Secondary) -->
-        <button
+        <Button
           @click="showCreateEventModal = true"
-          class="group flex items-center gap-2 rounded-2xl border border-gray-200 px-3 py-1.5 text-fluid-sm font-medium text-gray-600 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          variant="outline"
+          size="small"
+          class="flex items-center gap-2"
         >
-            <i class="fa-solid fa-plus text-sub group-hover:text-brand-red"></i>
+          <i class="fa-solid fa-plus text-sm"></i>
           <span class="hidden sm:inline">New Event</span>
-        </button>
+        </Button>
       </template>
       <template v-if="appliedFilterChips.length > 0" #bottom>
         <!-- Applied Filter Chips -->
@@ -189,7 +194,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { fetchCalendarEvents, fetchCalendarFilterOptions, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/api/calendar'
 import CalendarConnectModal from '@/components/modals/CalendarConnectModal.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import { Button, Badge } from '@motork/component-library'
+import { Button, Badge } from '@motork/component-library/future/primitives'
 import { useUserStore } from '@/stores/user'
 
 // New sub-components

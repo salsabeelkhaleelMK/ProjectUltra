@@ -4,6 +4,7 @@
     "awaitingAppointment": "Wachtend op Afspraak",
     "toBeCalledBack": "Terugbellen",
     "inNegotiation": "In Onderhandeling",
+    "inNegotiationContractPending": "In Onderhandeling - Contract In Afwachting",
     "needsFollowUp": "Nazorg Vereist",
     "contractPending": "Contract In Afwachting",
     "closedWon": "Gesloten Gewonnen",

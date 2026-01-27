@@ -37,7 +37,23 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     error.value = null
     try {
       const result = await opportunitiesApi.fetchOpportunities(filters)
-      opportunities.value = result.data || result
+      const opps = result.data || result
+      
+      // Check and auto-transition negotiation substatus for each opportunity
+      const { checkNegotiationSubstatusTransition } = await import('@/utils/stageMapper/opportunityStages')
+      for (const opp of opps) {
+        const newSubstatus = checkNegotiationSubstatusTransition(opp)
+        if (newSubstatus !== opp.negotiationSubstatus) {
+          // Auto-transition detected - update silently
+          opp.negotiationSubstatus = newSubstatus
+          // Update in database (async, don't wait)
+          opportunitiesApi.updateOpportunity(opp.id, { negotiationSubstatus: newSubstatus }).catch(err => {
+            console.error('Failed to auto-update negotiation substatus:', err)
+          })
+        }
+      }
+      
+      opportunities.value = opps
       return result
     } catch (err) {
       error.value = err.message
@@ -52,6 +68,19 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     error.value = null
     try {
       const loadedOpportunity = await opportunitiesApi.fetchOpportunityById(id)
+      
+      // Check and auto-transition negotiation substatus
+      const { checkNegotiationSubstatusTransition } = await import('@/utils/stageMapper/opportunityStages')
+      const newSubstatus = checkNegotiationSubstatusTransition(loadedOpportunity)
+      if (newSubstatus !== loadedOpportunity.negotiationSubstatus) {
+        // Auto-transition detected - update silently
+        loadedOpportunity.negotiationSubstatus = newSubstatus
+        // Update in database (async, don't wait)
+        opportunitiesApi.updateOpportunity(id, { negotiationSubstatus: newSubstatus }).catch(err => {
+          console.error('Failed to auto-update negotiation substatus:', err)
+        })
+      }
+      
       currentOpportunity.value = loadedOpportunity
       
       // Sync back to opportunities list to keep list and detail view in sync
@@ -171,6 +200,155 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
 
+  // Add offer to opportunity
+  const addOffer = async (opportunityId, offerData) => {
+    loading.value = true
+    error.value = null
+    try {
+      const newOffer = {
+        id: `offer-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        vehicleBrand: offerData.vehicleBrand || '',
+        vehicleModel: offerData.vehicleModel || '',
+        vehicleYear: offerData.vehicleYear || '',
+        price: offerData.price || 0,
+        status: 'active',
+        data: offerData.data || {}
+      }
+      
+      const result = await opportunitiesApi.addOffer(opportunityId, newOffer)
+      
+      // Update local state
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp) {
+        if (!opp.offers) opp.offers = []
+        opp.offers.push(result)
+        
+        // Set stage and negotiationSubstatus if first offer
+        if (opp.offers.length === 1) {
+          opp.stage = 'In Negotiation'
+          opp.negotiationSubstatus = 'Offer Sent'
+        }
+      }
+      
+      if (currentOpportunity.value?.id === opportunityId) {
+        if (!currentOpportunity.value.offers) currentOpportunity.value.offers = []
+        currentOpportunity.value.offers.push(result)
+        
+        // Set stage and negotiationSubstatus if first offer
+        if (currentOpportunity.value.offers.length === 1) {
+          currentOpportunity.value.stage = 'In Negotiation'
+          currentOpportunity.value.negotiationSubstatus = 'Offer Sent'
+        }
+      }
+      
+      // Add activity for offer creation
+      await addActivity(opportunityId, {
+        type: 'offer',
+        user: 'You',
+        action: 'created an offer',
+        content: `Offer created: ${newOffer.vehicleBrand} ${newOffer.vehicleModel} (${newOffer.vehicleYear}) - € ${newOffer.price.toLocaleString()}`,
+        data: { offerId: newOffer.id },
+        timestamp: new Date().toISOString()
+      })
+      
+      return result
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Mark offer as accepted
+  const markOfferAccepted = async (opportunityId, offerId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.markOfferAccepted(opportunityId, offerId)
+      
+      // Update local state
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp && opp.offers) {
+        const offer = opp.offers.find(o => o.id === offerId)
+        if (offer) {
+          offer.status = 'accepted'
+        }
+        opp.negotiationSubstatus = 'Offer Accepted'
+        opp.stage = 'In Negotiation'
+      }
+      
+      if (currentOpportunity.value?.id === opportunityId && currentOpportunity.value.offers) {
+        const offer = currentOpportunity.value.offers.find(o => o.id === offerId)
+        if (offer) {
+          offer.status = 'accepted'
+        }
+        currentOpportunity.value.negotiationSubstatus = 'Offer Accepted'
+        currentOpportunity.value.stage = 'In Negotiation'
+      }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Delete/archive offer
+  const deleteOffer = async (opportunityId, offerId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.deleteOffer(opportunityId, offerId)
+      
+      // Update local state
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp && opp.offers) {
+        const offer = opp.offers.find(o => o.id === offerId)
+        if (offer) {
+          offer.status = 'archived'
+        }
+      }
+      
+      if (currentOpportunity.value?.id === opportunityId && currentOpportunity.value.offers) {
+        const offer = currentOpportunity.value.offers.find(o => o.id === offerId)
+        if (offer) {
+          offer.status = 'archived'
+        }
+      }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Update negotiation substatus
+  const updateNegotiationSubstatus = async (opportunityId, substatus) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.updateOpportunity(opportunityId, { negotiationSubstatus: substatus })
+      
+      // Update local state
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp) {
+        opp.negotiationSubstatus = substatus
+      }
+      
+      if (currentOpportunity.value?.id === opportunityId) {
+        currentOpportunity.value.negotiationSubstatus = substatus
+      }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   const updateActivity = async (opportunityId, activityId, updates) => {
     loading.value = true
     error.value = null
@@ -265,6 +443,10 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     updateActivity,
     deleteActivity,
     addVehicle,
-    createOffer
+    createOffer,
+    addOffer,
+    markOfferAccepted,
+    deleteOffer,
+    updateNegotiationSubstatus
   }
 })

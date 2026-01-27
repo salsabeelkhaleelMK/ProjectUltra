@@ -2,126 +2,139 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Edit Event</DialogTitle>
-          <DialogDescription>Update the event details.</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-4">
-      <div>
-        <label class="block label-upper mb-2">Event Type</label>
-        <select v-model="localEvent.type" class="input">
-          <option value="test-drive">Test Drive</option>
-          <option value="appointment">Dealership Visit</option>
-          <option value="offsite">Offsite Visit</option>
-          <option value="workshop">Workshop</option>
-          <option value="call">Call</option>
-          <option value="delivery">Delivery</option>
-          <option value="meeting">Meeting</option>
-          <option value="training">Training</option>
-          <option value="marketing">Marketing Event</option>
-          <option value="leave">Leave</option>
-          <option value="memo">Memo</option>
-          <option value="recall">Recall</option>
-          <option value="absence">Absence</option>
-          <option value="other">Other</option>
-        </select>
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Event Type</Label>
+        <Select v-model="localEvent.type">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select event type..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="test-drive">Test Drive</SelectItem>
+            <SelectItem value="appointment">Dealership Visit</SelectItem>
+            <SelectItem value="offsite">Offsite Visit</SelectItem>
+            <SelectItem value="workshop">Workshop</SelectItem>
+            <SelectItem value="call">Call</SelectItem>
+            <SelectItem value="delivery">Delivery</SelectItem>
+            <SelectItem value="meeting">Meeting</SelectItem>
+            <SelectItem value="training">Training</SelectItem>
+            <SelectItem value="marketing">Marketing Event</SelectItem>
+            <SelectItem value="leave">Leave</SelectItem>
+            <SelectItem value="memo">Memo</SelectItem>
+            <SelectItem value="recall">Recall</SelectItem>
+            <SelectItem value="absence">Absence</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Title</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Title</Label>
+        <Input 
           v-model="localEvent.title"
           type="text" 
           placeholder="Event title..." 
-          class="input"
-        >
+          class="w-full h-10"
+        />
       </div>
       
       <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block label-upper mb-2">Date</label>
-          <input 
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Date</Label>
+          <Input 
             v-model="localEvent.date"
             type="date" 
-            class="input"
-          >
+            class="w-full h-10"
+          />
         </div>
-        <div>
-          <label class="block label-upper mb-2">Time</label>
-          <input 
+        <div class="space-y-2">
+          <Label class="block text-sm font-semibold text-heading">Time</Label>
+          <Input 
             v-model="localEvent.time"
             type="time" 
-            class="input"
-          >
+            class="w-full h-10"
+          />
         </div>
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Customer</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Customer</Label>
+        <Input 
           v-model="localEvent.customer"
           type="text" 
           placeholder="Customer name..." 
-          class="input"
+          class="w-full h-10"
           :disabled="disabledFields.includes('customer')"
           :value="customer?.name || localEvent.customer"
-        >
+        />
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Assign to</label>
-        <select 
-          v-model="localEvent.assignee" 
-          class="input"
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Assign to</Label>
+        <Select 
+          v-model="localEvent.assignee"
           :disabled="disabledFields.includes('assignee')"
         >
-          <optgroup label="Teams">
-            <option v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select assignee..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="team in assignableTeams" :key="`team-${team.id}`" :value="`team-${team.id}`">
               {{ team.name }} Team
-            </option>
-          </optgroup>
-          <optgroup label="Users">
-            <option v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
+            </SelectItem>
+            <SelectItem v-for="user in assignableUsers" :key="`user-${user.id}`" :value="`user-${user.id}`">
               {{ user.name }}{{ user.id === userStore.currentUser?.id ? ' (Me)' : '' }}
-            </option>
-          </optgroup>
-        </select>
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <p v-if="isTeamSelected" class="text-xs text-sub mt-1">
           <i class="fa-solid fa-users text-sub"></i> Any available team member will be assigned
         </p>
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Vehicle</label>
-        <input 
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Vehicle</Label>
+        <Input 
           v-model="localEvent.vehicle"
           type="text" 
           placeholder="Vehicle..." 
-          class="input"
-        >
+          class="w-full h-10"
+        />
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Dealership</label>
-        <select v-model="localEvent.dealership" class="input">
-          <option value="">Select dealership...</option>
-          <option v-for="d in dealerships" :key="d" :value="d">{{ d }}</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Dealership</Label>
+        <Select v-model="localEvent.dealership">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select dealership..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="d in dealerships" :key="d" :value="d">{{ d }}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
-      <div>
-        <label class="block label-upper mb-2">Status</label>
-        <select v-model="localEvent.status" class="input">
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="no-show">No-show</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Status</Label>
+        <Select v-model="localEvent.status">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select status..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="confirmed">Confirmed</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="no-show">No-show</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -144,11 +157,19 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

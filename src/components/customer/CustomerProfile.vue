@@ -2,7 +2,7 @@
   <div class="h-full flex flex-col overflow-hidden bg-surface">
     <!-- Loading State -->
     <div v-if="loading || !customer" class="flex-1 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
     </div>
 
     <!-- Customer Detail Content -->
@@ -22,36 +22,35 @@
       @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
-        <!-- Customer Insights + Recent Activities (one row) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Cards Stack - Each on Own Row -->
+        <div class="flex flex-col gap-6">
           <CustomerSummaryWidget 
             :summary="task.summary || customerData?.summary"
             :preferences="task.preferences || customerData?.preferences"
             :customer-data="customerData"
           />
-          <div class="flex flex-col gap-6">
-            <!-- Suggested Next Action Widget -->
-            <SuggestedNextAction 
-              :leads="customerLeads"
-              :opportunities="customerOpportunities"
-              :activities="customerActivities"
-            />
-            <RecentActivitiesWidget
-              :next-appointment="nextAppointment"
-              :activities="customerActivities"
-              :leads="customerLeads"
-              :opportunities="customerOpportunities"
-              :customer-id="customerId"
-            />
-          </div>
+          
+          <SuggestedNextAction 
+            :leads="customerLeads"
+            :opportunities="customerOpportunities"
+            :activities="customerActivities"
+          />
+          
+          <RecentActivitiesWidget
+            :next-appointment="nextAppointment"
+            :activities="customerActivities"
+            :leads="customerLeads"
+            :opportunities="customerOpportunities"
+            :customer-id="customerId"
+          />
+          
+          <!-- Customer Cars Carousel -->
+          <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
         </div>
-        
-        <!-- Customer Cars Carousel - All cars from leads/opportunities -->
-        <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
       </template>
 
       <template #tab-negotiations>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="flex flex-col gap-6 mb-6">
           <CustomerLeadsWidget 
             :leads="customerLeads" 
             :all-tasks="customerTasks"

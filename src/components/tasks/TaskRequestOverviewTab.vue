@@ -125,7 +125,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Badge, Button } from '@motork/component-library'
+import { Badge, Button } from '@motork/component-library/future/primitives'
 import { getStageColor } from '@/utils/stageMapper'
 
 const props = defineProps({

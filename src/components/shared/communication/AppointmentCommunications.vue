@@ -52,6 +52,9 @@
         </span>
       </Label>
     </div>
+    
+    <!-- Action Buttons Slot -->
+    <slot name="actions"></slot>
   </div>
 </template>
 

@@ -4,10 +4,8 @@ import router from './router'
 import App from './App.vue'
 import { clickOutside } from '@/directives/clickOutside'
 import i18n from './locales'
-// Import component library CSS first (before custom styles)
-// Import using direct path since it's not exported in package.json exports field
-import '../node_modules/@motork/component-library/dist/component-library.css'
-import './style.css'
+// Import main CSS - includes Tailwind, Motork theme, and custom styles
+import './assets/css/main.css'
 
 const app = createApp(App)
 

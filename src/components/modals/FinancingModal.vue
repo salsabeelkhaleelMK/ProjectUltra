@@ -2,23 +2,24 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Add Financing</DialogTitle>
-          <DialogDescription>Record financing details for this customer</DialogDescription>
         </DialogHeader>
 
-        <FinancingWidget
-          :item="item"
-          :task-type="taskType"
-          :task-id="taskId"
-          :hide-actions="true"
-          ref="widgetRef"
-          @save="handleSave"
-          @cancel="$emit('close')"
-        />
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
+          <FinancingWidget
+            :item="item"
+            :task-type="taskType"
+            :task-id="taskId"
+            :hide-actions="true"
+            ref="widgetRef"
+            @save="handleSave"
+            @cancel="$emit('close')"
+          />
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -42,11 +43,10 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

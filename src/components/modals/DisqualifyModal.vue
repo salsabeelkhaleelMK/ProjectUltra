@@ -2,59 +2,59 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>Disqualify Lead</DialogTitle>
-          <DialogDescription>Please select a reason for disqualification.</DialogDescription>
         </DialogHeader>
 
-        <div class="space-y-6">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
       <!-- Category Radio Buttons -->
-      <div>
-        <label class="block label-upper mb-3">Category</label>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Category</Label>
         <div class="flex gap-6">
-          <label class="flex items-center gap-2 cursor-pointer">
+          <Label class="flex items-center gap-2 cursor-pointer">
             <input 
               type="radio" 
               v-model="category"
               value="Not Valid"
-              class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300"
+              class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
             >
-            <span class="text-base text-body">Not Valid</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
+            <span class="text-sm text-body">Not Valid</span>
+          </Label>
+          <Label class="flex items-center gap-2 cursor-pointer">
             <input 
               type="radio" 
               v-model="category"
               value="Not Interested"
-              class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300"
+              class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
             >
-            <span class="text-base text-body">Not Interested</span>
-          </label>
+            <span class="text-sm text-body">Not Interested</span>
+          </Label>
         </div>
       </div>
       
       <!-- Failure Reason Dropdown -->
-      <div>
-        <label class="block label-upper mb-3">Failure Reason</label>
-        <select 
-          v-model="failureReason"
-          class="w-full bg-surface border-2 border-red-500 rounded-lg px-4 py-3 text-base text-body focus:outline-none focus:border-red-600 transition-colors"
-        >
-          <option value="">Select a reason...</option>
-          <option value="Data cleanup">Data cleanup</option>
-          <option value="Unreachable">Unreachable</option>
-          <option value="Purchase postponed">Purchase postponed</option>
-          <option value="Vehicle sold">Vehicle sold</option>
-          <option value="Out of budget">Out of budget</option>
-          <option value="Financing rejected">Financing rejected</option>
-          <option value="Duplicate">Duplicate</option>
-          <option value="Bought elsewhere">Bought elsewhere</option>
-        </select>
+      <div class="space-y-2">
+        <Label class="block text-sm font-semibold text-heading">Failure Reason</Label>
+        <Select v-model="failureReason">
+          <SelectTrigger class="w-full h-10">
+            <SelectValue placeholder="Select a reason..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Data cleanup">Data cleanup</SelectItem>
+            <SelectItem value="Unreachable">Unreachable</SelectItem>
+            <SelectItem value="Purchase postponed">Purchase postponed</SelectItem>
+            <SelectItem value="Vehicle sold">Vehicle sold</SelectItem>
+            <SelectItem value="Out of budget">Out of budget</SelectItem>
+            <SelectItem value="Financing rejected">Financing rejected</SelectItem>
+            <SelectItem value="Duplicate">Duplicate</SelectItem>
+            <SelectItem value="Bought elsewhere">Bought elsewhere</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-    </div>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -78,11 +78,18 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

@@ -1,10 +1,12 @@
 <template>
-  <CustomerProfile
-    :customer-id="customerId"
-    :customer-type="customerType"
-    :show-close-button="false"
-    :close-on-convert="false"
-  />
+  <div class="h-full overflow-hidden bg-surface">
+    <CustomerProfile
+      :customer-id="customerId"
+      :customer-type="customerType"
+      :show-close-button="false"
+      :close-on-convert="false"
+    />
+  </div>
 </template>
 
 <script setup>

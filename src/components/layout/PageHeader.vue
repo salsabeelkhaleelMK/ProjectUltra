@@ -1,24 +1,17 @@
 <template>
-  <header 
-    class="page-header"
-    :class="{
-      'page-header--has-bottom': $slots.bottom
-    }"
-  >
-    <div class="page-header-main">
-      <div class="page-header-content">
-        <div class="page-header-title-container">
-          <h1 class="page-header-title">{{ title }}</h1>
-        </div>
-        <div class="page-header-actions">
-          <slot name="actions"></slot>
-        </div>
+  <header class="page-header-main">
+    <div class="page-header-content">
+      <div class="min-w-0 flex-1">
+        <h1 class="page-header-title">{{ title }}</h1>
+      </div>
+      <div v-if="$slots.actions" class="page-header-actions">
+        <slot name="actions"></slot>
       </div>
     </div>
-    <div v-if="$slots.bottom" class="page-header-bottom">
-      <slot name="bottom"></slot>
-    </div>
   </header>
+  <div v-if="$slots.bottom" class="section-header px-4 md:px-8">
+    <slot name="bottom"></slot>
+  </div>
 </template>
 
 <script setup>
@@ -29,4 +22,3 @@ defineProps({
   }
 })
 </script>
-

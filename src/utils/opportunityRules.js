@@ -61,6 +61,35 @@ export const OpportunityConditions = {
     return days >= threshold && !context.hasOffers
   },
 
+  // Negotiation substatus conditions
+  'negotiation-offer-sent-substatus': (context) => {
+    return context.opportunity?.negotiationSubstatus === 'Offer Sent'
+  },
+  
+  'negotiation-offer-feedback-substatus': (context) => {
+    return context.opportunity?.negotiationSubstatus === 'Offer Feedback'
+  },
+  
+  'negotiation-offer-accepted-substatus': (context) => {
+    return context.opportunity?.negotiationSubstatus === 'Offer Accepted'
+  },
+  
+  'negotiation-offer-sent-3-days': (context) => {
+    // Check if we need to auto-transition from Offer Sent to Offer Feedback
+    if (context.opportunity?.negotiationSubstatus !== 'Offer Sent') return false
+    if (!context.opportunity?.offers || context.opportunity.offers.length === 0) return false
+    
+    // Find most recent offer
+    const mostRecentOffer = context.opportunity.offers
+      .filter(o => o.status === 'active')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+    
+    if (!mostRecentOffer) return false
+    
+    const days = calculateDaysSince(mostRecentOffer.createdAt)
+    return days >= 3
+  },
+
   // Negotiation stage conditions
   'negotiation-5-plus-days-no-contract-has-offers': (context) => {
     // For 'In Negotiation' stage, only show if offers exist
@@ -74,9 +103,14 @@ export const OpportunityConditions = {
     return days >= threshold && !context.opportunity.contractDate && context.hasOffers
   },
   
-  'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers': (context) => {
-    // For 'In Negotiation' stage, only show if offers exist
-    if (context.stage === 'In Negotiation' && !context.hasOffers) {
+  'negotiation-offer-feedback-5-plus-days-no-appointment': (context) => {
+    // NFU only appears in 'Offer Feedback' substatus
+    if (context.opportunity?.negotiationSubstatus !== 'Offer Feedback') {
+      return false
+    }
+    
+    // Must have offers
+    if (!context.hasOffers) {
       return false
     }
     
@@ -86,7 +120,13 @@ export const OpportunityConditions = {
     const hasFutureAppointment = context.scheduledAppointment && 
       new Date(context.scheduledAppointment.start) > new Date()
     
-    return days >= threshold && !context.opportunity.contractDate && !hasFutureAppointment && context.hasOffers
+    return days >= threshold && !context.opportunity.contractDate && !hasFutureAppointment
+  },
+  
+  // Legacy condition (kept for backwards compatibility)
+  'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers': (context) => {
+    // Redirect to new condition
+    return OpportunityConditions['negotiation-offer-feedback-5-plus-days-no-appointment'](context)
   },
 
   // Contract/Delivery conditions
@@ -268,7 +308,7 @@ export function getTaskWidgetTitle(widgetType) {
     'OFB': 'Offer Follow-up Task',
     'CFB': 'Contract Follow-up Task',
     'DFB': 'Delivery Follow-up Task',
-    'NS': 'No-Show Follow-up Task',
+    'NS': 'NS',
     'ABANDONED': 'Abandoned Opportunity Task'
   }
   

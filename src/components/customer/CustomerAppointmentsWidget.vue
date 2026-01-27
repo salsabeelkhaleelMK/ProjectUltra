@@ -1,79 +1,80 @@
 <template>
-  <div class="rounded-card flex flex-col mb-6" style="background-color: var(--base-muted, #f5f5f5)">
-    <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-calendar-days text-heading"></i>
-        <h2 class="text-fluid-sm font-medium text-heading leading-5">Appointments</h2>
-        <span class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded-full">
-          {{ appointments.length }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Card Content -->
-    <div class="bg-white rounded-card p-2 shadow-sm flex flex-col" style="box-shadow: var(--nsc-card-shadow);">
-      <div v-if="appointments.length > 0" class="divide-y divide-gray-100">
-        <div
-          v-for="apt in appointments"
-          :key="apt.id"
-          class="flex flex-col p-3 hover:bg-surfaceSecondary transition-colors rounded-md group cursor-pointer"
-          @click="handleAppointmentClick(apt)"
+  <div>
+    <div v-if="appointments.length > 0" class="space-y-4 mb-6 px-1">
+      <div
+        v-for="apt in appointments"
+        :key="apt.id"
+        class="bg-white border border-E5E7EB rounded-xl p-4 shadow-sm flex gap-4 animate-fade-in feed-item cursor-pointer hover:shadow-md transition-shadow"
+        @click="handleAppointmentClick(apt)"
+      >
+        <div 
+          class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border bg-purple-100 text-purple-600 border-purple-200"
         >
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span
-                  class="text-xs px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
-                  :class="getTypeBadgeClass(apt.type)"
-                >
-                  {{ getTypeLabel(apt.type) }}
-                </span>
-                <span
-                  v-if="apt.status"
-                  class="text-xs px-1.5 py-0.5 rounded font-medium capitalize"
-                  :class="getStatusBadgeClass(apt.status)"
-                >
-                  {{ apt.status }}
-                </span>
-              </div>
-              <div class="text-fluid-sm font-medium text-heading truncate mb-0.5">
-                {{ apt.title || 'Appointment' }}
-              </div>
-              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub">
-                <span class="flex items-center gap-1">
-                  <i class="fa-solid fa-clock text-xs"></i>
-                  {{ formatDateTime(apt.start) }}
-                </span>
-                <span v-if="apt.assignee" class="flex items-center gap-1">
-                  <i class="fa-solid fa-user text-xs"></i>
-                  {{ apt.assignee }}
-                </span>
-                <span v-if="apt.vehicle" class="flex items-center gap-1">
-                  <i class="fa-solid fa-car text-xs"></i>
-                  {{ apt.vehicle }}
-                </span>
-              </div>
+          <i class="fa-solid fa-calendar text-sm"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold text-heading">{{ getCustomerInitials(apt) }}</span>
+            <span class="text-xs text-sub">scheduled</span>
+            <span class="text-xs text-sub">• {{ formatTime(apt.start) }}</span>
+            <div class="ml-auto relative">
+              <button 
+                @click.stop="showMenu[apt.id] = !showMenu[apt.id]"
+                class="text-gray-400 hover:text-body transition-colors p-1"
+                title="More actions"
+              >
+                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+              </button>
             </div>
-            <div
-              class="w-8 h-8 flex items-center justify-center bg-surface border border-black/5 rounded hover:bg-white hover:border-brand-blue/30 text-sub hover:text-brand-blue transition-all shrink-0"
-            >
-              <i class="fa-solid fa-chevron-right text-xs"></i>
+          </div>
+          <div class="text-sm text-body">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span
+                class="text-xs px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter border"
+                :class="getTypeBadgeClass(apt.type)"
+              >
+                {{ getTypeLabel(apt.type) }}
+              </span>
+              <span
+                v-if="apt.status"
+                class="text-xs px-1.5 py-0.5 rounded font-medium capitalize"
+                :class="getStatusBadgeClass(apt.status)"
+              >
+                {{ apt.status }}
+              </span>
+            </div>
+            <div class="text-sm font-medium text-heading mb-1">
+              {{ apt.title || 'Appointment' }}
+            </div>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-sub">
+              <span class="flex items-center gap-1">
+                <i class="fa-solid fa-clock text-xs"></i>
+                {{ formatDateTime(apt.start) }}
+              </span>
+              <span v-if="apt.assignee" class="flex items-center gap-1">
+                <i class="fa-solid fa-user text-xs"></i>
+                {{ apt.assignee }}
+              </span>
+              <span v-if="apt.vehicle" class="flex items-center gap-1">
+                <i class="fa-solid fa-car text-xs"></i>
+                {{ apt.vehicle }}
+              </span>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-8 text-sub">
-        <i class="fa-solid fa-calendar-xmark text-2xl mb-2 opacity-30"></i>
-        <p class="text-xs">No appointments for this customer</p>
-      </div>
+    <!-- Empty State -->
+    <div v-else class="text-center py-8 text-sub">
+      <i class="fa-solid fa-calendar-xmark text-2xl mb-2 opacity-30"></i>
+      <p class="text-xs">No appointments for this customer</p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -84,6 +85,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const showMenu = ref({})
 
 const TYPE_LABELS = {
   'appointment': 'Dealership Visit',
@@ -128,6 +130,31 @@ const formatDateTime = (dateString) => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+const formatTime = (timestamp) => {
+  if (!timestamp) return 'Just now'
+  const date = new Date(timestamp)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+  
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins} minutes ago`
+  if (diffHours < 24) return `${diffHours} hours ago`
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays < 7) return `${diffDays} days ago`
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+const getCustomerInitials = (apt) => {
+  // Try to get customer initials from appointment data
+  if (apt.customerInitials) return apt.customerInitials
+  if (apt.customer?.initials) return apt.customer.initials
+  // Default fallback
+  return 'SK'
 }
 
 const handleAppointmentClick = (apt) => {

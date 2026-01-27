@@ -1,9 +1,8 @@
 <template>
   <div 
     :class="[
-      'hidden md:flex flex-col items-stretch py-2 gap-2 shrink-0 z-20 h-screen fixed left-0 top-0 border-r border-black/5'
+      'sidebar-container hidden md:flex flex-col items-stretch py-2 gap-2 shrink-0 z-20 h-screen fixed left-0 top-0 border-r border-black/5'
     ]"
-    :style="{ backgroundColor: 'var(--base-sidebar-foreground, #0a0a0a)', width: 'var(--sidebar-width)' }"
   >
     <!-- Logo at Top -->
     <div class="w-full px-2 pt-2 pb-2">
@@ -293,8 +292,7 @@
           title="User Menu"
         >
           <div 
-            class="user-avatar-logo rounded-full flex items-center justify-center font-medium text-white"
-            :style="{ backgroundColor: 'var(--brand-slate, #6B7280)' }"
+            class="user-avatar user-avatar-logo rounded-full flex items-center justify-center font-medium text-white"
           >
             {{ userInitials }}
           </div>

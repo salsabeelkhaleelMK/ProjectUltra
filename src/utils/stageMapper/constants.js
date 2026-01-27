@@ -7,10 +7,11 @@
 export const OPPORTUNITY_STAGES = {
   QUALIFIED: 'Qualified',
   AWAITING_APPOINTMENT: 'Awaiting Appointment',
+  APPOINTMENT_SCHEDULED: 'Appointment Scheduled',
   TO_BE_CALLED_BACK: 'To be Called Back',
   IN_NEGOTIATION: 'In Negotiation',
   NEEDS_FOLLOW_UP: 'Needs Follow-up',
-  CONTRACT_PENDING: 'Contract Pending',
+  CONTRACT_PENDING: 'In Negotiation - Contract Pending',
   CLOSED_WON: 'Closed Won',
   CLOSED_LOST: 'Closed Lost',
   ABANDONED: 'Abandoned'

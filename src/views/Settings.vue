@@ -9,44 +9,22 @@
     <!-- Content -->
     <div class="p-4 md:p-6 lg:p-8">
       <!-- Tabs -->
-      <div class="mb-6 border-b border-E5E7EB">
-        <nav class="flex gap-4">
-          <button
-            type="button"
-            @click="activeTab = 'general'"
-            class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
-            :class="activeTab === 'general' 
-              ? 'border-brand-dark text-brand-dark' 
-              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
-          >
+      <Tabs v-model="activeTab" class="mb-6">
+        <TabsList class="border-b border-border bg-transparent justify-start">
+          <TabsTrigger value="general" class="data-[state=active]:border-b-2 data-[state=active]:border-brand-dark rounded-none">
             General
-          </button>
-          <button
-            type="button"
-            @click="activeTab = 'urgency'"
-            class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
-            :class="activeTab === 'urgency' 
-              ? 'border-brand-dark text-brand-dark' 
-              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
-          >
+          </TabsTrigger>
+          <TabsTrigger value="urgency" class="data-[state=active]:border-b-2 data-[state=active]:border-brand-dark rounded-none">
             Urgency Settings
-          </button>
-          <button
-            type="button"
-            @click="activeTab = 'navigation'"
-            class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
-            :class="activeTab === 'navigation' 
-              ? 'border-brand-dark text-brand-dark' 
-              : 'border-transparent text-sub hover:text-body hover:border-gray-300'"
-          >
+          </TabsTrigger>
+          <TabsTrigger value="navigation" class="data-[state=active]:border-b-2 data-[state=active]:border-brand-dark rounded-none">
             Navigation
-          </button>
-        </nav>
-      </div>
+          </TabsTrigger>
+        </TabsList>
 
-      <form @submit.prevent="handleSave" class="space-y-8">
-        <!-- General Tab Content -->
-        <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <form @submit.prevent="handleSave" class="space-y-8 mt-6">
+          <!-- General Tab Content -->
+          <TabsContent value="general" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Opportunity Task Widget Thresholds -->
         <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6 lg:col-span-2">
           <h2 class="heading-sub mb-4">Opportunity Task Widget Thresholds</h2>
@@ -318,10 +296,11 @@
             label="Auto-close NFU/OFB widgets when opportunity is closed (Won/Lost)"
           />
         </div>
-        </div>
 
-        <!-- Navigation Settings Tab Content -->
-        <div v-if="activeTab === 'navigation'">
+          </TabsContent>
+
+          <!-- Navigation Settings Tab Content -->
+          <TabsContent value="navigation">
         <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Navigation Menu Items</h2>
           <p class="text-meta mb-6">Control which navigation items appear in the sidebar and mobile menu.</p>
@@ -366,10 +345,11 @@
             </div>
           </div>
         </div>
-        </div>
 
-        <!-- Urgency Settings Tab Content -->
-        <div v-if="activeTab === 'urgency'">
+          </TabsContent>
+
+          <!-- Urgency Settings Tab Content -->
+          <TabsContent value="urgency">
         <!-- Lead Urgency Auto-Sorter -->
         <div class="bg-surface border border-E5E7EB rounded-xl shadow-sm p-6">
           <h2 class="heading-sub mb-4">Lead Urgency Auto-Sorter</h2>
@@ -551,7 +531,6 @@
             </div>
           </div>
         </div>
-        </div>
 
         <!-- Action Buttons -->
         <div class="flex justify-between items-center pt-4 border-t border-E5E7EB">
@@ -576,7 +555,9 @@
             />
           </div>
         </div>
-      </form>
+          </TabsContent>
+        </form>
+      </Tabs>
     </div>
   </div>
 </template>
@@ -584,7 +565,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { Button, Checkbox, Toggle } from '@motork/component-library'
+import { Button, Checkbox, Toggle, Tabs, TabsList, TabsTrigger, TabsContent } from '@motork/component-library/future/primitives'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
 const settingsStore = useSettingsStore()

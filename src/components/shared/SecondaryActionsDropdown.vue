@@ -1,7 +1,7 @@
 <template>
-  <div class="relative" v-click-outside="closeDropdown">
+  <div class="relative">
     <button 
-      @click="toggleDropdown"
+      @click.stop="toggleDropdown"
       class="w-auto bg-surface hover:bg-surfaceSecondary border border-E5E7EB text-body font-medium px-4 py-2 rounded-lg text-fluid-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
     >
@@ -13,27 +13,19 @@
     </button>
 
     <!-- Dropdown menu -->
-    <transition
-      enter-active-class="transition ease-out duration-100"
-      enter-from-class="transform opacity-0 scale-95"
-      enter-to-class="transform opacity-100 scale-100"
-      leave-active-class="transition ease-in duration-75"
-      leave-from-class="transform opacity-100 scale-100"
-      leave-to-class="transform opacity-0 scale-95"
+    <div 
+      v-if="isOpen && menuItems.length > 0"
+      class="absolute top-full right-0 mt-2 z-50 dropdown-menu-small"
+      v-click-outside="closeDropdown"
     >
-      <div
-        v-if="isOpen"
-        class="absolute top-full right-0 mt-2 min-w-full z-50 dropdown-menu-small"
-      >
-        <DropdownMenu :items="menuItems" className="min-w-full" />
-      </div>
-    </transition>
+      <DropdownMenu :items="menuItems" className="w-56" />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   actions: {

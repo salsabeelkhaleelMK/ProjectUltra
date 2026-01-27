@@ -60,7 +60,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Badge } from '@motork/component-library'
+import { Badge } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   vehicle: {

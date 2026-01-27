@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { Badge } from '@motork/component-library'
+import { Badge } from '@motork/component-library/future/primitives'
 
 defineProps({
   vehicleTabs: {

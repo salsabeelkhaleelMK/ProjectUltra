@@ -1,24 +1,27 @@
 <template>
-  <div class="flex gap-0 md:gap-8 text-fluid-sm font-medium text-sub py-1">
-    <div 
-      v-for="tab in tabs"
-      :key="tab.key"
-      @click="$emit('update:modelValue', tab.key)"
-      class="flex-1 md:flex-none pb-2 border-b-2 cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-      :class="modelValue === tab.key ? 'border-brand-dark text-brand-darkDarker' : 'border-transparent hover:text-body hover:border-slate-200'"
-    >
-      <!-- Icon (always visible) -->
-      <i 
-        :class="[getIconClass(tab.key), 'text-sm md:text-sm', modelValue === tab.key ? 'text-brand-darkDarker' : 'text-sub']"
-      ></i>
-      
-      <!-- Label (hidden on mobile, visible on desktop) -->
-      <span class="hidden md:inline whitespace-nowrap" :class="modelValue === tab.key ? 'text-brand-darkDarker' : ''">{{ tab.label }}</span>
-    </div>
-  </div>
+  <Tabs :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)">
+    <TabsList class="w-full justify-start border-b border-border bg-transparent">
+      <TabsTrigger
+        v-for="tab in tabs"
+        :key="tab.key"
+        :value="tab.key"
+        class="flex items-center gap-1.5 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-2 focus-visible:outline-none focus-visible:ring-0"
+      >
+        <!-- Icon (always visible) -->
+        <i 
+          :class="[getIconClass(tab.key), 'text-sm']"
+        ></i>
+        
+        <!-- Label (hidden on mobile, visible on desktop) -->
+        <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
+      </TabsTrigger>
+    </TabsList>
+  </Tabs>
 </template>
 
 <script setup>
+import { Tabs, TabsList, TabsTrigger } from '@motork/component-library/future/primitives'
+
 defineProps({
   modelValue: {
     type: String,

@@ -20,25 +20,32 @@ export function getLeadPrimaryAction(context) {
   // Calculate display stage from source data
   const displayStage = getDisplayStage(lead, 'lead')
   
-  // If no displayStage calculated, fallback to NEW
+  // If no displayStage calculated, return null (no fallback)
   if (!displayStage) {
-    return LEAD_STATE_CONFIG[LEAD_STAGES.NEW]?.primaryAction || null
+    console.warn('No display stage calculated for lead')
+    return null
   }
   
   const config = LEAD_STATE_CONFIG[displayStage]
   
-  // If config not found, fallback to NEW stage config
+  // If config not found, return null (no fallback)
   if (!config) {
-    return LEAD_STATE_CONFIG[LEAD_STAGES.NEW]?.primaryAction || null
+    console.warn(`No state config found for lead stage: ${displayStage}`)
+    return null
   }
   
   if (!config.primaryAction) {
-    return LEAD_STATE_CONFIG[LEAD_STAGES.NEW]?.primaryAction || null
+    console.warn(`No primary action found for lead stage: ${displayStage}`)
+    return null
   }
   
   const action = config.primaryAction
   if (typeof action === 'function') {
-    return action({ lead, displayStage })
+    const result = action({ lead, displayStage })
+    if (!result) {
+      console.warn(`Primary action function returned null for lead stage: ${displayStage}`)
+    }
+    return result
   }
   return action
 }

@@ -12,7 +12,7 @@
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-base font-medium text-heading leading-6">Activity</h3>
         
-        <!-- Filter Dropdown and Chips (Right side of title) -->
+        <!-- Filter Dropdown, Add Activity Button, and Chips (Right side of title) -->
         <div class="flex items-center gap-2 flex-wrap">
           <!-- Filter Dropdown Button -->
           <div class="relative" ref="filterContainer">
@@ -40,104 +40,71 @@
             </transition>
           </div>
           
-          <!-- Selected Filter Chips -->
-          <div v-if="selectedFilters.length > 0" class="flex items-center gap-2 flex-wrap">
-            <div
-              v-for="filterValue in selectedFilters"
-              :key="filterValue"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-sm font-medium text-heading border border-black/5"
+          <!-- Add Activity Button -->
+          <div class="relative">
+            <Button
+              variant="default"
+              size="icon"
+              @click.stop="showAddDropdown = !showAddDropdown"
+              class="relative w-8 h-8 bg-primary text-white border border-primary hover:bg-primary/90"
+              aria-label="Add activity"
             >
-              <span>{{ getFilterLabel(filterValue) }}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                @click="removeFilter(filterValue)"
-                class="w-4 h-4 rounded-full"
-                aria-label="Remove filter"
-              >
-                <i class="fa-solid fa-xmark text-sm"></i>
-              </Button>
-            </div>
-          </div>
+              <i class="fa-solid fa-plus text-sm"></i>
+            </Button>
+            <div
+              v-if="showAddDropdown"
+              class="absolute right-0 top-full mt-2 w-48 bg-white border border-black/10 rounded-lg shadow-lg py-1 z-50"
+              v-click-outside="() => showAddDropdown = false"
+              @click.stop
+            >
+            <!-- Communication Group -->
+            <button @click="handleAddActivity('email')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-envelope text-sm text-primary"></i> Email
+            </button>
+            <button @click="handleAddActivity('sms')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-comment text-sm text-purple-600"></i> SMS
+            </button>
+            <button @click="handleAddActivity('whatsapp')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-sm text-green-600"></i> WhatsApp
+            </button>
+            <button @click="handleAddActivity('call')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-phone text-sm text-green-600"></i> Call
+            </button>
+
+            <div class="border-t border-black/10 my-1"></div>
+
+            <!-- Activities Group -->
+            <button @click="handleAddActivity('note')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-sticky-note text-sm text-orange-600"></i> Note
+            </button>
+            <button @click="handleAddActivity('attachment')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-paperclip text-sm text-sub"></i> Attachment
+            </button>
+
+            <div class="border-t border-black/10 my-1"></div>
+
+            <!-- Business Group -->
+            <button @click="handleAddActivity('financing')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-file-invoice-dollar text-sm text-primary"></i> Financing
+            </button>
+            <button @click="handleAddActivity('tradein')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right-arrow-left text-sm text-primary"></i> Trade-in
+            </button>
+            <button @click="handleAddActivity('purchase')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-solid fa-handshake text-sm text-primary"></i> Offer
+            </button>
+
+            <div class="border-t border-black/10 my-1"></div>
+
+            <!-- Appointment -->
+            <button @click="handleAddActivity('appointment')" class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2">
+              <i class="fa-regular fa-calendar text-sm text-purple-600"></i> Appointment
+            </button>
         </div>
       </div>
-      
-      <!-- Add Activity Button - Always below title -->
-      <div class="relative">
-        <Button
-          variant="ghost"
-          @click="showAddDropdown = !showAddDropdown"
-          class="flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 underline decoration-primary-600 hover:decoration-primary-700 transition-colors h-auto p-0"
-        >
-          <Plus :size="14" />
-          Add activity
-        </Button>
-        <div
-          v-if="showAddDropdown"
-          class="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-black/10 py-1 z-10"
-          v-click-outside="() => showAddDropdown = false"
-        >
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'note')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <StickyNote :size="16" class="text-orange-600" />
-            Note
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'sms')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <MessageCircle :size="16" class="text-purple-600" />
-            SMS
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'whatsapp')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <MessageCircle :size="16" class="text-green-600" />
-            WhatsApp
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'email')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <Mail :size="16" class="text-blue-600" />
-            Email
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'attachment')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <Paperclip :size="16" class="text-gray-600" />
-            Attachment
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'tradein')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-600">
-              <path d="M7 17L17 7M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Trade-In
-          </Button>
-          <Button
-            variant="ghost"
-            @click="$emit('add-activity', 'purchase-method')"
-            class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 justify-start h-auto"
-          >
-            <FileText :size="16" class="text-indigo-600" />
-            Purchase Method
-          </Button>
-        </div>
-      </div>
-    </div>
+          </div> <!-- Close flex items-center gap-2 flex-wrap -->
+        </div> <!-- Close flex items-center justify-between mb-2 -->
+      </div> <!-- Close mb-4 -->
     
     <div class="space-y-6 flex-1 flex flex-col min-h-0">
       <div v-if="sortedActivities.length > 0" class="flex-1 overflow-y-auto min-h-0">
@@ -300,6 +267,26 @@
               </div>
             </div>
           </div>
+          
+          <!-- Selected Filter Chips -->
+          <div v-if="selectedFilters.length > 0" class="flex items-center gap-2 flex-wrap">
+            <div
+              v-for="filterValue in selectedFilters"
+              :key="filterValue"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-sm font-medium text-heading border border-black/5"
+            >
+              <span>{{ getFilterLabel(filterValue) }}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                @click="removeFilter(filterValue)"
+                class="w-4 h-4 rounded-full"
+                aria-label="Remove filter"
+              >
+                <i class="fa-solid fa-xmark text-sm"></i>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -325,10 +312,9 @@ import {
   FileText,
   Clock,
   Sparkles,
-  Plus,
   Paperclip
 } from 'lucide-vue-next'
-import { DropdownMenu } from '@motork/component-library'
+import { DropdownMenu } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   activities: {
@@ -456,6 +442,11 @@ const handleActivityClick = (activity) => {
   if (['note', 'email', 'whatsapp'].includes(activity.type)) {
     emit('activity-click', activity)
   }
+}
+
+const handleAddActivity = (action) => {
+  showAddDropdown.value = false
+  emit('add-activity', action)
 }
 </script>
 

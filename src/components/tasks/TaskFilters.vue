@@ -1,45 +1,83 @@
 <template>
   <div v-if="!buttonOnly && !chipsOnly" class="flex flex-col gap-2">
     <!-- Filter Dropdown and Chips Row -->
-    <div class="flex items-center gap-2 flex-wrap">
-      <!-- Filter Dropdown (Icon only, matching old sort style) -->
-      <div class="relative" ref="filterContainer">
+    <div class="flex items-center gap-1.5 flex-wrap">
+      <!-- Filter Dropdown (Icon only) -->
+      <div class="relative" ref="filterContainer" v-click-outside="closeFilterMenu">
         <button
-          @click.stop="toggleFilterMenu"
-          class="relative w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-900"
+          @click="toggleFilterMenu"
+          class="filter-dropdown-button"
         >
           <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
           <span 
-            v-if="activeFilters.length > 0 || (sortOption && sortOption !== 'recent-first')"
-            class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-black"
+            v-if="activeFilters.length > 0 || sortOption"
+            class="filter-indicator"
           ></span>
         </button>
         
-        <transition name="dropdown">
+        <transition name="dropdown-fade">
           <div 
             v-if="showFilterMenu"
-            class="absolute left-0 mt-2 z-50 filter-dropdown-wrapper"
-            v-click-outside="() => showFilterMenu = false"
+            class="absolute left-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-lg py-1"
+            @click.stop
           >
-            <DropdownMenu :items="combinedMenuItems" className="w-56" />
+            <!-- Filter Options -->
+            <button
+              v-for="option in filterOptions"
+              :key="option.key"
+              @click="toggleFilter(option.key)"
+              class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
+              :class="{ 'bg-surfaceSecondary filter-item-selected': activeFilters.includes(option.key) }"
+            >
+              <span>{{ option.label }}</span>
+            </button>
+            
+            <div class="border-t border-black/10 my-1"></div>
+            
+            <!-- Sort Options -->
+            <button
+              v-for="sortItem in sortMenuItems"
+              :key="sortItem.key"
+              @click="selectSort(sortItem.key)"
+              class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
+              :class="{ 'bg-surfaceSecondary sort-item-selected': sortItem.key === sortOption }"
+            >
+              <span>{{ sortItem.label }}</span>
+            </button>
           </div>
         </transition>
       </div>
       
-      <!-- Filter Chips -->
-      <div v-if="activeFilters.length > 0" class="flex items-center gap-2 flex-wrap">
+      <!-- Filter and Sort Chips -->
+      <div v-if="activeFilters.length > 0 || showSortChip" class="flex items-center gap-1.5 flex-wrap">
+        <!-- Filter Chips -->
         <div
           v-for="filterKey in activeFilters"
           :key="filterKey"
-          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-xs font-medium text-heading border border-E5E7EB"
+          class="task-filter-badge"
         >
           <span>{{ getFilterLabel(filterKey) }}</span>
           <button
             @click="removeFilter(filterKey)"
-            class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 transition-colors text-sub hover:text-heading"
+            class="task-filter-badge-remove"
             aria-label="Remove filter"
           >
-            <i class="fa-solid fa-xmark text-xs"></i>
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        
+        <!-- Sort Chip -->
+        <div
+          v-if="showSortChip"
+          class="task-filter-badge"
+        >
+          <span>{{ sortLabel }}</span>
+          <button
+            @click="removeSort"
+            class="task-filter-badge-remove"
+            aria-label="Remove sort"
+          >
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
@@ -47,43 +85,81 @@
   </div>
   
   <!-- Button Only Mode -->
-  <div v-else-if="buttonOnly" class="relative" ref="filterContainer">
+  <div v-else-if="buttonOnly" class="relative" ref="filterContainer" v-click-outside="closeFilterMenu">
     <button
-      @click.stop="toggleFilterMenu"
-      class="relative w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-900"
+      @click="toggleFilterMenu"
+      class="filter-dropdown-button"
     >
       <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
       <span 
-        v-if="activeFilters.length > 0 || (sortOption && sortOption !== 'recent-first')"
-        class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-black"
+        v-if="activeFilters.length > 0 || sortOption"
+        class="filter-indicator"
       ></span>
     </button>
     
-    <transition name="dropdown">
+    <transition name="dropdown-fade">
       <div 
         v-if="showFilterMenu"
-        class="absolute right-0 mt-2 z-50 filter-dropdown-wrapper"
-        v-click-outside="() => showFilterMenu = false"
+        class="absolute right-0 mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-lg py-1"
+        @click.stop
       >
-        <DropdownMenu :items="combinedMenuItems" className="w-56" />
+        <!-- Filter Options -->
+        <button
+          v-for="option in filterOptions"
+          :key="option.key"
+          @click="toggleFilter(option.key)"
+          class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
+          :class="{ 'bg-surfaceSecondary filter-item-selected': activeFilters.includes(option.key) }"
+        >
+          <span>{{ option.label }}</span>
+        </button>
+        
+        <div class="border-t border-black/10 my-1"></div>
+        
+        <!-- Sort Options -->
+        <button
+          v-for="sortItem in sortMenuItems"
+          :key="sortItem.key"
+          @click="selectSort(sortItem.key)"
+          class="w-full px-4 py-2 text-left text-sm text-heading hover:bg-surfaceSecondary flex items-center gap-2 relative"
+          :class="{ 'bg-surfaceSecondary sort-item-selected': sortItem.key === sortOption }"
+        >
+          <span>{{ sortItem.label }}</span>
+        </button>
       </div>
     </transition>
   </div>
   
   <!-- Chips Only Mode -->
-  <div v-else-if="chipsOnly && activeFilters.length > 0" class="flex items-center gap-2 flex-wrap">
+  <div v-else-if="chipsOnly && (activeFilters.length > 0 || showSortChip)" class="flex items-center gap-1.5 flex-wrap">
+    <!-- Filter Chips -->
     <div
       v-for="filterKey in activeFilters"
       :key="filterKey"
-      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surfaceSecondary text-xs font-medium text-heading border border-E5E7EB"
+      class="task-filter-badge"
     >
       <span>{{ getFilterLabel(filterKey) }}</span>
       <button
         @click="removeFilter(filterKey)"
-        class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 transition-colors text-sub hover:text-heading"
+        class="task-filter-badge-remove"
         aria-label="Remove filter"
       >
-        <i class="fa-solid fa-xmark text-xs"></i>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
+    <!-- Sort Chip -->
+    <div
+      v-if="showSortChip"
+      class="task-filter-badge"
+    >
+      <span>{{ sortLabel }}</span>
+      <button
+        @click="removeSort"
+        class="task-filter-badge-remove"
+        aria-label="Remove sort"
+      >
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
   </div>
@@ -91,11 +167,10 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library'
 
 const props = defineProps({
   activeFilters: { type: Array, default: () => [] },
-  sortOption: { type: String, default: 'recent-first' },
+  sortOption: { type: String, default: '' },
   showClosed: { type: Boolean, default: false },
   buttonOnly: { type: Boolean, default: false },
   chipsOnly: { type: Boolean, default: false }
@@ -107,6 +182,10 @@ const showFilterMenu = ref(false)
 
 const toggleFilterMenu = () => {
   showFilterMenu.value = !showFilterMenu.value
+}
+
+const closeFilterMenu = () => {
+  showFilterMenu.value = false
 }
 
 // Filter options configuration
@@ -152,103 +231,35 @@ const removeFilter = (filterKey) => {
   }
 }
 
-// Build filter menu items
-const filterMenuItems = computed(() => {
-  return filterOptions.map(option => ({
-    key: option.key,
-    label: option.label,
-    onClick: () => toggleFilter(option.key),
-    className: props.activeFilters.includes(option.key) ? 'filter-item-selected' : ''
-  }))
-})
-
 const selectSort = (option) => {
   showFilterMenu.value = false
   emit('sort-change', option)
 }
 
+// Remove sort chip (reset to default)
+const removeSort = () => {
+  emit('sort-change', '')
+}
+
 // Build sort menu items
 const sortMenuItems = computed(() => {
   const hasLeads = props.activeFilters.includes('lead')
-  const base = [
-    { key: 'recent-first', label: 'Most Recent First', onClick: () => selectSort('recent-first') },
-    ...(hasLeads
-      ? [{ key: 'urgent-first', label: 'Urgent first', onClick: () => selectSort('urgent-first') }]
-      : []),
-    { key: 'assigned-to-me', label: 'Assigned to me', onClick: () => selectSort('assigned-to-me') },
-    { key: 'assigned-to-my-team', label: 'Assigned to my team', onClick: () => selectSort('assigned-to-my-team') }
+  return [
+    { key: 'recent-first', label: 'Most Recent First' },
+    ...(hasLeads ? [{ key: 'urgent-first', label: 'Urgent first' }] : []),
+    { key: 'assigned-to-me', label: 'Assigned to me' },
+    { key: 'assigned-to-my-team', label: 'Assigned to my team' }
   ]
-  return base.map(item => ({
-    ...item,
-    className: item.key === props.sortOption ? 'sort-item-selected' : ''
-  }))
 })
 
-// Combine filter and sort menu items
-const combinedMenuItems = computed(() => {
-  const filters = filterMenuItems.value
-  const sorts = sortMenuItems.value
-  
-  // Combine filters and sort options (filters first, then sort options)
-  return [
-    ...filters,
-    ...sorts
-  ]
+// Show sort chip for currently selected sort
+const showSortChip = computed(() => {
+  return props.sortOption && props.sortOption !== '' && props.sortOption !== 'none'
+})
+
+// Get current sort label
+const sortLabel = computed(() => {
+  const sortItem = sortMenuItems.value.find(item => item.key === props.sortOption)
+  return sortItem ? sortItem.label : props.sortOption
 })
 </script>
-
-<style scoped>
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-
-/* Extended styling for Motork DropdownMenu */
-:deep(.filter-dropdown-wrapper *) {
-  font-size: 0.875rem !important; /* text-sm - smaller text for all items */
-}
-
-/* Target all dropdown menu items */
-:deep(.filter-dropdown-wrapper button),
-:deep(.filter-dropdown-wrapper [role="menuitem"]),
-:deep(.filter-dropdown-wrapper a),
-:deep(.filter-dropdown-wrapper [class*="item"]) {
-  font-size: 0.875rem !important; /* text-sm */
-  position: relative;
-  padding-left: 2.5rem !important; /* Space for dot */
-}
-
-/* Selected item styling using className */
-:deep(.filter-dropdown-wrapper .filter-item-selected),
-:deep(.filter-dropdown-wrapper .sort-item-selected),
-:deep(.filter-dropdown-wrapper button.filter-item-selected),
-:deep(.filter-dropdown-wrapper button.sort-item-selected),
-:deep(.filter-dropdown-wrapper [class*="item"].filter-item-selected),
-:deep(.filter-dropdown-wrapper [class*="item"].sort-item-selected) {
-  background-color: var(--color-bg-surface-secondary) !important; /* Light grey background */
-}
-
-/* Highlight dot for selected item */
-:deep(.filter-dropdown-wrapper .filter-item-selected::before),
-:deep(.filter-dropdown-wrapper .sort-item-selected::before),
-:deep(.filter-dropdown-wrapper button.filter-item-selected::before),
-:deep(.filter-dropdown-wrapper button.sort-item-selected::before),
-:deep(.filter-dropdown-wrapper [class*="item"].filter-item-selected::before),
-:deep(.filter-dropdown-wrapper [class*="item"].sort-item-selected::before) {
-  content: '';
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 50%;
-  background-color: var(--brand-dark); /* Black dot instead of red */
-}
-</style>

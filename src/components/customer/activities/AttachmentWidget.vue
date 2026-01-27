@@ -3,20 +3,17 @@
   <Dialog v-if="modal" :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+        <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ item ? 'Edit Attachment' : 'Add Attachment' }}</DialogTitle>
-          <DialogDescription v-if="!item">
-            Upload a file attachment
-          </DialogDescription>
         </DialogHeader>
 
-        <form @submit.prevent="handleSave" class="space-y-4">
+        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
           <!-- File Selection -->
-          <div>
-            <label class="block label-upper mb-2">
+          <div class="space-y-2">
+            <Label class="block text-sm font-semibold text-heading">
               File <span class="text-brand-red">*</span>
-            </label>
+            </Label>
             <div class="flex items-center gap-3">
               <input 
                 type="file" 
@@ -28,15 +25,16 @@
                 label="Choose File"
                 variant="outline"
                 size="small"
+                class="rounded-sm"
                 @click="fileInput?.click()"
               />
-              <span v-if="selectedFileName" class="text-fluid-sm text-slate-600">{{ selectedFileName }}</span>
-              <span v-else class="text-fluid-sm text-sub">No file selected</span>
+              <span v-if="selectedFileName" class="text-sm text-body truncate">{{ selectedFileName }}</span>
+              <span v-else class="text-sm text-sub">No file selected</span>
             </div>
           </div>
-        </form>
+        </div>
 
-        <DialogFooter class="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
           <Button
             label="Cancel"
             variant="outline"
@@ -106,11 +104,13 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button,
+  Label
+} from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,

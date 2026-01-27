@@ -1,33 +1,105 @@
 <template>
-  <BaseTaskWidget
-    :title="'Offer Feedback'"
-    :description="`This opportunity has been in negotiation for ${daysInNegotiation} days without a contract. Consider creating a contract to finalize the deal.`"
-    :color-scheme="{ background: 'bg-blue-50/50', border: 'border-blue-100' }"
-  >
-    <template #actions>
-      <button
-        @click="handleCreateContract"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-btn text-fluid-xs flex items-center gap-2 transition-colors"
-      >
-        Create Contract
-      </button>
-    </template>
-    
-    <template #survey>
-      <SurveyWidget
-        :questions="surveyQuestions"
-        @survey-completed="handleSurveyCompleted"
-        @survey-refused="handleSurveyRefused"
-        @not-responding="handleNotResponding"
+  <div class="space-y-4">
+    <!-- Title and Description Card -->
+    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+      <h4 class="font-bold text-heading text-sm mb-1">Offer Feedback Task</h4>
+      <p class="text-sm text-body">
+        This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Follow up with customer to get feedback and move forward.
+      </p>
+    </div>
+
+    <!-- Offers Carousel -->
+    <div v-if="opportunity.offers && opportunity.offers.length > 0" class="mb-4">
+      <OfferCarousel
+        :offers="opportunity.offers"
+        :opportunity-id="opportunity.id"
+        @offer-accepted="handleOfferAccepted"
       />
-    </template>
-  </BaseTaskWidget>
+    </div>
+
+    <!-- Communication Options -->
+    <div class="bg-white border border-black/5 rounded-lg shadow-sm overflow-hidden p-6">
+      <h5 class="font-semibold text-heading text-sm mb-4">Contact Customer</h5>
+      
+      <!-- Channel Selection -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        <Button
+          variant="outline"
+          @click="communicationChannel = 'call'"
+          class="flex items-center justify-center gap-2"
+          :class="communicationChannel === 'call' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
+        >
+          <i class="fa-solid fa-phone text-xs"></i>
+          <span>Call</span>
+        </Button>
+        <Button
+          variant="outline"
+          @click="communicationChannel = 'whatsapp'"
+          class="flex items-center justify-center gap-2"
+          :class="communicationChannel === 'whatsapp' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
+        >
+          <i class="fa-brands fa-whatsapp text-xs"></i>
+          <span>WhatsApp</span>
+        </Button>
+        <Button
+          variant="outline"
+          @click="communicationChannel = 'sms'"
+          class="flex items-center justify-center gap-2"
+          :class="communicationChannel === 'sms' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
+        >
+          <i class="fa-solid fa-message text-xs"></i>
+          <span>SMS</span>
+        </Button>
+        <Button
+          variant="outline"
+          @click="communicationChannel = 'email'"
+          class="flex items-center justify-center gap-2"
+          :class="communicationChannel === 'email' ? 'border-brand-blue bg-blue-50 text-brand-blue' : ''"
+        >
+          <i class="fa-solid fa-envelope text-xs"></i>
+          <span>Email</span>
+        </Button>
+      </div>
+      
+      <!-- Message Composer -->
+      <div v-if="communicationChannel" class="space-y-3">
+        <div v-if="offerSelectOptions.length > 0">
+          <Label class="block text-sm font-medium text-body mb-2">Select offer to reference</Label>
+          <SelectMenu
+            v-model="selectedOfferId"
+            :items="offerSelectOptions"
+            placeholder="Select an offer..."
+            value-key="id"
+            class="w-full"
+          >
+            <template #item="{ item }">
+              <div class="flex items-center justify-between gap-2">
+                <span>{{ item.label }}</span>
+                <span class="text-sub text-xs">€ {{ formatCurrency(item.price) }}</span>
+              </div>
+            </template>
+          </SelectMenu>
+        </div>
+        
+        <div>
+          <Label class="block text-sm font-medium text-body mb-2">Message</Label>
+          <Textarea
+            v-model="message"
+            rows="4"
+            placeholder="Type your message here..."
+            class="w-full"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import BaseTaskWidget from '@/components/tasks/shared/BaseTaskWidget.vue'
-import SurveyWidget from '@/components/customer/SurveyWidget.vue'
+import { ref, computed } from 'vue'
+import { Button, Label, Textarea } from '@motork/component-library/future/primitives'
+import { SelectMenu } from '@motork/component-library/future/components'
+import OfferCarousel from '@/components/shared/OfferCarousel.vue'
 
 const props = defineProps({
   opportunity: {
@@ -36,32 +108,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-contract', 'survey-completed', 'survey-refused', 'not-responding'])
+const emit = defineEmits(['offer-accepted', 'offer-deleted', 'view-offer', 'send-message'])
 
-const surveyQuestions = [
-  {
-    key: 'customerFeedback',
-    label: 'Customer feedback on offer?',
-    type: 'select',
-    options: ['Positive', 'Neutral', 'Negative', 'No feedback yet']
-  },
-  {
-    key: 'objections',
-    label: 'Any objections?',
-    type: 'text',
-    placeholder: 'Describe any concerns or objections raised by customer...'
-  },
-  {
-    key: 'nextSteps',
-    label: 'What are the next steps?',
-    type: 'select',
-    options: ['Waiting for customer decision', 'Revising offer', 'Scheduling closing meeting', 'Addressing objections', 'Other']
-  }
-]
+const communicationChannel = ref(null)
+const message = ref('')
+const selectedOfferId = ref(null)
 
 const daysInNegotiation = computed(() => {
-  // Calculate days since opportunity entered negotiation stage
-  // For now, use lastActivity or createdAt as fallback
   const date = props.opportunity.lastActivity || props.opportunity.createdAt
   if (!date) return 0
   const negotiationDate = new Date(date)
@@ -71,21 +124,59 @@ const daysInNegotiation = computed(() => {
   return diffDays
 })
 
-const handleCreateContract = () => {
-  emit('create-contract', props.opportunity)
+const offerSelectOptions = computed(() => {
+  if (!props.opportunity.offers || props.opportunity.offers.length === 0) return []
+  
+  return props.opportunity.offers
+    .filter(o => o.status === 'active')
+    .map(offer => ({
+      id: offer.id,
+      label: `${offer.vehicleBrand} ${offer.vehicleModel} (${offer.vehicleYear})`,
+      price: offer.price,
+      value: offer.id
+    }))
+})
+
+const canSubmit = computed(() => {
+  return communicationChannel.value && message.value.trim().length > 0
+})
+
+function formatCurrency(value) {
+  if (!value) return '0'
+  return new Intl.NumberFormat('en-US').format(value)
 }
 
-
-const handleSurveyCompleted = (responses) => {
-  emit('survey-completed', { opportunity: props.opportunity, responses })
+function handleOfferAccepted(offer) {
+  emit('offer-accepted', offer)
 }
 
-const handleSurveyRefused = () => {
-  emit('survey-refused', { opportunity: props.opportunity })
+function handleOfferDeleted(offer) {
+  emit('offer-deleted', offer)
 }
 
-const handleNotResponding = () => {
-  emit('not-responding', { opportunity: props.opportunity })
+function handleViewOffer(offer) {
+  emit('view-offer', offer)
 }
+
+async function submit() {
+  if (!canSubmit.value) return
+  
+  emit('send-message', {
+    channel: communicationChannel.value,
+    message: message.value,
+    offerId: selectedOfferId.value
+  })
+  
+  // Reset form
+  communicationChannel.value = null
+  message.value = ''
+  selectedOfferId.value = null
+}
+
+// Expose for parent component
+defineExpose({
+  canSubmit,
+  submit
+})
 </script>
 

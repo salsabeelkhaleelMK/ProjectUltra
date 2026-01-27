@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { Button } from '@motork/component-library'
+import { Button } from '@motork/component-library/future/primitives'
 
 defineProps({
   title: {

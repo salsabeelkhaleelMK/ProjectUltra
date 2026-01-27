@@ -1,46 +1,48 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-6">
     <!-- Template Selection -->
-    <div>
-      <label class="block text-fluid-xs font-medium text-body mb-1">Template</label>
-      <select 
-        v-model="selectedTemplate" 
-        @change="onTemplateChange"
-        class="input"
-      >
-        <option value="">Select a template...</option>
-        <option value="Follow-up">Follow-up</option>
-        <option value="Meeting Confirmation">Meeting Confirmation</option>
-        <option value="Quote Proposal">Quote Proposal</option>
-        <option value="Unable to Reach">Unable to Reach</option>
-      </select>
+    <div class="space-y-2">
+      <Label class="block text-sm font-semibold text-heading">Template</Label>
+      <Select v-model="selectedTemplate" @update:model-value="onTemplateChange">
+        <SelectTrigger class="w-full h-10">
+          <SelectValue placeholder="Select a template..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="Follow-up">Follow-up</SelectItem>
+          <SelectItem value="Meeting Confirmation">Meeting Confirmation</SelectItem>
+          <SelectItem value="Quote Proposal">Quote Proposal</SelectItem>
+          <SelectItem value="Unable to Reach">Unable to Reach</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- Message -->
-    <div>
-      <label class="block text-fluid-xs font-medium text-body mb-1">Message</label>
-      <textarea 
+    <div class="space-y-2">
+      <Label class="block text-sm font-semibold text-heading">Message</Label>
+      <Textarea 
         v-model="message"
-        class="input" 
-        rows="4" 
+        rows="5"
         placeholder="Type your SMS message here..."
         maxlength="160"
-      ></textarea>
-      <p class="text-fluid-xs text-sub mt-1">{{ message.length }}/160 characters</p>
+        class="w-full min-h-[120px] resize-none"
+      />
+      <p class="text-xs text-sub mt-1">{{ message.length }}/160 characters</p>
     </div>
     
     <!-- Action Buttons -->
-    <div class="flex justify-end gap-2">
+    <div class="flex justify-end gap-3">
       <Button
         label="Cancel"
         variant="outline"
         size="small"
+        class="rounded-sm"
         @click="$emit('cancel')"
       />
       <Button
         label="Send SMS"
         variant="primary"
         size="small"
+        class="rounded-sm !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
         @click="handleSend"
       />
     </div>
@@ -49,7 +51,16 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Button } from '@motork/component-library'
+import { 
+  Button, 
+  Textarea,
+  Label,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   initialTemplate: {
