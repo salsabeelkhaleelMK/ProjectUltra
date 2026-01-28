@@ -238,20 +238,6 @@ export const mockCustomers = [
     summary: 'Hot lead interested in compact luxury vehicles. Prefers phone calls during business hours. Looking for premium compact cars with stylish design. Budget: €35,000-€50,000. Fast decision-maker when presented with right options.'
   },
   { 
-    id: 16, 
-    name: 'Robert Klein', 
-    initials: 'RK', 
-    email: 'robert.klein@example.com', 
-    phone: '+4901989123456', 
-    address: 'Hafenstraße 80, 20359 Hamburg', 
-    company: 'Klein GmbH', 
-    source: 'Google Ads', 
-    tags: ['Corporate'], 
-    createdAt: '2025-03-19T10:00:00', 
-    lastContact: '2025-03-19T10:00:00',
-    summary: 'Corporate buyer looking for fleet vehicles for company executives. Prefers email for proposals and documentation. Interested in executive sedans with professional appearance. Budget: €50,000-€70,000 per vehicle. Requires detailed proposals and TCO analysis.'
-  },
-  { 
     id: 17, 
     name: 'Sabine Vogel', 
     initials: 'SV', 
@@ -264,42 +250,6 @@ export const mockCustomers = [
     createdAt: '2025-03-24T10:00:00', 
     lastContact: '2025-03-25T03:00:00',
     summary: 'Family buyer seeking reliable vehicle for daily use. Prefers phone communication. Interested in practical vehicles with good fuel economy. Budget: €25,000-€40,000. Values reliability and low maintenance costs.'
-  },
-  { 
-    id: 18, 
-    name: 'Dr. Andreas Werner', 
-    initials: 'AW', 
-    email: 'andreas.werner@example.com', 
-    phone: '+4902001345678', 
-    address: 'Königsallee 25, 40212 Düsseldorf', 
-    company: 'Werner Medical GmbH', 
-    source: 'Facebook', 
-    tags: ['VIP', 'Referral', 'Premium', 'High-Value'], 
-    createdAt: '2025-03-25T04:00:00', 
-    lastContact: '2025-03-25T06:00:00',
-    summary: 'VIP customer. Medical professional with busy schedule - best reached via email for initial contact, then phone after 6 PM. Extremely high standards and expects white-glove service. Interested in luxury sedans and executive vehicles (Mercedes S-Class, BMW 7 Series, Audi A8). Company car purchase potential. Budget: €100,000+. Values discretion, punctuality, and efficiency. Quick decision-maker when properly presented.',
-    preferredVehicleType: 'Sedan',
-    preferredChannel: 'Email',
-    preferredContactTime: 'Evenings (after 6 PM)',
-    budgetRange: '€100K+'
-  },
-  { 
-    id: 19, 
-    name: 'Christina Bauer', 
-    initials: 'CB', 
-    email: 'christina.bauer@example.com', 
-    phone: '+4902012456789', 
-    address: 'Leopoldstraße 50, 80802 Munich', 
-    company: 'Bauer Consulting AG', 
-    source: 'Google Ads', 
-    tags: ['Corporate', 'Urgent'], 
-    createdAt: '2025-03-23T10:00:00', 
-    lastContact: '2025-03-25T07:00:00',
-    summary: 'Corporate fleet buyer for consulting firm. Looking to purchase 3-5 vehicles for company executives. Prefers professional, executive sedans (Audi A6, BMW 5 Series, Mercedes E-Class). Email preferred for initial proposals and documentation, phone for negotiations. Available weekdays 9 AM-5 PM. Decision involves board approval - requires detailed proposals with TCO analysis. Budget: €50,000-€70,000 per vehicle. Long sales cycle but high-value opportunity.',
-    preferredVehicleType: 'Sedan',
-    preferredChannel: 'Email',
-    preferredContactTime: 'Business hours (9 AM-5 PM)',
-    budgetRange: '€50K-€70K per vehicle'
   },
   { 
     id: 20, 
@@ -589,27 +539,6 @@ export const mockCustomers = [
     })()
   },
   {
-    id: 39,
-    name: 'Marcus Schneider',
-    initials: 'MS',
-    email: 'marcus.schneider@example.com',
-    phone: '+4901666777888',
-    address: 'Neue Straße 15, 70173 Stuttgart',
-    company: 'Schneider Tech Solutions',
-    source: 'Immo-scout',
-    tags: ['Corporate'],
-    createdAt: (() => {
-      const date = new Date()
-      date.setHours(date.getHours() - 5) // Created 5 hours ago
-      return date.toISOString()
-    })(),
-    lastContact: (() => {
-      const date = new Date()
-      date.setHours(date.getHours() - 5)
-      return date.toISOString()
-    })()
-  },
-  {
     id: 40,
     name: 'Isabella Rodriguez',
     initials: 'IR',
@@ -718,28 +647,329 @@ export const mockCustomers = [
       return date.toISOString()
     })()
   },
+  // ============================================
+  // NESTED CONTACT-ACCOUNT RELATIONSHIP DEMO DATA
+  // ============================================
+  
+  // Company Account: Ferrari Dealership Group (1:N relationship)
   {
-    id: 45,
-    name: 'Niklas Johansson',
-    initials: 'NJ',
-    email: 'niklas.johansson@example.com',
-    phone: '+4901333444555',
-    address: 'Schildergasse 25, 50667 Köln',
-    company: 'Johansson Consulting',
-    source: 'Facebook',
-    tags: ['Corporate'],
-    createdAt: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 1) // Created yesterday
-      date.setHours(16, 0, 0, 0)
-      return date.toISOString()
-    })(),
-    lastContact: (() => {
-      const date = new Date()
-      date.setDate(date.getDate() - 1)
-      date.setHours(16, 0, 0, 0)
-      return date.toISOString()
-    })()
+    id: 100,
+    name: 'Ferrari Dealership Group',
+    initials: 'FDG',
+    email: 'info@ferraridealership.com',
+    phone: '+390212345678',
+    address: 'Via Emilia 123, 40121 Bologna, Italy',
+    company: 'Ferrari Dealership Group', // This makes it an account
+    source: 'Corporate',
+    tags: ['Premium', 'Corporate', 'High-Value'],
+    createdAt: '2024-01-15T10:00:00',
+    lastContact: '2025-03-25T14:00:00',
+    // Account-specific fields
+    type: 'Company',
+    vat: 'IT12345678901',
+    vatNumber: 'IT12345678901',
+    taxCode: 'FDRGRP85M01H501X',
+    fiscalCode: 'FDRGRP85M01H501X',
+    accountOwner: { id: 2, name: 'Sarah Jenkins', initials: 'SJ' }, // Sales Rep assigned
+    owner: { id: 2, name: 'Sarah Jenkins', initials: 'SJ' },
+    masterContactId: 101, // Marco Rossini is the master contact
+    masterContact: { id: 101, name: 'Marco Rossini' },
+    description: 'Premium automotive dealership group specializing in luxury vehicles. Established 1995. Multiple locations across Italy. High-value corporate client with fleet purchasing capabilities.',
+    notes: 'Corporate fleet buyer - prefers email communication. Requires detailed proposals with TCO analysis. Decision-making involves board approval process.',
+    numberOfEmployees: 150,
+    // Account-owned vehicles
+    vehicles: [
+      {
+        id: 'account-vehicle-1',
+        brand: 'Ferrari',
+        model: 'F8 Tributo',
+        year: 2024,
+        type: 'owned',
+        price: 280000,
+        fuelType: 'Petrol',
+        gearType: 'Automatic',
+        kilometers: 0
+      },
+      {
+        id: 'account-vehicle-2',
+        brand: 'Ferrari',
+        model: 'SF90 Stradale',
+        year: 2024,
+        type: 'owned',
+        price: 450000,
+        fuelType: 'Hybrid',
+        gearType: 'Automatic',
+        kilometers: 0
+      }
+    ]
+  },
+  
+  // Contact 1: Marco Rossini (Master Contact for Ferrari Dealership Group)
+  {
+    id: 101,
+    name: 'Marco Rossini',
+    initials: 'MR',
+    email: 'marco.rossini@ferraridealership.com',
+    phone: '+390212345679',
+    address: 'Via Emilia 123, 40121 Bologna, Italy',
+    company: null, // This makes it a contact
+    account_id: 100, // Links to Ferrari Dealership Group
+    accountId: 100,
+    source: 'Corporate',
+    tags: ['Master Contact', 'Premium', 'Corporate'],
+    createdAt: '2024-01-15T10:00:00',
+    lastContact: '2025-03-25T14:00:00',
+    title: 'Mr.',
+    salutation: 'Mr.',
+    jobTitle: 'Sales Manager',
+    summary: 'Master contact for Ferrari Dealership Group. Primary decision-maker for fleet purchases. Prefers email for proposals and phone for urgent matters. Available weekdays 9 AM-6 PM.',
+    preferredVehicleType: 'Sports Car',
+    preferredChannel: 'Email',
+    preferredContactTime: 'Business hours (9 AM-6 PM)',
+    budgetRange: '€200K+'
+  },
+  
+  // Contact 2: Giovanni Rossi (Finance Manager - Related Contact)
+  {
+    id: 102,
+    name: 'Giovanni Rossi',
+    initials: 'GR',
+    email: 'giovanni.rossi@ferraridealership.com',
+    phone: '+390212345680',
+    address: 'Via Emilia 123, 40121 Bologna, Italy',
+    company: null,
+    account_id: 100,
+    accountId: 100,
+    source: 'Corporate',
+    tags: ['Finance', 'Corporate'],
+    createdAt: '2024-01-20T10:00:00',
+    lastContact: '2025-03-24T16:00:00',
+    title: 'Mr.',
+    salutation: 'Mr.',
+    jobTitle: 'Finance Manager',
+    summary: 'Finance Manager at Ferrari Dealership Group. Handles financial approvals and payment terms. Prefers email communication with detailed financial documentation.',
+    preferredVehicleType: 'Executive',
+    preferredChannel: 'Email',
+    preferredContactTime: 'Business hours (9 AM-5 PM)',
+    budgetRange: '€150K-€300K'
+  },
+  
+  // Contact 3: Anna Ferrari (Marketing Manager - Related Contact)
+  {
+    id: 103,
+    name: 'Anna Ferrari',
+    initials: 'AF',
+    email: 'anna.ferrari@ferraridealership.com',
+    phone: '+390212345681',
+    address: 'Via Emilia 123, 40121 Bologna, Italy',
+    company: null,
+    account_id: 100,
+    accountId: 100,
+    source: 'Corporate',
+    tags: ['Marketing', 'Corporate'],
+    createdAt: '2024-02-01T10:00:00',
+    lastContact: '2025-03-23T11:00:00',
+    title: 'Ms.',
+    salutation: 'Ms.',
+    jobTitle: 'Marketing Manager',
+    summary: 'Marketing Manager at Ferrari Dealership Group. Involved in brand partnerships and promotional vehicle selections. Prefers WhatsApp for quick updates.',
+    preferredVehicleType: 'Luxury',
+    preferredChannel: 'WhatsApp',
+    preferredContactTime: 'Business hours (10 AM-4 PM)',
+    budgetRange: '€100K-€250K'
+  },
+  
+  // Contact 4: Paolo Verdi (Operations Manager - Related Contact)
+  {
+    id: 104,
+    name: 'Paolo Verdi',
+    initials: 'PV',
+    email: 'paolo.verdi@ferraridealership.com',
+    phone: '+390212345682',
+    address: 'Via Emilia 123, 40121 Bologna, Italy',
+    company: null,
+    account_id: 100,
+    accountId: 100,
+    source: 'Corporate',
+    tags: ['Operations', 'Corporate'],
+    createdAt: '2024-02-10T10:00:00',
+    lastContact: '2025-03-22T15:00:00',
+    title: 'Mr.',
+    salutation: 'Mr.',
+    jobTitle: 'Operations Manager',
+    summary: 'Operations Manager at Ferrari Dealership Group. Handles fleet logistics and vehicle delivery coordination. Prefers phone calls during business hours.',
+    preferredVehicleType: 'Fleet',
+    preferredChannel: 'Phone',
+    preferredContactTime: 'Business hours (8 AM-5 PM)',
+    budgetRange: '€50K-€150K'
+  },
+  
+  // Private Account: Private Individual (1:1 relationship)
+  {
+    id: 200,
+    name: 'Dr. Elena Bianchi',
+    initials: 'EB',
+    email: 'elena.bianchi@example.com',
+    phone: '+390212345700',
+    address: 'Via Roma 50, 20121 Milano, Italy',
+    company: 'Dr. Elena Bianchi', // Private account (1:1)
+    source: 'Referral',
+    tags: ['VIP', 'Premium', 'Private'],
+    createdAt: '2024-03-01T10:00:00',
+    lastContact: '2025-03-25T10:00:00',
+    // Account-specific fields
+    type: 'Private',
+    vat: null, // Private accounts may not have VAT
+    vatNumber: null,
+    taxCode: 'BNCLNE85H45F205X',
+    fiscalCode: 'BNCLNE85H45F205X',
+    accountOwner: { id: 6, name: 'Giulia Bianchi', initials: 'GB' },
+    owner: { id: 6, name: 'Giulia Bianchi', initials: 'GB' },
+    masterContactId: 201, // Same as contact ID for private accounts
+    masterContact: { id: 201, name: 'Dr. Elena Bianchi' },
+    description: 'Private account for individual customer. High-value client with preference for luxury vehicles.',
+    notes: 'VIP customer - prefers email communication. Available evenings after 7 PM.',
+    numberOfEmployees: null,
+    // Private account vehicles
+    vehicles: [
+      {
+        id: 'private-vehicle-1',
+        brand: 'Mercedes-Benz',
+        model: 'S-Class',
+        year: 2023,
+        type: 'owned',
+        price: 120000,
+        fuelType: 'Hybrid',
+        gearType: 'Automatic',
+        kilometers: 15000
+      }
+    ]
+  },
+  
+  // Contact for Private Account (1:1 relationship)
+  {
+    id: 201,
+    name: 'Dr. Elena Bianchi',
+    initials: 'EB',
+    email: 'elena.bianchi@example.com',
+    phone: '+390212345700',
+    address: 'Via Roma 50, 20121 Milano, Italy',
+    company: null,
+    account_id: 200, // Links to private account
+    accountId: 200,
+    source: 'Referral',
+    tags: ['VIP', 'Premium'],
+    createdAt: '2024-03-01T10:00:00',
+    lastContact: '2025-03-25T10:00:00',
+    title: 'Dr.',
+    salutation: 'Dr.',
+    jobTitle: 'Medical Professional',
+    summary: 'Private customer with high purchasing power. Prefers luxury sedans and SUVs. Best reached via email, available evenings after 7 PM.',
+    preferredVehicleType: 'Luxury Sedan',
+    preferredChannel: 'Email',
+    preferredContactTime: 'Evenings (after 7 PM)',
+    budgetRange: '€100K+'
+  },
+  
+  // Another Company Account: Tech Solutions GmbH
+  {
+    id: 300,
+    name: 'Tech Solutions GmbH',
+    initials: 'TSG',
+    email: 'info@techsolutions.de',
+    phone: '+4903012345678',
+    address: 'Unter den Linden 50, 10117 Berlin, Germany',
+    company: 'Tech Solutions GmbH',
+    source: 'Corporate',
+    tags: ['Corporate', 'Fleet'],
+    createdAt: '2024-05-10T10:00:00',
+    lastContact: '2025-03-24T16:00:00',
+    type: 'Company',
+    vat: 'DE123456789',
+    vatNumber: 'DE123456789',
+    taxCode: 'TSGMBH85M01H501X',
+    fiscalCode: 'TSGMBH85M01H501X',
+    accountOwner: { id: 3, name: 'David Miller', initials: 'DM' },
+    owner: { id: 3, name: 'David Miller', initials: 'DM' },
+    masterContactId: 301,
+    masterContact: { id: 301, name: 'Thomas Schneider' },
+    description: 'Technology consulting firm requiring executive fleet vehicles for client meetings and business travel.',
+    notes: 'Fleet buyer - requires detailed proposals with TCO analysis. Decision involves procurement department.',
+    numberOfEmployees: 75,
+    vehicles: [
+      {
+        id: 'account-vehicle-3',
+        brand: 'BMW',
+        model: '5 Series',
+        year: 2024,
+        type: 'owned',
+        price: 65000,
+        fuelType: 'Hybrid',
+        gearType: 'Automatic',
+        kilometers: 0
+      },
+      {
+        id: 'account-vehicle-4',
+        brand: 'Audi',
+        model: 'A6',
+        year: 2024,
+        type: 'owned',
+        price: 68000,
+        fuelType: 'Petrol',
+        gearType: 'Automatic',
+        kilometers: 0
+      }
+    ]
+  },
+  
+  // Contact: Thomas Schneider (Master Contact for Tech Solutions)
+  {
+    id: 301,
+    name: 'Thomas Schneider',
+    initials: 'TS',
+    email: 'thomas.schneider@techsolutions.de',
+    phone: '+4903012345679',
+    address: 'Unter den Linden 50, 10117 Berlin, Germany',
+    company: null,
+    account_id: 300,
+    accountId: 300,
+    source: 'Corporate',
+    tags: ['Master Contact', 'Corporate'],
+    createdAt: '2024-05-10T10:00:00',
+    lastContact: '2025-03-24T16:00:00',
+    title: 'Mr.',
+    salutation: 'Mr.',
+    jobTitle: 'CEO',
+    summary: 'CEO and master contact for Tech Solutions GmbH. Primary decision-maker for fleet purchases. Prefers email for documentation and phone for urgent matters.',
+    preferredVehicleType: 'Executive Sedan',
+    preferredChannel: 'Email',
+    preferredContactTime: 'Business hours (9 AM-6 PM)',
+    budgetRange: '€50K-€80K per vehicle'
+  },
+  
+  // Contact: Maria Weber (HR Manager - Related Contact)
+  {
+    id: 302,
+    name: 'Maria Weber',
+    initials: 'MW',
+    email: 'maria.weber@techsolutions.de',
+    phone: '+4903012345680',
+    address: 'Unter den Linden 50, 10117 Berlin, Germany',
+    company: null,
+    account_id: 300,
+    accountId: 300,
+    source: 'Corporate',
+    tags: ['HR', 'Corporate'],
+    createdAt: '2024-05-15T10:00:00',
+    lastContact: '2025-03-23T14:00:00',
+    title: 'Ms.',
+    salutation: 'Ms.',
+    jobTitle: 'HR Manager',
+    summary: 'HR Manager at Tech Solutions GmbH. Involved in employee vehicle benefit programs. Prefers email communication.',
+    preferredVehicleType: 'Fleet',
+    preferredChannel: 'Email',
+    preferredContactTime: 'Business hours (10 AM-4 PM)',
+    budgetRange: '€30K-€50K per vehicle'
   }
 ]
 

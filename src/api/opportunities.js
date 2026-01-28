@@ -57,6 +57,12 @@ export const createOpportunityFromContact = async (contactId, carData) => {
   const contact = mockContacts.find(c => c.id === parseInt(contactId))
   if (!contact) throw new Error('Contact not found')
   
+  // Get expected close date from settings
+  const { useSettingsStore } = await import('@/stores/settings')
+  const settingsStore = useSettingsStore()
+  const defaultDays = settingsStore.getSetting('expectedCloseDateDays') || 90
+  const expectedCloseDate = new Date(Date.now() + defaultDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  
   // Use service layer for business logic and enrichment
   return await opportunityService.create({
     customerId: contact.customerId,
@@ -69,7 +75,7 @@ export const createOpportunityFromContact = async (contactId, carData) => {
     assigneeInitials: '',
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString(),
-    expectedCloseDate: null,
+    expectedCloseDate: expectedCloseDate,
     tags: [],
     value: carData.price || 0
   })
@@ -188,6 +194,10 @@ export const addOffer = async (opportunityId, offerData) => {
     vehicleYear: offerData.vehicleYear || '',
     price: offerData.price || 0,
     status: offerData.status || 'active',
+    acceptance_status: offerData.acceptance_status || 'pending',
+    acceptance_date: offerData.acceptance_date || null,
+    acceptance_method: offerData.acceptance_method || null,
+    accepted_by_user_id: offerData.accepted_by_user_id || null,
     data: offerData.data || {}
   }
   
@@ -205,24 +215,111 @@ export const addOffer = async (opportunityId, offerData) => {
   return newOffer
 }
 
-// Mark offer as accepted
-export const markOfferAccepted = async (opportunityId, offerId) => {
+// Add contract to opportunity's contracts array
+export const addContract = async (opportunityId, contractData) => {
+  await delay()
+
+  const opportunity = await opportunityService.findById(opportunityId)
+  if (!opportunity) throw new Error('Opportunity not found')
+
+  if (!opportunity.contracts) opportunity.contracts = []
+
+  const datetime = contractData.contractTime
+    ? `${contractData.contractDate}T${contractData.contractTime}:00`
+    : `${contractData.contractDate}T12:00:00`
+
+  const newContract = {
+    id: contractData.id || `contract-${Date.now()}`,
+    contractDate: datetime,
+    contractNotes: contractData.notes || '',
+    version: opportunity.contracts.length + 1,
+    contractSigned: false,
+    esignatureCollectedDate: null,
+    status: 'active',
+    // Locked terms from accepted offer
+    lockedOfferId: contractData.lockedOfferId || null,
+    lockedTradeInLabel: contractData.lockedTradeInLabel || '',
+    lockedFinancingLabel: contractData.lockedFinancingLabel || '',
+    lockedPrice: contractData.lockedPrice || 0
+  }
+
+  opportunity.contracts.push(newContract)
+  const isFirst = opportunity.contracts.length === 1
+  if (isFirst) {
+    opportunity.contractDate = datetime
+  }
+  opportunity.lastActivity = new Date().toISOString()
+
+  await opportunityRepository.update(opportunityId, opportunity)
+  return newContract
+}
+
+// Delete contract (clear contractDate and revert offer status if auto-accepted)
+export const deleteContract = async (opportunityId) => {
   await delay()
   
   const opportunity = await opportunityService.findById(opportunityId)
   if (!opportunity) throw new Error('Opportunity not found')
-  if (!opportunity.offers) throw new Error('No offers found')
   
-  const offer = opportunity.offers.find(o => o.id === offerId)
-  if (!offer) throw new Error('Offer not found')
+  // Check if offer was auto-accepted via contract
+  const wasAutoAccepted = opportunity.offerAcceptanceMethod === 'auto_via_contract'
+  const hasAcceptedOffer = opportunity.offers && opportunity.offers.some(o => o.acceptance_method === 'auto_via_contract')
   
-  offer.status = 'accepted'
-  opportunity.negotiationSubstatus = 'Offer Accepted'
-  opportunity.stage = 'In Negotiation'
-  opportunity.lastActivity = new Date().toISOString()
+  // Clear contract date
+  const updates = {
+    contractDate: null,
+    contractNotes: null
+  }
   
-  await opportunityRepository.update(opportunityId, opportunity)
-  return opportunity
+  // Revert offer status to "Offer Sent" if it was auto-accepted via contract
+  // Only revert if no other contracts exist (check if contractDate was the only contract indicator)
+  if (wasAutoAccepted || hasAcceptedOffer) {
+    // Find the auto-accepted offer and revert its status
+    if (opportunity.offers) {
+      const autoAcceptedOffers = opportunity.offers.filter(o => o.acceptance_method === 'auto_via_contract')
+      for (const offer of autoAcceptedOffers) {
+        offer.status = 'active'
+        offer.acceptance_status = 'pending'
+        offer.acceptance_date = null
+        offer.acceptance_method = null
+        offer.accepted_by_user_id = null
+      }
+    }
+    
+    // Revert opportunity negotiation substatus to "Offer Sent"
+    updates.negotiationSubstatus = 'Offer Sent'
+    updates.offerAcceptanceDate = null
+    updates.offerAcceptanceMethod = null
+    updates.acceptedByUserId = null
+  }
+  
+  // If stage was Closed Won, revert to In Negotiation
+  if (opportunity.stage === 'Closed Won') {
+    updates.stage = 'In Negotiation'
+  }
+  
+  updates.lastActivity = new Date().toISOString()
+  
+  await opportunityRepository.update(opportunityId, { ...opportunity, ...updates })
+  
+  // Add audit log
+  await activityRepository.create({
+    opportunityId,
+    type: 'contract-deletion',
+    user: 'System',
+    action: 'contract deleted',
+    content: wasAutoAccepted 
+      ? 'Contract deleted, offer reverted to Offer Sent'
+      : 'Contract deleted',
+    data: {
+      wasAutoAccepted,
+      previousSubstatus: opportunity.negotiationSubstatus,
+      previousStage: opportunity.stage
+    },
+    timestamp: new Date().toISOString()
+  })
+  
+  return await opportunityService.findById(opportunityId)
 }
 
 // Delete/archive offer
@@ -237,6 +334,33 @@ export const deleteOffer = async (opportunityId, offerId) => {
   if (!offer) throw new Error('Offer not found')
   
   offer.status = 'archived'
+  opportunity.lastActivity = new Date().toISOString()
+  
+  await opportunityRepository.update(opportunityId, opportunity)
+  return opportunity
+}
+
+// Activate offer (change from archived to active)
+// When activating an offer, deactivate all other active offers
+export const activateOffer = async (opportunityId, offerId) => {
+  await delay()
+  
+  const opportunity = await opportunityService.findById(opportunityId)
+  if (!opportunity) throw new Error('Opportunity not found')
+  if (!opportunity.offers) throw new Error('No offers found')
+  
+  const offer = opportunity.offers.find(o => o.id === offerId)
+  if (!offer) throw new Error('Offer not found')
+  
+  // Deactivate all other active offers (except accepted ones)
+  opportunity.offers.forEach(o => {
+    if (o.id !== offerId && o.status === 'active' && o.acceptance_status !== 'accepted') {
+      o.status = 'archived'
+    }
+  })
+  
+  // Activate the selected offer
+  offer.status = 'active'
   opportunity.lastActivity = new Date().toISOString()
   
   await opportunityRepository.update(opportunityId, opportunity)
@@ -261,6 +385,12 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
   }
   
   // Use service layer to create opportunity
+  // Get expected close date from settings
+  const { useSettingsStore } = await import('@/stores/settings')
+  const settingsStore = useSettingsStore()
+  const defaultDays = settingsStore.getSetting('expectedCloseDateDays') || 90
+  const expectedCloseDate = new Date(Date.now() + defaultDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  
   const newOpportunity = await opportunityService.create({
     customerId: leadData.customerId,
     requestedCar: leadData.requestedCar,
@@ -268,7 +398,7 @@ export const createOpportunityFromLead = async (leadData, activities, options = 
     stage: 'Qualified',
     tags: leadData.tags || [],
     value: leadData.requestedCar?.price || 0,
-    expectedCloseDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 90 days from now
+    expectedCloseDate: expectedCloseDate,
     assignee: assigneeName,
     assigneeId: options.assigneeId || null,
     source: leadData.source || 'Marketing',
@@ -456,6 +586,59 @@ export const fetchActionableQuestions = async (userId, userRole) => {
             nsTaskCreatedAt: appointment.nsTaskCreatedAt
           })
         }
+      }
+    }
+  }
+  
+  // Question 3: Offer sent but no response (3+ days after offer sent)
+  for (const opp of userOpportunities) {
+    // Only check opportunities in In Negotiation stage with offers
+    if (opp.stage !== 'In Negotiation') continue
+    
+    // Skip if already has contract
+    if (opp.contractDate) continue
+    if (opp.negotiationSubstatus === 'Contract Pending') continue
+    
+    // Check if opportunity has offers
+    if (!opp.offers || opp.offers.length === 0) continue
+    
+    // Find the most recent offer (by createdAt date)
+    const activeOffers = opp.offers.filter(o => o.status === 'active' || !o.status)
+    if (activeOffers.length === 0) continue
+    
+    const mostRecentOffer = activeOffers.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0)
+      const dateB = new Date(b.createdAt || 0)
+      return dateB - dateA
+    })[0]
+    
+    if (!mostRecentOffer.createdAt) continue
+    
+    const offerDate = new Date(mostRecentOffer.createdAt)
+    const daysSinceOffer = Math.floor((now - offerDate) / (1000 * 60 * 60 * 24))
+    
+    // Only show if offer was sent 3+ days ago (after transition window)
+    if (daysSinceOffer >= 3) {
+      // Check if this specific offer has been accepted
+      const offerAccepted = mostRecentOffer.acceptance_status === 'accepted' || 
+                           (mostRecentOffer.acceptance_date && new Date(mostRecentOffer.acceptance_date) >= offerDate)
+      
+      // Check if contract has been created after this offer
+      const hasContract = opp.contractDate && new Date(opp.contractDate) >= offerDate
+      
+      // Only show if offer hasn't been accepted and no contract exists
+      if (!offerAccepted && !hasContract) {
+        const enrichedOpp = enrichOpportunityWithCustomer(opp)
+        questions.push({
+          id: `offer-followup-${opp.id}`,
+          type: 'offer-followup',
+          priority: 5, // Medium
+          question: `You sent an offer to ${enrichedOpp.customer.name} ${daysSinceOffer === 3 ? '3 days ago' : `${daysSinceOffer} days ago`}. Follow up on the pending offer.`,
+          customer: enrichedOpp.customer,
+          opportunityId: opp.id,
+          opportunity: enrichedOpp,
+          createdAt: mostRecentOffer.createdAt
+        })
       }
     }
   }

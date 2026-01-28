@@ -81,12 +81,6 @@
               {{ dynamicDescription }}
             </p>
           </div>
-          <div
-            class="flex items-center gap-2 px-2 py-1 rounded-btn text-sm font-semibold"
-            :class="statusBadge.class"
-          >
-            {{ statusBadge.text }}
-          </div>
         </div>
 
         <!-- Combined Follow-up and Contact Attempts Banner -->
@@ -904,7 +898,7 @@ import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
 import { useSettingsStore } from '@/stores/settings'
 import { useLeadsStore } from '@/stores/leads'
-import { formatDate, formatTime, formatDueDate } from '@/utils/formatters'
+import { formatDate, formatTime } from '@/utils/formatters'
 import { useLeadActions } from '@/composables/useLeadActions'
 import { LEAD_STAGES } from '@/utils/stageMapper'
 import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
@@ -1189,19 +1183,6 @@ const hasScheduledFollowUp = computed(() => {
   return !!props.lead.scheduledAppointment
 })
 
-const statusBadge = computed(() => {
-  if (hasScheduledFollowUp.value) {
-    return { text: 'Follow-up Scheduled', class: 'bg-blue-100 text-blue-700' }
-  }
-  if (isOverdue.value) {
-    return { text: 'Overdue', class: 'bg-red-100 text-red-700' }
-  }
-  // For Pending, show "Task Pending - Due [date]" format
-  const pendingText = props.lead.nextActionDue 
-    ? `Task Pending - Due ${formatDueDate(props.lead.nextActionDue)}`
-    : 'Task Pending'
-  return { text: pendingText, class: 'bg-orange-100 text-orange-700' }
-})
 
 // Use contactAttempts and maxContactAttempts from state machine
 const contactAttempts = leadState.contactAttempts

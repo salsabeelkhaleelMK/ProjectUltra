@@ -1,63 +1,72 @@
 <template>
-  <div class="page-container relative">
+  <div class="page-container relative flex flex-col overflow-hidden h-full">
     <!-- Header -->
-    <PageHeader title="Customers">
+    <PageHeader title="Customers" class="shrink-0">
       <template #actions>
         <!-- Add New Button -->
-        <Button
+        <button
           @click="router.push('/add-new')"
-          variant="secondary"
-          size="md"
-          class="flex items-center gap-2"
+          class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
         >
-          <i class="fa-solid fa-plus text-sm"></i>
+          <i class="fa-solid fa-plus text-muted-foreground group-hover:text-brand-red"></i>
           <span class="hidden sm:inline">Add new</span>
-        </Button>
+        </button>
       </template>
     </PageHeader>
     
     <!-- Filters + Table -->
-    <div class="p-4 md:p-8">
-      <!-- Stage Tabs -->
-      <Tabs v-model="activeTab">
-        <TabsList class="w-full justify-start border-b border-border bg-transparent mb-0 overflow-x-auto">
-          <TabsTrigger
-            v-for="tab in stageTabs"
-            :key="tab.key"
-            :value="tab.key"
-            class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-dark data-[state=active]:text-brand-darkDarker rounded-none pb-0.5 px-4 shrink-0"
-          >
-            <span class="text-sm font-medium whitespace-nowrap">{{ tab.label }}</span>
-            <Badge
-              :text="String(tab.count)"
-              size="small"
-              :theme="getBadgeTheme(tab.key, activeTab === tab.key)"
-            />
-          </TabsTrigger>
-        </TabsList>
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+        <!-- Stage Tabs -->
+        <div class="mb-2 -mt-2">
+          <Tabs v-model="activeTab">
+            <TabsList class="flex shrink-0 border-b border-border bg-white rounded-none w-full relative h-full">
+              <TabsTrigger
+                v-for="tab in stageTabs"
+                :key="tab.key"
+                :value="tab.key"
+                class="flex items-center gap-2 text-sm font-medium transition-all relative flex-1 justify-center bg-transparent outline-none h-full shrink-0"
+                :class="activeTab === tab.key 
+                  ? 'text-foreground' 
+                  : 'text-muted-foreground hover:text-muted-foreground'"
+              >
+                <span class="whitespace-nowrap">{{ tab.label }}</span>
+                <Badge
+                  :text="String(tab.count)"
+                  size="small"
+                  :theme="getBadgeTheme(tab.key, activeTab === tab.key)"
+                />
+                <span 
+                  v-if="activeTab === tab.key"
+                  class="absolute bottom-0 left-0 right-0 h-[2px] bg-primary z-10"
+                ></span>
+              </TabsTrigger>
+            </TabsList>
 
-        <!-- Tab Content for each stage -->
-        <TabsContent
-          v-for="tab in stageTabs"
-          :key="`content-${tab.key}`"
-          :value="tab.key"
-        >
-          <Suspense>
-            <component 
-              :is="tabComponents[tab.key]" 
-              @row-click="handleRowClick"
-            />
-            <template #fallback>
-              <div class="flex items-center justify-center py-12">
-                <div class="text-center">
-                  <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
-                  <p class="text-meta">Loading...</p>
-                </div>
-              </div>
-            </template>
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+            <!-- Tab Content for each stage -->
+            <TabsContent
+              v-for="tab in stageTabs"
+              :key="`content-${tab.key}`"
+              :value="tab.key"
+            >
+              <Suspense>
+                <component 
+                  :is="tabComponents[tab.key]" 
+                  @row-click="handleRowClick"
+                />
+                <template #fallback>
+                  <div class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                      <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+                      <p class="text-meta">Loading...</p>
+                    </div>
+                  </div>
+                </template>
+              </Suspense>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
     
     <!-- Drawer Container -->
@@ -355,4 +364,56 @@ onMounted(async () => {
   await opportunitiesStore.fetchOpportunities()
 })
 </script>
+
+<style scoped>
+/* Tab styling to match Customer.vue */
+:deep([role="tablist"]) {
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  height: auto !important;
+  min-height: 48px !important;
+}
+
+:deep([role="tab"]) {
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  margin: 0 !important;
+  padding: 6px 16px 12px 16px !important;
+  position: relative !important;
+  box-shadow: none !important;
+  height: 100% !important;
+  min-height: 48px !important;
+}
+
+:deep([role="tab"]:not(:last-child)) {
+  border-right: none !important;
+}
+
+:deep([role="tab"]::before),
+:deep([role="tab"]::after) {
+  display: none !important;
+  box-shadow: none !important;
+}
+
+:deep([role="tab"] *) {
+  box-shadow: none !important;
+}
+
+:deep([role="tab"][data-state="active"]) {
+  color: var(--color-text-foreground) !important;
+  box-shadow: none !important;
+}
+
+:deep([role="tab"][data-state="inactive"]) {
+  color: var(--color-text-muted-foreground) !important;
+  box-shadow: none !important;
+}
+</style>
 

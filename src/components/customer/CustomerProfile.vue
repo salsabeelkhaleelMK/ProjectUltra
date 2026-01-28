@@ -1,13 +1,7 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden bg-surface">
-    <!-- Loading State -->
-    <div v-if="loading || !customer" class="flex-1 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-    </div>
-
     <!-- Customer Detail Content -->
     <EntityDetailLayout
-      v-else
       :task="task"
       :type="taskType"
       :management-widget="managementWidget"
@@ -22,30 +16,131 @@
       @appointment-created="handleAppointmentCreated"
     >
       <template #pinned-extra="{ task }">
-        <!-- Cards Stack - Each on Own Row -->
-        <div class="flex flex-col gap-6">
-          <CustomerSummaryWidget 
-            :summary="task.summary || customerData?.summary"
-            :preferences="task.preferences || customerData?.preferences"
-            :customer-data="customerData"
-          />
+        <!-- Responsive Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-min">
+          <!-- Contact Details Card - Row 1, Col 1 (Desktop) -->
+          <div class="h-auto">
+            <CustomerContactDetailsCard
+              :name="customerData?.name || task?.customer?.name || ''"
+              :first-name="customerData?.firstName || ''"
+              :last-name="customerData?.lastName || ''"
+              :initials="customerData?.initials || task?.customer?.initials || ''"
+              :title="customerData?.title || customerData?.salutation || ''"
+              :salutation="customerData?.salutation || customerData?.title || ''"
+              :job-title="customerData?.jobTitle || ''"
+              :birth-date="customerData?.birthDate || ''"
+              :gender="customerData?.gender || ''"
+              :place-of-birth="customerData?.placeOfBirth || ''"
+              :email="customerData?.email || task?.customer?.email || ''"
+              :secondary-email="customerData?.secondaryEmail || ''"
+              :phone="customerData?.phone || task?.customer?.phone || ''"
+              :secondary-phone="customerData?.secondaryPhone || ''"
+              :mobile-phone="customerData?.mobilePhone || ''"
+              :preferred-contact-method="customerData?.preferredContactMethod || customerData?.preferredChannel || ''"
+              :preferred-channel="customerData?.preferredChannel || ''"
+              :address="customerData?.address || task?.customer?.address || ''"
+              :street-address1="customerData?.streetAddress1 || customerData?.streetAddress || customerData?.address?.streetLine1 || ''"
+              :street-address2="customerData?.streetAddress2 || customerData?.address?.streetLine2 || ''"
+              :city="customerData?.city || customerData?.address?.city || ''"
+              :postal-code="customerData?.postalCode || customerData?.zipCode || customerData?.address?.postalCode || ''"
+              :region="customerData?.region || customerData?.state || customerData?.county || customerData?.address?.region || ''"
+              :country="customerData?.country || customerData?.address?.country || ''"
+              :contact-custom-fields="customerData?.customFields || customerData?.contactCustomFields || {}"
+              :external-id="customerData?.externalId || customerData?.contactExternalId || ''"
+              :created-at="customerData?.createdAt || customerData?.createdDate || ''"
+              :created-date="customerData?.createdDate || customerData?.createdAt || ''"
+              :updated-at="customerData?.updatedAt || customerData?.lastUpdatedDate || customerData?.lastContact || ''"
+              :last-updated-date="customerData?.lastUpdatedDate || customerData?.updatedAt || ''"
+              :last-activity-date="customerData?.lastActivityDate || ''"
+              :is-master-contact="isMasterContact"
+              :account-name="accountData?.name || accountData?.companyName || ''"
+              :loading="loadingCustomer"
+            />
+          </div>
           
-          <SuggestedNextAction 
-            :leads="customerLeads"
-            :opportunities="customerOpportunities"
-            :activities="customerActivities"
-          />
+          <!-- Customer Insights Card - Row 1, Col 2 (Desktop) -->
+          <div class="h-auto">
+            <CustomerSummaryWidget 
+              :summary="task?.summary || customerData?.summary"
+              :preferences="task?.preferences || customerData?.preferences"
+              :customer-data="customerData"
+              :loading="loadingCustomer"
+            />
+          </div>
           
-          <RecentActivitiesWidget
-            :next-appointment="nextAppointment"
-            :activities="customerActivities"
-            :leads="customerLeads"
-            :opportunities="customerOpportunities"
-            :customer-id="customerId"
-          />
+          <!-- Account Details Card - Row 2, Col 1 (Desktop, only for company accounts) -->
+          <div v-if="accountData && accountData.type === 'Company'" class="h-auto">
+            <AccountDetailsCard
+              :account-data="accountData"
+              :current-contact-id="customerId"
+              :account-status="accountData?.status || accountData?.accountStatus || 'Active'"
+              :company-website="accountData?.website || accountData?.companyWebsite || ''"
+              :company-phone="accountData?.companyPhone || accountData?.phone || ''"
+              :company-email="accountData?.companyEmail || accountData?.email || ''"
+              :company-address="accountData?.companyAddress || accountData?.address || ''"
+              :company-street-address1="accountData?.companyAddress?.streetLine1 || accountData?.streetAddress1 || accountData?.companyStreetAddress || accountData?.address?.streetLine1 || (typeof accountData?.address === 'string' ? accountData?.address?.split(',')[0] : '') || ''"
+              :company-street-address2="accountData?.companyAddress?.streetLine2 || accountData?.streetAddress2 || accountData?.address?.streetLine2 || ''"
+              :company-city="accountData?.companyAddress?.city || accountData?.city || accountData?.companyCity || accountData?.address?.city || ''"
+              :company-postal-code="accountData?.companyAddress?.postalCode || accountData?.postalCode || accountData?.zipCode || accountData?.companyPostalCode || accountData?.address?.postalCode || ''"
+              :company-region="accountData?.companyAddress?.region || accountData?.region || accountData?.state || accountData?.county || accountData?.companyRegion || accountData?.address?.region || ''"
+              :company-country="accountData?.companyAddress?.country || accountData?.country || accountData?.companyCountry || accountData?.address?.country || ''"
+              :fiscal-entity="accountData?.fiscalEntity || accountData?.fiscalEntityName || ''"
+              :account-external-id="accountData?.externalId || accountData?.accountExternalId || ''"
+              :account-custom-fields="accountData?.customFields || accountData?.accountCustomFields || {}"
+              :account-created-at="accountData?.createdAt || accountData?.createdDate || ''"
+              :created-date="accountData?.createdDate || accountData?.createdAt || ''"
+              :account-updated-at="accountData?.updatedAt || accountData?.lastUpdatedDate || accountData?.lastContact || ''"
+              :last-updated-date="accountData?.lastUpdatedDate || accountData?.updatedAt || ''"
+              :last-activity="accountData?.lastActivity || accountData?.lastActivityDate || accountData?.lastContact || ''"
+              :last-activity-date="accountData?.lastActivityDate || accountData?.lastActivity || ''"
+              :related-contacts-count="relatedContacts.length"
+              :related-leads-count="customerLeads.length"
+              :related-opportunities-count="customerOpportunities.length"
+              :related-vehicles-count="customerCars.length"
+              :account-tags="accountData?.tags || []"
+              :payment-terms="accountData?.paymentTerms || ''"
+              :credit-limit="accountData?.creditLimit || ''"
+              :loading="loadingAccount"
+            />
+          </div>
           
-          <!-- Customer Cars Carousel -->
-          <VehiclesCarousel v-if="customerCars.length > 0" :cars="customerCars" />
+          <!-- Related Contacts Widget - Row 2, Col 2 (Desktop, only for company accounts) -->
+          <div v-if="accountData && accountData.type === 'Company'" class="h-auto">
+            <RelatedContactsWidget
+              :related-contacts="relatedContacts"
+              :master-contact-id="accountData?.masterContactId || accountData?.masterContact?.id"
+              :current-contact-id="customerId"
+              :account-data="accountData"
+              :loading="loadingRelatedContacts"
+            />
+          </div>
+          
+          <!-- Suggested Next Action - Row 3, Full Width -->
+          <div class="lg:col-span-2 h-auto">
+            <SuggestedNextAction 
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :activities="customerActivities"
+              :loading="loadingLeads || loadingOpportunities || loadingActivities"
+            />
+          </div>
+          
+          <!-- Recent Activities - Row 4, Full Width -->
+          <div class="lg:col-span-2 h-auto">
+            <RecentActivitiesWidget
+              :next-appointment="nextAppointment"
+              :activities="customerActivities"
+              :leads="customerLeads"
+              :opportunities="customerOpportunities"
+              :customer-id="customerId"
+              :loading="loadingActivities || loadingAppointments || loadingLeads || loadingOpportunities"
+            />
+          </div>
+          
+          <!-- Customer Cars Carousel - Row 5, Full Width -->
+          <div v-if="customerCars.length > 0 || loadingCars" class="lg:col-span-2 h-auto">
+            <VehiclesCarousel :cars="customerCars" />
+          </div>
         </div>
       </template>
 
@@ -54,19 +149,21 @@
           <CustomerLeadsWidget 
             :leads="customerLeads" 
             :all-tasks="customerTasks"
+            :loading="loadingLeads"
             @add-lead="openAddModal('lead')"
           />
           <CustomerOpportunitiesWidget 
             :opportunities="customerOpportunities" 
             :all-tasks="customerTasks"
             :activities="customerActivities"
+            :loading="loadingOpportunities"
             @add-opportunity="openAddModal('opportunity')"
           />
         </div>
       </template>
 
       <template #tab-appointments>
-        <CustomerAppointmentsWidget :appointments="customerAppointments" />
+        <CustomerAppointmentsWidget :appointments="customerAppointments" :loading="loadingAppointments" />
       </template>
     </EntityDetailLayout>
 
@@ -97,7 +194,11 @@ import AddLeadOpportunityModal from '@/components/modals/AddLeadOpportunityModal
 import CustomerSummaryWidget from '@/components/customer/CustomerSummaryWidget.vue'
 import SuggestedNextAction from '@/components/customer/SuggestedNextAction.vue'
 import RecentActivitiesWidget from '@/components/customer/RecentActivitiesWidget.vue'
-import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId } from '@/api/contacts'
+import CustomerContactDetailsCard from '@/components/customer/CustomerContactDetailsCard.vue'
+import AccountDetailsCard from '@/components/customer/AccountDetailsCard.vue'
+import RelatedContactsWidget from '@/components/customer/RelatedContactsWidget.vue'
+import { fetchLeadsByCustomerId, fetchOpportunitiesByCustomerId, fetchCustomerCars, fetchTasksByCustomerId, fetchContactsByAccountId } from '@/api/contacts'
+import { fetchAccountById } from '@/api/accounts'
 import { fetchLeadActivities } from '@/api/leads'
 import { fetchOpportunityActivities } from '@/api/opportunities'
 import { fetchAppointmentsByCustomerId } from '@/api/calendar'
@@ -129,11 +230,21 @@ const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 const customersStore = useCustomersStore()
 
-const loading = ref(false)
+// Individual loading states for each data type
+const loadingCustomer = ref(false)
+const loadingAccount = ref(false)
+const loadingRelatedContacts = ref(false)
+const loadingLeads = ref(false)
+const loadingOpportunities = ref(false)
+const loadingCars = ref(false)
+const loadingActivities = ref(false)
+const loadingAppointments = ref(false)
 const error = ref(null)
 
 // Customer-related data
 const customerData = ref(null)
+const accountData = ref(null)
+const relatedContacts = ref([])
 const customerLeads = ref([])
 const customerOpportunities = ref([])
 const customerTasks = ref([])
@@ -148,10 +259,42 @@ const customer = computed(() => {
   return customerData.value || customersStore.currentCustomer
 })
 
+// Check if current contact is master contact
+const isMasterContact = computed(() => {
+  if (!accountData.value || !customerData.value) {
+    // Also check if contact has isMasterContact flag directly
+    return customerData.value?.isMasterContact === true
+  }
+  const masterId = accountData.value.masterContactId || accountData.value.masterContact?.id
+  const contactId = customerData.value.id || customerData.value.contactId
+  return (masterId && String(masterId) === String(contactId)) || customerData.value?.isMasterContact === true
+})
+
 // Get task from customer data
 const task = computed(() => {
   const cust = customer.value
-  if (!cust) return null
+  if (!cust) {
+    // Return a minimal task structure when customer is loading
+    return {
+      id: null,
+      type: 'contact',
+      summary: null,
+      preferences: [],
+      customer: {
+        id: null,
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        initials: '?'
+      },
+      source: 'Direct',
+      tags: [],
+      stage: 'Contact',
+      assignee: null,
+      assigneeId: null
+    }
+  }
   // Map customer/contact to task-like structure
   return {
     ...cust,
@@ -205,20 +348,78 @@ const loadCustomerData = async () => {
   if (!props.customerId) return
   
   try {
-    loading.value = true
-    // Fetch customer data, leads, opportunities, tasks, and cars
-    const [customer, leadsResult, oppsResult, tasksResult, carsResult] = await Promise.all([
-      customersStore.fetchCustomerById(props.customerId, props.customerType),
-      fetchLeadsByCustomerId(props.customerId),
-      fetchOpportunitiesByCustomerId(props.customerId),
-      fetchTasksByCustomerId(props.customerId),
-      fetchCustomerCars(props.customerId)
+    // Set all loading states to true initially
+    loadingCustomer.value = true
+    loadingLeads.value = true
+    loadingOpportunities.value = true
+    loadingCars.value = true
+    loadingActivities.value = true
+    loadingAppointments.value = true
+    
+    // Fetch customer data and tasks first
+    const [customer, tasksResult] = await Promise.all([
+      customersStore.fetchCustomerById(props.customerId, props.customerType).finally(() => {
+        loadingCustomer.value = false
+      }),
+      fetchTasksByCustomerId(props.customerId)
     ])
     
     customerData.value = customer || customersStore.currentCustomer
+    customerTasks.value = tasksResult.data || []
+    
+    // Fetch account data if contact has accountId (support both account_id and accountId)
+    const accountId = customerData.value?.accountId || customerData.value?.account_id
+    if (accountId) {
+      try {
+        loadingAccount.value = true
+        accountData.value = await fetchAccountById(accountId)
+        
+        // If account type is Company, fetch related contacts (support both type and accountType)
+        if (accountData.value?.type === 'Company' || accountData.value?.accountType === 'Company') {
+          try {
+            loadingRelatedContacts.value = true
+            const relatedContactsResult = await fetchContactsByAccountId(accountId)
+            // Filter out current contact from related contacts
+            relatedContacts.value = (relatedContactsResult.data || []).filter(
+              contact => contact.id !== props.customerId
+            )
+          } catch (err) {
+            console.error('Failed to load related contacts:', err)
+            relatedContacts.value = []
+          } finally {
+            loadingRelatedContacts.value = false
+          }
+        } else {
+          relatedContacts.value = []
+        }
+      } catch (err) {
+        console.error('Failed to load account data:', err)
+        accountData.value = null
+        relatedContacts.value = []
+      } finally {
+        loadingAccount.value = false
+      }
+    } else {
+      accountData.value = null
+      relatedContacts.value = []
+    }
+    
+    // Fetch leads and opportunities by account_id if available, otherwise by customerId
+    const [leadsResult, oppsResult, carsResult] = await Promise.all([
+      fetchLeadsByCustomerId(props.customerId, accountId || null).finally(() => {
+        loadingLeads.value = false
+      }),
+      fetchOpportunitiesByCustomerId(props.customerId, accountId || null).finally(() => {
+        loadingOpportunities.value = false
+      }),
+      // Fetch vehicles by account_id (vehicles are owned by accounts), fallback to customerId
+      fetchCustomerCars(accountId || props.customerId).finally(() => {
+        loadingCars.value = false
+      })
+    ])
+    
     customerLeads.value = leadsResult.data || []
     customerOpportunities.value = oppsResult.data || []
-    customerTasks.value = tasksResult.data || []
     customerCars.value = carsResult.data || []
     
     // Fetch activities using API wrappers
@@ -240,6 +441,7 @@ const loadCustomerData = async () => {
       }
     }
     customerActivities.value = allActivities
+    loadingActivities.value = false
     
     // Fetch all appointments
     try {
@@ -247,12 +449,21 @@ const loadCustomerData = async () => {
     } catch (err) {
       console.error('Failed to load appointments:', err)
       customerAppointments.value = []
+    } finally {
+      loadingAppointments.value = false
     }
   } catch (err) {
     console.error('Error loading customer data:', err)
     error.value = err.message || 'Failed to load customer'
-  } finally {
-    loading.value = false
+    // Reset all loading states on error
+    loadingCustomer.value = false
+    loadingAccount.value = false
+    loadingRelatedContacts.value = false
+    loadingLeads.value = false
+    loadingOpportunities.value = false
+    loadingCars.value = false
+    loadingActivities.value = false
+    loadingAppointments.value = false
   }
 }
 
@@ -270,7 +481,7 @@ const handleContactCarAdded = async (carData) => {
 // Handle contact to lead conversion
 const handleConvertToLead = async () => {
   try {
-    loading.value = true
+    loadingLeads.value = true
     const newLead = await customersStore.convertToLead(props.customerId)
     // Close drawer if needed, then navigate
     if (props.closeOnConvert) {
@@ -280,14 +491,14 @@ const handleConvertToLead = async () => {
   } catch (err) {
     console.error('Error converting to lead:', err)
     error.value = err.message || 'Failed to convert to lead'
-    loading.value = false
+    loadingLeads.value = false
   }
 }
 
 // Handle contact to opportunity conversion
 const handleConvertToOpportunity = async () => {
   try {
-    loading.value = true
+    loadingOpportunities.value = true
     const newOpp = await customersStore.convertToOpportunity(props.customerId)
     // Close drawer if needed, then navigate
     if (props.closeOnConvert) {
@@ -297,7 +508,7 @@ const handleConvertToOpportunity = async () => {
   } catch (err) {
     console.error('Error converting to opportunity:', err)
     error.value = err.message || 'Failed to convert to opportunity'
-    loading.value = false
+    loadingOpportunities.value = false
   }
 }
 
@@ -328,7 +539,11 @@ const openAddModal = (type) => {
 
 const handleAddModalSave = async (data) => {
   try {
-    loading.value = true
+    if (addModalType.value === 'lead') {
+      loadingLeads.value = true
+    } else {
+      loadingOpportunities.value = true
+    }
     showAddModal.value = false
     
     if (!props.customerId) {
@@ -344,11 +559,14 @@ const handleAddModalSave = async (data) => {
     
     // Reload data to show the new item
     await loadCustomerData()
-    loading.value = false
   } catch (err) {
     console.error(`Error adding ${addModalType.value}:`, err)
     error.value = err.message || `Failed to add ${addModalType.value}`
-    loading.value = false
+    if (addModalType.value === 'lead') {
+      loadingLeads.value = false
+    } else {
+      loadingOpportunities.value = false
+    }
   }
 }
 

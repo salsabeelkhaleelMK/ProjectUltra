@@ -1,113 +1,135 @@
 <template>
-  <div class="rounded-lg flex flex-col mb-6 bg-muted">
-    <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+  <Card class="h-full">
+    <CardHeader>
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-clock-rotate-left text-foreground"></i>
-        <h2 class="text-sm font-semibold text-foreground leading-5">Recent Activities</h2>
+        <Clock class="w-4 h-4 text-foreground" />
+        <CardTitle class="text-sm font-semibold leading-5">Recent Activities</CardTitle>
       </div>
-    </div>
-    
-    <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
-      <div class="divide-y divide-gray-100">
-        <!-- Next Appointment -->
-        <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-calendar-check text-primary text-sm"></i>
+    </CardHeader>
+    <CardContent>
+      <!-- Skeleton Loading State -->
+      <template v-if="loading">
+        <div class="space-y-3 animate-pulse">
+          <div v-for="n in 3" :key="`skeleton-${n}`" class="flex items-center gap-3 p-3">
+            <div class="w-8 h-8 bg-muted rounded-full"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3 bg-muted rounded w-1/4"></div>
+              <div class="h-4 bg-muted rounded w-3/4"></div>
+              <div class="h-3 bg-muted rounded w-1/2"></div>
             </div>
-            <div class="min-w-0">
-              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Next Appointment</div>
-              <div class="text-sm text-muted-foreground truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
-              <div class="text-xs text-muted-foreground truncate">{{ nextAppointment.title || 'Appointment' }}</div>
-            </div>
+            <div class="w-8 h-8 bg-muted rounded"></div>
           </div>
-          <button
-            @click="viewAppointmentDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-primary/30 text-muted-foreground hover:text-primary transition-all shrink-0"
-            title="View Details"
-          >
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
         </div>
-        
-        <!-- Last Communication -->
-        <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center shrink-0">
-              <i :class="getCommunicationIcon(lastCommunication.type)" class="text-slate-600 text-sm"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Last Communication</div>
-              <div class="text-sm text-muted-foreground truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
-              <div class="text-xs text-muted-foreground truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
-            </div>
-          </div>
-          <button
-            @click="viewCommunicationDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-slate-300 text-muted-foreground hover:text-slate-600 transition-all shrink-0"
-            title="View Details"
-          >
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
-        </div>
-        
-        <!-- Active Lead Next Action -->
-        <div v-if="activeLead" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-brand-dark/10 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-user-clock text-brand-dark text-sm"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Lead Request</div>
-              <div class="text-sm text-muted-foreground truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
-              <div class="text-xs text-muted-foreground truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
-            </div>
-          </div>
-          <button
-            @click="viewLeadDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-brand-dark/30 text-muted-foreground hover:text-brand-dark transition-all shrink-0"
-            title="View Details"
-          >
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
-        </div>
-        
-        <!-- Active Opportunity Next Action -->
-        <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-handshake text-primary text-sm"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Opportunity</div>
-              <div class="text-sm text-muted-foreground truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
-              <div class="text-xs text-muted-foreground truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
-            </div>
-          </div>
-          <button
-            @click="viewOpportunityDetails"
-            class="w-8 h-8 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-primary/30 text-muted-foreground hover:text-primary transition-all shrink-0"
-            title="View Details"
-          >
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
-        </div>
-      </div>
+      </template>
       
-      <!-- Empty State -->
-      <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-6 text-muted-foreground">
-        <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
-        <p class="text-xs">No recent activities available</p>
-      </div>
-    </div>
-  </div>
+      <!-- Content -->
+      <template v-else>
+        <div class="divide-y divide-border">
+          <!-- Next Appointment -->
+          <div v-if="nextAppointment" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                <CalendarCheck class="w-4 h-4 text-primary" />
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Next Appointment</div>
+                <div class="text-sm text-muted-foreground truncate">{{ formatAppointmentDate(nextAppointment.start) }}</div>
+                <div class="text-xs text-muted-foreground truncate">{{ nextAppointment.title || 'Appointment' }}</div>
+              </div>
+            </div>
+            <Button
+              @click="viewAppointmentDetails"
+              variant="outline"
+              size="icon"
+              title="View Details"
+            >
+              <ArrowRight class="w-4 h-4" />
+            </Button>
+          </div>
+        
+          <!-- Last Communication -->
+          <div v-if="lastCommunication" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded bg-muted flex items-center justify-center shrink-0">
+                <component :is="getCommunicationIcon(lastCommunication.type)" class="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Last Communication</div>
+                <div class="text-sm text-muted-foreground truncate">{{ getCommunicationPreview(lastCommunication) }}</div>
+                <div class="text-xs text-muted-foreground truncate">{{ formatDate(lastCommunication.timestamp) }}</div>
+              </div>
+            </div>
+            <Button
+              @click="viewCommunicationDetails"
+              variant="outline"
+              size="icon"
+              title="View Details"
+            >
+              <ArrowRight class="w-4 h-4" />
+            </Button>
+          </div>
+        
+          <!-- Active Lead Next Action -->
+          <div v-if="activeLead" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                <User class="w-4 h-4 text-primary" />
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Lead Request</div>
+                <div class="text-sm text-muted-foreground truncate">{{ activeLeadNextAction?.label || 'No action defined' }}</div>
+                <div class="text-xs text-muted-foreground truncate">{{ activeLead.requestedCar?.brand }} {{ activeLead.requestedCar?.model }}</div>
+              </div>
+            </div>
+            <Button
+              @click="viewLeadDetails"
+              variant="outline"
+              size="icon"
+              title="View Details"
+            >
+              <ArrowRight class="w-4 h-4" />
+            </Button>
+          </div>
+          
+          <!-- Active Opportunity Next Action -->
+          <div v-if="activeOpportunity" class="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors rounded-md group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                <Handshake class="w-4 h-4 text-primary" />
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-semibold text-foreground uppercase tracking-wider mb-0.5">Active Opportunity</div>
+                <div class="text-sm text-muted-foreground truncate">{{ activeOpportunityNextAction?.label || 'No action defined' }}</div>
+                <div class="text-xs text-muted-foreground truncate">{{ activeOpportunity.vehicle?.brand }} {{ activeOpportunity.vehicle?.model }} - {{ activeOpportunity.stage }}</div>
+              </div>
+            </div>
+            <Button
+              @click="viewOpportunityDetails"
+              variant="outline"
+              size="icon"
+              title="View Details"
+            >
+              <ArrowRight class="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div v-if="!nextAppointment && !lastCommunication && !activeLead && !activeOpportunity" class="text-center py-6 text-muted-foreground">
+          <Inbox class="w-8 h-8 mx-auto mb-2 opacity-30" />
+          <p class="text-xs">No recent activities available</p>
+        </div>
+      </template>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
+import { Button } from '@motork/component-library/future/primitives'
+import { Clock, CalendarCheck, ArrowRight, Mail, MessageSquare, MessageCircle, Phone, User, Handshake, Inbox } from 'lucide-vue-next'
 import { getLeadPrimaryAction } from '@/utils/leadRules'
 import { getPrimaryAction } from '@/utils/opportunityRules'
 
@@ -131,6 +153,10 @@ const props = defineProps({
   customerId: {
     type: [Number, String],
     default: null
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -211,13 +237,13 @@ const activeOpportunityNextAction = computed(() => {
 
 // Helper functions
 const getCommunicationIcon = (type) => {
-  const icons = {
-    email: 'fa-solid fa-envelope',
-    sms: 'fa-solid fa-message',
-    whatsapp: 'fa-brands fa-whatsapp',
-    call: 'fa-solid fa-phone'
+  const iconMap = {
+    email: Mail,
+    sms: MessageSquare,
+    whatsapp: MessageCircle,
+    call: Phone
   }
-  return icons[type] || 'fa-solid fa-comment'
+  return iconMap[type] || MessageCircle
 }
 
 const getCommunicationPreview = (activity) => {

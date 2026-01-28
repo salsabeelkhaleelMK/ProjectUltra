@@ -350,7 +350,7 @@ const processRow = async (row) => {
         address: contact.address || ''
       },
       status: 'Open',
-      stage: 'Open Lead',
+      stage: 'Open',
       priority: row.priority || 'Normal',
       source: vehicleData.source || 'Import',
       assignee: null,

@@ -109,57 +109,7 @@
           </div>
         </CollapsibleSection>
 
-        <!-- Section 2: Delivery Planning -->
-        <CollapsibleSection
-          :is-expanded="expandedSections.deliveryPlanning"
-          @toggle="expandedSections.deliveryPlanning = !expandedSections.deliveryPlanning"
-          title="Delivery Planning"
-        >
-          <div class="space-y-6 pt-4">
-            <!-- Q4: Delivery Timeline -->
-            <div>
-              <Label class="block text-sm font-medium text-muted-foreground mb-2">
-                Have you and our team agreed on a delivery date?
-                <span class="text-red-600">*</span>
-              </Label>
-              <div class="space-y-2">
-                <label
-                  v-for="option in deliveryTimelineOptions"
-                  :key="option.value"
-                  class="flex items-center gap-3 border rounded-lg px-3 py-2 cursor-pointer transition-colors"
-                  :class="
-                    responses.q4 === option.value
-                      ? 'border-2 border-brand-blue bg-muted/50'
-                      : 'border border-border hover:bg-muted/50'
-                  "
-                >
-                  <input
-                    v-model="responses.q4"
-                    type="radio"
-                    :value="option.value"
-                    class="shrink-0"
-                  />
-                  <span class="text-sm text-foreground">{{ option.label }}</span>
-                </label>
-              </div>
-              
-              <!-- Date input if "Yes scheduled" selected -->
-              <div v-if="responses.q4 === 'yes-scheduled'" class="mt-3">
-                <Label class="block text-sm font-medium text-muted-foreground mb-2">
-                  Delivery Date <span class="text-red-600">*</span>
-                </Label>
-                <Input
-                  v-model="responses.q4DeliveryDate"
-                  type="date"
-                  :min="minDeliveryDate"
-                  class="w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </CollapsibleSection>
-
-        <!-- Section 3: Service Quality -->
+        <!-- Section 2: Service Quality -->
         <CollapsibleSection
           :is-expanded="expandedSections.serviceQuality"
           @toggle="expandedSections.serviceQuality = !expandedSections.serviceQuality"
@@ -274,21 +224,6 @@
           <span class="text-xs text-muted-foreground">(Q2 = Not clear at all)</span>
         </div>
         
-        <!-- Delivery Date Captured -->
-        <div class="flex items-center gap-3">
-          <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
-            <Checkbox
-              id="trigger-delivery-date"
-              v-model="triggerActions.deliveryDate"
-              :disabled="!hasDeliveryDate"
-            />
-            <span class="text-sm font-medium text-foreground">
-              ✅ Auto-populate delivery date on opportunity
-            </span>
-          </Label>
-          <span class="text-xs text-muted-foreground">(Q4 = Yes scheduled with date)</span>
-        </div>
-        
         <!-- Poor Salesperson Support -->
         <div class="flex items-center gap-3">
           <Label class="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-muted/50 transition-colors flex-1">
@@ -309,7 +244,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Checkbox, Label, Textarea, Input } from '@motork/component-library/future/primitives'
+import { Checkbox, Label, Textarea } from '@motork/component-library/future/primitives'
 import CollapsibleSection from '@/components/shared/CollapsibleSection.vue'
 
 const props = defineProps({
@@ -324,7 +259,6 @@ const emit = defineEmits(['submit', 'cancel'])
 // Collapsible sections state
 const expandedSections = ref({
   contractExperience: true, // First section expanded by default
-  deliveryPlanning: false,
   serviceQuality: false,
   internalNotes: false
 })
@@ -336,8 +270,6 @@ const responses = ref({
   q3: [], // Outstanding Issues (multi-select)
   q3Other: false,
   q3OtherText: '',
-  q4: '', // Delivery Timeline
-  q4DeliveryDate: '', // Delivery date if scheduled
   q5: null, // Salesperson Support (1-5 stars)
   q6: '', // Likelihood to Recommend (NPS)
   q7: '' // Internal Follow-up Notes
@@ -347,7 +279,6 @@ const responses = ref({
 const triggerActions = ref({
   negativeSatisfaction: false,
   documentClarity: false,
-  deliveryDate: false,
   poorSupport: false
 })
 
@@ -377,13 +308,6 @@ const outstandingIssuesOptions = [
   { value: 'additional-fees', label: 'Additional fees or charges' }
 ]
 
-const deliveryTimelineOptions = [
-  { value: 'yes-scheduled', label: 'Yes, delivery scheduled for: [DATE]' },
-  { value: 'tentatively-planned', label: 'Tentatively planned, pending confirmation' },
-  { value: 'not-discussed', label: 'Not discussed yet' },
-  { value: 'customer-hasnt-decided', label: "Customer hasn't decided on delivery date" }
-]
-
 const recommendationOptions = [
   { value: 'definitely', label: 'Definitely (9-10) - Excellent experience' },
   { value: 'probably', label: 'Probably (7-8) - Good experience' },
@@ -395,15 +319,6 @@ const recommendationOptions = [
 // Computed properties
 const showQ3 = computed(() => {
   return responses.value.q1 === 'unsatisfied' || responses.value.q1 === 'very-unsatisfied'
-})
-
-const hasDeliveryDate = computed(() => {
-  return responses.value.q4 === 'yes-scheduled' && !!responses.value.q4DeliveryDate
-})
-
-const minDeliveryDate = computed(() => {
-  const today = new Date()
-  return today.toISOString().split('T')[0]
 })
 
 // Auto-check trigger actions based on survey answers
@@ -420,14 +335,6 @@ watch(() => responses.value.q2, (value) => {
     triggerActions.value.documentClarity = true
   } else {
     triggerActions.value.documentClarity = false
-  }
-})
-
-watch(() => hasDeliveryDate.value, (value) => {
-  if (value) {
-    triggerActions.value.deliveryDate = true
-  } else {
-    triggerActions.value.deliveryDate = false
   }
 })
 
@@ -455,14 +362,6 @@ const isValid = computed(() => {
     return false
   }
   
-  // Q4 is mandatory
-  if (!responses.value.q4) return false
-  
-  // Q4DeliveryDate is mandatory if Q4 = 'yes-scheduled'
-  if (responses.value.q4 === 'yes-scheduled' && !responses.value.q4DeliveryDate) {
-    return false
-  }
-  
   return true
 })
 
@@ -474,7 +373,6 @@ const handleSubmit = () => {
   const surveyData = {
     responses: { ...responses.value },
     triggerActions: { ...triggerActions.value },
-    deliveryDate: hasDeliveryDate.value ? responses.value.q4DeliveryDate : null,
     timestamp: new Date().toISOString()
   }
   

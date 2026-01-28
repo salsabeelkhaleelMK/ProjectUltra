@@ -139,7 +139,7 @@ const getLeadTasks = (lead) => {
   }
 
   // 2. Add detected LQ tasks
-  if (lead.stage === 'Open Lead') {
+  if (lead.stage === 'Open') {
     const daysSince = calculateDaysSince(lead.createdAt)
     if (daysSince >= 0) {
       tasks.push({
@@ -154,7 +154,7 @@ const getLeadTasks = (lead) => {
 }
 
 const getStageTheme = (stage) => {
-  if (stage === 'Open Lead' || stage === 'Validated' || stage === 'Contacted') return 'blue'
+  if (stage === 'Open' || stage === 'Validated' || stage === 'Contacted') return 'blue'
   return 'gray'
 }
 

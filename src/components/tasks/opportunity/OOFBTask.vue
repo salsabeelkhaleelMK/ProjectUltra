@@ -3,6 +3,7 @@
     :title="'Open Opportunity Feedback'"
     :description="`This opportunity has been open for ${daysOpen} days without any offer. Consider creating an offer to move forward.`"
     :color-scheme="{ background: 'bg-orange-50/50', border: 'border-orange-100' }"
+    @postpone="$emit('postpone', 'oofb')"
   >
     <template #actions>
       <button
@@ -42,7 +43,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['create-offer', 'review', 'survey-completed', 'survey-refused', 'not-responding'])
+const emit = defineEmits(['create-offer', 'review', 'survey-completed', 'survey-refused', 'not-responding', 'postpone'])
 
 const surveyQuestions = [
   {

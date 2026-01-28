@@ -152,7 +152,8 @@
       
       <!-- Task Detail Panel for Card View (right side on desktop, full screen on mobile) -->
       <TaskDetailView
-        v-if="currentTask"
+        v-if="currentTask && managementWidget && storeAdapter && addNewConfig"
+        :key="currentTask?.compositeId || 'card-empty'"
         :task="currentTask"
         :management-widget="managementWidget"
         :store-adapter="storeAdapter"
@@ -209,7 +210,8 @@
     >
       <!-- TaskDetailView in Drawer (uses allTasks for prev/next; table is independent of TaskFilters) -->
       <TaskDetailView
-        v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter"
+        v-if="drawerTask && drawerManagementWidget && drawerStoreAdapter && drawerAddNewConfig"
+        :key="drawerTask?.compositeId || 'drawer-empty'"
         :task="drawerTask"
         :management-widget="drawerManagementWidget"
         :store-adapter="drawerStoreAdapter"
@@ -528,8 +530,11 @@ const handleBackToTaskList = () => {
 }
 
 const closeTaskDrawer = () => {
-  showTaskDrawer.value = false
-  drawerTask.value = null
+  // Use nextTick to ensure proper cleanup order
+  nextTick(() => {
+    showTaskDrawer.value = false
+    drawerTask.value = null
+  })
 }
 
 const handleTaskNavigate = (direction) => {
@@ -673,7 +678,7 @@ const reopenLead = async (task) => {
         disqualifyReason: null,
         disqualifyCategory: null,
         isDuplicate: false,
-        stage: 'Open Lead',
+        stage: 'Open',
         status: 'Open',
         nextActionDue: null,
         scheduledAppointment: null
@@ -704,22 +709,6 @@ const getTaskMenuItems = (task) => {
       key: 'reopen',
       label: 'Reopen Lead',
       onClick: () => reopenLead(task)
-    })
-  }
-  
-  // Reassign
-  items.push({
-    key: 'reassign',
-    label: 'Reassign',
-    onClick: () => reassignTask(task)
-  })
-  
-  // Assign to me
-  if (task.assignee !== userStore.user?.name) {
-    items.push({
-      key: 'assign-me',
-      label: 'Assign to me',
-      onClick: () => assignToMe(task)
     })
   }
   

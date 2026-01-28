@@ -1,47 +1,67 @@
 <template>
-  <div class="rounded-lg flex flex-col mb-6 bg-muted">
-    <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+  <Card class="h-full">
+    <CardHeader>
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-foreground"></i>
-        <h2 class="text-sm font-semibold text-foreground leading-5">Customer Insights</h2>
+        <Lightbulb class="w-4 h-4 text-foreground" />
+        <CardTitle class="text-sm font-semibold leading-5">Customer Insights</CardTitle>
       </div>
-    </div>
-    
-    <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
-      <div class="divide-y divide-gray-100">
-        <!-- Summary Section -->
-        <div class="p-3">
-          <p v-if="summary" class="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-            {{ summary }}
-          </p>
-          <div v-else class="flex items-center gap-3 py-1 text-muted-foreground">
-            <i class="fa-solid fa-circle-info text-sm opacity-20"></i>
-            <p class="text-xs italic">No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.</p>
+    </CardHeader>
+    <CardContent>
+      <!-- Skeleton Loading State -->
+      <template v-if="loading">
+        <div class="space-y-3 animate-pulse">
+          <div class="space-y-2">
+            <div class="h-4 bg-muted rounded w-3/4"></div>
+            <div class="h-4 bg-muted rounded w-full"></div>
+            <div class="h-4 bg-muted rounded w-5/6"></div>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-3">
+            <div class="h-6 bg-muted rounded w-24"></div>
+            <div class="h-6 bg-muted rounded w-32"></div>
+            <div class="h-6 bg-muted rounded w-20"></div>
           </div>
         </div>
-        
-        <!-- Preferences Tags Section -->
-        <div v-if="preferences && preferences.length > 0" class="p-3">
-          <div class="flex flex-wrap gap-2">
-            <span 
-              v-for="(pref, index) in preferences" 
-              :key="index"
-              class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted text-foreground text-xs font-semibold uppercase tracking-wider rounded border border-border"
-            >
-              <i :class="pref.icon" class="text-xs text-primary"></i>
-              {{ pref.label }}
-            </span>
+      </template>
+      
+      <!-- Content -->
+      <template v-else>
+        <div class="divide-y divide-border">
+          <!-- Summary Section -->
+          <div class="py-3">
+            <p v-if="summary" class="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {{ summary }}
+            </p>
+            <div v-else class="flex items-center gap-3 py-1 text-muted-foreground">
+              <Info class="w-4 h-4 opacity-20" />
+              <p class="text-xs italic">No customer insights available yet. Insights will appear as we learn more about this customer's preferences and behavior.</p>
+            </div>
+          </div>
+          
+          <!-- Preferences Tags Section -->
+          <div v-if="preferences && preferences.length > 0" class="py-3">
+            <div class="flex flex-wrap gap-2">
+              <Badge
+                v-for="(pref, index) in preferences" 
+                :key="index"
+                variant="outline"
+                class="text-xs font-semibold uppercase tracking-wider"
+              >
+                <component :is="getPreferenceIcon(pref.icon)" class="w-3 h-3 mr-1.5 text-primary" />
+                {{ pref.label }}
+              </Badge>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </template>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
+import { Badge } from '@motork/component-library/future/primitives'
+import { Lightbulb, Info, Car, MessageCircle, Phone, Mail, MessageSquare, Clock, DollarSign } from 'lucide-vue-next'
 
 const props = defineProps({
   summary: {
@@ -55,8 +75,27 @@ const props = defineProps({
   customerData: {
     type: Object,
     default: null
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
+
+// Map Font Awesome icon classes to lucide-vue-next components
+const getPreferenceIcon = (iconClass) => {
+  const iconMap = {
+    'fa-solid fa-car': Car,
+    'fa-brands fa-whatsapp': MessageCircle,
+    'fa-solid fa-phone': Phone,
+    'fa-solid fa-envelope': Mail,
+    'fa-solid fa-message': MessageSquare,
+    'fa-solid fa-comment': MessageCircle,
+    'fa-solid fa-clock': Clock,
+    'fa-solid fa-dollar-sign': DollarSign
+  }
+  return iconMap[iconClass] || Info
+}
 
 // Generate preferences from customer data if available
 const preferences = computed(() => {

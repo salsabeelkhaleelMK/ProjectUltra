@@ -29,7 +29,26 @@ export const fetchAccountById = async (id) => {
   const accounts = getAccounts()
   const account = accounts.find(a => a.id === parseInt(id))
   if (!account) throw new Error('Account not found')
-  return account
+  
+  // Ensure account has all required fields with defaults
+  return {
+    ...account,
+    id: account.id,
+    name: account.name || account.companyName || account.company || '',
+    companyName: account.companyName || account.company || account.name || '',
+    type: account.type || (account.company ? 'Company' : 'Private'),
+    vat: account.vat || account.vatNumber || null,
+    vatNumber: account.vatNumber || account.vat || null,
+    taxCode: account.taxCode || account.fiscalCode || null,
+    fiscalCode: account.fiscalCode || account.taxCode || null,
+    accountOwner: account.accountOwner || account.owner || null,
+    owner: account.owner || account.accountOwner || null,
+    masterContactId: account.masterContactId || account.masterContact?.id || null,
+    masterContact: account.masterContact || (account.masterContactId ? { id: account.masterContactId } : null),
+    description: account.description || account.notes || null,
+    notes: account.notes || account.description || null,
+    numberOfEmployees: account.numberOfEmployees || null
+  }
 }
 
 export const createAccount = async (accountData) => {

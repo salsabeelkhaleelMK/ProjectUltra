@@ -80,26 +80,6 @@
             <button @click="handleAddActivity('attachment')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
               <i class="fa-solid fa-paperclip text-sm text-muted-foreground"></i> Attachment
             </button>
-
-            <div class="border-t border-black/10 my-1"></div>
-
-            <!-- Business Group -->
-            <button @click="handleAddActivity('financing')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-file-invoice-dollar text-sm text-primary"></i> Financing
-            </button>
-            <button @click="handleAddActivity('tradein')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-arrow-right-arrow-left text-sm text-primary"></i> Trade-in
-            </button>
-            <button @click="handleAddActivity('purchase')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-handshake text-sm text-primary"></i> Offer
-            </button>
-
-            <div class="border-t border-black/10 my-1"></div>
-
-            <!-- Appointment -->
-            <button @click="handleAddActivity('appointment')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-regular fa-calendar text-sm text-purple-600"></i> Appointment
-            </button>
         </div>
       </div>
           </div> <!-- Close flex items-center gap-2 flex-wrap -->

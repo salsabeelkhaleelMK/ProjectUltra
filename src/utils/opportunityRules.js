@@ -50,6 +50,20 @@ export const OpportunityConditions = {
     const settingsStore = useSettingsStore()
     const minDays = settingsStore.getSetting('oofbMinDays')
     const maxDays = settingsStore.getSetting('oofbMaxDays')
+    
+    // Check if OOFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.oofb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= minDays && daysFromPostpone < maxDays + 1 && !context.hasOffers
+    }
+    
+    // Normal condition check
     const days = calculateDaysSince(context.opportunity.createdAt)
     return days >= minDays && days < maxDays + 1 && !context.hasOffers
   },
@@ -57,6 +71,20 @@ export const OpportunityConditions = {
   'qualified-no-offers-14-plus-days': (context) => {
     const settingsStore = useSettingsStore()
     const threshold = settingsStore.getSetting('ufbDays')
+    
+    // Check if UFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.ufb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold && !context.hasOffers
+    }
+    
+    // Normal condition check
     const days = calculateDaysSince(context.opportunity.createdAt)
     return days >= threshold && !context.hasOffers
   },
@@ -66,41 +94,120 @@ export const OpportunityConditions = {
     return context.opportunity?.negotiationSubstatus === 'Offer Sent'
   },
   
+  'negotiation-contract-pending-substatus': (context) => {
+    return context.opportunity?.contractDate !== null && 
+           context.opportunity?.contractDate !== undefined
+  },
+  
   'negotiation-offer-feedback-substatus': (context) => {
     return context.opportunity?.negotiationSubstatus === 'Offer Feedback'
   },
-  
-  'negotiation-offer-accepted-substatus': (context) => {
-    return context.opportunity?.negotiationSubstatus === 'Offer Accepted'
-  },
-  
-  'negotiation-offer-sent-3-days': (context) => {
-    // Check if we need to auto-transition from Offer Sent to Offer Feedback
-    if (context.opportunity?.negotiationSubstatus !== 'Offer Sent') return false
-    if (!context.opportunity?.offers || context.opportunity.offers.length === 0) return false
-    
-    // Find most recent offer
-    const mostRecentOffer = context.opportunity.offers
-      .filter(o => o.status === 'active')
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
-    
-    if (!mostRecentOffer) return false
-    
-    const days = calculateDaysSince(mostRecentOffer.createdAt)
-    return days >= 3
-  },
 
   // Negotiation stage conditions
+  // NOTE: OFB task should NOT appear during negotiation phase - only in Closed Won - Awaiting Feedback
+  // TEMPORARILY ENABLED FOR EVALUATION - opportunity 33
   'negotiation-5-plus-days-no-contract-has-offers': (context) => {
-    // For 'In Negotiation' stage, only show if offers exist
-    if (context.stage === 'In Negotiation' && !context.hasOffers) {
+    // OFB never appears during negotiation phase per new requirements
+    // TEMPORARY: Enable for opportunity 33 evaluation
+    if (context.opportunity?.id === 33) {
+      // Check if has offers and no contract
+      if (!context.hasOffers) return false
+      if (context.opportunity.contractDate) return false
+      
+      // Check days since last activity (or creation if no lastActivity)
+      const date = context.opportunity.lastActivity || context.opportunity.createdAt
+      if (!date) return false
+      const days = calculateDaysSince(date)
+      return days >= 5
+    }
+    return false
+  },
+  
+  'contract-pending-5-plus-days': (context) => {
+    // Contract Feedback Task (CFB) - shows in Contract Pending substatus
+    // Only show if at least one contract exists AND at least one is accepted (signed).
+    // No CFB when contracts exist but none have been marked accepted.
+    const opp = context.opportunity
+    const hasAccepted = (c) => !!(c?.contractSigned || c?.esignatureCollectedDate)
+
+    let hasAnyAcceptedContract = false
+    let referenceDate = null
+
+    if (Array.isArray(opp?.contracts) && opp.contracts.length > 0) {
+      const accepted = opp.contracts.filter(hasAccepted)
+      hasAnyAcceptedContract = accepted.length > 0
+      if (hasAnyAcceptedContract) {
+        const latest = accepted.reduce((best, c) => {
+          const d = c.esignatureCollectedDate || c.contractDate
+          if (!d) return best
+          if (!best) return d
+          return new Date(d) > new Date(best) ? d : best
+        }, null)
+        referenceDate = latest
+      }
+    } else {
+      hasAnyAcceptedContract = !!(opp?.contractSigned || opp?.esignatureCollectedDate)
+      referenceDate = opp?.contractDate || opp?.esignatureCollectedDate
+    }
+
+    if (!hasAnyAcceptedContract || !referenceDate) {
+      return false
+    }
+
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('cfbDays') || 5
+
+    const postponedDate = opp.postponedTasks?.cfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      if (daysSincePostpone < postponePeriod) return false
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+
+    try {
+      const dateObj = new Date(referenceDate)
+      if (isNaN(dateObj.getTime())) return false
+      const days = calculateDaysSince(dateObj.toISOString())
+      return days >= threshold
+    } catch (e) {
+      return false
+    }
+  },
+  
+  'closed-won-contract-feedback': (context) => {
+    // Contract Feedback Task (CFB) - shows in Closed Won stage
+    // Only show if a contract exists on the opportunity
+    const contractDate = context.opportunity?.contractDate
+    if (!contractDate || contractDate === null || contractDate === undefined || contractDate === '') {
       return false
     }
     
     const settingsStore = useSettingsStore()
-    const threshold = settingsStore.getSetting('ofbDays')
-    const days = calculateDaysSince(context.opportunity.lastActivity || context.opportunity.createdAt)
-    return days >= threshold && !context.opportunity.contractDate && context.hasOffers
+    const threshold = settingsStore.getSetting('cfbDays') || 5
+    
+    // Check if CFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.cfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      if (daysSincePostpone < postponePeriod) return false
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+    
+    // Normal condition check - ensure contractDate is a valid date
+    try {
+      const contractDateObj = new Date(contractDate)
+      if (isNaN(contractDateObj.getTime())) {
+        return false // Invalid date
+      }
+      const days = calculateDaysSince(contractDateObj.toISOString())
+      return days >= threshold
+    } catch (e) {
+      return false // Error parsing date
+    }
   },
   
   'negotiation-offer-feedback-5-plus-days-no-appointment': (context) => {
@@ -116,6 +223,22 @@ export const OpportunityConditions = {
     
     const settingsStore = useSettingsStore()
     const threshold = settingsStore.getSetting('nfuDays')
+    
+    // Check if NFU was postponed
+    const postponedDate = context.opportunity.postponedTasks?.nfu
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      const hasFutureAppointment = context.scheduledAppointment && 
+        new Date(context.scheduledAppointment.start) > new Date()
+      return daysFromPostpone >= threshold && !context.opportunity.contractDate && !hasFutureAppointment
+    }
+    
+    // Normal condition check
     const days = calculateDaysSince(context.opportunity.lastActivity || context.opportunity.createdAt)
     const hasFutureAppointment = context.scheduledAppointment && 
       new Date(context.scheduledAppointment.start) > new Date()
@@ -135,6 +258,23 @@ export const OpportunityConditions = {
     
     const settingsStore = useSettingsStore()
     const threshold = settingsStore.getSetting('cfbDays')
+    
+    // Check if CFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.cfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      const hasDelivery = context.activities?.some(a => 
+        a.type === 'delivery' || a.action?.toLowerCase().includes('delivered')
+      )
+      return daysFromPostpone >= threshold && !hasDelivery
+    }
+    
+    // Normal condition check
     const days = calculateDaysSince(context.opportunity.contractDate)
     const hasDelivery = context.activities?.some(a => 
       a.type === 'delivery' || a.action?.toLowerCase().includes('delivered')
@@ -143,21 +283,70 @@ export const OpportunityConditions = {
     return days >= threshold && !hasDelivery
   },
   
-  'delivery-date-set': (context) => {
-    // Trigger DFB immediately when delivery date is set
-    return !!context.opportunity.deliveryDate
-  },
-  
-  'delivery-3-plus-days': (context) => {
-    const deliveryActivity = context.activities?.find(a => 
-      a.type === 'delivery' || a.action?.toLowerCase().includes('delivered')
-    )
+  'delivery-delay-feedback-required': (context) => {
+    // Must be awaiting delivery (not yet delivered)
+    if (context.deliverySubstatus !== 'Awaiting Delivery') return false
     
-    if (!deliveryActivity) return false
+    // Must have a delivery date set
+    if (!context.opportunity.deliveryDate) return false
+    
+    // Check that there's no actual delivery date yet
+    const actualDeliveryDate = context.opportunity.actualDeliveryDate || 
+      context.activities?.find(a => a.data?.actualDeliveryDate)?.data?.actualDeliveryDate
+    if (actualDeliveryDate) return false
     
     const settingsStore = useSettingsStore()
-    const threshold = settingsStore.getSetting('dfbDays')
-    const days = calculateDaysSince(deliveryActivity.timestamp)
+    const threshold = settingsStore.getSetting('dfbDays') || 3
+    
+    // Check if DFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.dfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+    
+    // Normal condition check - X days after scheduled delivery date
+    const days = calculateDaysSince(context.opportunity.deliveryDate)
+    
+    return days >= threshold
+  },
+  
+  'delivery-feedback-required': (context) => {
+    // Must be delivered
+    if (context.deliverySubstatus !== 'Delivered') return false
+    
+    // Check actual delivery date (not scheduled deliveryDate)
+    // Support both actualDeliveryDate and deliveredDate for backward compatibility
+    const actualDeliveryDate = context.opportunity.actualDeliveryDate || 
+      context.opportunity.deliveredDate ||
+      context.activities?.find(a => a.data?.actualDeliveryDate)?.data?.actualDeliveryDate ||
+      context.activities?.find(a => a.data?.deliveredDate)?.data?.deliveredDate
+    
+    if (!actualDeliveryDate) return false
+    
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('dfbDays') || 3
+    
+    // Check if DFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.dfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+    
+    // Normal condition check
+    const days = calculateDaysSince(actualDeliveryDate)
+    
     return days >= threshold
   },
 
@@ -218,16 +407,30 @@ export function getAvailableSecondaryActions(stage, context) {
     return [
       CLOSED_OPPORTUNITY_ACTIONS.reopen,
       CLOSED_OPPORTUNITY_ACTIONS.requalify,
-      CLOSED_OPPORTUNITY_ACTIONS.closeLost
+      CLOSED_OPPORTUNITY_ACTIONS.closeLost,
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      }
     ]
   }
   
   const stageConfig = OPPORTUNITY_STATE_CONFIG[stage]
   if (!stageConfig || !stageConfig.secondaryActions) {
-    return []
+    // Even if no stage config, always include schedule-appointment
+    return [
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      }
+    ]
   }
   
-  return stageConfig.secondaryActions.filter(action => {
+  const filteredActions = stageConfig.secondaryActions.filter(action => {
     // If no conditional, always include
     if (!action.conditional) return true
     
@@ -235,6 +438,19 @@ export function getAvailableSecondaryActions(stage, context) {
     const conditionFn = OpportunityConditions[action.conditional]
     return conditionFn ? conditionFn(context) : true
   })
+  
+  // Always ensure schedule-appointment is included
+  const hasScheduleAppointment = filteredActions.some(a => a.key === 'schedule-appointment')
+  if (!hasScheduleAppointment) {
+    filteredActions.push({
+      key: 'schedule-appointment',
+      label: 'Schedule Appointment',
+      icon: 'fa-solid fa-calendar-plus',
+      description: 'Schedule a new appointment'
+    })
+  }
+  
+  return filteredActions
 }
 
 /**
@@ -244,6 +460,11 @@ export function getAvailableSecondaryActions(stage, context) {
 export function getActiveTaskWidget(stage, context) {
   const stageConfig = OPPORTUNITY_STATE_CONFIG[stage]
   if (!stageConfig || !stageConfig.taskWidgets) {
+    return null
+  }
+  
+  // Skip task widgets if opportunity was just reopened from Closed Won
+  if (context.opportunity.skipTaskReTrigger) {
     return null
   }
   
@@ -307,7 +528,7 @@ export function getTaskWidgetTitle(widgetType) {
     'NFU': 'No Future Updates Task',
     'OFB': 'Offer Follow-up Task',
     'CFB': 'Contract Follow-up Task',
-    'DFB': 'Delivery Follow-up Task',
+    'DFB': 'Post-Delivery Customer Satisfaction Survey',
     'NS': 'NS',
     'ABANDONED': 'Abandoned Opportunity Task'
   }
@@ -320,6 +541,41 @@ export function getTaskWidgetTitle(widgetType) {
  */
 export function isOpportunityClosed(stage) {
   return stage === 'Closed Won' || stage === 'Closed Lost'
+}
+
+/**
+ * Validation functions for opportunity operations
+ */
+export const OpportunityValidations = {
+  /**
+   * Check if contract can be created
+   * @param {Object} opportunity - Opportunity object
+   * @param {boolean} isFastDeal - Whether this is a fast deal (contract from Offer Sent directly)
+   * @returns {Object} { valid: boolean, error: string|null }
+   */
+  canCreateContract: (opportunity, isFastDeal = false) => {
+    if (!opportunity) {
+      return { valid: false, error: 'Opportunity not found' }
+    }
+    
+    // Fast deal path: can create contract from Offer Sent status
+    if (isFastDeal) {
+      if (opportunity.negotiationSubstatus === 'Offer Sent' || 
+          opportunity.negotiationSubstatus === 'Awaiting Response' || // backward compatibility
+          opportunity.negotiationSubstatus === null) { // new offers default to Offer Sent
+        return { valid: true, error: null }
+      }
+    }
+    
+    // Normal path: can create contract from Offer Sent status
+    if (opportunity.negotiationSubstatus === 'Offer Sent' || 
+        opportunity.negotiationSubstatus === 'Awaiting Response' || // backward compatibility
+        opportunity.negotiationSubstatus === null) {
+      return { valid: true, error: null }
+    }
+    
+    return { valid: true, error: null }
+  }
 }
 
 // Export helper for external use

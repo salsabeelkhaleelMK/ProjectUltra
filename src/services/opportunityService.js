@@ -29,15 +29,47 @@ export class OpportunityService {
   enrichWithCustomer(opportunity) {
     if (!opportunity) return null
     
-    const customer = customerRepository.findByIdSync(opportunity.customerId)
-    if (!customer) {
-      // Fallback if customer not found
+    // First try to find customer by customerId
+    let customer = customerRepository.findByIdSync(opportunity.customerId)
+    
+    // If not found and opportunity has contactId (account-level), try to find by contactId
+    if (!customer && opportunity.contactId) {
+      customer = customerRepository.findByIdSync(opportunity.contactId)
+    }
+    
+    // If customer found, use it
+    if (customer) {
       return {
         ...opportunity,
         customer: {
-          id: opportunity.customerId,
-          name: 'Unknown Customer',
-          initials: '??',
+          id: customer.id,
+          name: customer.name,
+          initials: customer.initials,
+          email: customer.email,
+          phone: customer.phone,
+          address: customer.address
+        }
+      }
+    }
+    
+    // If contactName is available (account-level opportunities), use it
+    if (opportunity.contactName && opportunity.contactName.trim()) {
+      const nameParts = opportunity.contactName.trim().split(' ').filter(Boolean)
+      let initials = '??'
+      if (nameParts.length >= 2) {
+        initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+      } else if (nameParts.length === 1 && nameParts[0].length >= 2) {
+        initials = nameParts[0].substring(0, 2).toUpperCase()
+      } else if (nameParts.length === 1 && nameParts[0].length === 1) {
+        initials = nameParts[0].toUpperCase() + '?'
+      }
+      
+      return {
+        ...opportunity,
+        customer: {
+          id: opportunity.contactId || opportunity.customerId,
+          name: opportunity.contactName,
+          initials: initials,
           email: '',
           phone: '',
           address: ''
@@ -45,15 +77,16 @@ export class OpportunityService {
       }
     }
     
+    // Last resort: Unknown Customer
     return {
       ...opportunity,
       customer: {
-        id: customer.id,
-        name: customer.name,
-        initials: customer.initials,
-        email: customer.email,
-        phone: customer.phone,
-        address: customer.address
+        id: opportunity.customerId,
+        name: 'Unknown Customer',
+        initials: '??',
+        email: '',
+        phone: '',
+        address: ''
       }
     }
   }
@@ -68,13 +101,26 @@ export class OpportunityService {
     
     // Backward compatibility: Migrate old stage names
     let migratedStage = opportunity.stage
+    let migratedSubstatus = opportunity.negotiationSubstatus
+    
     if (opportunity.stage === 'Offer Sent') {
       migratedStage = 'In Negotiation'
+      migratedSubstatus = 'Offer Sent'
     } else if (opportunity.stage === 'Awaiting Response') {
-      migratedStage = 'Needs Follow-up'
+      migratedStage = 'In Negotiation'
+      migratedSubstatus = 'Offer Sent'
     }
     
-    const oppWithCustomer = this.enrichWithCustomer({ ...opportunity, stage: migratedStage })
+    // Migrate legacy "Awaiting Response" substatus to "Offer Sent"
+    if (opportunity.negotiationSubstatus === 'Awaiting Response') {
+      migratedSubstatus = 'Offer Sent'
+    }
+    
+    const oppWithCustomer = this.enrichWithCustomer({ 
+      ...opportunity, 
+      stage: migratedStage,
+      negotiationSubstatus: migratedSubstatus !== undefined ? migratedSubstatus : opportunity.negotiationSubstatus
+    })
     
     // Fetch activities using repository
     const activities = await activityRepository.findAllByOpportunityId(opportunity.id)
@@ -108,8 +154,12 @@ export class OpportunityService {
     if (filters.search) {
       const search = filters.search.toLowerCase()
       results = results.filter(opp => {
-        const customer = customerRepository.findByIdSync(opp.customerId)
-        const customerName = customer?.name || ''
+        // Try to find customer by customerId or contactId
+        let customer = customerRepository.findByIdSync(opp.customerId)
+        if (!customer && opp.contactId) {
+          customer = customerRepository.findByIdSync(opp.contactId)
+        }
+        const customerName = customer?.name || opp.contactName || ''
         return customerName.toLowerCase().includes(search) ||
           (opp.vehicle && opp.vehicle.brand && opp.vehicle.brand.toLowerCase().includes(search)) ||
           (opp.vehicle && opp.vehicle.model && opp.vehicle.model.toLowerCase().includes(search))

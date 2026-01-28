@@ -21,10 +21,10 @@ import NFUTask from '@/components/tasks/opportunity/NFUTask.vue'
 import OFBTask from '@/components/tasks/opportunity/OFBTask.vue'
 import CFBTask from '@/components/tasks/opportunity/CFBTask.vue'
 import DFBTask from '@/components/tasks/opportunity/DFBTask.vue'
-import NSTask from '@/components/tasks/opportunity/NSTask.vue'
 import AbandonedTask from '@/components/tasks/opportunity/AbandonedTask.vue'
 
 // Map widget types to components
+// Note: NS task widgets (NS1/NS2/NS3) are handled inline in OpportunityManagementWidget, not as task widgets
 const TASK_WIDGET_COMPONENTS = {
   'OOFB': OOFBTask,
   'UFB': UFBTask,
@@ -32,7 +32,6 @@ const TASK_WIDGET_COMPONENTS = {
   'OFB': OFBTask,
   'CFB': CFBTask,
   'DFB': DFBTask,
-  'NS': NSTask,
   'ABANDONED': AbandonedTask
 }
 
@@ -114,15 +113,18 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
   const secondaryActions = computed(() => {
     const ctx = contextWithWidget.value
     const availableActions = getAvailableSecondaryActions(ctx.stage, ctx)
+    const primaryKey = primaryAction.value?.key
     
-    return availableActions.map(action => {
-      const handler = handlers[action.key]
-      
-      return {
-        ...action,
-        handler: handler || (() => {})
-      }
-    })
+    return availableActions
+      .filter(action => action.key !== primaryKey) // Filter out primary action
+      .map(action => {
+        const handler = handlers[action.key]
+        
+        return {
+          ...action,
+          handler: handler || (() => {})
+        }
+      })
   })
 
   // Check if opportunity is closed

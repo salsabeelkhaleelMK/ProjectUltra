@@ -49,8 +49,7 @@ export function useTasksTableFilters({ typeFilter, showTypeFilter, tasks }) {
         { value: 'Won', label: 'Won' },
         { value: 'Lost', label: 'Lost' },
         { value: 'Not interested', label: 'Not interested' },
-        { value: 'Open', label: 'Open' },
-        { value: 'Open Lead', label: 'Open Lead' }
+        { value: 'Open', label: 'Open' }
       ],
       aiHint: 'Lead status or opportunity stage',
       pinned: true

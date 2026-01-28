@@ -1,65 +1,32 @@
 <template>
-  <div v-if="offers.length > 0">
+  <div v-if="offers && offers.length > 0">
     <div class="flex items-center justify-between mb-2">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-file-invoice-dollar text-muted-foreground text-xs"></i>
         <h3 class="font-semibold text-foreground text-sm">Offers ({{ offers.length }})</h3>
       </div>
     </div>
     <div class="relative">
       <div class="flex overflow-x-auto space-x-2 pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory" style="scrollbar-width: thin;">
-        <div
+        <OfferCard
           v-for="offer in offers"
-          :key="offer.id"
-          class="flex-none w-36 snap-start bg-white border rounded-lg shadow-nsc-card overflow-hidden transition-shadow relative"
-          :class="getOfferBorderClass(offer)"
+          :key="`offer-${offer.id}-${offer.status}-${offer.acceptance_status || 'none'}`"
+          :offer="offer"
+          variant="carousel"
+          :menu-items="getMenuItems(offer)"
+          :loading="loadingOffers.has(offer.id)"
+          container-class="flex-none w-36 snap-start"
+        />
+
+        <!-- Add New Entry Card -->
+        <button
+          class="flex-none w-36 h-[171px] snap-start bg-muted/50 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-muted/80 transition-colors group"
+          @click="$emit('add')"
         >
-          <!-- Status Badge -->
-          <div
-            class="absolute top-1 right-1 z-10 text-white text-xs font-bold px-1.5 py-0.5 rounded shadow-sm"
-            :class="getStatusBadgeClass(offer.status)"
-          >
-            {{ getStatusLabel(offer.status) }}
+          <div class="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors shadow-sm">
+            <Plus :size="20" />
           </div>
-          
-          <!-- Vehicle Image -->
-          <div class="w-full h-16 bg-muted flex items-center justify-center overflow-hidden">
-            <img 
-              v-if="offer.data?.image" 
-              :src="offer.data.image" 
-              alt="Vehicle" 
-              class="w-full h-full object-cover"
-            >
-            <i v-else class="fa-solid fa-car text-base text-muted-foreground"></i>
-          </div>
-          
-          <!-- Offer Details -->
-          <div class="p-2 space-y-1.5">
-            <!-- Vehicle Info -->
-            <div>
-              <h4 class="font-bold text-foreground text-xs leading-tight line-clamp-2 mb-0.5">
-                {{ offer.vehicleBrand }} {{ offer.vehicleModel }} ({{ offer.vehicleYear }})
-              </h4>
-              <p class="text-sm font-bold text-foreground">€ {{ formatCurrency(offer.price) }}</p>
-              <p class="text-xs text-muted-foreground">
-                {{ formatDate(offer.createdAt) }}
-              </p>
-            </div>
-            
-            <!-- Action: Mark as accepted only -->
-            <div v-if="offer.status === 'active'" class="pt-1">
-              <Button
-                variant="primary"
-                size="small"
-                @click.stop="$emit('offer-accepted', offer)"
-                class="w-full text-xs h-7"
-              >
-                <i class="fa-solid fa-check text-xs mr-1"></i>
-                Mark as accepted
-              </Button>
-            </div>
-          </div>
-        </div>
+          <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground uppercase tracking-wider">New Offer</span>
+        </button>
       </div>
     </div>
   </div>
@@ -73,7 +40,9 @@
 </template>
 
 <script setup>
-import { Button } from '@motork/component-library/future/primitives'
+import { ref } from 'vue'
+import { Plus } from 'lucide-vue-next'
+import OfferCard from '@/components/shared/OfferCard.vue'
 
 const props = defineProps({
   offers: {
@@ -86,51 +55,72 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['offer-accepted'])
+const emit = defineEmits(['offer-accepted', 'generate-pdf', 'offer-activated', 'add'])
 
-const formatCurrency = (value) => {
-  if (!value) return '0'
-  return new Intl.NumberFormat('en-US').format(value)
+// Track loading state per offer
+const loadingOffers = ref(new Set())
+
+const setOfferLoading = (offerId, isLoading) => {
+  if (isLoading) {
+    loadingOffers.value.add(offerId)
+  } else {
+    loadingOffers.value.delete(offerId)
+  }
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffTime = Math.abs(now - date)
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+const getMenuItems = (offer) => {
+  const items = []
+  const isAccepted = offer.status === 'accepted' || offer.acceptance_status === 'accepted'
   
-  if (diffDays === 0) return 'today'
-  if (diffDays === 1) return 'yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
+  // Set active - always available (unless already active)
+  if (offer.status !== 'active') {
+    items.push({
+      key: 'set-active',
+      label: 'Set active',
+      onClick: () => {
+        setOfferLoading(offer.id, true)
+        emit('offer-activated', offer)
+      }
+    })
+  }
   
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  // Set accepted / Remove acceptance - toggle based on current state
+  if (isAccepted) {
+    items.push({
+      key: 'remove-accepted',
+      label: 'Remove acceptance',
+      onClick: () => {
+        setOfferLoading(offer.id, true)
+        emit('offer-accepted', offer, true) // Pass true to indicate removal
+      }
+    })
+  } else {
+    items.push({
+      key: 'set-accepted',
+      label: 'Set accepted',
+      onClick: () => {
+        setOfferLoading(offer.id, true)
+        emit('offer-accepted', offer)
+      }
+    })
+  }
+  
+  // Send Offer PDF - always available
+  items.push({
+    key: 'send-offer-pdf',
+    label: 'Send Offer PDF',
+    onClick: () => {
+      emit('generate-pdf', offer)
+    }
+  })
+  
+  return items
 }
 
-const getStatusLabel = (status) => {
-  const labels = {
-    'active': 'Active',
-    'accepted': 'Accepted',
-    'archived': 'Archived'
-  }
-  return labels[status] || 'Active'
-}
-
-const getStatusBadgeClass = (status) => {
-  const classes = {
-    'active': 'bg-blue-600',
-    'accepted': 'bg-green-600',
-    'archived': 'bg-gray-600'
-  }
-  return classes[status] || 'bg-gray-600'
-}
-
-const getOfferBorderClass = (offer) => {
-  if (offer.status === 'accepted') {
-    return 'border-green-500 border-2'
-  }
-  return 'border-border'
-}
+// Expose method to clear loading state (called by parent after operation completes)
+defineExpose({
+  setOfferLoading
+})
 </script>
 
 <style scoped>

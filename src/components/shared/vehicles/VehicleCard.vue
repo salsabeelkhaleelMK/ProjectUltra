@@ -1,101 +1,93 @@
 <template>
-  <div 
+  <div
     @click="$emit('select')"
-    class="border border-border rounded-lg p-3 hover:border-blue-500 hover:shadow cursor-pointer transition-all bg-surface"
-    :class="{ 'border-blue-500 shadow': selected }"
+    :class="[
+      'bg-white border rounded-lg shadow-nsc-card overflow-hidden transition-shadow relative cursor-pointer',
+      selected ? 'border-primary border-2' : 'border-border'
+    ]"
   >
+    <!-- Status Badge -->
+    <div
+      class="absolute top-1 left-1 z-10 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wider"
+      :class="badgeBgClass"
+    >
+      {{ badge }}
+    </div>
+
     <!-- Vehicle Image -->
-    <div class="w-full h-28 bg-muted rounded overflow-hidden mb-2">
-      <img 
-        v-if="vehicle.image" 
-        :src="vehicle.image" 
+    <div class="w-full h-16 bg-muted flex items-center justify-center overflow-hidden">
+      <img
+        v-if="vehicle.image"
+        :src="vehicle.image"
         :alt="`${vehicle.brand} ${vehicle.model}`"
         class="w-full h-full object-cover"
       />
-      <div v-else class="w-full h-full flex items-center justify-center">
-        <i class="fa-solid fa-car text-muted-foreground opacity-50 text-2xl"></i>
-      </div>
+      <Car v-else class="size-6 text-muted-foreground" />
     </div>
-    
-    <!-- Vehicle Info -->
-    <div>
-      <!-- Badge and Price Row -->
-      <div class="flex items-center justify-between mb-1.5">
-        <Badge
-          :text="badge"
-          size="small"
-          :theme="badgeTheme"
-        />
-        <span class="text-sm font-bold text-foreground">€{{ formatPrice(vehicle.price) }}</span>
-      </div>
-      
-      <!-- Brand and Model -->
-      <h4 class="font-bold text-xs text-foreground mb-0.5 line-clamp-1">
-        {{ vehicle.brand }} {{ vehicle.model }}
+
+    <!-- Details -->
+    <div class="flex flex-col p-2">
+      <h4 class="font-bold text-foreground leading-tight line-clamp-2 text-xs">
+        {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.year }})
       </h4>
-      
-      <!-- Year -->
-      <p class="text-xs text-muted-foreground mb-1.5">{{ vehicle.year }}</p>
-      
-      <!-- Stock Status -->
-      <div v-if="stockDays !== null && stockDays !== undefined" class="text-xs text-green-600 font-medium mb-2">
-        <i class="fa-solid fa-check-circle mr-0.5"></i>
-        In stock ({{ stockDays }} days)
+      <p class="font-bold text-foreground text-xs mt-0.5">€ {{ formatPrice(vehicle.price) }}</p>
+
+      <!-- Stock pill -->
+      <div
+        v-if="stockDays !== null && stockDays !== undefined"
+        class="flex items-center gap-0.5 px-1 py-0.5 bg-green-50 text-green-700 text-[8px] font-bold rounded border border-green-100 uppercase tracking-tighter w-fit mt-1"
+      >
+        <CheckCircle2 class="size-3" />
+        <span>In stock {{ stockDays }}d</span>
       </div>
-      <div v-else class="text-xs text-orange-600 font-medium mb-2">
-        <i class="fa-solid fa-clock mr-0.5"></i>
-        Out of stock
+      <div
+        v-else
+        class="flex items-center gap-0.5 px-1 py-0.5 bg-amber-50 text-amber-700 text-[8px] font-bold rounded border border-amber-100 uppercase tracking-tighter w-fit mt-1"
+      >
+        <Clock class="size-3" />
+        <span>Out</span>
       </div>
-      
-      <!-- Select Button -->
-      <button 
+
+      <Button
+        v-if="!hideSelectButton"
+        variant="default"
+        size="small"
+        class="w-full mt-2"
         @click.stop="$emit('select')"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded text-xs transition-colors"
       >
         Select
-      </button>
+      </Button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { Badge } from '@motork/component-library/future/primitives'
+import { Car, CheckCircle2, Clock } from 'lucide-vue-next'
+import { Button } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
-  vehicle: {
-    type: Object,
-    required: true
-  },
-  badge: {
-    type: String,
-    required: true // 'Requested', 'Recommended', 'In Stock', 'Custom'
-  },
-  stockDays: {
-    type: Number,
-    default: null
-  },
-  selected: {
-    type: Boolean,
-    default: false
-  }
+  vehicle: { type: Object, required: true },
+  badge: { type: String, required: true },
+  stockDays: { type: Number, default: null },
+  selected: { type: Boolean, default: false },
+  hideSelectButton: { type: Boolean, default: false }
 })
 
 defineEmits(['select'])
 
-const badgeTheme = computed(() => {
-  const themeMap = {
-    'Requested': 'blue',
-    'Recommended': 'gray', // Purple not available, use gray
-    'In Stock': 'green',
-    'Custom': 'yellow' // Orange not available, use yellow
+const badgeBgClass = computed(() => {
+  const m = {
+    'Requested': 'bg-blue-600',
+    'Recommended': 'bg-gray-600',
+    'In Stock': 'bg-green-600',
+    'Custom': 'bg-amber-600'
   }
-  return themeMap[props.badge] || 'gray'
+  return m[props.badge] || 'bg-gray-600'
 })
 
-const formatPrice = (price) => {
+function formatPrice(price) {
   if (!price) return '0'
   return price.toLocaleString('en-US')
 }
 </script>
-

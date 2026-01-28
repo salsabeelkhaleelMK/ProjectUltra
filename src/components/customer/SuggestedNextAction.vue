@@ -1,63 +1,79 @@
 <template>
-  <div
-    v-if="suggestedActions.length > 0"
-    class="rounded-lg flex flex-col mb-6 bg-muted"
+  <Card
+    v-if="loading || suggestedActions.length > 0"
+    class="h-full"
   >
-    <!-- Title Section -->
-    <div class="px-4 py-4 flex items-center justify-between shrink-0">
+    <CardHeader>
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-lightbulb text-foreground"></i>
-        <h2 class="text-sm font-semibold text-foreground leading-5">Suggested Next Action</h2>
+        <Lightbulb class="w-4 h-4 text-foreground" />
+        <CardTitle class="text-sm font-semibold leading-5">Suggested Next Action</CardTitle>
       </div>
-    </div>
-
-    <!-- Card Content -->
-    <div class="bg-white rounded-lg p-2 shadow-nsc-card flex flex-col">
-      <div class="divide-y divide-gray-100">
-        <!-- Action Description Section -->
-        <div class="p-3">
-          <p class="text-sm text-muted-foreground leading-relaxed break-words">
-            <template v-for="(action, index) in suggestedActions" :key="action.id">
-              <template v-if="index > 0">
-                <span class="text-muted-foreground"> or </span>
-              </template>
-              <span class="font-medium text-foreground">{{ action.title }}</span>
-              <span class="text-xs text-muted-foreground ml-1">
-                ({{ action.type === 'lead' ? 'Lead' : 'Opp' }} #{{ action.entityId }})
-              </span>
-            </template>
-          </p>
-        </div>
-        
-        <!-- Action Buttons Section -->
-        <div class="p-3">
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <button
-              v-if="suggestedActions.length > 0"
-              @click="handleAction(suggestedActions[0])"
-              class="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-btn font-medium text-sm transition-all w-full sm:w-auto sm:shrink-0"
-            >
-              <i :class="suggestedActions[0].icon" class="text-sm"></i>
-              <span>{{ suggestedActions[0].label }}</span>
-            </button>
-            <button
-              v-if="suggestedActions.length > 1"
-              @click="handleAction(suggestedActions[1])"
-              class="flex items-center justify-center gap-2 px-4 py-2 bg-surface border border-border hover:bg-muted text-foreground rounded-btn font-medium text-sm transition-colors w-full sm:w-auto sm:shrink-0"
-            >
-              <i :class="suggestedActions[1].icon" class="text-sm"></i>
-              <span>{{ suggestedActions[1].label }}</span>
-            </button>
+    </CardHeader>
+    <CardContent>
+      <!-- Skeleton Loading State -->
+      <template v-if="loading">
+        <div class="space-y-3 animate-pulse">
+          <div class="h-4 bg-muted rounded w-full"></div>
+          <div class="flex flex-col sm:flex-row gap-2 pt-3">
+            <div class="h-10 bg-muted rounded w-full sm:w-32"></div>
+            <div class="h-10 bg-muted rounded w-full sm:w-32"></div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </template>
+      
+      <!-- Content -->
+      <template v-else-if="suggestedActions.length > 0">
+        <div class="divide-y divide-border">
+          <!-- Action Description Section -->
+          <div class="py-3">
+            <p class="text-sm text-muted-foreground leading-relaxed break-words">
+              <template v-for="(action, index) in suggestedActions" :key="action.id">
+                <template v-if="index > 0">
+                  <span class="text-muted-foreground"> or </span>
+                </template>
+                <span class="font-medium text-foreground">{{ action.title }}</span>
+                <span class="text-xs text-muted-foreground ml-1">
+                  ({{ action.type === 'lead' ? 'Lead' : 'Opp' }} #{{ action.entityId }})
+                </span>
+              </template>
+            </p>
+          </div>
+          
+          <!-- Action Buttons Section -->
+          <div class="py-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <Button
+                v-if="suggestedActions.length > 0"
+                @click="handleAction(suggestedActions[0])"
+                variant="default"
+                class="w-full sm:w-auto"
+              >
+                <component :is="getActionIcon(suggestedActions[0].icon)" class="w-4 h-4 mr-2" />
+                {{ suggestedActions[0].label }}
+              </Button>
+              <Button
+                v-if="suggestedActions.length > 1"
+                @click="handleAction(suggestedActions[1])"
+                variant="outline"
+                class="w-full sm:w-auto"
+              >
+                <component :is="getActionIcon(suggestedActions[1].icon)" class="w-4 h-4 mr-2" />
+                {{ suggestedActions[1].label }}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
+import { Button } from '@motork/component-library/future/primitives'
+import { Lightbulb } from 'lucide-vue-next'
 import { getPrimaryAction } from '@/utils/opportunityRules'
 import { getLeadPrimaryAction } from '@/utils/leadRules'
 import { getDisplayStage } from '@/utils/stageMapper'
@@ -74,8 +90,19 @@ const props = defineProps({
   activities: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
+
+// Map action icon classes to lucide-vue-next components
+// This will need to be expanded based on what icons are returned from getPrimaryAction/getLeadPrimaryAction
+const getActionIcon = (iconClass) => {
+  // Default icon - can be expanded based on actual icon classes used
+  return Lightbulb
+}
 
 const router = useRouter()
 

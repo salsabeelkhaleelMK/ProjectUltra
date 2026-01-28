@@ -5,7 +5,6 @@
     "toBeCalledBack": "À Rappeler",
     "inNegotiation": "En Négociation",
     "inNegotiationContractPending": "En Négociation - Contrat en Attente",
-    "needsFollowUp": "Nécessite un Suivi",
     "contractPending": "Contrat en Attente",
     "closedWon": "Fermé Gagné",
     "closedLost": "Fermé Perdu",
@@ -18,7 +17,7 @@
     "closedInvalid": "Fermé - Non Valide",
     "closedNotInterested": "Fermé - Non Intéressé",
     "closedDuplicate": "Fermé - Duplicata",
-    "openLead": "Lead Ouvert",
+    "openLead": "Ouvert",
     "validated": "Validé"
   },
   "delivery": {

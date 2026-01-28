@@ -54,7 +54,8 @@ export class OpportunityRepository extends BaseRepository {
       })
     }
     
-    return results
+    // Ensure opportunity id: 1 always has today's appointment (for demo purposes)
+    return this.ensureTodayAppointment(results)
   }
 
   /**
@@ -65,7 +66,10 @@ export class OpportunityRepository extends BaseRepository {
   async findById(id) {
     await new Promise(resolve => setTimeout(resolve, 300))
     const opportunity = this.dataSource.find(o => o.id === parseInt(id))
-    return opportunity || null
+    if (!opportunity) return null
+    
+    // Ensure opportunity id: 1 always has today's appointment (for demo purposes)
+    return this.ensureTodayAppointment(opportunity)
   }
 
   /**
@@ -96,7 +100,12 @@ export class OpportunityRepository extends BaseRepository {
       createdAt: new Date().toISOString(),
       lastActivity: new Date().toISOString(),
       scheduledAppointment: data.scheduledAppointment || null,
-      contractDate: data.contractDate || null
+      contractDate: data.contractDate || null,
+      postponedTasks: data.postponedTasks || {},
+      actualDeliveryDate: data.actualDeliveryDate || null,
+      skipTaskReTrigger: data.skipTaskReTrigger || false,
+      tradeIns: data.tradeIns || [],
+      financingOptions: data.financingOptions || []
     }
     
     this.dataSource.push(newOpportunity)
@@ -154,6 +163,49 @@ export class OpportunityRepository extends BaseRepository {
     return this.dataSource.length > 0 
       ? Math.max(...this.dataSource.map(o => o.id)) + 1 
       : 1
+  }
+
+  /**
+   * Ensure opportunity id: 1 has today's appointment
+   * (Helper method for demo purposes - ensures "Mark as Showed Up" and "Mark as No-Show" are visible)
+   * @param {Object|Array} opportunityOrArray - Single opportunity object or array of opportunities
+   * @returns {Object|Array} Opportunity or array with id: 1 updated to have today's appointment
+   */
+  ensureTodayAppointment(opportunityOrArray) {
+    const isArray = Array.isArray(opportunityOrArray)
+    const opportunities = isArray ? opportunityOrArray : [opportunityOrArray]
+    
+    const today = new Date()
+    const startDate = new Date(today)
+    startDate.setHours(14, 0, 0, 0)
+    const endDate = new Date(today)
+    endDate.setHours(15, 0, 0, 0)
+    
+    const updatedOpportunities = opportunities.map(opp => {
+      if (opp && opp.id === 1) {
+        // Ensure opportunity id: 1 has today's appointment
+        const existingAppointment = opp.scheduledAppointment
+        return {
+          ...opp,
+          scheduledAppointment: {
+            id: existingAppointment?.id || 10,
+            start: startDate.toISOString(),
+            end: endDate.toISOString(),
+            type: existingAppointment?.type || 'Test Drive',
+            assignee: existingAppointment?.assignee || opp.assignee || 'Sarah Jenkins',
+            customerId: existingAppointment?.customerId || opp.customerId || 2,
+            opportunityId: 1,
+            duration: existingAppointment?.duration || 60,
+            status: existingAppointment?.status || 'confirmed',
+            noShowCount: existingAppointment?.noShowCount || 0,
+            lastNoShowDate: existingAppointment?.lastNoShowDate || null
+          }
+        }
+      }
+      return opp
+    })
+    
+    return isArray ? updatedOpportunities : updatedOpportunities[0]
   }
 }
 

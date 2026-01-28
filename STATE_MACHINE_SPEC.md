@@ -25,10 +25,14 @@ graph TD
     TBC --> IN
     TBC --> CL
     
-    IN -->|3 days since offer| NF[Needs Follow-up]
-    IN --> CP[Contract Pending]
+    IN -->|3 days since offer| OUR[Offer Under Review]
+    OUR --> OA[Offer Accepted]
+    OA --> CP[Contract Pending]
+    IN -->|fast deal| OA
+    OUR --> NF[Needs Follow-up]
     IN --> CL
     
+    NF --> OA
     NF --> CP
     NF --> IN
     NF --> CL
@@ -51,7 +55,9 @@ graph TD
     style TBC fill:#e0e7ff
     style IN fill:#fef3c7
     style NF fill:#fbcfe8
-    style CP fill:#d1fae5
+    style OUR fill:#fef3c7
+    style OA fill:#d1fae5
+    style CP fill:#a7f3d0
     style CW fill:#bbf7d0
     style CL fill:#fecaca
     style AB fill:#f3f4f6
@@ -65,9 +71,11 @@ graph TD
 | **Awaiting Appointment** | Blue | Qualified, no appointment | Schedule Appointment | OOFB (7-13d), UFB (14+d) |
 | **Appointment Scheduled** | Purple | Appointment set | View/Reschedule Apt | NS (no-show tracking) |
 | **To be Called Back** | Indigo | Callback set | Call Prospect | - |
-| **In Negotiation** | Yellow | First offer created | Follow Up / Request Feedback | OFB (5+d), NFU (5+d in Feedback only) |
+| **In Negotiation** | Yellow | First offer created | Follow Up / Create Offer | NFU (5+d in Offer Feedback only) |
+| **In Negotiation - Offer Under Review** | Yellow | Offer 3+ days old | Mark as Accepted / Create Another Offer | OFB (in expanded view, 5+d) |
+| **Offer Accepted** | Emerald | Offer marked as accepted | Create Contract | - |
 | **Needs Follow-up** | Pink | Offer pending (3+d) | Request Decision | OFB, NFU |
-| **Contract Pending** | Emerald | Contract date set | Finalize Contract | CFB (7+d) |
+| **In Negotiation - Contract Pending** | Emerald | Contract date set | Finalize Contract | CFB (7+d) |
 | **Closed Won** | Green | Contract signed | Schedule Delivery* | CFB, DFB |
 | **Closed Lost** | Red | Manually closed / NS3 | None | - |
 | **Abandoned** | Gray | Inactive 30+ days | Reopen | ABANDONED |
@@ -90,11 +98,16 @@ The "In Negotiation" stage has three substatus values that track the offer lifec
 ```mermaid
 stateDiagram-v2
     [*] --> OfferSent: Create First Offer
-    OfferSent --> OfferFeedback: After 3 days (auto)
+    OfferSent --> OfferUnderReview: After 3 days (auto)
     OfferSent --> OfferSent: Add New Offer
-    OfferFeedback --> OfferFeedback: Add New Offer
-    OfferFeedback --> OfferAccepted: Mark Offer Accepted
-    OfferAccepted --> ContractPending: Auto transition
+    OfferUnderReview --> OfferUnderReview: Add New Offer
+    OfferUnderReview --> OfferAccepted: Mark as Accepted (manual)
+    OfferSent --> OfferAccepted: Create Contract (fast deal, auto)
+    OfferUnderReview --> OfferAccepted: Create Contract (auto)
+    OfferFeedback --> OfferUnderReview: Backward compat transition
+    OfferFeedback --> OfferAccepted: Mark Offer Accepted (backward compat)
+    OfferAccepted --> ContractPending: Create Contract
+    ContractPending --> OfferUnderReview: Delete Contract (if auto-accepted)
 ```
 
 ### Substatus Definitions
@@ -102,17 +115,20 @@ stateDiagram-v2
 | Substatus | Display | Trigger | Available Actions |
 |-----------|---------|---------|-------------------|
 | **Offer Sent** | In Negotiation - Offer Sent | First offer created OR showed up for appointment | Follow Up, Add Offer, Mark Accepted, Communicate |
-| **Offer Feedback** | In Negotiation - Offer Feedback | 3 days after most recent offer | Follow Up, Add Offer, Mark Accepted, Communicate, Schedule Apt, Close Lost |
-| **Offer Accepted** | Offer Accepted | Any offer marked as accepted | Auto-transitions to Contract Pending |
-| **Contract Pending** | In Negotiation - Contract Pending | Offer accepted OR contract date set | Collect e-signatures, finalize contract, Add offer, Extend deadline, Schedule appointment |
+| **Offer Under Review** | In Negotiation - Offer Under Review | 3 days after most recent offer (auto) | **Primary:** Mark as Accepted, Create Another Offer<br>**Secondary:** Close as Lost, Request Decision from Prospect, Schedule Apt |
+| **Offer Feedback** | In Negotiation - Offer Feedback | 3 days after most recent offer (legacy, backward compat) | Follow Up, Add Offer, Mark Accepted, Communicate, Schedule Apt, Close Lost |
+| **Offer Accepted** | Offer Accepted | Offer marked as accepted (manual or auto via contract) | **Primary:** Create Contract<br>**Secondary:** Create Another Offer, Close as Lost |
+| **Contract Pending** | In Negotiation - Contract Pending | Contract date set | Collect e-signatures, finalize contract, Add offer, Extend deadline, Schedule appointment |
 
 ### Substatus Transition Rules
 
 1. **Offer Creation**: When first offer is created → stage becomes "In Negotiation", substatus = "Offer Sent"
-2. **Auto-Transition**: After 3 days with no acceptance → substatus changes to "Offer Feedback"
+2. **Auto-Transition**: After 3 days with no acceptance → substatus changes to "Offer Under Review" (or "Offer Feedback" for backward compatibility)
 3. **Add New Offer**: Can happen at any time, does NOT reset the 3-day timer or substatus
-4. **Offer Acceptance**: Mark any offer as accepted → substatus = "Offer Accepted" → auto-transition to "Contract Pending" stage
-5. **Multiple Offers**: All offers tracked in `offers` array, displayed in carousel
+4. **Manual Acceptance**: User clicks "Mark as Accepted" → substatus = "Offer Accepted", captures: timestamp, user, method='manual'
+5. **Auto-Acceptance**: When contract is created from "Offer Under Review" or "Offer Sent" (fast deal) → offer auto-accepted, captures: timestamp, contract ID, method='auto_via_contract'
+6. **Contract Deletion**: When contract is deleted → if offer was auto-accepted, revert to "Offer Under Review"
+7. **Multiple Offers**: All offers tracked in `offers` array, displayed in carousel
 
 ## No-Show (NS) Flow
 
@@ -131,9 +147,12 @@ NS3 (3rd miss) → Closed Lost (automatic)
 ### 2. Auto-Transitions
 - First offer created: `Qualified/Awaiting Appointment/Appointment Scheduled → In Negotiation (Offer Sent)`
 - Appointment scheduled: `Awaiting Appointment → Appointment Scheduled`
-- Offer 3 days old: `In Negotiation (Offer Sent) → In Negotiation (Offer Feedback)`
-- Offer accepted: `In Negotiation (Offer Accepted) → Contract Pending`
+- Offer 3 days old: `In Negotiation (Offer Sent) → In Negotiation (Offer Under Review)`
+- Offer accepted (manual): `In Negotiation (Offer Under Review/Offer Sent) → Offer Accepted`
+- Contract created (fast deal): `In Negotiation (Offer Sent) → Offer Accepted → Contract Pending → Closed Won`
+- Contract created (normal): `Offer Accepted → In Negotiation (Contract Pending) → Closed Won`
 - Contract date set: `Contract Pending → Closed Won` (auto-transition)
+- Contract deleted: `Offer Accepted → In Negotiation (Offer Under Review)` (if auto-accepted)
 - Third no-show: `Appointment Scheduled → Closed Lost`
 - Delivery date set: Substatus `None → Awaiting Delivery`
 - Delivery logged: Substatus `Awaiting Delivery → Delivered`
@@ -151,8 +170,8 @@ When reopening a closed opportunity:
 - **If no offers exist** → Returns to `Qualified` stage
 - **If offers exist** → Returns to `In Negotiation` stage with appropriate `negotiationSubstatus`:
   - If most recent offer is < 3 days old → `negotiationSubstatus = 'Offer Sent'`
-  - If most recent offer is 3+ days old → `negotiationSubstatus = 'Offer Feedback'`
-  - If any offer was accepted → `negotiationSubstatus = 'Offer Accepted'` (displays as Contract Pending)
+  - If most recent offer is 3+ days old → `negotiationSubstatus = 'Offer Under Review'`
+  - If any offer was accepted → `negotiationSubstatus = 'Offer Accepted'` (displays as standalone "Offer Accepted" status)
 - Task rules are re-triggered based on the stage returned to
 
 ## Task Widgets Reference
@@ -162,8 +181,8 @@ When reopening a closed opportunity:
 | **OOFB** | Qualified 7-13 days, no offers | Opportunity Offer Follow-up |
 | **UFB** | Qualified 14+ days, no offers | Urgent Follow-up |
 | **NS** | Appointment past, not completed | No-Show tracking (NS1/NS2/NS3) |
-| **OFB** | Negotiation 5+ days, no contract | Offer Follow-up |
-| **NFU** | Negotiation (Offer Feedback) 5+ days, no future apt | No Future Appointment (Schedule or Close) |
+| **OFB** | Negotiation (Offer Under Review only) 5+ days, no contract | Offer Follow-up (shown in expanded view, not as primary status) |
+| **NFU** | Negotiation (Offer Feedback only) 5+ days, no future apt | No Future Appointment (Schedule or Close) |
 | **CFB** | Contract 7+ days, no delivery | Contract Follow-up |
 | **DFB** | Delivery date set | Delivery Follow-up |
 | **ABANDONED** | Opportunity inactive 30+ days | Abandonment warning |
@@ -188,11 +207,14 @@ UI:
 {
   stage: String,                    // 'Qualified', 'In Negotiation', 'Closed Won', 'Closed Lost'
   displayStage: String,             // Computed from stage + context (9 stages)
-  negotiationSubstatus: String,     // null | 'Offer Sent' | 'Offer Feedback' | 'Offer Accepted' | 'Contract Pending' (displayed as "In Negotiation - Contract Pending")
+  negotiationSubstatus: String,     // null | 'Offer Sent' | 'Offer Under Review' | 'Awaiting Response' (legacy) | 'Offer Feedback' (legacy) | 'Offer Accepted' | 'Contract Pending' (displayed as "In Negotiation - Contract Pending")
   deliverySubstatus: String,        // null | 'Awaiting Delivery' | 'Delivered'
   contractDate: String,             // ISO date
   deliveryDate: String,             // ISO date
   callbackDate: String,             // ISO date
+  offerAcceptanceDate: String,      // ISO date (when any offer was accepted)
+  offerAcceptanceMethod: String,    // 'manual' | 'auto_via_contract' | null
+  acceptedByUserId: Number,         // User ID who accepted the offer
   scheduledAppointment: Object,
   noShowCount: Number,              // 0-3 (in calendar events)
   offers: Array[{                   // Array of offer objects
@@ -203,6 +225,10 @@ UI:
     vehicleYear: Number,
     price: Number,
     status: String,                 // 'active' | 'accepted' | 'archived'
+    acceptance_status: String,      // 'pending' | 'accepted' | 'rejected'
+    acceptance_date: String,        // ISO date (when this offer was accepted)
+    acceptance_method: String,      // 'manual' | 'auto_via_contract' | null
+    accepted_by_user_id: Number,    // User ID who accepted this offer
     data: Object                    // Full offer details from OfferWidget
   }]
 }

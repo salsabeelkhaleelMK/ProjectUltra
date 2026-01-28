@@ -91,15 +91,12 @@
               </div>
             </div>
           </div>
-          <div v-else-if="item.type === 'offer'" class="flex items-center gap-3">
-            <div v-if="item.data.image" class="w-16 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
-              <img :src="item.data.image" alt="Car" class="w-full h-full object-cover">
-            </div>
-            <div class="flex-1">
-              <h4 class="text-sm font-bold text-foreground">{{ item.data.brand }} {{ item.data.model }} ({{ item.data.year }})</h4>
-              <p class="text-sm text-muted-foreground">€ {{ formatCurrency(item.data.price) }}</p>
-            </div>
-            <span v-if="item.data.isMainOffer" class="bg-purple-600 text-white text-xs font-bold px-1 py-0.5 rounded">Main Offer</span>
+          <div v-else-if="item.type === 'offer'">
+            <OfferCarousel
+              :offers="[item.data]"
+              :opportunity-id="item.opportunityId || item.leadId || ''"
+            />
+            <span v-if="item.data.isMainOffer" class="inline-block mt-2 bg-purple-600 text-white text-xs font-bold px-1 py-0.5 rounded">Main Offer</span>
           </div>
           <div v-else-if="item.type === 'purchase'" class="flex items-center gap-3">
             <div class="flex-1">
@@ -153,6 +150,7 @@
 import { computed, ref } from 'vue'
 import { DropdownMenu } from '@motork/component-library/future/primitives'
 import AppointmentWidget from '@/components/customer/activities/AppointmentWidget.vue'
+import OfferCarousel from '@/components/shared/OfferCarousel.vue'
 
 const props = defineProps({
   item: {

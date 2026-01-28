@@ -12,10 +12,17 @@
               v-for="tab in tabs"
               :key="tab.key"
               :value="tab.key"
-              class="flex items-center gap-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-primary data-[state=active]:text-brand-primary rounded-none pb-3 px-6 h-auto"
+              class="flex items-center gap-2 text-sm font-medium transition-all relative bg-transparent outline-none"
+              :class="activeTab === tab.key 
+                ? 'text-foreground' 
+                : 'text-muted-foreground hover:text-muted-foreground'"
             >
               <i :class="[getTabIcon(tab.key), 'text-sm']"></i>
-              <span class="hidden md:inline whitespace-nowrap font-semibold">{{ tab.label }}</span>
+              <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
+              <span 
+                v-if="activeTab === tab.key"
+                class="absolute bottom-0 left-0 right-0 h-[2px] bg-primary z-10"
+              ></span>
             </TabsTrigger>
           </TabsList>
 
@@ -126,7 +133,7 @@ const handleSubmit = async (formData) => {
           address: contact.address || ''
         },
         status: 'Open',
-        stage: 'Open Lead',
+        stage: 'Open',
         priority: 'Normal',
         source: vehicleData?.source || 'Direct',
         assignee: null,
