@@ -2,159 +2,169 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-6xl max-h-[calc(100vh-4rem)] flex flex-col">
-        <DialogHeader class="flex-shrink-0">
-          <DialogTitle>Select Vehicle</DialogTitle>
+      <DialogContent class="w-full sm:max-w-6xl max-h-[90vh] flex flex-col">
+        <DialogHeader class="flex-shrink-0 px-6 pt-6 pb-4 border-b border-border">
+          <DialogTitle class="text-foreground">Select Vehicle</DialogTitle>
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
-      <!-- Section 1: Recommended Vehicles (includes requested if available) -->
-      <div v-if="allRecommendedVehicles.length">
-        <h3 class="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-sparkles text-purple-600"></i>
-          Recommended Vehicles
-        </h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
-          <VehicleCard
-            v-for="vehicle in allRecommendedVehicles"
-            :key="vehicle.id"
-            :vehicle="vehicle"
-            :badge="vehicle.isRequested ? 'Requested' : 'Recommended'"
-            :stock-days="vehicle.stockDays"
-            :selected="selectedVehicleId === vehicle.id"
-            @select="handleSelectVehicle(vehicle, vehicle.isRequested ? 'requested' : 'recommended')"
-          />
-        </div>
-      </div>
-      
-      <!-- Section 2: Browse Stock -->
-      <div>
-        <h3 class="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-warehouse text-green-600"></i>
-          Browse Stock
-        </h3>
-        
-        <!-- Search Input -->
-        <div class="mb-4">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-muted-foreground text-sm"></i>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search by brand, model, year..."
-              class="w-full bg-surface border border-border rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-            />
-          </div>
-        </div>
-        
-        <!-- Stock Vehicles Grid -->
-        <div v-if="filteredStock.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
-          <VehicleCard
-            v-for="vehicle in filteredStock"
-            :key="vehicle.id"
-            :vehicle="vehicle"
-            badge="In Stock"
-            :stock-days="vehicle.stockDays"
-            :selected="selectedVehicleId === vehicle.id"
-            @select="handleSelectVehicle(vehicle, 'stock')"
-          />
-        </div>
-        <div v-else class="text-center py-8 text-muted-foreground">
-          <i class="fa-solid fa-search text-4xl text-gray-300 mb-3"></i>
-          <p class="text-sm font-medium">No vehicles found matching your search</p>
-          <p class="text-xs mt-1 text-muted-foreground">Try different keywords or clear the search</p>
-        </div>
-      </div>
-      
-      <!-- Section 3: Configure Custom -->
-      <div>
-        <h3 class="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-wrench text-orange-600"></i>
-          Configure Custom Vehicle
-        </h3>
-        <div class="border border-border rounded-lg p-4 bg-muted">
-          <p class="text-xs text-muted-foreground mb-3">
-            Build a custom configuration with specific options and features
-          </p>
-          <button
-            @click="showConfigureForm = !showConfigureForm"
-            class="bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <i class="fa-solid fa-cog mr-2"></i>
-            {{ showConfigureForm ? 'Hide Configuration' : 'Build Custom Configuration' }}
-          </button>
-          
-          <!-- Custom Configuration Form -->
-          <div v-if="showConfigureForm" class="mt-4 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Brand</Label>
-                <Input
-                  v-model="customVehicle.brand"
-                  type="text"
-                  class="w-full h-10"
-                  placeholder="e.g., Audi"
-                />
-              </div>
-              <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Model</Label>
-                <Input
-                  v-model="customVehicle.model"
-                  type="text"
-                  class="w-full h-10"
-                  placeholder="e.g., e-tron GT"
-                />
-              </div>
-              <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Year</Label>
-                <Input
-                  v-model="customVehicle.year"
-                  type="number"
-                  class="w-full h-10"
-                  placeholder="2024"
-                />
-              </div>
-              <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Price (€)</Label>
-                <Input
-                  v-model="customVehicle.price"
-                  type="number"
-                  class="w-full h-10"
-                  placeholder="98000"
+          <!-- Stock mode: Recommended + Browse Stock -->
+          <template v-if="showStockSection">
+            <div v-if="allRecommendedVehicles.length" class="space-y-3">
+              <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
+                <Sparkles class="size-4 text-primary" />
+                Recommended Vehicles
+              </h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+                <VehicleCard
+                  v-for="vehicle in allRecommendedVehicles"
+                  :key="vehicle.id"
+                  :vehicle="vehicle"
+                  :badge="vehicle.isRequested ? 'Requested' : 'Recommended'"
+                  :stock-days="vehicle.stockDays"
+                  :selected="selectedVehicleId === vehicle.id"
+                  @select="handleSelectVehicle(vehicle, vehicle.isRequested ? 'requested' : 'recommended')"
                 />
               </div>
             </div>
-            <div class="flex justify-end">
-              <button
-                @click="handleSelectCustom"
-                :disabled="!isCustomVehicleValid"
-                class="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-              >
-                <i class="fa-solid fa-check mr-2"></i>
-                Use Custom Configuration
-              </button>
+
+            <div class="space-y-3">
+              <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
+                <Package class="size-4 text-primary" />
+                Browse Stock
+              </h3>
+              <div class="flex gap-2">
+                <div class="relative flex-1">
+                  <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    v-model="searchQuery"
+                    type="text"
+                    placeholder="Search by brand, model, year..."
+                    class="w-full pl-9 bg-background border-border"
+                  />
+                </div>
+              </div>
+              <div v-if="filteredStock.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+                <VehicleCard
+                  v-for="vehicle in filteredStock"
+                  :key="vehicle.id"
+                  :vehicle="vehicle"
+                  badge="In Stock"
+                  :stock-days="vehicle.stockDays"
+                  :selected="selectedVehicleId === vehicle.id"
+                  @select="handleSelectVehicle(vehicle, 'stock')"
+                />
+              </div>
+              <div v-else class="rounded-lg border border-border bg-muted py-12 text-center">
+                <Search class="mx-auto mb-3 size-10 text-muted-foreground" />
+                <p class="text-sm font-medium text-foreground">No vehicles found</p>
+                <p class="text-xs text-muted-foreground mt-1">Try different keywords or clear the search</p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Configure mode: Custom vehicle form -->
+          <div v-if="showConfigureSection" class="space-y-4">
+            <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
+              <Settings class="size-4 text-primary" />
+              Configure Custom Vehicle
+            </h3>
+            <div class="rounded-lg border border-border bg-muted p-4 space-y-4">
+              <p class="text-sm text-muted-foreground">
+                Build a custom configuration with specific options and features.
+              </p>
+              <div v-if="!showConfigureForm" class="flex justify-start">
+                <Button
+                  variant="default"
+                  size="sm"
+                  class="gap-2"
+                  @click="showConfigureForm = true"
+                >
+                  <Settings class="size-4" />
+                  Build Custom Configuration
+                </Button>
+              </div>
+              <div v-else class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div class="space-y-2">
+                    <Label class="text-sm font-medium text-foreground">Brand</Label>
+                    <Input
+                      v-model="customVehicle.brand"
+                      type="text"
+                      placeholder="e.g., Audi"
+                      class="w-full bg-background border-border"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <Label class="text-sm font-medium text-foreground">Model</Label>
+                    <Input
+                      v-model="customVehicle.model"
+                      type="text"
+                      placeholder="e.g., e-tron GT"
+                      class="w-full bg-background border-border"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <Label class="text-sm font-medium text-foreground">Year</Label>
+                    <Input
+                      v-model="customVehicle.year"
+                      type="number"
+                      placeholder="2024"
+                      class="w-full bg-background border-border"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <Label class="text-sm font-medium text-foreground">Price (€)</Label>
+                    <Input
+                      v-model="customVehicle.price"
+                      type="number"
+                      placeholder="98000"
+                      class="w-full bg-background border-border"
+                    />
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    @click="showConfigureForm = false"
+                  >
+                    Hide
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    class="gap-2"
+                    :disabled="!isCustomVehicleValid"
+                    @click="handleSelectCustom"
+                  >
+                    <Check class="size-4" />
+                    Use Custom Configuration
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
         </div>
 
-        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3 px-6 py-4 border-t border-border">
           <Button
-            label="Cancel"
             variant="outline"
-            size="small"
-            class="rounded-sm w-full sm:w-auto"
+            size="sm"
+            class="w-full sm:w-auto"
             @click="$emit('close')"
-          />
+          >
+            Cancel
+          </Button>
           <Button
             v-if="selectedVehicle"
-            label="Confirm Selection"
-            variant="primary"
-            size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+            variant="default"
+            size="sm"
+            class="w-full sm:w-auto"
             @click="handleConfirm"
-          />
+          >
+            Confirm Selection
+          </Button>
         </DialogFooter>
       </DialogContent>
     </DialogPortal>
@@ -162,8 +172,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { 
+import { ref, computed, onMounted, watch } from 'vue'
+import { Check, Package, Search, Settings, Sparkles } from 'lucide-vue-next'
+import {
   Button,
   Input,
   Label
@@ -181,31 +192,44 @@ import VehicleCard from '@/components/shared/vehicles/VehicleCard.vue'
 import { fetchVehicles } from '@/api/vehicles'
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true
-  },
-  requestedVehicle: {
-    type: Object,
-    default: null
-  },
-  opportunityId: {
-    type: Number,
-    required: true
-  }
+  show: { type: Boolean, required: true },
+  requestedVehicle: { type: Object, default: null },
+  requestedCar: { type: Object, default: null },
+  opportunity: { type: Object, default: null },
+  opportunityId: { type: [Number, String], default: null },
+  /** 'full' = Recommended + Stock + Configure; 'stock' = Recommended + Stock only; 'configure' = Configure only */
+  mode: { type: String, default: 'full' }
 })
+
+const resolvedRequestedVehicle = computed(() =>
+  props.requestedVehicle || props.requestedCar || props.opportunity?.selectedVehicle || props.opportunity?.vehicle || props.opportunity?.requestedCar || null
+)
+const resolvedOpportunityId = computed(() =>
+  props.opportunityId ?? props.opportunity?.id ?? null
+)
 
 const emit = defineEmits(['close', 'vehicle-selected'])
 
 const handleOpenChange = (isOpen) => {
-  if (!isOpen) {
-    emit('close')
-  }
+  if (!isOpen) emit('close')
 }
+
+const showStockSection = computed(() =>
+  props.mode === 'full' || props.mode === 'stock'
+)
+const showConfigureSection = computed(() =>
+  props.mode === 'full' || props.mode === 'configure'
+)
+
+watch(() => props.show, (isOpen) => {
+  if (isOpen && props.mode === 'configure') {
+    showConfigureForm.value = true
+  }
+})
 
 // State
 const searchQuery = ref('')
-const showConfigureForm = ref(false)
+const showConfigureForm = ref(props.mode === 'configure')
 const selectedVehicle = ref(null)
 const selectedVehicleId = ref(null)
 const selectedVehicleType = ref(null)
@@ -234,37 +258,28 @@ onMounted(async () => {
 
 // Check if requested vehicle is in stock
 const hasRequestedInStock = computed(() => {
-  return props.requestedVehicle && 
-         props.requestedVehicle.stockDays !== null && 
-         props.requestedVehicle.stockDays !== undefined
+  const rv = resolvedRequestedVehicle.value
+  return rv && rv.stockDays != null
 })
 
 // Get all recommended vehicles (includes requested vehicle if in stock)
 const allRecommendedVehicles = computed(() => {
+  const rv = resolvedRequestedVehicle.value
   const recommended = []
-  
-  // Only add requested vehicle if it exists AND is in stock
-  if (props.requestedVehicle && hasRequestedInStock.value) {
-    recommended.push({
-      ...props.requestedVehicle,
-      isRequested: true
-    })
+
+  if (rv && hasRequestedInStock.value) {
+    recommended.push({ ...rv, isRequested: true })
   }
-  
-  // Add other recommended vehicles
-  if (vehicles.value && vehicles.value.length > 0) {
-    const alternatives = vehicles.value.filter(v => {
-      // If no requested vehicle, show all
-      if (!props.requestedVehicle) return true
-      // Otherwise exclude the requested vehicle from alternatives
-      return v.brand !== props.requestedVehicle.brand || v.model !== props.requestedVehicle.model
+
+  if (vehicles.value?.length) {
+    const alternatives = vehicles.value.filter((v) => {
+      if (!rv) return true
+      return v.brand !== rv.brand || v.model !== rv.model
     })
-    
-    // Add first 3 alternatives if requested vehicle is shown, otherwise 4
-    const limit = (props.requestedVehicle && hasRequestedInStock.value) ? 3 : 4
+    const limit = (rv && hasRequestedInStock.value) ? 3 : 4
     recommended.push(...alternatives.slice(0, limit))
   }
-  
+
   return recommended
 })
 
@@ -313,12 +328,6 @@ const handleSelectCustom = () => {
   }
   
   handleSelectVehicle(vehicle, 'custom')
-}
-
-// Format price helper
-const formatPrice = (price) => {
-  if (!price) return '0'
-  return price.toLocaleString('en-US')
 }
 
 // Confirm and emit selection

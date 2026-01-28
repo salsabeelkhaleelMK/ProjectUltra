@@ -235,7 +235,12 @@ export const addContract = async (opportunityId, contractData) => {
     version: opportunity.contracts.length + 1,
     contractSigned: false,
     esignatureCollectedDate: null,
-    status: 'active'
+    status: 'active',
+    // Locked terms from accepted offer
+    lockedOfferId: contractData.lockedOfferId || null,
+    lockedTradeInLabel: contractData.lockedTradeInLabel || '',
+    lockedFinancingLabel: contractData.lockedFinancingLabel || '',
+    lockedPrice: contractData.lockedPrice || 0
   }
 
   opportunity.contracts.push(newContract)

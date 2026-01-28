@@ -1206,6 +1206,26 @@ export const mockOpportunities = [
       requestMessage: 'Looking for BMW i5. Interested in test drive.'
     },
     stage: 'Closed Lost',
+    negotiationSubstatus: 'Offer Sent',
+    offers: [
+      {
+        id: 'offer-lost-16-1',
+        createdAt: createDateOffset(-12),
+        vehicleBrand: 'BMW',
+        vehicleModel: 'i5',
+        vehicleYear: 2024,
+        price: 72000,
+        status: 'archived',
+        data: {
+          brand: 'BMW',
+          model: 'i5',
+          year: 2024,
+          price: 72000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJtd3xlbnwwfHwwfHx8MA%3D%3D'
+        }
+      }
+    ],
     tags: [],
     value: 72000,
     expectedCloseDate: null,
@@ -3527,6 +3547,7 @@ export const mockOpportunities = [
   },
   
   // 290-299: Closed Lost and Abandoned Variations
+  // 290: Closed Lost with offers + unsigned contract (customer chose competitor)
   {
     id: 290,
     customerId: 1,
@@ -3546,6 +3567,36 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
+    negotiationSubstatus: 'Contract Pending',
+    offers: [
+      {
+        id: 'offer-lost-290-1',
+        createdAt: createDateOffset(-14),
+        vehicleBrand: 'Volkswagen',
+        vehicleModel: 'ID.3',
+        vehicleYear: 2024,
+        price: 35000,
+        status: 'archived',
+        data: {
+          brand: 'Volkswagen',
+          model: 'ID.3',
+          year: 2024,
+          price: 35000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
+    contracts: [
+      {
+        id: 'contract-lost-290-1',
+        contractDate: createDateOffset(-8),
+        contractNotes: 'Draft sent; customer went with competitor before signing.',
+        contractSigned: false,
+        version: 1,
+        status: 'void'
+      }
+    ],
     tags: [],
     value: 35000,
     expectedCloseDate: null,
@@ -3557,6 +3608,7 @@ export const mockOpportunities = [
     closedDate: createDateOffset(-5), // Date de fermeture passée
     scheduledAppointment: null
   },
+  // 291: Closed Lost with offers (no longer interested after negotiation)
   {
     id: 291,
     customerId: 2,
@@ -3576,6 +3628,26 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
+    negotiationSubstatus: 'Offer Sent',
+    offers: [
+      {
+        id: 'offer-lost-291-1',
+        createdAt: createDateOffset(-10),
+        vehicleBrand: 'Audi',
+        vehicleModel: 'A3',
+        vehicleYear: 2024,
+        price: 38000,
+        status: 'archived',
+        data: {
+          brand: 'Audi',
+          model: 'A3',
+          year: 2024,
+          price: 38000,
+          financingType: 'cash',
+          image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
     tags: [],
     value: 38000,
     expectedCloseDate: null,
@@ -3587,6 +3659,7 @@ export const mockOpportunities = [
     closedDate: createDateOffset(0), // Aujourd'hui
     scheduledAppointment: null
   },
+  // 292: Closed Lost, no offers (NS3 - third no-show before offers sent)
   {
     id: 292,
     customerId: 3,
@@ -3606,6 +3679,8 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
+    negotiationSubstatus: null,
+    offers: [],
     tags: [],
     value: 32000,
     expectedCloseDate: null,

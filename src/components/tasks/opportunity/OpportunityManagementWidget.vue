@@ -31,6 +31,49 @@
         @action-clicked="opportunityState.primaryAction.value.handler"
       />
       
+      <!-- Financial Options Pool - Summary of available ingredients -->
+      <div v-if="financialPool.tradeIns.length > 0 || financialPool.financingOptions.length > 0" class="mt-4 p-4 bg-muted/30 border border-border rounded-lg relative">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Financial Ingredients Pool</h4>
+          <div class="flex gap-2">
+            <Button variant="ghost" size="xs" class="h-6 px-2 text-[10px] gap-1" @click="showTradeInModal = true">
+              <Plus :size="10" />
+              <span>Trade-in</span>
+            </Button>
+            <Button variant="ghost" size="xs" class="h-6 px-2 text-[10px] gap-1" @click="showFinancingModal = true">
+              <Plus :size="10" />
+              <span>Financing</span>
+            </Button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <!-- Trade-ins -->
+          <div v-if="financialPool.tradeIns.length > 0" class="flex flex-col gap-2">
+            <span class="text-[10px] font-medium text-muted-foreground">TRADE-INS</span>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="ti in financialPool.tradeIns" :key="ti.id" class="flex items-center gap-2 px-2 py-1 bg-white border border-border rounded shadow-sm">
+                <CarFront :size="12" class="text-blue-600" />
+                <span class="text-xs font-semibold">{{ ti.label }}</span>
+                <span class="text-xs text-muted-foreground">€ {{ formatCurrency(ti.value) }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Financing -->
+          <div v-if="financialPool.financingOptions.length > 0" class="flex flex-col gap-2">
+            <span class="text-[10px] font-medium text-muted-foreground">FINANCING OPTIONS</span>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="fo in financialPool.financingOptions" :key="fo.id" class="flex items-center gap-2 px-2 py-1 bg-white border border-border rounded shadow-sm">
+                <BadgePercent :size="12" class="text-purple-600" />
+                <span class="text-xs font-semibold">{{ fo.label }}</span>
+                <span v-if="fo.apr" class="text-xs text-muted-foreground">{{ fo.apr }}%</span>
+                <span v-if="fo.term" class="text-xs text-muted-foreground">{{ fo.term }}mo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Offers Carousel - Show for all stages when offers exist -->
       <div v-show="hasOffers" class="mt-4" :key="`offers-wrapper-${opportunity.id}`">
         <OfferCarousel
@@ -64,7 +107,6 @@
         ref="contractPendingManagementSectionRef"
         :opportunity="opportunity"
         :has-contracts="contracts.length > 0"
-        :show-add-offer-contract-pending-section="showAddOfferContractPendingSection"
         :show-close-as-lost-section="showCloseAsLostSection"
         :show-schedule-appointment-contract-pending-section="showScheduleAppointmentContractPendingSection"
         :show-set-delivery-date-section="showSetDeliveryDateSection"
@@ -74,21 +116,16 @@
         :has-delivery-date="hasDeliveryDate"
         :contract-pending-actions="contractPendingActions"
         :can-submit-set-delivery-date="canSubmitSetDeliveryDate"
-        :can-create-inline-offer-contract-pending="canCreateInlineOfferContractPending"
         :min-delivery-date="minDeliveryDate"
         @update:show-schedule-appointment-contract-pending-section="showScheduleAppointmentContractPendingSection = $event"
         @update:show-set-delivery-date-section="(p) => { 
           showSetDeliveryDateSection.value = p
           if (p) {
-            showAddOfferContractPendingSection.value = false
             showCloseAsLostSection.value = false
             initDateField(deliveryDateForm, 'deliveryDate')
           }
         }"
         @update:delivery-date-form="deliveryDateForm = $event"
-        @offer-created-contract-pending="handleInlineOfferCreatedContractPending"
-        @cancel-add-offer-contract-pending="handleCancelAddOfferContractPending"
-        @confirm-add-offer-contract-pending="handleConfirmAddOfferContractPending"
         @confirm-set-delivery-date="handleConfirmSetDeliveryDate"
         @cancel-set-delivery-date="handleCancelSetDeliveryDate"
         @schedule-appointment-contract-pending-submit="handleScheduleAppointmentContractPendingSubmit"
@@ -112,7 +149,6 @@
         :negotiation-selected-offer-id="negotiationSelectedOfferId"
         :offer-select-options="offerSelectOptions"
         :can-send-negotiation-message="canSendNegotiationMessage"
-        :can-create-inline-offer="canCreateInlineOffer"
         :secondary-actions="filteredSecondaryActions"
         @update:show-negotiation-section="showNegotiationSection = $event"
         @update:show-add-offer-section="showAddOfferSection = $event"
@@ -125,7 +161,9 @@
         @cancel-negotiation="handleCancelNegotiation"
         @offer-created="handleInlineOfferCreated"
         @cancel-add-offer="handleCancelAddOffer"
-        @confirm-add-offer="handleConfirmAddOffer"
+        @open-add-offer-modal="openCreateOfferModal"
+        @open-add-tradein="showTradeInModal = true"
+        @open-add-financing="showFinancingModal = true"
         @ofb-postpone="handleTaskPostpone"
         @generate-pdf="handleOfferPDFGenerate"
         @secondary-action="handleSecondaryAction"
@@ -164,7 +202,7 @@
         @ns-close-as-lost="handleNsCloseAsLost"
         @offer-assignment-created="handleOfferAssignmentCreated"
         @offer-assignment-cancel="handleCancelOfferAssignment"
-        @offer-assignment-confirm="handleConfirmOfferAssignment"
+        @open-create-offer-modal="openCreateOfferModalFromAssignment"
         @secondary-action="handleSecondaryAction"
         @close-as-lost-confirmed="handleCloseAsLostFromAppointment"
         @customer-click="handleCustomerClick"
@@ -314,7 +352,7 @@
               
               <!-- Secondary Actions Dropdown -->
               <SecondaryActionsDropdown
-                v-if="filteredSecondaryActions.length > 0"
+                v-if="filteredSecondaryActions && filteredSecondaryActions.length > 0"
                 :actions="filteredSecondaryActions"
                 @action-selected="handleSecondaryAction"
               />
@@ -665,7 +703,7 @@
               
               <!-- Secondary Actions Dropdown -->
               <SecondaryActionsDropdown
-                v-if="filteredSecondaryActions.length > 0"
+                v-if="filteredSecondaryActions && filteredSecondaryActions.length > 0"
                 :actions="filteredSecondaryActions"
                 @action-selected="handleSecondaryAction"
               />
@@ -701,42 +739,6 @@
         </div>
       </div>
 
-      <!-- Standalone Inline Offer Section (when NegotiationManagementSection is not shown) -->
-      <div v-if="showStandaloneOfferSection && !isInNegotiation && !opportunityState.isClosed.value" class="space-y-4">
-        <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-          <h5 class="font-semibold text-foreground text-sm mb-4">Create Offer</h5>
-          
-          <OfferWidget
-            ref="standaloneOfferWidgetRef"
-            :task-id="opportunity.id"
-            :task-type="'opportunity'"
-            :customer="opportunity.customer"
-            :selected-vehicle="opportunity.selectedVehicle || opportunity.vehicle || opportunity.requestedCar"
-            hide-header
-            hide-actions
-            @save="handleStandaloneOfferCreated"
-            @cancel="handleCancelStandaloneOffer"
-          />
-        </div>
-        
-        <!-- Standalone Offer Buttons -->
-        <div class="flex justify-end gap-2">
-          <Button
-            variant="secondary"
-            @click="handleCancelStandaloneOffer"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="default"
-            :disabled="!canCreateStandaloneOffer"
-            @click="handleConfirmStandaloneOffer"
-          >
-            Create Offer
-          </Button>
-        </div>
-      </div>
-
       <!-- Inline Close as Lost Section -->
       <!-- Only show if AppointmentManagementSection is not visible (it handles its own close as lost) -->
       <CloseAsLostCard
@@ -747,6 +749,19 @@
         @cancel="handleCancelCloseAsLost"
         @confirm="handleConfirmCloseAsLost"
       />
+
+      <!-- Inline Schedule Appointment Section (from More Actions) -->
+      <div v-if="showInlineScheduleSection && !opportunityState.isClosed.value" class="rounded-lg flex flex-col bg-muted">
+        <div class="px-4 py-4">
+          <OpportunityScheduleForm
+            ref="inlineScheduleFormRef"
+            :opportunity="opportunity"
+            mode="schedule"
+            @submit="(p) => handleScheduleFormSubmit(p, 'schedule')"
+            @cancel="cancelInlineScheduleForm"
+          />
+        </div>
+      </div>
 
       <!-- Regular Task Widgets -->
       <div v-else-if="opportunityState.activeTaskWidget.value && opportunityState.activeTaskWidget.value.component" class="space-y-3">
@@ -779,6 +794,7 @@
     @create="handleAppointmentCreated"
     @cancel="showCreateAppointment = false"
   />
+  
 
     <!-- Modals -->
     <VehicleSelectionModal
@@ -854,6 +870,25 @@
       @send="handlePDFSend"
     />
 
+    <PurchaseMethodModal
+      v-if="showFinancingModal"
+      :show="showFinancingModal"
+      task-type="opportunity"
+      :task-id="opportunity.id"
+      @save="handleFinancingSave"
+      @close="showFinancingModal = false"
+    />
+
+    <AddVehicleModal
+      v-if="showTradeInModal"
+      :show="showTradeInModal"
+      mode="tradein"
+      task-type="opportunity"
+      :task-id="opportunity.id"
+      @save="handleTradeInSave"
+      @close="showTradeInModal = false"
+    />
+
     <PDFPreviewModal
       v-if="showPDFPreviewModal"
       :show="showPDFPreviewModal"
@@ -876,12 +911,14 @@
     @cancel="closeCreateContractModal"
   />
 
-  <CreateOfferModal
+  <AddOfferModal
     v-if="showCreateOfferModal"
     :show="showCreateOfferModal"
     :opportunity="opportunity"
     @confirm="handleOfferCreatedFromModal"
     @cancel="closeCreateOfferModal"
+    @open-add-tradein="showTradeInModal = true"
+    @open-add-financing="showFinancingModal = true"
   />
 
   <PostponeTaskDialog
@@ -953,7 +990,7 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useContractPDF } from '@/composables/useContractPDF'
 import { useCloseAsLost } from '@/composables/useCloseAsLost'
 import { createCalendarEvent } from '@/api/calendar'
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, Wallet, CarFront, CheckCircle2, BadgePercent, Plus } from 'lucide-vue-next'
 
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
@@ -961,7 +998,6 @@ import PrimaryActionWidget from '@/components/tasks/shared/PrimaryActionWidget.v
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
 import TaskAssignee from '@/components/tasks/TaskAssignee.vue'
 import DeadlineBanner from '@/components/tasks/shared/DeadlineBanner.vue'
-import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import CreateEventModal from '@/components/modals/CreateEventModal.vue'
 import VehicleSelectionModal from '@/components/modals/VehicleSelectionModal.vue'
 import ContractDateModal from '@/components/modals/ContractDateModal.vue'
@@ -972,6 +1008,8 @@ import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 import QuickViewEventModal from '@/components/modals/QuickViewEventModal.vue'
 import EditEventModal from '@/components/modals/EditEventModal.vue'
 import PDFGenerationModal from '@/components/modals/PDFGenerationModal.vue'
+import PurchaseMethodModal from '@/components/modals/PurchaseMethodModal.vue'
+import AddVehicleModal from '@/components/modals/AddVehicleModal.vue'
 import PDFPreviewModal from '@/components/modals/PDFPreviewModal.vue'
 import EmailPDFModal from '@/components/modals/EmailPDFModal.vue'
 import CallInterface from '@/components/tasks/lead/CallInterface.vue'
@@ -988,7 +1026,7 @@ import AppointmentManagementSection from '@/components/tasks/opportunity/Appoint
 import NegotiationManagementSection from '@/components/tasks/opportunity/NegotiationManagementSection.vue'
 import ContractPendingManagementSection from '@/components/tasks/opportunity/ContractPendingManagementSection.vue'
 import CreateContractModal from '@/components/modals/CreateContractModal.vue'
-import CreateOfferModal from '@/components/modals/CreateOfferModal.vue'
+import AddOfferModal from '@/components/modals/AddOfferModal.vue'
 
 const props = defineProps({
   opportunity: {
@@ -1204,6 +1242,7 @@ const logManualCall = () => {
 // Template refs - now accessed through appointmentManagementSectionRef
 const appointmentManagementSectionRef = ref(null)
 const scheduleFormRef = computed(() => appointmentManagementSectionRef.value?.scheduleFormRef)
+const inlineScheduleFormRef = ref(null)
 
 const cancelRescheduleForm = () => {
   showRescheduleSection.value = false
@@ -1211,6 +1250,11 @@ const cancelRescheduleForm = () => {
 
 const cancelScheduleForm = () => {
   scheduleFormRef.value?.resetForm()
+}
+
+const cancelInlineScheduleForm = () => {
+  inlineScheduleFormRef.value?.resetForm()
+  showInlineScheduleSection.value = false
 }
 
 async function handleScheduleFormSubmit(payload, mode) {
@@ -1256,10 +1300,11 @@ async function handleScheduleFormSubmit(payload, mode) {
         const created = await createCalendarEvent({ ...appointmentData, status: 'pending_confirmation' })
         appointmentToSave = { ...appointmentData, id: created.id, status: 'pending_confirmation' }
       }
-      await opportunitiesStore.updateOpportunity(opp.id, { scheduledAppointment: appointmentToSave })
-      emit('appointment-scheduled', appointmentToSave)
-      showRescheduleSection.value = false
-      return
+    await opportunitiesStore.updateOpportunity(opp.id, { scheduledAppointment: appointmentToSave })
+    emit('appointment-scheduled', appointmentToSave)
+    showRescheduleSection.value = false
+    showInlineScheduleSection.value = false
+    return
     }
 
     const calendarEventData = {
@@ -1298,6 +1343,7 @@ async function handleScheduleFormSubmit(payload, mode) {
     await opportunitiesStore.updateOpportunity(opp.id, { scheduledAppointment: appointmentData })
     emit('appointment-scheduled', { ...appointmentData, calendarEventId: calendarEvent.id })
     cancelScheduleForm()
+    showInlineScheduleSection.value = false
   } catch (err) {
     console.error('Failed to schedule/reschedule appointment:', err)
   }
@@ -1321,6 +1367,7 @@ async function handleConfirmAppointment() {
 // Modal states
 const showCreateAppointment = ref(false)
 const showRescheduleSection = ref(false)
+const showInlineScheduleSection = ref(false)
 const showNsTaskSection = ref(false)
 const showOfferAssignmentSection = ref(false)
 
@@ -1332,17 +1379,13 @@ const ns1TaskRef = computed(() => appointmentManagementSectionRef.value?.ns1Task
 const ns2TaskRef = computed(() => appointmentManagementSectionRef.value?.ns2TaskRef)
 const ns3TaskRef = computed(() => appointmentManagementSectionRef.value?.ns3TaskRef)
 const offerAssignmentTaskRef = computed(() => appointmentManagementSectionRef.value?.offerAssignmentTaskRef)
-const addOfferWidgetRef = computed(() => negotiationManagementSectionRef.value?.addOfferWidgetRef)
-
 // In Negotiation section state
 const showNegotiationSection = ref(false)
 const showAddOfferSection = ref(false)
 const showSurveySection = ref(false)
-const showStandaloneOfferSection = ref(false)
 const negotiationChannel = ref(null)
 const negotiationMessage = ref('')
 const negotiationSelectedOfferId = ref(null)
-// addOfferWidgetRef is now accessed through negotiationManagementSectionRef
 
 // Delivery Management section state
 const showScheduleDeliverySection = ref(false)
@@ -1400,9 +1443,6 @@ const deliveryDateForm = ref({
   notes: ''
 })
 
-// Template refs - accessed through contractPendingManagementSectionRef
-// contractPendingManagementSectionRef is declared earlier (line 1039)
-const addOfferContractPendingRef = computed(() => contractPendingManagementSectionRef.value?.addOfferContractPendingRef)
 const scheduleAppointmentContractPendingFormRef = computed(() => contractPendingManagementSectionRef.value?.scheduleAppointmentContractPendingFormRef)
 
 const contractPendingActions = computed(() => {
@@ -1411,7 +1451,9 @@ const contractPendingActions = computed(() => {
     actions.push({
       key: 'add-offer',
       label: 'Add offer',
-      handler: () => handleAddOfferContractPending()
+      handler: () => {
+        openCreateOfferModal()
+      }
     })
   }
   actions.push(
@@ -1502,6 +1544,29 @@ const canCreateOffer = computed(() => {
   return offerAssignmentTaskRef?.value?.canSubmit || false
 })
 
+// Financial pool for trade-ins and financing options
+const financialPool = computed(() => {
+  const activities = opportunitiesStore.currentOpportunityActivities || []
+  return {
+    tradeIns: activities.filter(a => a.type === 'tradein').map(a => ({
+      id: a.id,
+      ...a.data,
+      label: `${a.data.make} ${a.data.model} (${a.data.year})`,
+      value: a.data.value,
+      timestamp: a.timestamp
+    })),
+    financingOptions: activities.filter(a => a.type === 'financing').map(a => ({
+      id: a.id,
+      ...a.data,
+      label: a.data.product || a.data.productName || 'Financing Proposal',
+      apr: a.data.apr || a.data.interestRate,
+      term: a.data.term,
+      monthly: a.data.monthly || a.data.monthlyPayment,
+      timestamp: a.timestamp
+    }))
+  }
+})
+
 // In Negotiation computed properties
 const offerSelectOptions = computed(() => {
   const opp = opportunity.value
@@ -1528,12 +1593,15 @@ const showVehicleSelectionModal = ref(false)
 const showComingSoonModal = ref(false)
 const showViewAppointment = ref(false)
 const showEditAppointment = ref(false)
+const showTradeInModal = ref(false)
+const showFinancingModal = ref(false)
 const recommendedCars = ref([])
 
 // PDF Generation state
 const showPDFGenerationModal = ref(false)
 const showCreateContractModal = ref(false)
 const showCreateOfferModal = ref(false)
+const addOfferModalContext = ref('default') // 'default' | 'assignment'
 const showPDFPreviewModal = ref(false)
 const showEmailPDFModal = ref(false)
 const showPostponeTaskDialog = ref(false)
@@ -1568,7 +1636,11 @@ defineExpose({
 
 // Action handlers map
 const actionHandlers = {
-  'schedule-appointment': () => { showCreateAppointment.value = true },
+  'schedule-appointment': () => { 
+    showInlineScheduleSection.value = true
+    // Hide other sections when showing schedule form
+    showRescheduleSection.value = false
+  },
   'manage-appointment': () => {
     // Show appointment management options (reschedule/cancel/mark no-show)
     // The secondary actions dropdown will show these options
@@ -1580,7 +1652,8 @@ const actionHandlers = {
     if (scheduledAppointment.value) {
       showViewAppointment.value = true
     } else {
-      showCreateAppointment.value = true
+      showInlineScheduleSection.value = true
+      showRescheduleSection.value = false
     }
   },
   'reschedule': () => {
@@ -1595,22 +1668,7 @@ const actionHandlers = {
     handleMarkNoShow()
   },
   'select-vehicle': () => { showVehicleSelectionModal.value = true },
-  'create-offer': () => {
-    if (!props.opportunity.selectedVehicle && !props.opportunity.vehicle && !props.opportunity.requestedCar) {
-      showVehicleSelectionModal.value = true
-    } else {
-      // Show inline offer form
-      if (isInNegotiation.value) {
-        // Use NegotiationManagementSection's inline form
-        showAddOfferSection.value = true
-        showNegotiationSection.value = false
-        showSurveySection.value = false
-      } else {
-        // Show standalone inline offer section
-        showStandaloneOfferSection.value = true
-      }
-    }
-  },
+  'create-offer': () => { openCreateOfferModal() },
   'call-prospect': () => { showComingSoonModal.value = true },
   'follow-up-offer': () => { showComingSoonModal.value = true },
   'request-decision': () => { showComingSoonModal.value = true },
@@ -1637,17 +1695,7 @@ const actionHandlers = {
     handleCancelAppointment()
   },
   'close-won': () => { showContractDateModal.value = true },
-  'add-offer': () => {
-    // Always show inline offer form
-    if (isInNegotiation.value) {
-      // Use NegotiationManagementSection's inline form
-      showAddOfferSection.value = true
-      showNegotiationSection.value = false
-    } else {
-      // Show standalone inline offer section
-      showStandaloneOfferSection.value = true
-    }
-  },
+  'add-offer': () => { openCreateOfferModal() },
   'add-contract': () => { showContractDateModal.value = true },
   'create-contract': () => { openCreateContractModal() },
   'extend-deadline': () => { showComingSoonModal.value = true },
@@ -1794,10 +1842,33 @@ const hasOffers = computed(() => {
 })
 
 // More actions: hide "Create offer" / "Add offer" when at least one offer exists
+// Always ensure "schedule-appointment" is available for all statuses
 const filteredSecondaryActions = computed(() => {
   const base = opportunityState.secondaryActions.value || []
-  if (!hasOffers.value) return base
-  return base.filter(a => a.key !== 'add-offer' && a.key !== 'create-offer')
+  let filtered = base
+  if (hasOffers.value) {
+    filtered = base.filter(a => a.key !== 'add-offer' && a.key !== 'create-offer')
+  }
+  
+  // Always include schedule-appointment if not already present
+  const hasScheduleAppointment = filtered.some(a => a.key === 'schedule-appointment')
+  if (!hasScheduleAppointment) {
+    filtered = [
+      ...filtered,
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment',
+        handler: () => {
+          showInlineScheduleSection.value = true
+          showRescheduleSection.value = false
+        }
+      }
+    ]
+  }
+  
+  return filtered
 })
 
 // Helper function (kept for backward compatibility)
@@ -1937,15 +2008,8 @@ function handleCancelExtendExpectedCloseDate() {
 function handleVehicleSelected(vehicleData) {
   showVehicleSelectionModal.value = false
   emit('vehicle-selected', vehicleData)
-  
-  // After vehicle selected, show inline offer form
   setTimeout(() => {
-    if (isInNegotiation.value) {
-      showAddOfferSection.value = true
-      showNegotiationSection.value = false
-    } else {
-      showStandaloneOfferSection.value = true
-    }
+    openCreateOfferModal()
   }, 300)
 }
 
@@ -1954,49 +2018,51 @@ function handleOfferCreated(offerData) {
 }
 
 // Standalone offer handlers
-const standaloneOfferWidgetRef = ref(null)
-
-const canCreateStandaloneOffer = computed(() => {
-  return standaloneOfferWidgetRef.value?.isValid || false
-})
-
-function handleCancelStandaloneOffer() {
-  showStandaloneOfferSection.value = false
-}
-
-function handleConfirmStandaloneOffer() {
-  if (standaloneOfferWidgetRef.value) {
-    standaloneOfferWidgetRef.value.submit()
+async function handleFinancingSave(data) {
+  try {
+    const opp = getCurrentOpportunity()
+    const typeLabel = data.type === 'FIN' ? 'Captive Financing' : data.type === 'LEA' ? 'Leasing' : data.type === 'LTR' ? 'Long-Term Rental' : data.type || 'Financing'
+    const duration = data.fields?.duration ?? null
+    const content = duration ? `${typeLabel} ${duration} months` : typeLabel
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'financing',
+      user: userStore.currentUser?.name || 'You',
+      action: 'added a financing proposal',
+      content: data.successMessage || content,
+      data: { type: data.type, ...data.fields },
+      timestamp: new Date().toISOString()
+    })
+    const foLabel = duration ? `${data.type || 'Financing'} ${duration} months` : (typeLabel || 'Financing')
+    const list = [...(opp.financingOptions || []), { id: `fo-${Date.now()}`, label: foLabel, termMonths: duration || null }]
+    await opportunitiesStore.updateOpportunity(opp.id, { financingOptions: list })
+    await opportunitiesStore.fetchOpportunityById(opp.id)
+    showFinancingModal.value = false
+  } catch (error) {
+    console.error('Failed to save financing:', error)
   }
 }
 
-async function handleStandaloneOfferCreated(offerPayload) {
+async function handleTradeInSave(data) {
   try {
-    const opp = opportunity.value
-    // Add offer to opportunity
-    await opportunitiesStore.addOffer(opp.id, {
-      vehicleBrand: offerPayload.data?.brand || '',
-      vehicleModel: offerPayload.data?.model || '',
-      vehicleYear: offerPayload.data?.year || '',
-      price: offerPayload.data?.price || 0,
-      data: offerPayload.data
-    })
-    
-    // Add activity for offer creation
+    const opp = getCurrentOpportunity()
+    const v = data.vehicle || {}
+    const parts = [v.brand, v.model].filter(Boolean)
+    const label = (parts.length ? parts.join(' ') + (v.year ? ` (${v.year})` : '') : 'Trade-in') || 'Trade-in'
+    const valuation = data.valuation?.tradeInPrice ?? 0
     await opportunitiesStore.addActivity(opp.id, {
-      type: 'offer',
+      type: 'tradein',
       user: userStore.currentUser?.name || 'You',
-      action: 'created an offer',
-      content: `Offer created: ${offerPayload.data?.brand} ${offerPayload.data?.model} (${offerPayload.data?.year}) - € ${(offerPayload.data?.price || 0).toLocaleString()}`,
-      data: offerPayload.data,
+      action: 'added a trade-in',
+      content: label,
+      data: { vehicle: data.vehicle, valuation: data.valuation },
       timestamp: new Date().toISOString()
     })
-    
-    // Close the section
-    showStandaloneOfferSection.value = false
-    emit('offer-created', offerPayload)
+    const list = [...(opp.tradeIns || []), { id: `ti-${Date.now()}`, label: label || 'Trade-in', valuation: typeof valuation === 'number' ? valuation : parseFloat(valuation) || 0 }]
+    await opportunitiesStore.updateOpportunity(opp.id, { tradeIns: list })
+    await opportunitiesStore.fetchOpportunityById(opp.id)
+    showTradeInModal.value = false
   } catch (error) {
-    console.error('Failed to create offer:', error)
+    console.error('Failed to save trade-in:', error)
   }
 }
 
@@ -2454,7 +2520,7 @@ function handleCancelNsTask() {
 }
 
 // Handle offer created from offer assignment task
-async function handleOfferAssignmentCreated({ opportunity, offerData }) {
+async function handleOfferAssignmentCreated({ opportunity: _opportunity, offerData }) {
   try {
     // Update appointment status to "completed"
     if (scheduledAppointment.value?.id) {
@@ -2463,8 +2529,6 @@ async function handleOfferAssignmentCreated({ opportunity, offerData }) {
         status: 'completed'
       })
     }
-    
-    // Add offer to offers array and transition to In Negotiation
     const opp = opportunity.value
     await opportunitiesStore.addOffer(opp.id, {
       vehicleBrand: offerData.data?.brand || '',
@@ -2473,16 +2537,18 @@ async function handleOfferAssignmentCreated({ opportunity, offerData }) {
       price: offerData.data?.price || 0,
       data: offerData.data
     })
-    
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'offer',
+      user: userStore.currentUser?.name || 'You',
+      action: 'created an offer',
+      content: `Offer created: ${offerData.data?.brand} ${offerData.data?.model} (${offerData.data?.year}) - € ${(offerData.data?.price || 0).toLocaleString()}`,
+      data: offerData.data,
+      timestamp: new Date().toISOString()
+    })
     showOfferAssignmentSection.value = false
   } catch (error) {
     console.error('Failed to create offer:', error)
   }
-}
-
-// Handle confirm offer assignment
-function handleConfirmOfferAssignment() {
-  offerAssignmentTaskRef?.value?.submit()
 }
 
 // Handle cancel offer assignment
@@ -2492,15 +2558,12 @@ function handleCancelOfferAssignment() {
 
 // In Negotiation handlers
 function handleFollowUpOffer() {
-  // Show negotiation section, hide others (mutually exclusive)
   showRescheduleSection.value = false
   showNsTaskSection.value = false
   showOfferAssignmentSection.value = false
   showAddOfferSection.value = false
   showSurveySection.value = false
   showNegotiationSection.value = !showNegotiationSection.value
-  
-  // Reset form if closing
   if (!showNegotiationSection.value) {
     negotiationChannel.value = null
     negotiationMessage.value = ''
@@ -2509,13 +2572,7 @@ function handleFollowUpOffer() {
 }
 
 function handleAddAnotherOffer() {
-  // Show add offer section, hide others (mutually exclusive)
-  showRescheduleSection.value = false
-  showNsTaskSection.value = false
-  showOfferAssignmentSection.value = false
-  showNegotiationSection.value = false
-  showSurveySection.value = false
-  showAddOfferSection.value = !showAddOfferSection.value
+  openCreateOfferModal()
 }
 
 const offerCarouselRef = ref(null)
@@ -2616,16 +2673,11 @@ function handleCancelNegotiation() {
   negotiationSelectedOfferId.value = null
 }
 
-// Add Offer inline handlers
-const canCreateInlineOffer = computed(() => {
-  return addOfferWidgetRef?.value?.isValid || false
-})
-
+// Inline Add Offer (same form as modal, used in Negotiation section)
 async function handleInlineOfferCreated(offerPayload) {
-  
+  if (!offerPayload?.data) return
   try {
     const opp = opportunity.value
-    // Add offer to opportunity
     await opportunitiesStore.addOffer(opp.id, {
       vehicleBrand: offerPayload.data?.brand || '',
       vehicleModel: offerPayload.data?.model || '',
@@ -2633,8 +2685,6 @@ async function handleInlineOfferCreated(offerPayload) {
       price: offerPayload.data?.price || 0,
       data: offerPayload.data
     })
-    
-    // Add activity for offer creation
     await opportunitiesStore.addActivity(opp.id, {
       type: 'offer',
       user: userStore.currentUser?.name || 'You',
@@ -2643,26 +2693,14 @@ async function handleInlineOfferCreated(offerPayload) {
       data: offerPayload.data,
       timestamp: new Date().toISOString()
     })
-    
-    // Close the section
     showAddOfferSection.value = false
   } catch (error) {
     console.error('Failed to create offer:', error)
   }
 }
 
-function handleConfirmAddOffer() {
-  if (addOfferWidgetRef?.value) {
-    addOfferWidgetRef.value.submit()
-  }
-}
-
 function handleCancelAddOffer() {
   showAddOfferSection.value = false
-  // Reset the form if needed
-  if (addOfferWidgetRef.value) {
-    // The OfferWidget component will handle its own reset
-  }
 }
 
 // Contract Pending Management handlers
@@ -2673,10 +2711,6 @@ const maxContractDate = computed(() => {
 
 const canSubmitSetDeliveryDate = computed(() => {
   return !!deliveryDateForm.value.deliveryDate && !!deliveryDateForm.value.deliveryLocation
-})
-
-const canCreateInlineOfferContractPending = computed(() => {
-  return addOfferContractPendingRef.value?.isValid || false
 })
 
 // Delivery Management computed properties
@@ -2714,16 +2748,28 @@ function closeCreateContractModal() {
 }
 
 function openCreateOfferModal() {
+  addOfferModalContext.value = 'default'
+  showCreateOfferModal.value = true
+}
+
+function openCreateOfferModalFromAssignment() {
+  addOfferModalContext.value = 'assignment'
   showCreateOfferModal.value = true
 }
 
 function closeCreateOfferModal() {
   showCreateOfferModal.value = false
+  addOfferModalContext.value = 'default'
 }
 
 async function handleOfferCreatedFromModal(offerPayload) {
   if (!offerPayload?.data) return
   try {
+    if (addOfferModalContext.value === 'assignment') {
+      await handleOfferAssignmentCreated({ opportunity: opportunity.value, offerData: offerPayload })
+      closeCreateOfferModal()
+      return
+    }
     const opp = opportunity.value
     await opportunitiesStore.addOffer(opp.id, {
       vehicleBrand: offerPayload.data?.brand || '',
@@ -2750,72 +2796,44 @@ async function handleConfirmCreateContractFromModal(payload) {
   if (!payload?.contractDate) return
   try {
     const opp = getCurrentOpportunity()
+    
+    // Find the accepted offer to lock in its terms
+    const acceptedOffer = opp.offers?.find(o => o.status === 'accepted' || o.acceptance_status === 'accepted')
+    
     await opportunitiesStore.addContract(opp.id, {
       contractDate: payload.contractDate,
       contractTime: payload.contractTime,
-      notes: payload.notes
+      notes: payload.notes,
+      lockedOfferId: acceptedOffer?.id,
+      lockedTradeInLabel: acceptedOffer?.data?.selectedTradeInLabel,
+      lockedFinancingLabel: acceptedOffer?.data?.selectedFinancingLabel,
+      lockedPrice: acceptedOffer?.price
     })
+    
     const datetime = payload.contractTime
       ? `${payload.contractDate}T${payload.contractTime}:00`
       : `${payload.contractDate}T12:00:00`
+    
     await opportunitiesStore.addActivity(opp.id, {
       type: 'contract',
       user: userStore.currentUser?.name || 'You',
       action: 'created a contract',
-      content: `Contract created: ${new Date(datetime).toLocaleString()}`,
-      data: { contractDate: datetime, notes: payload.notes },
+      content: `Contract created: ${new Date(datetime).toLocaleString()}${acceptedOffer ? ` (Locked terms from Offer #${acceptedOffer.id})` : ''}`,
+      data: { 
+        contractDate: datetime, 
+        notes: payload.notes,
+        lockedOfferId: acceptedOffer?.id,
+        lockedTerms: acceptedOffer ? {
+          tradeIn: acceptedOffer.data?.selectedTradeInLabel,
+          financing: acceptedOffer.data?.selectedFinancingLabel,
+          price: acceptedOffer.price
+        } : null
+      },
       timestamp: new Date().toISOString()
     })
     closeCreateContractModal()
   } catch (error) {
     console.error('Failed to create contract:', error)
-  }
-}
-
-// Add Offer
-function handleAddOfferContractPending() {
-  showCloseAsLostSection.value = false
-  showScheduleAppointmentContractPendingSection.value = false
-  showSetDeliveryDateSection.value = false
-  showAddOfferContractPendingSection.value = !showAddOfferContractPendingSection.value
-}
-
-function handleCancelAddOfferContractPending() {
-  showAddOfferContractPendingSection.value = false
-}
-
-function handleConfirmAddOfferContractPending() {
-  if (addOfferContractPendingRef?.value) {
-    addOfferContractPendingRef.value.submit()
-  }
-}
-
-async function handleInlineOfferCreatedContractPending(offerPayload) {
-  try {
-    const opp = getCurrentOpportunity()
-    
-    // Add offer to opportunity
-    await opportunitiesStore.addOffer(opp.id, {
-      vehicleBrand: offerPayload.data?.brand || '',
-      vehicleModel: offerPayload.data?.model || '',
-      vehicleYear: offerPayload.data?.year || '',
-      price: offerPayload.data?.price || 0,
-      data: offerPayload.data
-    })
-    
-    // Add activity
-    await opportunitiesStore.addActivity(opp.id, {
-      type: 'offer',
-      user: userStore.currentUser?.name || 'You',
-      action: 'created an offer',
-      content: `Offer created: ${offerPayload.data?.brand} ${offerPayload.data?.model} (${offerPayload.data?.year}) - € ${(offerPayload.data?.price || 0).toLocaleString()}`,
-      data: offerPayload.data,
-      timestamp: new Date().toISOString()
-    })
-    
-    showAddOfferContractPendingSection.value = false
-  } catch (error) {
-    console.error('Failed to create offer:', error)
   }
 }
 
@@ -2825,6 +2843,35 @@ function handleScheduleAppointmentContractPending() {
   showCloseAsLostSection.value = false
   showSetDeliveryDateSection.value = false
   showScheduleAppointmentContractPendingSection.value = !showScheduleAppointmentContractPendingSection.value
+}
+
+function handleCancelAddOfferContractPending() {
+  showAddOfferContractPendingSection.value = false
+}
+
+async function handleInlineOfferCreatedContractPending(offerPayload) {
+  if (!offerPayload?.data) return
+  try {
+    const opp = getCurrentOpportunity()
+    await opportunitiesStore.addOffer(opp.id, {
+      vehicleBrand: offerPayload.data?.brand || '',
+      vehicleModel: offerPayload.data?.model || '',
+      vehicleYear: offerPayload.data?.year || '',
+      price: offerPayload.data?.price || 0,
+      data: offerPayload.data
+    })
+    await opportunitiesStore.addActivity(opp.id, {
+      type: 'offer',
+      user: userStore.currentUser?.name || 'You',
+      action: 'created an offer',
+      content: `Offer created: ${offerPayload.data?.brand} ${offerPayload.data?.model} (${offerPayload.data?.year}) - € ${(offerPayload.data?.price || 0).toLocaleString()}`,
+      data: offerPayload.data,
+      timestamp: new Date().toISOString()
+    })
+    showAddOfferContractPendingSection.value = false
+  } catch (error) {
+    console.error('Failed to create offer:', error)
+  }
 }
 
 function handleCancelSetDeliveryDate() {

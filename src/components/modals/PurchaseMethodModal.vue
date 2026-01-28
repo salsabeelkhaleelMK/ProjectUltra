@@ -7,152 +7,121 @@
           <DialogTitle>{{ isEditMode ? 'Edit Purchase Method' : 'Add Purchase Method' }}</DialogTitle>
         </DialogHeader>
 
-        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
-          <!-- Type Selector (Radio buttons styled as tabs) -->
-          <div>
-            <label class="block label-upper mb-3">Purchase Method Type</label>
-            <div class="flex gap-2">
+        <div class="flex-1 overflow-y-auto py-4 w-full space-y-6">
+          <!-- Purchase Method Type (radio buttons) -->
+          <div class="space-y-2">
+            <Label class="block text-sm font-medium text-foreground">Purchase Method Type</Label>
+            <div class="space-y-3">
               <label
                 v-for="typeOption in typeOptions"
                 :key="typeOption.value"
-                class="flex-1 cursor-pointer"
+                class="flex items-center gap-2 cursor-pointer"
               >
                 <input
                   type="radio"
                   :value="typeOption.value"
                   v-model="formData.type"
-                  class="sr-only"
+                  class="size-4 rounded-full border-2 border-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
                   @change="handleTypeChange"
                 />
-                <div
-                  class="px-4 py-3 rounded-btn border-2 text-center text-sm font-medium transition-colors"
-                  :class="formData.type === typeOption.value
-                    ? 'border-brand-red bg-brand-red/5 text-brand-red'
-                    : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-slate'"
-                >
-                  {{ typeOption.label }}
-                </div>
+                <span class="text-sm font-medium text-foreground">{{ typeOption.label }}</span>
               </label>
             </div>
           </div>
 
           <!-- Dynamic Form Based on Type -->
           <div v-if="formData.type" class="space-y-4">
-            <!-- Section Header -->
-            <h3 class="text-h3-card text-foreground mb-4">
+            <h3 class="text-base font-medium text-foreground">
               {{ getTypeLabel(formData.type) }} Details
             </h3>
 
-            <!-- Common Fields: Monthly Instalment and Down Payment -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block label-upper mb-2">
-                  Monthly Instalment <span class="text-brand-red">*</span>
-                </label>
+              <div class="space-y-2">
+                <Label class="block text-sm font-medium text-foreground">Monthly Instalment <span class="text-muted-foreground">*</span></Label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
-                  <input
+                  <Input
                     v-model.number="formData.fields.monthlyInstalment"
                     type="number"
                     step="0.01"
                     min="0"
                     placeholder="0.00"
-                    class="input pl-8"
-                    :class="{ 'border-red-500': errors.monthlyInstalment }"
+                    class="w-full pl-8"
+                    :class="{ 'border-destructive': errors.monthlyInstalment }"
                     @input="clearError('monthlyInstalment')"
                     @blur="validateField('monthlyInstalment')"
                   />
                 </div>
-                <p v-if="errors.monthlyInstalment" class="text-xs text-red-600 mt-1">
-                  {{ errors.monthlyInstalment }}
-                </p>
-                <p class="text-xs text-muted-foreground mt-1">Customer's desired monthly payment amount</p>
+                <p v-if="errors.monthlyInstalment" class="text-xs text-destructive">{{ errors.monthlyInstalment }}</p>
+                <p class="text-xs text-muted-foreground">Customer's desired monthly payment amount</p>
               </div>
 
-              <div>
-                <label class="block label-upper mb-2">
-                  Down Payment <span class="text-brand-red">*</span>
-                </label>
+              <div class="space-y-2">
+                <Label class="block text-sm font-medium text-foreground">Down Payment <span class="text-muted-foreground">*</span></Label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
-                  <input
+                  <Input
                     v-model.number="formData.fields.downPayment"
                     type="number"
                     step="0.01"
                     min="0"
                     placeholder="0.00"
-                    class="input pl-8"
-                    :class="{ 'border-red-500': errors.downPayment }"
+                    class="w-full pl-8"
+                    :class="{ 'border-destructive': errors.downPayment }"
                     @input="clearError('downPayment')"
                     @blur="validateField('downPayment')"
                   />
                 </div>
-                <p v-if="errors.downPayment" class="text-xs text-red-600 mt-1">
-                  {{ errors.downPayment }}
-                </p>
-                <p class="text-xs text-muted-foreground mt-1">Amount at contract signing</p>
+                <p v-if="errors.downPayment" class="text-xs text-destructive">{{ errors.downPayment }}</p>
+                <p class="text-xs text-muted-foreground">Amount at contract signing</p>
               </div>
             </div>
 
-            <!-- LTR-specific: Duration and Unlock Kilometers -->
             <template v-if="formData.type === 'LTR'">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block label-upper mb-2">
-                  Duration (months) <span class="text-brand-red">*</span>
-                </label>
-                <Select
-                  v-model="formData.fields.duration"
-                  @update:model-value="clearError('duration')"
-                >
-                  <SelectTrigger class="w-full h-10 min-h-10" :class="{ 'border-red-500': errors.duration }">
-                    <SelectValue placeholder="Select duration..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      v-for="month in getDurationOptions(formData.type)"
-                      :key="month"
-                      :value="month"
-                    >
-                      {{ month }} months
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <p v-if="errors.duration" class="text-xs text-red-600 mt-1">
-                  {{ errors.duration }}
-                </p>
-              </div>
-
                 <div class="space-y-2">
-                  <Label class="block text-sm font-semibold text-foreground">Unlock Kilometers</Label>
+                  <Label class="block text-sm font-medium text-foreground">Duration (months) <span class="text-muted-foreground">*</span></Label>
+                  <Select
+                    v-model="formData.fields.duration"
+                    @update:model-value="clearError('duration')"
+                  >
+                    <SelectTrigger class="w-full" :class="{ 'border-destructive': errors.duration }">
+                      <SelectValue placeholder="Select duration..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="month in getDurationOptions(formData.type)"
+                        :key="month"
+                        :value="month"
+                      >
+                        {{ month }} months
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p v-if="errors.duration" class="text-xs text-destructive">{{ errors.duration }}</p>
+                </div>
+                <div class="space-y-2">
+                  <Label class="block text-sm font-medium text-foreground">Unlock Kilometers</Label>
                   <Input
                     v-model.number="formData.fields.mileageLimit"
                     type="number"
                     min="0"
                     placeholder="0"
-                    class="w-full h-10"
-                    :class="{ 'border-red-500': errors.mileageLimit }"
+                    class="w-full"
+                    :class="{ 'border-destructive': errors.mileageLimit }"
                     @input="clearError('mileageLimit')"
                   />
-                  <p v-if="errors.mileageLimit" class="text-xs text-red-600 mt-1">
-                    {{ errors.mileageLimit }}
-                  </p>
+                  <p v-if="errors.mileageLimit" class="text-xs text-destructive">{{ errors.mileageLimit }}</p>
                 </div>
               </div>
-            </template>
 
-            <!-- FIN and LEA: Only Monthly Instalment and Down Payment (no additional fields) -->
-            <!-- LTR-specific Fields -->
-            <template v-if="formData.type === 'LTR'">
-              <div>
-                <label class="block label-upper mb-2">
-                  Customer Type <span class="text-brand-red">*</span>
-                </label>
+              <div class="space-y-2">
+                <Label class="block text-sm font-medium text-foreground">Customer Type <span class="text-muted-foreground">*</span></Label>
                 <Select
                   v-model="formData.fields.customerType"
                   @update:model-value="clearError('customerType')"
                 >
-                  <SelectTrigger class="w-full h-10 min-h-10" :class="{ 'border-red-500': errors.customerType }">
+                  <SelectTrigger class="w-full" :class="{ 'border-destructive': errors.customerType }">
                     <SelectValue placeholder="Select customer type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -161,78 +130,48 @@
                     <SelectItem value="Fleet">Fleet</SelectItem>
                   </SelectContent>
                 </Select>
-                <p v-if="errors.customerType" class="text-xs text-red-600 mt-1">
-                  {{ errors.customerType }}
-                </p>
+                <p v-if="errors.customerType" class="text-xs text-destructive">{{ errors.customerType }}</p>
               </div>
 
-              <!-- Calculated Total Rental Amount -->
               <div class="bg-muted p-4 rounded-lg border border-border">
                 <div class="flex justify-between items-center">
                   <span class="text-sm font-medium text-muted-foreground">Total Rental Amount:</span>
                   <span class="text-lg font-bold text-foreground">€ {{ formatCurrency(totalRentalAmount) }}</span>
                 </div>
-                <p class="text-xs text-muted-foreground mt-1">
-                  (Monthly × Duration + Down Payment)
-                </p>
+                <p class="text-xs text-muted-foreground mt-1">(Monthly × Duration + Down Payment)</p>
               </div>
 
               <div class="flex flex-col gap-3">
                 <div class="flex items-center gap-2">
-                  <Checkbox
-                    id="ltr-insurance"
-                    v-model:checked="formData.fields.insuranceIncluded"
-                  />
-                  <Label for="ltr-insurance" class="text-sm text-muted-foreground cursor-pointer">
-                    Insurance Included
-                  </Label>
+                  <Checkbox id="ltr-insurance" v-model:checked="formData.fields.insuranceIncluded" />
+                  <Label for="ltr-insurance" class="text-sm text-muted-foreground cursor-pointer">Insurance Included</Label>
                 </div>
                 <div class="flex items-center gap-2">
-                  <Checkbox
-                    id="ltr-maintenance"
-                    v-model:checked="formData.fields.maintenanceIncluded"
-                  />
-                  <Label for="ltr-maintenance" class="text-sm text-muted-foreground cursor-pointer">
-                    Maintenance Included
-                  </Label>
+                  <Checkbox id="ltr-maintenance" v-model:checked="formData.fields.maintenanceIncluded" />
+                  <Label for="ltr-maintenance" class="text-sm text-muted-foreground cursor-pointer">Maintenance Included</Label>
                 </div>
                 <div class="flex items-center gap-2">
-                  <Checkbox
-                    id="ltr-registration"
-                    v-model:checked="formData.fields.registrationTaxesIncluded"
-                  />
-                  <Label for="ltr-registration" class="text-sm text-muted-foreground cursor-pointer">
-                    Registration/Taxes Included
-                  </Label>
+                  <Checkbox id="ltr-registration" v-model:checked="formData.fields.registrationTaxesIncluded" />
+                  <Label for="ltr-registration" class="text-sm text-muted-foreground cursor-pointer">Registration/Taxes Included</Label>
                 </div>
               </div>
             </template>
 
-            <!-- Optional: Offer Validity Dates -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Offer Valid From</Label>
-                <Input
-                  v-model="formData.offerValidFrom"
-                  type="date"
-                  class="w-full h-10"
-                />
+                <Label class="block text-sm font-medium text-foreground">Offer Valid From</Label>
+                <Input v-model="formData.offerValidFrom" type="date" class="w-full" />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Offer Valid To</Label>
-                <Input
-                  v-model="formData.offerValidTo"
-                  type="date"
-                  class="w-full h-10"
-                />
+                <Label class="block text-sm font-medium text-foreground">Offer Valid To</Label>
+                <Input v-model="formData.offerValidTo" type="date" class="w-full" />
               </div>
             </div>
           </div>
 
-          <!-- Validation Errors Summary -->
-          <div v-if="validationErrors.length > 0" class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h4 class="text-sm font-semibold text-red-800 mb-2">Please fix the following errors:</h4>
-            <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+          <div v-if="validationErrors.length > 0" class="bg-destructive/10 border border-border rounded-lg p-4">
+            <h4 class="text-sm font-medium text-destructive mb-2">Please fix the following errors:</h4>
+            <ul class="list-disc list-inside text-sm text-foreground space-y-1">
               <li v-for="error in validationErrors" :key="error">{{ error }}</li>
             </ul>
           </div>
@@ -243,14 +182,11 @@
             label="Cancel"
             variant="outline"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
             @click="$emit('close')"
           />
           <Button
-            :label="isEditMode ? 'Update Purchase Method' : 'Save Purchase Method'"
-            variant="primary"
+            variant="default"
             size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             :disabled="!isFormValid || saving"
             @click="handleSubmit"
           >
@@ -332,9 +268,9 @@ const errors = ref({})
 const validationErrors = ref([])
 
 const typeOptions = [
-  { value: 'FIN', label: 'FIN' },
-  { value: 'LEA', label: 'LEA' },
-  { value: 'LTR', label: 'LTR' }
+  { value: 'FIN', label: 'Financing' },
+  { value: 'LEA', label: 'Leasing' },
+  { value: 'LTR', label: 'Long-Term Rental' }
 ]
 
 const formData = ref({
@@ -616,7 +552,3 @@ watch(() => props.show, (isOpen) => {
 })
 </script>
 
-<style scoped>
-/* label-upper and .input classes are defined globally in style.css */
-/* No need to redefine them here */
-</style>

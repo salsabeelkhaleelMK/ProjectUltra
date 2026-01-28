@@ -61,15 +61,15 @@
                   <i class="fa-solid fa-phone-volume"></i>
                   <span>{{ (opportunity.negotiationSubstatus === 'Offer Feedback') ? 'Request Feedback' : 'Follow Up' }}</span>
                 </Toggle>
-                <Toggle
+                <Button
                   variant="outline"
-                  :model-value="showAddOfferSection"
-                  @update:model-value="(p) => { $emit('update:show-add-offer-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-survey-section', false); } }"
-                  class="outcome-toggle-item"
+                  size="small"
+                  class="gap-2"
+                  @click="$emit('open-add-offer-modal')"
                 >
                   <i class="fa-solid fa-plus"></i>
                   <span>Add Offer</span>
-                </Toggle>
+                </Button>
                 <Toggle
                   v-if="meetsOFBCondition"
                   variant="outline"
@@ -193,40 +193,6 @@
         </Button>
       </div>
       
-      <!-- Inline Add Offer Section -->
-      <div v-if="showAddOfferSection">
-        <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-          <OfferWidget
-            ref="addOfferWidgetRef"
-            :task-id="opportunity.id"
-            :task-type="'opportunity'"
-            :customer="opportunity.customer"
-            :selected-vehicle="opportunity.selectedVehicle || opportunity.vehicle || opportunity.requestedCar"
-            hide-header
-            hide-actions
-            @save="$emit('offer-created', $event)"
-            @cancel="$emit('cancel-add-offer')"
-          />
-        </div>
-      </div>
-      
-      <!-- Unified Add Offer Buttons -->
-      <div v-if="showAddOfferSection" class="flex justify-end gap-2 pt-3">
-        <Button
-          variant="secondary"
-          @click="$emit('cancel-add-offer')"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="default"
-          :disabled="!canCreateInlineOffer"
-          @click="$emit('confirm-add-offer')"
-        >
-          Create Offer
-        </Button>
-      </div>
-      
       <!-- OFB Survey Section (only when toggle is active and OFB condition is met) -->
       <div v-if="showSurveySection && meetsOFBCondition" class="space-y-4">
         <OFBTask
@@ -270,7 +236,6 @@ import { computed, ref } from 'vue'
 import { Button, Toggle, Label, Textarea } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
-import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import OFBTask from '@/components/tasks/opportunity/OFBTask.vue'
 import { OpportunityConditions } from '@/utils/opportunityRules'
 
@@ -311,10 +276,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  canCreateInlineOffer: {
-    type: Boolean,
-    default: false
-  },
   secondaryActions: {
     type: Array,
     default: () => []
@@ -333,7 +294,9 @@ const emit = defineEmits([
   'cancel-negotiation',
   'offer-created',
   'cancel-add-offer',
-  'confirm-add-offer',
+  'open-add-offer-modal',
+  'open-add-tradein',
+  'open-add-financing',
   'offer-accepted',
   'mark-offer-accepted',
   'secondary-action',
@@ -342,7 +305,6 @@ const emit = defineEmits([
   'survey-cancelled'
 ])
 
-const addOfferWidgetRef = ref(null)
 const ofbTaskRef = ref(null)
 
 const hasOffers = computed(() => {
@@ -393,15 +355,10 @@ const handleSecondaryActionClick = (action) => {
   const followUpActions = ['follow-up', 'request-feedback', 'collect-feedback', 'reassign', 'schedule-appointment', 'close-lost']
   
   if (addOfferActions.includes(action.key)) {
-    // Toggle add offer section
-    const newValue = !props.showAddOfferSection
-    emit('update:show-add-offer-section', newValue)
-    if (newValue) {
-      emit('update:show-negotiation-section', false)
-      emit('update:show-survey-section', false)
-    }
-  } else if (followUpActions.includes(action.key)) {
-    // Toggle negotiation/follow-up section (default for most actions)
+    emit('open-add-offer-modal')
+    return
+  }
+  if (followUpActions.includes(action.key)) {
     const newValue = !props.showNegotiationSection
     emit('update:show-negotiation-section', newValue)
     if (newValue) {
@@ -411,7 +368,6 @@ const handleSecondaryActionClick = (action) => {
       emit('reset-negotiation-form')
     }
   } else {
-    // For any other action, default to follow-up form
     const newValue = !props.showNegotiationSection
     emit('update:show-negotiation-section', newValue)
     if (newValue) {
@@ -421,8 +377,6 @@ const handleSecondaryActionClick = (action) => {
       emit('reset-negotiation-form')
     }
   }
-  
-  // Still emit the secondary-action event for parent to handle other logic
   emit('secondary-action', action)
 }
 
@@ -450,8 +404,7 @@ const shouldShowOFBTask = computed(() => {
   // TEMPORARY: For opportunity 33 evaluation, show even when not expanded
   const isEvaluationMode = props.opportunity?.id === 33
   
-  // Only show when negotiation section or add offer section is expanded (unless evaluation mode)
-  if (!isEvaluationMode && !props.showNegotiationSection && !props.showAddOfferSection) {
+  if (!isEvaluationMode && !props.showNegotiationSection) {
     return false
   }
   
@@ -481,9 +434,5 @@ function formatCurrency(value) {
   }).format(value).replace('€', '€')
 }
 
-// Expose refs for parent component
-defineExpose({
-  addOfferWidgetRef,
-  ofbTaskRef
-})
+defineExpose({ ofbTaskRef })
 </script>

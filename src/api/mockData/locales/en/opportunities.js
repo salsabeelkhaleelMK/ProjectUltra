@@ -29,7 +29,16 @@ export const mockOpportunities = [
     assignee: 'Salsabeel Khaleel',
     createdAt: createDateOffset(-2),
     lastActivity: createDateOffset(-1),
-    scheduledAppointment: null
+    scheduledAppointment: null,
+    tradeIns: [
+      { id: 't1', label: '2015 Mercedes', valuation: 8000 },
+      { id: 't2', label: '2018 VW', valuation: 6000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
 
   // 2. Opportunity - In Negotiation, appointment TODAY (not "Appointment Scheduled" status); Manage Appointment card shows last
@@ -90,7 +99,16 @@ export const mockOpportunities = [
       status: 'confirmed',
       noShowCount: 0,
       lastNoShowDate: null
-    }
+    },
+    tradeIns: [
+      { id: 't1', label: '2015 Mercedes', valuation: 8000 },
+      { id: 't2', label: '2018 VW', valuation: 6000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
 
   // 3. Opportunity - 1st No Show
@@ -159,10 +177,19 @@ export const mockOpportunities = [
         date.setDate(date.getDate() - 5)
         return date.toISOString()
       })()
-    }
+    },
+    tradeIns: [
+      { id: 't1', label: '2014 BMW 3 Series', valuation: 11000 },
+      { id: 't2', label: '2017 Mercedes A-Class', valuation: 8500 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
 
-  // 4. Opportunity - Closed Lost
+  // 4. Opportunity - Closed Lost (had offers, went with competitor)
   {
     id: 16,
     customerId: 5,
@@ -182,8 +209,43 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
-    negotiationSubstatus: null,
-    offers: [],
+    negotiationSubstatus: 'Offer Sent',
+    offers: [
+      {
+        id: 'offer-lost-16-1',
+        createdAt: createDateOffset(-12),
+        vehicleBrand: 'Porsche',
+        vehicleModel: 'Cayenne',
+        vehicleYear: 2024,
+        price: 95000,
+        status: 'archived',
+        data: {
+          brand: 'Porsche',
+          model: 'Cayenne',
+          year: 2024,
+          price: 95000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1611651338412-8403fa6e3599?w=900&auto=format&fit=crop&q=60'
+        }
+      },
+      {
+        id: 'offer-lost-16-2',
+        createdAt: createDateOffset(-18),
+        vehicleBrand: 'Porsche',
+        vehicleModel: 'Cayenne',
+        vehicleYear: 2024,
+        price: 92000,
+        status: 'archived',
+        data: {
+          brand: 'Porsche',
+          model: 'Cayenne',
+          year: 2024,
+          price: 92000,
+          financingType: 'cash',
+          image: 'https://images.unsplash.com/photo-1611651338412-8403fa6e3599?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
     tags: ['Premium'],
     value: 95000,
     lostReason: 'Went with competitor',
@@ -203,7 +265,16 @@ export const mockOpportunities = [
       const date = new Date()
       date.setDate(date.getDate() - 5)
       return date.toISOString()
-    })()
+    })(),
+    tradeIns: [
+      { id: 't1', label: '2018 Porsche Macan', valuation: 42000 },
+      { id: 't2', label: '2020 Audi Q5', valuation: 35000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
 
   // 7. Opportunity - In Negotiation - Offer Sent; appointment TODAY (not "Appointment Scheduled"); Manage Appointment last
@@ -281,7 +352,16 @@ export const mockOpportunities = [
       status: 'confirmed',
       noShowCount: 0,
       lastNoShowDate: null
-    }
+    },
+    tradeIns: [
+      { id: 't1', label: '2019 BMW X3', valuation: 28000 },
+      { id: 't2', label: '2020 VW Tiguan', valuation: 19500 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
 
   // 7. Opportunity - In Negotiation - Contract Pending - Awaiting Contract Feedback (contract date 7+ days ago)
@@ -3103,6 +3183,7 @@ export const mockOpportunities = [
   },
   
   // 290-299: Closed Lost and Abandoned Variations
+  // 290: Closed Lost with offers + unsigned contract (customer chose competitor)
   {
     id: 290,
     customerId: 1,
@@ -3122,8 +3203,36 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
-    negotiationSubstatus: null,
-    offers: [],
+    negotiationSubstatus: 'Contract Pending',
+    offers: [
+      {
+        id: 'offer-lost-290-1',
+        createdAt: createDateOffset(-14),
+        vehicleBrand: 'Volkswagen',
+        vehicleModel: 'ID.3',
+        vehicleYear: 2024,
+        price: 35000,
+        status: 'archived',
+        data: {
+          brand: 'Volkswagen',
+          model: 'ID.3',
+          year: 2024,
+          price: 35000,
+          financingType: 'financing',
+          image: 'https://images.unsplash.com/photo-1607853203100-69829c08b88e?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
+    contracts: [
+      {
+        id: 'contract-lost-290-1',
+        contractDate: createDateOffset(-8),
+        contractNotes: 'Draft sent; customer went with competitor before signing.',
+        contractSigned: false,
+        version: 1,
+        status: 'void'
+      }
+    ],
     tags: [],
     value: 35000,
     expectedCloseDate: null,
@@ -3135,6 +3244,7 @@ export const mockOpportunities = [
     closedDate: createDateOffset(-5), // Past closed date
     scheduledAppointment: null
   },
+  // 291: Closed Lost with offers (no longer interested after negotiation)
   {
     id: 291,
     customerId: 2,
@@ -3154,8 +3264,26 @@ export const mockOpportunities = [
     vehicle: null,
     selectedVehicle: null,
     stage: 'Closed Lost',
-    negotiationSubstatus: null,
-    offers: [],
+    negotiationSubstatus: 'Offer Sent',
+    offers: [
+      {
+        id: 'offer-lost-291-1',
+        createdAt: createDateOffset(-10),
+        vehicleBrand: 'Audi',
+        vehicleModel: 'A3',
+        vehicleYear: 2024,
+        price: 38000,
+        status: 'archived',
+        data: {
+          brand: 'Audi',
+          model: 'A3',
+          year: 2024,
+          price: 38000,
+          financingType: 'cash',
+          image: 'https://images.unsplash.com/photo-1589536672709-a5d34b12466d?w=900&auto=format&fit=crop&q=60'
+        }
+      }
+    ],
     tags: [],
     value: 38000,
     expectedCloseDate: null,
@@ -3167,6 +3295,7 @@ export const mockOpportunities = [
     closedDate: createDateOffset(0), // Today
     scheduledAppointment: null
   },
+  // 292: Closed Lost, no offers (NS3 - third no-show before offers sent)
   {
     id: 292,
     customerId: 3,

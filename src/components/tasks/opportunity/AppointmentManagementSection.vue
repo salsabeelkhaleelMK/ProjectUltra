@@ -163,7 +163,7 @@
         </Button>
       </div>
       
-      <!-- Inline Offer Assignment Task Section -->
+      <!-- Offer Assignment Task (Create Offer opens modal) -->
       <transition name="expand">
         <div v-if="showOfferAssignmentSection" class="mt-4">
           <OfferAssignmentTask
@@ -172,27 +172,10 @@
             :scheduled-appointment="scheduledAppointment"
             @offer-created="$emit('offer-assignment-created', $event)"
             @cancel="$emit('offer-assignment-cancel')"
+            @open-create-offer-modal="$emit('open-create-offer-modal')"
           />
         </div>
       </transition>
-      
-      <!-- Unified Offer Assignment Buttons -->
-      <div v-if="showOfferAssignmentSection" class="flex justify-end gap-2 px-4 pb-4 pt-3">
-        <Button
-          variant="secondary"
-          @click="$emit('offer-assignment-cancel')"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          :disabled="!canCreateOffer"
-          @click="$emit('offer-assignment-confirm')"
-          class="bg-primary"
-        >
-          Create Offer
-        </Button>
-      </div>
     </div>
   </div>
 </template>
@@ -281,6 +264,7 @@ const emit = defineEmits([
   'offer-assignment-created',
   'offer-assignment-cancel',
   'offer-assignment-confirm',
+  'open-create-offer-modal',
   'secondary-action',
   'customer-click',
   'close-as-lost-confirmed'

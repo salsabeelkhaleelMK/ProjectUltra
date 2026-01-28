@@ -7,7 +7,7 @@
           <DialogTitle>{{ getTitle() }}</DialogTitle>
         </DialogHeader>
 
-        <div class="flex-1 overflow-y-auto px-6 py-4 w-full">
+        <div class="flex-1 overflow-y-auto py-4 w-full">
           <!-- Vehicle Type Selection (only when mode is 'vehicle' and no item is being edited) -->
           <!-- Skip selection screen when mode is 'tradein' - go directly to form -->
           <div v-if="mode === 'vehicle' && !item && !selectedVehicleType" class="space-y-4 py-4 w-full">
@@ -17,21 +17,21 @@
               label="Drove"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
+              class="w-full justify-start"
               @click="selectedVehicleType = 'drove'"
             />
             <Button
               label="Requested"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
+              class="w-full justify-start"
               @click="selectedVehicleType = 'requested'"
             />
             <Button
               label="Trade-In"
               variant="outline"
               size="small"
-              class="w-full justify-start !border-D1D5DB !text-foreground hover:!bg-muted"
+              class="w-full justify-start"
               @click="selectedVehicleType = 'tradein'"
             />
           </div>
@@ -43,22 +43,22 @@
             <!-- Brand and Model in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Brand <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-medium text-foreground">Brand <span class="text-muted-foreground">*</span></Label>
                 <Input 
                   v-model="vehicleData.brand"
                   type="text" 
                   placeholder="e.g., Volkswagen" 
-                  class="w-full h-10"
+                  class="w-full"
                   required
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Model <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-medium text-foreground">Model <span class="text-muted-foreground">*</span></Label>
                 <Input 
                   v-model="vehicleData.model"
                   type="text" 
                   placeholder="e.g., ID.4" 
-                  class="w-full h-10"
+                  class="w-full"
                   required
                 />
               </div>
@@ -67,35 +67,48 @@
             <!-- Year and Kilometers in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Year (or registration year) <span class="text-brand-red">*</span></Label>
+                <Label class="block text-sm font-medium text-foreground">Year (or registration year) <span class="text-muted-foreground">*</span></Label>
                 <Input 
                   v-model="vehicleData.year"
                   type="number" 
                   placeholder="e.g., 2024" 
-                  class="w-full h-10"
+                  class="w-full"
                   min="1900"
                   :max="new Date().getFullYear() + 1"
                   required
                 />
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Kilometers</Label>
+                <Label class="block text-sm font-medium text-foreground">Kilometers</Label>
                 <Input 
                   v-model.number="vehicleData.kilometers"
                   type="number" 
                   placeholder="0" 
-                  class="w-full h-10"
+                  class="w-full"
                   min="0"
                 />
               </div>
             </div>
 
+            <!-- Valuation (€) -->
+            <div class="space-y-2">
+              <Label class="block text-sm font-medium text-foreground">Valuation (€)</Label>
+              <Input 
+                v-model.number="vehicleData.valuation"
+                type="number"
+                placeholder="0"
+                class="w-full"
+                min="0"
+                step="1"
+              />
+            </div>
+
             <!-- Fuel Type and Gear Type in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
+                <Label class="block text-sm font-medium text-foreground">Fuel Type</Label>
                 <Select v-model="vehicleData.fuelType">
-                  <SelectTrigger class="w-full h-10">
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select fuel type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -108,9 +121,9 @@
                 </Select>
               </div>
               <div class="space-y-2">
-                <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
+                <Label class="block text-sm font-medium text-foreground">Gear Type</Label>
                 <Select v-model="vehicleData.gearType">
-                  <SelectTrigger class="w-full h-10">
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select gear type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -124,24 +137,24 @@
 
             <!-- Plates -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-foreground">Plates</Label>
+              <Label class="block text-sm font-medium text-foreground">Plates</Label>
               <Input 
                 v-model="vehicleData.plates"
                 type="text" 
                 placeholder="License plate number" 
-                class="w-full h-10"
+                class="w-full"
               />
               <p class="text-xs text-muted-foreground mt-1">These can be relevant for automatically retrieving other information.</p>
             </div>
 
             <!-- Note field -->
             <div class="space-y-2">
-              <Label class="block text-sm font-semibold text-foreground">Note</Label>
+              <Label class="block text-sm font-medium text-foreground">Note</Label>
               <Textarea 
                 v-model="vehicleData.note"
-                rows="5"
+                rows="3"
                 placeholder="Add unquantifiable requests, such as the customer's desired value for the car..." 
-                class="w-full min-h-[120px] resize-none"
+                class="w-full resize-none"
               />
             </div>
           </template>
@@ -327,14 +340,12 @@
             label="Cancel"
             variant="outline"
             size="small"
-            class="rounded-sm w-full sm:w-auto"
             @click="$emit('close')"
           />
           <Button
             :label="isTradeIn ? 'Save Trade-In' : 'Add Vehicle'"
-            variant="primary"
+            variant="default"
             size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
             :disabled="!isValid"
             @click="handleSubmit"
           />
@@ -449,7 +460,8 @@ const vehicleData = ref({
   ownedSince: '',
   warrantyInfo: '',
   note: '',
-  stockDays: null
+  stockDays: null,
+  valuation: null
 })
 
 
@@ -474,7 +486,8 @@ onMounted(() => {
         ownedSince: props.item.data.ownedSince || '',
         warrantyInfo: props.item.data.warrantyInfo || '',
         note: props.item.data.note || '',
-        stockDays: null
+        stockDays: null,
+        valuation: props.item.data.tradeInPrice ?? null
       }
 
     }
@@ -501,7 +514,8 @@ watch(() => props.show, (isOpen) => {
       ownedSince: '',
       warrantyInfo: '',
       note: '',
-      stockDays: null
+      stockDays: null,
+      valuation: null
     }
   }
 })
@@ -541,12 +555,16 @@ const handleSubmit = () => {
     }
   }
 
-  // Add vehicle type if selected
   if (selectedVehicleType.value) {
     data.vehicleType = selectedVehicleType.value
   }
 
-  // For trade-ins, note is stored in vehicle data (no separate valuation section)
+  if (isTradeIn.value) {
+    const v = vehicleData.value.valuation
+    data.valuation = {
+      tradeInPrice: v != null && v !== '' ? Number(v) : null
+    }
+  }
 
   if (props.item) {
     data.id = props.item.id

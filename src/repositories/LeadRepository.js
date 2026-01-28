@@ -105,7 +105,9 @@ export class LeadRepository extends BaseRepository {
       isDisqualified: data.isDisqualified || false,
       disqualifyReason: data.disqualifyReason || null,
       scheduledAppointment: data.scheduledAppointment || null,
-      contactAttempts: data.contactAttempts || []
+      contactAttempts: data.contactAttempts || [],
+      tradeIns: data.tradeIns || [],
+      financingOptions: data.financingOptions || []
     }
     
     this.dataSource.push(newLead)

@@ -7,40 +7,35 @@
       </Button>
     </div>
     
-    <!-- Vehicle Selection Step (only show when creating new offer without selected vehicle) -->
-    <div v-if="!selectedVehicle && !item && vehicleSelectionStep === 'select'" class="mb-6">
-      <div class="bg-white border border-border rounded-lg shadow-nsc-card overflow-hidden p-6">
+    <!-- Vehicle Selection Step (hidden when hideVehicleSelection, e.g. used inside AddOfferForm) -->
+    <div v-if="!hideVehicleSelection && !selectedVehicle && !item && vehicleSelectionStep === 'select'" class="mb-6 space-y-4">
+      <div v-if="vehicleSubView === 'choice'" class="rounded-lg border border-border bg-muted overflow-hidden p-6">
         <h6 class="text-sm font-semibold text-foreground mb-4">Select Vehicle</h6>
-        <p class="text-xs text-muted-foreground mb-4">Choose how you want to add a vehicle to this offer:</p>
-        
+        <p class="text-sm text-muted-foreground mb-4">Choose how you want to add a vehicle to this offer:</p>
         <div class="space-y-3">
-          <Button
-            variant="outline"
-            class="w-full justify-start"
-            @click="showVehicleSelectionModal = true"
-          >
-            <i class="fa-solid fa-warehouse mr-2"></i>
-            Add from Stock — Search and select an existing vehicle from inventory
+          <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSubView = 'stock'">
+            <i class="fa-solid fa-warehouse"></i>
+            <span>Add from Stock — Search and select an existing vehicle from inventory</span>
           </Button>
-          
-          <Button
-            variant="outline"
-            class="w-full justify-start"
-            @click="showVehicleSelectionModal = true"
-          >
-            <i class="fa-solid fa-cog mr-2"></i>
-            Configure Vehicle — Build/customize a new vehicle
+          <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSubView = 'configure'">
+            <i class="fa-solid fa-cog"></i>
+            <span>Configure Vehicle — Build/customize a new vehicle</span>
           </Button>
-          
-          <Button
-            variant="outline"
-            class="w-full justify-start"
-            @click="vehicleSelectionStep = 'manual'"
-          >
-            <i class="fa-solid fa-pen-to-square mr-2"></i>
-            Skip & Enter Manually — Create vehicle data from scratch
+          <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSelectionStep = 'manual'">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Skip & Enter Manually — Create vehicle data from scratch</span>
           </Button>
         </div>
+      </div>
+      <div v-else class="rounded-lg border border-border bg-muted overflow-hidden p-6">
+        <VehicleSelectionInline
+          :requested-vehicle="selectedVehicle"
+          :opportunity-id="taskId"
+          :mode="vehicleSubView"
+          show-back
+          @vehicle-selected="handleVehicleSelectedFromInline"
+          @back="vehicleSubView = 'choice'"
+        />
       </div>
     </div>
     
@@ -225,7 +220,7 @@
           class="w-full flex items-center justify-between p-4 text-left hover:bg-muted transition-colors"
         >
           <div class="flex items-center gap-2">
-            <h6 class="text-sm font-semibold text-foreground">Pricing & Financing</h6>
+            <h6 class="text-sm font-semibold text-foreground">Pricing</h6>
             <span class="text-xs text-red-600">*Required</span>
           </div>
           <i 
@@ -245,22 +240,6 @@
               v-model="offerData.price" 
               placeholder="0"
             />
-          </div>
-          
-          <!-- Financing Type -->
-          <div>
-            <Label class="text-xs font-medium text-muted-foreground mb-1">Financing Type <span class="text-red-500">*</span></Label>
-            <Select v-model="offerData.financingType">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Select financing type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="financing">Financing</SelectItem>
-                <SelectItem value="leasing">Leasing</SelectItem>
-                <SelectItem value="rental">Rental</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           
           <!-- VAT Toggle and Details -->
@@ -463,6 +442,46 @@
         </div>
       </div>
       
+      <!-- Financing Section -->
+      <div class="border border-border rounded-lg bg-white shadow-nsc-card">
+        <button
+          type="button"
+          @click="showFinancing = !showFinancing"
+          class="w-full flex items-center justify-between p-4 text-left hover:bg-muted transition-colors"
+        >
+          <h6 class="text-sm font-semibold text-foreground">Financing</h6>
+          <ChevronDown
+            :class="['size-4 text-muted-foreground transition-transform duration-200', showFinancing && 'rotate-180']"
+          />
+        </button>
+        <div v-if="showFinancing" class="px-4 pb-4 border-t border-border pt-4 space-y-3">
+          <div v-if="financialPool.financingOptions.length > 0" class="space-y-3">
+            <Select :model-value="financingSelectValue" @update:model-value="onFinancingSelect">
+              <SelectTrigger class="w-full bg-muted/50 border-border h-9 text-xs">
+                <SelectValue placeholder="Pick a financing option or Cash..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cash">Cash</SelectItem>
+                <SelectItem v-for="fo in financialPool.financingOptions" :key="fo.id" :value="fo.id.toString()">
+                  {{ fo.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" class="gap-2 w-full sm:w-auto" @click="$emit('open-add-financing')">
+              <Plus class="size-4" />
+              Add financing / purchase method
+            </Button>
+          </div>
+          <div v-else class="flex flex-col items-center gap-2 py-2">
+            <p class="text-xs text-muted-foreground">No financing options yet</p>
+            <Button variant="outline" size="sm" class="gap-2" @click="$emit('open-add-financing')">
+              <Plus class="size-4" />
+              Add financing / purchase method
+            </Button>
+          </div>
+        </div>
+      </div>
+      
       <!-- Trade-In Section -->
       <div class="border border-border rounded-lg bg-white shadow-nsc-card">
         <button
@@ -471,40 +490,37 @@
           class="w-full flex items-center justify-between p-4 text-left hover:bg-muted transition-colors"
         >
           <h6 class="text-sm font-semibold text-foreground">Trade-In</h6>
-          <i 
-            :class="[
-              'fa-solid transition-transform duration-200 text-muted-foreground text-xs',
-              showTradeIn ? 'fa-chevron-up' : 'fa-chevron-down'
-            ]"
-          ></i>
+          <ChevronDown
+            :class="['size-4 text-muted-foreground transition-transform duration-200', showTradeIn && 'rotate-180']"
+          />
         </button>
-        
-        <div v-if="showTradeIn" class="px-4 pb-4 space-y-4 border-t border-border pt-4">
-          <div class="flex items-center gap-2">
-            <Checkbox 
-              :checked="offerData.tradeIn.showOnPdf"
-              @update:checked="offerData.tradeIn.showOnPdf = $event"
-              id="show-tradein-pdf"
-            />
-            <Label for="show-tradein-pdf" class="text-xs font-medium text-muted-foreground cursor-pointer">Show on PDF</Label>
+        <div v-if="showTradeIn" class="px-4 pb-4 border-t border-border pt-4 space-y-3">
+          <div v-if="financialPool.tradeIns.length > 0" class="space-y-3">
+            <Select
+              :model-value="offerData.selectedTradeInId != null ? String(offerData.selectedTradeInId) : 'none'"
+              @update:model-value="onTradeInSelect"
+            >
+              <SelectTrigger class="w-full bg-muted/50 border-border h-9 text-xs">
+                <SelectValue placeholder="Pick a trade-in..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem v-for="ti in financialPool.tradeIns" :key="ti.id" :value="ti.id.toString()">
+                  {{ ti.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" class="gap-2 w-full sm:w-auto" @click="$emit('open-add-tradein')">
+              <Plus class="size-4" />
+              Add trade-in
+            </Button>
           </div>
-          
-          <div>
-            <Label class="text-xs font-medium text-muted-foreground mb-1">Trade-in Valuation (€)</Label>
-            <Input 
-              type="number"
-              v-model="offerData.tradeIn.valuation" 
-              placeholder="0"
-            />
-          </div>
-          
-          <div>
-            <Label class="text-xs font-medium text-muted-foreground mb-1">Trade-in Notes</Label>
-            <Textarea 
-              v-model="offerData.tradeIn.notes" 
-              rows="3"
-              placeholder="Add notes about the trade-in vehicle..."
-            />
+          <div v-else class="flex flex-col items-center gap-2 py-2">
+            <p class="text-xs text-muted-foreground">No trade-ins yet</p>
+            <Button variant="outline" size="sm" class="gap-2" @click="$emit('open-add-tradein')">
+              <Plus class="size-4" />
+              Add trade-in
+            </Button>
           </div>
         </div>
       </div>
@@ -686,24 +702,20 @@
       />
     </div>
     
-    <!-- Vehicle Selection Modal -->
-    <VehicleSelectionModal
-      :show="showVehicleSelectionModal"
-      :requested-vehicle="selectedVehicle"
-      :opportunity-id="taskId"
-      @close="showVehicleSelectionModal = false"
-      @vehicle-selected="handleVehicleSelected"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { Plus, ChevronDown } from 'lucide-vue-next'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 import { 
   Button, Input, Label, Textarea, Checkbox,
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue 
 } from '@motork/component-library/future/primitives'
-import VehicleSelectionModal from '@/components/modals/VehicleSelectionModal.vue'
+import VehicleSelectionInline from '@/components/shared/VehicleSelectionInline.vue'
+
+const opportunitiesStore = useOpportunitiesStore()
 
 const props = defineProps({
   item: {
@@ -733,14 +745,44 @@ const props = defineProps({
   hideActions: {
     type: Boolean,
     default: false
+  },
+  /** When true, vehicle selection step is hidden; parent handles vehicle (e.g. AddOfferForm). */
+  hideVehicleSelection: {
+    type: Boolean,
+    default: false
+  },
+  /** When hideVehicleSelection, 'manual' skips to form with manual vehicle entry. */
+  initialVehicleStep: {
+    type: String,
+    default: 'select'
+  },
+  /** Trade-ins from task/opportunity (e.g. Request tab list). */
+  tradeIns: {
+    type: Array,
+    default: () => []
+  },
+  /** Financing options from task/opportunity (e.g. Request tab list). */
+  financingOptions: {
+    type: Array,
+    default: () => []
   }
 })
 
-const emit = defineEmits(['save', 'cancel'])
+const emit = defineEmits(['save', 'cancel', 'open-add-tradein', 'open-add-financing'])
 
 // Vehicle selection step state
 const vehicleSelectionStep = ref('select') // 'select', 'manual'
-const showVehicleSelectionModal = ref(false)
+const vehicleSubView = ref('choice') // 'choice' | 'stock' | 'configure'
+
+function handleVehicleSelectedFromInline({ vehicle }) {
+  offerData.value.price = vehicle.price || 0
+  offerData.value.brand = vehicle.brand || ''
+  offerData.value.model = vehicle.model || ''
+  offerData.value.year = vehicle.year || ''
+  offerData.value.image = vehicle.image || ''
+  vehicleSelectionStep.value = 'manual'
+  vehicleSubView.value = 'choice'
+}
 
 // Collapsible section states (all collapsed by default)
 const showPersonalInfo = ref(false)
@@ -748,9 +790,102 @@ const showVehicleDetails = ref(false)
 const showPricing = ref(false)
 const showQuotationItems = ref(false)
 const showDiscounts = ref(false)
+const showFinancing = ref(false)
 const showTradeIn = ref(false)
 const showPaymentMethods = ref(false)
 const showTerms = ref(false)
+
+// Financial pool: activities + task tradeIns/financingOptions (e.g. from Request tab)
+const financialPool = computed(() => {
+  const activities = opportunitiesStore.currentOpportunityActivities || []
+  const fromActivities = {
+    tradeIns: (activities.filter(a => a.type === 'tradein') || []).map(a => ({
+      id: a.id,
+      ...(a.data || {}),
+      label: a.data?.make && a.data?.model
+        ? `${a.data.make} ${a.data.model} (${a.data.year || ''}) - €${(a.data.value ?? 0).toLocaleString()}`
+        : (a.data?.label || `Trade-in #${a.id}`)
+    })),
+    financingOptions: (activities.filter(a => a.type === 'financing') || []).map(a => ({
+      id: a.id,
+      ...(a.data || {}),
+      label: (a.data?.product || a.data?.productName)
+        ? `${a.data.product || a.data.productName} (${a.data.apr || a.data.interestRate}% APR, ${a.data.term}mo)`
+        : (a.data?.label || `Financing #${a.id}`)
+    }))
+  }
+  const fromTask = {
+    tradeIns: (props.tradeIns || []).map(t => ({
+      id: t.id,
+      label: t.label || `Trade-in`,
+      value: t.valuation ?? 0
+    })),
+    financingOptions: (props.financingOptions || []).map(f => ({
+      id: f.id,
+      label: f.termMonths ? `${f.label} (${f.termMonths} mo)` : (f.label || 'Financing'),
+      term: f.termMonths ?? null
+    }))
+  }
+  return {
+    tradeIns: [...fromTask.tradeIns, ...fromActivities.tradeIns.filter(a => !fromTask.tradeIns.some(t => String(t.id) === String(a.id)))],
+    financingOptions: [...fromTask.financingOptions, ...fromActivities.financingOptions.filter(a => !fromTask.financingOptions.some(f => String(f.id) === String(a.id)))]
+  }
+})
+
+function applyFinancingFromPool(id) {
+  const fo = financialPool.value.financingOptions.find(o => String(o.id) === String(id))
+  if (!fo) return
+  offerData.value.financingType = 'financing'
+  offerData.value.term = fo.term ?? offerData.value.term
+  offerData.value.interestRate = fo.apr ?? fo.interestRate ?? offerData.value.interestRate
+  offerData.value.downPayment = fo.downPayment ?? fo.deposit ?? offerData.value.downPayment
+  offerData.value.monthlyPayment = fo.monthly ?? fo.monthlyPayment ?? offerData.value.monthlyPayment
+  offerData.value.selectedFinancingId = fo.id
+  offerData.value.selectedFinancingLabel = fo.product ?? fo.productName ?? fo.label ?? ''
+}
+
+function applyTradeInFromPool(id) {
+  const ti = financialPool.value.tradeIns.find(o => String(o.id) === String(id))
+  if (!ti) return
+  offerData.value.tradeIn.valuation = ti.value ?? ti.valuation ?? 0
+  const note = ti.make && ti.model
+    ? `${ti.make} ${ti.model} (${ti.year || ''}) - ${ti.condition || ''} condition, ${ti.mileage ?? ''}km`
+    : (ti.label || '')
+  offerData.value.tradeIn.notes = note.trim() || offerData.value.tradeIn.notes
+  offerData.value.selectedTradeInId = ti.id
+  offerData.value.selectedTradeInLabel = (ti.make && ti.model ? `${ti.make} ${ti.model}` : null) ?? ti.label ?? ''
+}
+
+function onTradeInSelect(val) {
+  if (!val || val === 'none') {
+    offerData.value.tradeIn.valuation = 0
+    offerData.value.tradeIn.notes = ''
+    offerData.value.selectedTradeInId = null
+    offerData.value.selectedTradeInLabel = ''
+    return
+  }
+  applyTradeInFromPool(val)
+}
+
+const financingSelectValue = computed(() => {
+  const id = offerData.value.selectedFinancingId
+  if (id != null && id !== '') return String(id)
+  return 'cash'
+})
+
+function onFinancingSelect(val) {
+  if (val === 'cash' || val == null || val === '') {
+    offerData.value.financingType = 'cash'
+    offerData.value.selectedFinancingId = null
+    offerData.value.selectedFinancingLabel = ''
+    offerData.value.downPayment = 0
+    offerData.value.monthlyPayment = 0
+    offerData.value.term = 36
+    offerData.value.interestRate = 3.5
+    return
+  }
+  applyFinancingFromPool(val)
+}
 
 // Offer data
 const offerData = ref({
@@ -766,7 +901,7 @@ const offerData = ref({
   
   // Offer Details
   price: 0,
-  financingType: '',
+  financingType: 'cash',
   downPayment: 0,
   monthlyPayment: 0,
   term: 36,
@@ -794,7 +929,13 @@ const offerData = ref({
     notes: ''
   },
   paymentMethods: [],
-  expirationDate: null
+  expirationDate: null,
+  
+  // Pool references
+  selectedTradeInId: null,
+  selectedTradeInLabel: '',
+  selectedFinancingId: null,
+  selectedFinancingLabel: ''
 })
 
 // Check if customer fields should be disabled (when customer data is available)
@@ -918,20 +1059,16 @@ const populateCustomerData = () => {
 
 // Initialize from selected vehicle and customer
 onMounted(() => {
-  // Pre-populate customer data
   populateCustomerData()
-  
-  // If editing existing offer, skip vehicle selection
+
   if (props.item) {
     vehicleSelectionStep.value = 'manual'
-  }
-  
-  // If vehicle is already selected, skip vehicle selection
-  if (props.selectedVehicle) {
+  } else if (props.selectedVehicle) {
+    vehicleSelectionStep.value = 'manual'
+  } else if (props.hideVehicleSelection && props.initialVehicleStep === 'manual') {
     vehicleSelectionStep.value = 'manual'
   }
-  
-  // Pre-populate vehicle data
+
   if (props.selectedVehicle) {
     offerData.value.price = props.selectedVehicle.price || 0
     offerData.value.brand = props.selectedVehicle.brand || ''
@@ -946,7 +1083,7 @@ onMounted(() => {
       ...offerData.value,
       ...props.item.data,
       price: props.item.data.price || props.item.data.total || 0,
-      financingType: props.item.data.financingType || props.item.data.paymentMethod || '',
+      financingType: props.item.data.financingType || props.item.data.paymentMethod || 'cash',
       notes: props.item.data.notes || props.item.data.description || '',
       showVat: props.item.data.showVat || false,
       vatRate: props.item.data.vatRate || 21,
@@ -958,7 +1095,11 @@ onMounted(() => {
         notes: ''
       },
       paymentMethods: props.item.data.paymentMethods || [],
-      expirationDate: props.item.data.expirationDate || null
+      expirationDate: props.item.data.expirationDate || null,
+      selectedTradeInId: props.item.data.selectedTradeInId || null,
+      selectedTradeInLabel: props.item.data.selectedTradeInLabel || '',
+      selectedFinancingId: props.item.data.selectedFinancingId || null,
+      selectedFinancingLabel: props.item.data.selectedFinancingLabel || ''
     }
   }
 })
@@ -979,6 +1120,19 @@ watch(() => props.selectedVehicle, (newVehicle) => {
 watch(() => props.customer, () => {
   populateCustomerData()
 })
+
+// Expand Trade-In and Financing when pool has options (e.g. Add Offer modal)
+watch(
+  () => ({
+    hasTradeIns: financialPool.value.tradeIns.length > 0,
+    hasFinancing: financialPool.value.financingOptions.length > 0
+  }),
+  ({ hasTradeIns, hasFinancing }) => {
+    if (hasTradeIns) showTradeIn.value = true
+    if (hasFinancing) showFinancing.value = true
+  },
+  { immediate: true }
+)
 
 // Validation
 const canSave = computed(() => {
@@ -1007,24 +1161,6 @@ const formatCurrency = (value) => {
   if (!value) return '0'
   const num = typeof value === 'string' ? parseFloat(value) : value
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
-// Handle vehicle selection from modal
-const handleVehicleSelected = (selection) => {
-  const vehicle = selection.vehicle
-  
-  // Set the vehicle data
-  offerData.value.brand = vehicle.brand || ''
-  offerData.value.model = vehicle.model || ''
-  offerData.value.year = vehicle.year || ''
-  offerData.value.price = vehicle.price || 0
-  offerData.value.image = vehicle.image || ''
-  
-  // Update vehicle selection step to show the form
-  vehicleSelectionStep.value = 'manual'
-  
-  // Close the modal
-  showVehicleSelectionModal.value = false
 }
 
 // Save handler
@@ -1078,7 +1214,13 @@ const handleSave = () => {
       tradeIn: offerData.value.tradeIn,
       paymentMethods: offerData.value.paymentMethods,
       expirationDate: offerData.value.expirationDate,
-      grandTotal: grandTotal.value
+      grandTotal: grandTotal.value,
+      
+      // Pool references
+      selectedTradeInId: offerData.value.selectedTradeInId,
+      selectedTradeInLabel: offerData.value.selectedTradeInLabel,
+      selectedFinancingId: offerData.value.selectedFinancingId,
+      selectedFinancingLabel: offerData.value.selectedFinancingLabel
     },
     timestamp: props.item?.timestamp || new Date().toISOString(),
     isEdit: !!props.item

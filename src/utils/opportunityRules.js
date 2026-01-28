@@ -407,16 +407,30 @@ export function getAvailableSecondaryActions(stage, context) {
     return [
       CLOSED_OPPORTUNITY_ACTIONS.reopen,
       CLOSED_OPPORTUNITY_ACTIONS.requalify,
-      CLOSED_OPPORTUNITY_ACTIONS.closeLost
+      CLOSED_OPPORTUNITY_ACTIONS.closeLost,
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      }
     ]
   }
   
   const stageConfig = OPPORTUNITY_STATE_CONFIG[stage]
   if (!stageConfig || !stageConfig.secondaryActions) {
-    return []
+    // Even if no stage config, always include schedule-appointment
+    return [
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      }
+    ]
   }
   
-  return stageConfig.secondaryActions.filter(action => {
+  const filteredActions = stageConfig.secondaryActions.filter(action => {
     // If no conditional, always include
     if (!action.conditional) return true
     
@@ -424,6 +438,19 @@ export function getAvailableSecondaryActions(stage, context) {
     const conditionFn = OpportunityConditions[action.conditional]
     return conditionFn ? conditionFn(context) : true
   })
+  
+  // Always ensure schedule-appointment is included
+  const hasScheduleAppointment = filteredActions.some(a => a.key === 'schedule-appointment')
+  if (!hasScheduleAppointment) {
+    filteredActions.push({
+      key: 'schedule-appointment',
+      label: 'Schedule Appointment',
+      icon: 'fa-solid fa-calendar-plus',
+      description: 'Schedule a new appointment'
+    })
+  }
+  
+  return filteredActions
 }
 
 /**

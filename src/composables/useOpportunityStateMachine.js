@@ -27,7 +27,7 @@ export const OPPORTUNITY_STATE_CONFIG = {
         key: 'schedule-appointment',
         label: 'Schedule Appointment',
         icon: 'fa-solid fa-calendar-plus',
-        conditional: 'no-appointment'
+        description: 'Schedule a new appointment'
       },
       {
         key: 'close-lost',
@@ -98,6 +98,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         description: 'Choose a vehicle for this opportunity'
       },
       {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      },
+      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -125,6 +131,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
       colorScheme: { background: 'bg-purple-50/50', border: 'border-purple-100' }
     },
     secondaryActions: [
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      },
       {
         key: 'cancel-appointment',
         label: 'Cancel Appointment',
@@ -176,7 +188,7 @@ export const OPPORTUNITY_STATE_CONFIG = {
         key: 'schedule-appointment',
         label: 'Schedule Appointment',
         icon: 'fa-solid fa-calendar-plus',
-        conditional: 'no-appointment'
+        description: 'Schedule a new appointment'
       },
       {
         key: 'close-lost',
@@ -197,6 +209,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         label: 'Create Another Offer',
         icon: 'fa-solid fa-file-invoice-dollar',
         description: 'Create an additional offer if terms need adjustment'
+      },
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
       },
       {
         key: 'close-lost',
@@ -249,6 +267,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         label: 'Create Another Offer',
         icon: 'fa-solid fa-file-invoice-dollar',
         description: 'Create an additional offer if terms need adjustment'
+      },
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
       },
       {
         key: 'close-lost',
@@ -331,6 +355,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
         description: 'Reschedule the delivery date'
       },
       {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      },
+      {
         key: 'archive',
         label: 'Archive',
         icon: 'fa-solid fa-archive',
@@ -366,6 +396,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
     },
     secondaryActions: [
       {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      },
+      {
         key: 'requalify',
         label: 'Requalify as Lead',
         icon: 'fa-solid fa-arrow-left',
@@ -386,6 +422,12 @@ export const OPPORTUNITY_STATE_CONFIG = {
       colorScheme: { background: 'bg-gray-50/50', border: 'border-gray-100' }
     },
     secondaryActions: [
+      {
+        key: 'schedule-appointment',
+        label: 'Schedule Appointment',
+        icon: 'fa-solid fa-calendar-plus',
+        description: 'Schedule a new appointment'
+      },
       {
         key: 'close-lost',
         label: 'Close as Lost',

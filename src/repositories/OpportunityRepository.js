@@ -103,7 +103,9 @@ export class OpportunityRepository extends BaseRepository {
       contractDate: data.contractDate || null,
       postponedTasks: data.postponedTasks || {},
       actualDeliveryDate: data.actualDeliveryDate || null,
-      skipTaskReTrigger: data.skipTaskReTrigger || false
+      skipTaskReTrigger: data.skipTaskReTrigger || false,
+      tradeIns: data.tradeIns || [],
+      financingOptions: data.financingOptions || []
     }
     
     this.dataSource.push(newOpportunity)

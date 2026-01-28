@@ -57,39 +57,6 @@
     </div>
 
     <div class="px-4 py-4 space-y-4">
-      <!-- Inline Add Offer Section -->
-      <div v-if="showAddOfferContractPendingSection">
-        <div class="bg-white rounded-lg shadow-nsc-card overflow-hidden p-6">
-          <OfferWidget
-            ref="addOfferContractPendingRef"
-            :task-id="opportunity.id"
-            :task-type="'opportunity'"
-            :customer="opportunity.customer"
-            :selected-vehicle="opportunity.selectedVehicle || opportunity.vehicle || opportunity.requestedCar"
-            hide-header
-            hide-actions
-            @save="$emit('offer-created-contract-pending', $event)"
-            @cancel="$emit('cancel-add-offer-contract-pending')"
-          />
-        </div>
-      </div>
-
-      <div v-if="showAddOfferContractPendingSection" class="flex justify-end gap-2 pt-3">
-        <Button
-          variant="secondary"
-          @click="$emit('cancel-add-offer-contract-pending')"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="default"
-          :disabled="!canCreateInlineOfferContractPending"
-          @click="$emit('confirm-add-offer-contract-pending')"
-        >
-          Create Offer
-        </Button>
-      </div>
-
       <!-- Inline Close as Lost Section -->
       <div v-if="showCloseAsLostSection">
         <CloseAsLostCard
@@ -185,14 +152,12 @@
 import { ref } from 'vue'
 import { Button, Toggle, Label, Input, Textarea, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@motork/component-library/future/primitives'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
-import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import OpportunityScheduleForm from '@/components/tasks/opportunity/OpportunityScheduleForm.vue'
 import CloseAsLostCard from '@/components/shared/CloseAsLostCard.vue'
 
 const props = defineProps({
   opportunity: { type: Object, required: true },
   hasContracts: { type: Boolean, default: false },
-  showAddOfferContractPendingSection: { type: Boolean, default: false },
   showCloseAsLostSection: { type: Boolean, default: false },
   showScheduleAppointmentContractPendingSection: { type: Boolean, default: false },
   showSetDeliveryDateSection: { type: Boolean, default: false },
@@ -202,18 +167,13 @@ const props = defineProps({
   hasDeliveryDate: { type: Boolean, default: false },
   minDeliveryDate: { type: String, default: '' },
   canSubmitSetDeliveryDate: { type: Boolean, default: false },
-  contractPendingActions: { type: Array, default: () => [] },
-  canCreateInlineOfferContractPending: { type: Boolean, default: false }
+  contractPendingActions: { type: Array, default: () => [] }
 })
 
 defineEmits([
-  'update:show-add-offer-contract-pending-section',
   'update:show-schedule-appointment-contract-pending-section',
   'update:show-set-delivery-date-section',
   'update:delivery-date-form',
-  'offer-created-contract-pending',
-  'cancel-add-offer-contract-pending',
-  'confirm-add-offer-contract-pending',
   'confirm-set-delivery-date',
   'cancel-set-delivery-date',
   'schedule-appointment-contract-pending-submit',
@@ -223,12 +183,10 @@ defineEmits([
   'close-as-lost-confirm'
 ])
 
-const addOfferContractPendingRef = ref(null)
 const scheduleAppointmentContractPendingFormRef = ref(null)
 const closeAsLostCardRef = ref(null)
 
 defineExpose({
-  addOfferContractPendingRef,
   scheduleAppointmentContractPendingFormRef,
   closeAsLostCardRef
 })

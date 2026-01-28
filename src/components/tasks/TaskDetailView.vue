@@ -103,6 +103,14 @@
                   @open-ad="handleOpenAd"
                   @more-actions="handleMoreActions"
                 />
+                <TradeInsCard
+                  :items="task.tradeIns || []"
+                  @open-add="showTradeInModal = true"
+                />
+                <FinancingOptionsCard
+                  :items="task.financingOptions || []"
+                  @open-add="showFinancingModal = true"
+                />
               </TabsContent>
               
               <!-- Activity Tab -->
@@ -221,6 +229,8 @@ import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'
 import VehicleRequestCard from './VehicleRequestCard.vue'
 import TaskActivityCard from './TaskActivityCard.vue'
+import TradeInsCard from '@/components/shared/TradeInsCard.vue'
+import FinancingOptionsCard from '@/components/shared/FinancingOptionsCard.vue'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import AttachmentWidget from '@/components/customer/activities/AttachmentWidget.vue'
 import AddWhatsAppModal from '@/components/modals/AddWhatsAppModal.vue'
@@ -406,6 +416,38 @@ const handleNoteSave = async (noteData) => {
   }
 }
 
+async function handleAddTradeIn(item) {
+  if (!props.storeAdapter || !props.task) return
+  try {
+    const list = [...(props.task.tradeIns || []), item]
+    if (props.task.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error adding trade-in:', error)
+  }
+}
+
+async function handleAddFinancingOption(item) {
+  if (!props.storeAdapter || !props.task) return
+  try {
+    const list = [...(props.task.financingOptions || []), item]
+    if (props.task.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error adding financing option:', error)
+  }
+}
+
 const handleAttachmentSave = async (attachmentData) => {
   if (!props.storeAdapter || !props.task) return
   try {
@@ -474,12 +516,21 @@ const handleEmailSave = async (data) => {
 const handleFinancingSave = async (data) => {
   if (!props.storeAdapter || !props.task) return
   try {
+    const typeLabel = data.type === 'FIN' ? 'Captive Financing' : data.type === 'LEA' ? 'Leasing' : data.type === 'LTR' ? 'Long-Term Rental' : data.type || 'Financing'
+    const duration = data.fields?.duration ?? null
+    const content = duration ? `${typeLabel} ${duration} months` : typeLabel
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'financing',
-      action: data.action || 'added a financing proposal',
-      content: data.content || `Financing: ${data.data?.product || 'Unknown'}`,
-      data: data.data,
+      action: 'added a financing proposal',
+      content: data.successMessage || content,
+      data: { type: data.type, ...data.fields },
       timestamp: new Date().toISOString()
+    })
+    const foLabel = duration ? `${data.type || 'Financing'} ${duration} months` : (typeLabel || 'Financing')
+    await handleAddFinancingOption({
+      id: `fo-${Date.now()}`,
+      label: foLabel,
+      termMonths: duration || null
     })
     showFinancingModal.value = false
   } catch (error) {
@@ -490,12 +541,21 @@ const handleFinancingSave = async (data) => {
 const handleTradeInSave = async (data) => {
   if (!props.storeAdapter || !props.task) return
   try {
+    const v = data.vehicle || {}
+    const parts = [v.brand, v.model].filter(Boolean)
+    const label = (parts.length ? parts.join(' ') + (v.year ? ` (${v.year})` : '') : 'Trade-in') || 'Trade-in'
+    const valuation = data.valuation?.tradeInPrice ?? 0
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'tradein',
       action: 'added a trade-in',
-      content: data.content || 'Trade-in vehicle added',
-      data: data.data,
+      content: label,
+      data: { vehicle: data.vehicle, valuation: data.valuation },
       timestamp: new Date().toISOString()
+    })
+    await handleAddTradeIn({
+      id: `ti-${Date.now()}`,
+      label: label || 'Trade-in',
+      valuation: typeof valuation === 'number' ? valuation : parseFloat(valuation) || 0
     })
     showTradeInModal.value = false
   } catch (error) {

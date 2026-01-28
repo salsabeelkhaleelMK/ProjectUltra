@@ -302,6 +302,18 @@
             />
           </div>
 
+          <!-- Trade-ins and Financing options (leads + opportunities) -->
+          <div v-if="type !== 'contact'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:col-span-2">
+            <TradeInsCard
+              :items="task.tradeIns || []"
+              @open-add="openTradeInModalFromCard"
+            />
+            <FinancingOptionsCard
+              :items="task.financingOptions || []"
+              @open-add="openFinancingModalFromCard"
+            />
+          </div>
+
           <!-- Customer Related Tasks Widget -->
           <CustomerRelatedTasksWidget
             v-if="type !== 'contact'"
@@ -602,6 +614,8 @@ import Request from '@/components/shared/Request.vue'
 import TaskRequestOverviewTab from '@/components/tasks/TaskRequestOverviewTab.vue'
 import TaskContactCard from '@/components/tasks/TaskContactCard.vue'
 import CustomerRelatedTasksWidget from '@/components/tasks/CustomerRelatedTasksWidget.vue'
+import TradeInsCard from '@/components/shared/TradeInsCard.vue'
+import FinancingOptionsCard from '@/components/shared/FinancingOptionsCard.vue'
 import AddNewButton from '@/components/customer/widgets/AddNewButton.vue'
 import FeedItemCard from '@/components/customer/feed/FeedItemCard.vue'
 import TaskActivityCard from '@/components/tasks/TaskActivityCard.vue'
@@ -828,6 +842,16 @@ const openTradeInModal = () => {
   showOverviewModal.value = true
 }
 
+const openTradeInModalFromCard = () => {
+  overviewModalType.value = 'tradein'
+  showOverviewModal.value = true
+}
+
+const openFinancingModalFromCard = () => {
+  overviewModalType.value = 'financing'
+  showOverviewModal.value = true
+}
+
 const formatGridDate = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
@@ -990,6 +1014,36 @@ const handleAddRequestedCarSave = async (carData) => {
     showAddRequestedCarModal.value = false
   } catch (error) {
     console.error('Error saving requested car:', error)
+  }
+}
+
+async function handleAddTradeIn(item) {
+  try {
+    const list = [...(props.task.tradeIns || []), item]
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else if (props.type === 'opportunity') {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error adding trade-in:', error)
+  }
+}
+
+async function handleAddFinancingOption(item) {
+  try {
+    const list = [...(props.task.financingOptions || []), item]
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else if (props.type === 'opportunity') {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error adding financing option:', error)
   }
 }
 
@@ -1167,22 +1221,27 @@ const closeOverviewModal = () => {
 // Handle modal save
 const handlePurchaseMethodSave = async (purchaseMethodData) => {
   try {
-    // Create activity for the purchase method (for activity feed display)
-    const typeLabel = purchaseMethodData.type === 'FIN' ? 'Captive Financing' 
-      : purchaseMethodData.type === 'LEA' ? 'Leasing' 
+    const typeLabel = purchaseMethodData.type === 'FIN' ? 'Captive Financing'
+      : purchaseMethodData.type === 'LEA' ? 'Leasing'
       : 'Long-Term Rental'
     const monthly = purchaseMethodData.fields?.monthlyInstalment || 0
-    
-    // Use standard handler to save as activity
+    const duration = purchaseMethodData.fields?.duration ?? null
+
     await handleWidgetSave({
       type: 'purchase-method',
       action: `added a ${typeLabel} purchase method`,
-      content: `${typeLabel}: €${monthly.toLocaleString()}/month for ${purchaseMethodData.fields?.duration || 0} months`,
+      content: `${typeLabel}: €${monthly.toLocaleString()}/month for ${duration || 0} months`,
       data: {
         purchaseMethodId: purchaseMethodData.id,
         type: purchaseMethodData.type,
         ...purchaseMethodData.fields
       }
+    })
+    const foLabel = duration ? `${purchaseMethodData.type || 'Financing'} ${duration} months` : (typeLabel || 'Financing')
+    await handleAddFinancingOption({
+      id: `fo-${Date.now()}`,
+      label: foLabel,
+      termMonths: duration || null
     })
     closeOverviewModal()
   } catch (error) {
@@ -1191,12 +1250,10 @@ const handlePurchaseMethodSave = async (purchaseMethodData) => {
 }
 
 const handleOverviewModalSave = async (data) => {
-  // Special handling for trade-in: save vehicle and activity
   if (overviewModalType.value === 'tradein') {
     try {
       const { saveTradeInVehicle } = useTradeInVehicle()
       const result = await saveTradeInVehicle(props.type, props.task.id, data.vehicle, data.valuation || {})
-      // Add to inline content for immediate display
       inlineContent.value.push({
         id: result.activity.id,
         type: 'tradein',
@@ -1206,12 +1263,20 @@ const handleOverviewModalSave = async (data) => {
         timestamp: result.activity.timestamp,
         activityId: result.activity.id
       })
+      const v = data.vehicle || {}
+      const parts = [v.brand, v.model].filter(Boolean)
+      const label = (parts.length ? parts.join(' ') + (v.year ? ` (${v.year})` : '') : 'Trade-in') || 'Trade-in'
+      const valuation = data.valuation?.tradeInPrice ?? 0
+      await handleAddTradeIn({
+        id: `ti-${Date.now()}`,
+        label,
+        valuation: typeof valuation === 'number' ? valuation : parseFloat(valuation) || 0
+      })
       closeOverviewModal()
     } catch (error) {
       console.error('Error saving trade-in:', error)
     }
   } else if (overviewModalType.value === 'purchase') {
-    // For purchase offers, use standard handler
     await handleWidgetSave(data)
     closeOverviewModal()
   }

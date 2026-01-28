@@ -29,12 +29,12 @@ export const mockLeads = [
     assigneeInitials: 'SK',
     createdAt: (() => {
       const date = new Date()
-      date.setHours(date.getHours() - 3) // 3 hours ago - very fresh lead
+      date.setDate(date.getDate() - 1) // 1 day ago - too new for urgency banner
       return date.toISOString()
     })(),
     lastActivity: (() => {
       const date = new Date()
-      date.setHours(date.getHours() - 3)
+      date.setDate(date.getDate() - 1)
       return date.toISOString()
     })(),
     nextActionDue: (() => {
@@ -80,7 +80,7 @@ export const mockLeads = [
     assigneeInitials: 'SK',
     createdAt: (() => {
       const date = new Date()
-      date.setDate(date.getDate() - 4)
+      date.setDate(date.getDate() - 10) // 10 days ago - within 7-14 day urgency window
       return date.toISOString()
     })(),
     lastActivity: (() => {
@@ -88,29 +88,13 @@ export const mockLeads = [
       date.setDate(date.getDate() - 1)
       return date.toISOString()
     })(),
-    nextActionDue: null, // No next action due - appointment already scheduled
+    nextActionDue: null, // No next action due
     tags: ['Premium'],
-    stage: 'Validated', // Validated with test drive appointment scheduled
+    stage: 'Open', // Changed to Open to trigger urgency banner
     isDisqualified: false,
     disqualifyReason: null,
     disqualifyCategory: null,
-    scheduledAppointment: {
-      id: 101,
-      start: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 2)
-        date.setHours(14, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      end: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 2)
-        date.setHours(15, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      type: 'test-drive',
-      status: 'confirmed'
-    },
+    scheduledAppointment: null,
     contactAttempts: [
       {
         timestamp: (() => {

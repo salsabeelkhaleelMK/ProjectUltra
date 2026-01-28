@@ -82,6 +82,24 @@
           <p v-if="contract.contractNotes" class="text-[10px] text-muted-foreground line-clamp-2 mt-0.5 leading-tight">
             {{ contract.contractNotes }}
           </p>
+          
+          <!-- Locked Terms Section -->
+          <div v-if="contract.lockedTradeInLabel || contract.lockedFinancingLabel" class="mt-2 p-1.5 bg-muted/50 rounded border border-border/50">
+            <div class="flex items-center gap-1 mb-1">
+              <Lock :size="8" class="text-amber-600" />
+              <span class="text-[8px] font-bold text-amber-700 uppercase tracking-tighter">Locked Terms</span>
+            </div>
+            <div class="space-y-0.5">
+              <div v-if="contract.lockedFinancingLabel" class="flex items-center gap-1 text-[9px] text-foreground font-medium">
+                <BadgePercent :size="8" class="text-purple-600" />
+                <span class="line-clamp-1">{{ contract.lockedFinancingLabel }}</span>
+              </div>
+              <div v-if="contract.lockedTradeInLabel" class="flex items-center gap-1 text-[9px] text-foreground font-medium">
+                <CarFront :size="8" class="text-blue-600" />
+                <span class="line-clamp-1">{{ contract.lockedTradeInLabel }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -111,7 +129,7 @@
 
 <script setup>
 import { ref, nextTick, watch, computed } from 'vue'
-import { MoreVertical } from 'lucide-vue-next'
+import { MoreVertical, Lock, CarFront, BadgePercent } from 'lucide-vue-next'
 
 const props = defineProps({
   contract: {

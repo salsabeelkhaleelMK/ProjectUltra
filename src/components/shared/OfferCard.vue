@@ -84,6 +84,18 @@
           {{ getVehicleDisplayName(offer) }}
         </h4>
         <p :class="['font-bold text-foreground', priceSizeClass]">€ {{ formatCurrency(getOfferPrice(offer)) }}</p>
+        
+        <!-- Ingredient Badges -->
+        <div class="flex flex-wrap gap-1 mt-1">
+          <div v-if="offer.data?.selectedFinancingLabel" class="flex items-center gap-0.5 px-1 py-0.5 bg-purple-50 text-purple-700 text-[8px] font-bold rounded border border-purple-100 uppercase tracking-tighter" :title="offer.data.selectedFinancingLabel">
+            <BadgePercent :size="8" />
+            <span>Financing</span>
+          </div>
+          <div v-if="offer.data?.tradeIn?.valuation > 0" class="flex items-center gap-0.5 px-1 py-0.5 bg-blue-50 text-blue-700 text-[8px] font-bold rounded border border-blue-100 uppercase tracking-tighter" :title="offer.data.selectedTradeInLabel || 'Trade-in'">
+            <CarFront :size="8" />
+            <span>Trade-in</span>
+          </div>
+        </div>
       </div>
       
       <!-- Date & Acceptance info at bottom -->
@@ -112,7 +124,7 @@
 
 <script setup>
 import { ref, nextTick, watch, computed } from 'vue'
-import { MoreVertical } from 'lucide-vue-next'
+import { MoreVertical, Wallet, CarFront, BadgePercent } from 'lucide-vue-next'
 
 const props = defineProps({
   offer: {

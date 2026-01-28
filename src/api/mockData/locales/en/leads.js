@@ -29,12 +29,12 @@ export const mockLeads = [
     assigneeInitials: 'SK',
     createdAt: (() => {
       const date = new Date()
-      date.setHours(date.getHours() - 3) // 3 hours ago - very fresh lead
+      date.setDate(date.getDate() - 1) // 1 day ago - too new for urgency banner
       return date.toISOString()
     })(),
     lastActivity: (() => {
       const date = new Date()
-      date.setHours(date.getHours() - 3)
+      date.setDate(date.getDate() - 1)
       return date.toISOString()
     })(),
     nextActionDue: (() => {
@@ -47,7 +47,16 @@ export const mockLeads = [
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
-    contactAttempts: [] // Zero contact attempts - needs initial call
+    contactAttempts: [], // Zero contact attempts - needs initial call
+    tradeIns: [
+      { id: 't1', label: '2015 Mercedes', valuation: 8000 },
+      { id: 't2', label: '2018 VW', valuation: 6000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
+    ]
   },
   // GROUP A: Validated Stage Leads
   {
@@ -80,7 +89,7 @@ export const mockLeads = [
     assigneeInitials: 'SK',
     createdAt: (() => {
       const date = new Date()
-      date.setDate(date.getDate() - 4)
+      date.setDate(date.getDate() - 10) // 10 days ago - within 7-14 day urgency window
       return date.toISOString()
     })(),
     lastActivity: (() => {
@@ -88,29 +97,13 @@ export const mockLeads = [
       date.setDate(date.getDate() - 1)
       return date.toISOString()
     })(),
-    nextActionDue: null, // No next action due - appointment already scheduled
+    nextActionDue: null, // No next action due
     tags: ['Premium'],
-    stage: 'Validated', // Validated with test drive appointment scheduled
+    stage: 'Open', // Changed to Open to trigger urgency banner
     isDisqualified: false,
     disqualifyReason: null,
     disqualifyCategory: null,
-    scheduledAppointment: {
-      id: 101,
-      start: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 2)
-        date.setHours(14, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      end: (() => {
-        const date = new Date()
-        date.setDate(date.getDate() + 2)
-        date.setHours(15, 0, 0, 0)
-        return date.toISOString()
-      })(),
-      type: 'test-drive',
-      status: 'confirmed'
-    },
+    scheduledAppointment: null,
     contactAttempts: [
       {
         timestamp: (() => {
@@ -123,6 +116,15 @@ export const mockLeads = [
         notes: 'Customer confirmed interest, validated contact details, scheduled test drive',
         transcription: null
       }
+    ],
+    tradeIns: [
+      { id: 't1', label: '2015 Mercedes', valuation: 8000 },
+      { id: 't2', label: '2018 VW', valuation: 6000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
     ]
   },
   {
@@ -197,6 +199,15 @@ export const mockLeads = [
         notes: 'Validated lead, customer interested. Needs to check calendar for appointment',
         transcription: null
       }
+    ],
+    tradeIns: [
+      { id: 't1', label: '2016 Audi A3', valuation: 9500 },
+      { id: 't2', label: '2019 VW Golf', valuation: 7200 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 },
+      { id: 'f3', label: 'Leasing 36 months', termMonths: 36 }
     ]
   },
   // GROUP B: Disqualified States
@@ -245,7 +256,14 @@ export const mockLeads = [
     disqualifyReason: 'Data cleanup',
     disqualifyCategory: 'Not Valid',
     scheduledAppointment: null,
-    contactAttempts: []
+    contactAttempts: [],
+    tradeIns: [
+      { id: 't1', label: '2020 VW Golf', valuation: 14000 }
+    ],
+    financingOptions: [
+      { id: 'f1', label: 'Cash' },
+      { id: 'f2', label: 'Loan 48 months', termMonths: 48 }
+    ]
   },
   {
     id: 7,
