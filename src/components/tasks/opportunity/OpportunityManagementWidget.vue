@@ -30,49 +30,6 @@
         :color-scheme="opportunityState.primaryAction.value.colorScheme"
         @action-clicked="opportunityState.primaryAction.value.handler"
       />
-      
-      <!-- Financial Options Pool - Summary of available ingredients -->
-      <div v-if="financialPool.tradeIns.length > 0 || financialPool.financingOptions.length > 0" class="mt-4 p-4 bg-muted/30 border border-border rounded-lg relative">
-        <div class="flex items-center justify-between mb-3">
-          <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Financial Ingredients Pool</h4>
-          <div class="flex gap-2">
-            <Button variant="ghost" size="xs" class="h-6 px-2 text-[10px] gap-1" @click="showTradeInModal = true">
-              <Plus :size="10" />
-              <span>Trade-in</span>
-            </Button>
-            <Button variant="ghost" size="xs" class="h-6 px-2 text-[10px] gap-1" @click="showFinancingModal = true">
-              <Plus :size="10" />
-              <span>Financing</span>
-            </Button>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-4">
-          <!-- Trade-ins -->
-          <div v-if="financialPool.tradeIns.length > 0" class="flex flex-col gap-2">
-            <span class="text-[10px] font-medium text-muted-foreground">TRADE-INS</span>
-            <div class="flex flex-wrap gap-2">
-              <div v-for="ti in financialPool.tradeIns" :key="ti.id" class="flex items-center gap-2 px-2 py-1 bg-white border border-border rounded shadow-sm">
-                <CarFront :size="12" class="text-blue-600" />
-                <span class="text-xs font-semibold">{{ ti.label }}</span>
-                <span class="text-xs text-muted-foreground">€ {{ formatCurrency(ti.value) }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Financing -->
-          <div v-if="financialPool.financingOptions.length > 0" class="flex flex-col gap-2">
-            <span class="text-[10px] font-medium text-muted-foreground">FINANCING OPTIONS</span>
-            <div class="flex flex-wrap gap-2">
-              <div v-for="fo in financialPool.financingOptions" :key="fo.id" class="flex items-center gap-2 px-2 py-1 bg-white border border-border rounded shadow-sm">
-                <BadgePercent :size="12" class="text-purple-600" />
-                <span class="text-xs font-semibold">{{ fo.label }}</span>
-                <span v-if="fo.apr" class="text-xs text-muted-foreground">{{ fo.apr }}%</span>
-                <span v-if="fo.term" class="text-xs text-muted-foreground">{{ fo.term }}mo</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Offers Carousel - Show for all stages when offers exist -->
       <div v-show="hasOffers" class="mt-4" :key="`offers-wrapper-${opportunity.id}`">
@@ -990,7 +947,7 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useContractPDF } from '@/composables/useContractPDF'
 import { useCloseAsLost } from '@/composables/useCloseAsLost'
 import { createCalendarEvent } from '@/api/calendar'
-import { ChevronDown, Wallet, CarFront, CheckCircle2, BadgePercent, Plus } from 'lucide-vue-next'
+import { ChevronDown, Wallet, CheckCircle2, Plus } from 'lucide-vue-next'
 
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'
@@ -1544,29 +1501,6 @@ const canCreateOffer = computed(() => {
   return offerAssignmentTaskRef?.value?.canSubmit || false
 })
 
-// Financial pool for trade-ins and financing options
-const financialPool = computed(() => {
-  const activities = opportunitiesStore.currentOpportunityActivities || []
-  return {
-    tradeIns: activities.filter(a => a.type === 'tradein').map(a => ({
-      id: a.id,
-      ...a.data,
-      label: `${a.data.make} ${a.data.model} (${a.data.year})`,
-      value: a.data.value,
-      timestamp: a.timestamp
-    })),
-    financingOptions: activities.filter(a => a.type === 'financing').map(a => ({
-      id: a.id,
-      ...a.data,
-      label: a.data.product || a.data.productName || 'Financing Proposal',
-      apr: a.data.apr || a.data.interestRate,
-      term: a.data.term,
-      monthly: a.data.monthly || a.data.monthlyPayment,
-      timestamp: a.timestamp
-    }))
-  }
-})
-
 // In Negotiation computed properties
 const offerSelectOptions = computed(() => {
   const opp = opportunity.value
@@ -1617,13 +1551,6 @@ const pdfPreviewError = ref(null)
 const emailPDFId = ref(null)
 const emailRecipient = ref('')
 const emailSubject = ref('Contract/Offer Document')
-
-// Helper function for formatting currency
-function formatCurrency(value) {
-  if (!value) return '0'
-  return new Intl.NumberFormat('en-US').format(value)
-}
-
 
 function openPostponeExpectedCloseModal() {
   showEditExpectedCloseDateModal.value = true
