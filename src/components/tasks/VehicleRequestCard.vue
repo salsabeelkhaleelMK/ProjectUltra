@@ -1,6 +1,11 @@
 <template>
   <div class="overflow-hidden p-4 rounded-lg bg-white shadow-nsc-card">
-    <h3 class="text-base font-medium text-foreground leading-6 mb-4">Requested Car</h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-medium text-foreground leading-6">Requested Car</h3>
+      <p v-if="source" class="text-sm text-muted-foreground">
+        {{ source }}
+      </p>
+    </div>
 
     <div class="flex gap-4">
       <div
@@ -26,18 +31,12 @@
           {{ vehicleNameWithYear }}
         </p>
         <div
-          v-if="vehicle.price || source"
+          v-if="vehicle.price"
           class="flex items-center gap-2 mt-1 text-sm text-foreground flex-wrap"
         >
           <span v-if="vehicle.price" class="font-semibold">
             €{{ formatPrice(vehicle.price) }}
           </span>
-          <span
-            v-if="vehicle.price && source"
-            class="h-3 w-px bg-border shrink-0"
-            aria-hidden="true"
-          />
-          <span v-if="source" class="text-muted-foreground truncate">{{ source }}</span>
         </div>
         <div
           v-if="vehicle.mileage || vehicle.fuelType"
@@ -49,12 +48,11 @@
       </div>
     </div>
 
-    <div
-      v-if="requestMessage"
-      class="rounded-lg p-3 mt-3 bg-muted"
-    >
-      <p class="text-xs text-muted-foreground mb-0.5">Request message</p>
-      <p class="text-sm text-foreground">{{ requestMessage }}</p>
+    <!-- Request Message -->
+    <div v-if="requestMessage" class="mt-4 pt-4 border-t border-border">
+      <p class="text-sm text-foreground leading-5">
+        "{{ requestMessage }}"
+      </p>
     </div>
 
     <div class="flex gap-2 pt-3 mt-3 border-t border-border">

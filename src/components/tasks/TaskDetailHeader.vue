@@ -2,8 +2,8 @@
   <div class="border-b border-border bg-white px-6 h-16 min-h-16 shrink-0">
     <div class="flex items-center justify-between gap-4 w-full h-full">
       <div class="flex flex-col min-w-0">
-        <!-- Task Title & Badges Row -->
-        <div class="flex items-center gap-2 min-w-0">
+        <!-- Task Title & Badges & Tags Row -->
+        <div class="flex items-center gap-2 min-w-0 flex-wrap">
           <h2 v-if="task && taskTitle" class="text-lg font-medium text-foreground truncate">
             {{ taskTitle }}
           </h2>
@@ -18,68 +18,149 @@
           <div v-if="task" class="shrink-0">
             <TaskBadges :task="task" />
           </div>
-        </div>
-        
-        <!-- Task Subtitle -->
-        <p v-if="task" class="text-sm text-muted-foreground truncate leading-normal mt-0.5">
-          {{ getTaskSubtitle(task) }}
-        </p>
-        <p v-else class="text-sm text-muted-foreground">
-          Select a task to view details
-        </p>
-      </div>
-      <div class="flex items-center gap-3 shrink-0">
-        <!-- Due Date / Expected Close Date -->
-        <div v-if="showDueDate" class="flex items-center gap-2">
-          <div class="flex items-center gap-1.5 px-2 py-1 rounded-btn text-xs font-medium bg-muted text-muted-foreground">
-            <i class="fa-solid fa-calendar-day text-xs"></i>
-            <span>{{ dueDateLabel }}: {{ formattedDueDate }}</span>
-          </div>
-        </div>
-        
-        <!-- Expected Close Date badge for opportunities (with postpone dropdown) -->
-        <div
-          v-if="showExpectedCloseDate"
-          class="relative"
-        >
-          <button
-            type="button"
-            class="flex items-center gap-1.5 px-2 py-1 rounded-btn text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-            :class="{ 'cursor-default': isTaskClosed }"
-            :aria-expanded="showExpectedCloseMenu && !isTaskClosed"
-            aria-haspopup="true"
-            aria-label="Expected close date"
-            @click.stop="!isTaskClosed && (showExpectedCloseMenu = !showExpectedCloseMenu)"
-          >
-            <i class="fa-solid fa-calendar-day text-xs"></i>
-            <span>Expected Close: {{ formattedExpectedCloseDate }}</span>
-            <ChevronDown
-              v-if="!isTaskClosed"
-              :size="12"
-              stroke-width="2"
-              class="shrink-0 transition-transform ml-1 text-muted-foreground"
-              :class="{ 'rotate-180': showExpectedCloseMenu }"
+          
+          <!-- Tags -->
+          <div v-if="task" class="flex items-center gap-1.5 shrink-0">
+            <Badge 
+              v-for="tag in (task.tags || [])" 
+              :key="tag"
+              :text="tag"
+              size="small"
+              theme="blue"
             />
-          </button>
-          <div
-            v-if="showExpectedCloseMenu && !isTaskClosed && expectedCloseMenuItems.length > 0"
-            v-click-outside="() => (showExpectedCloseMenu = false)"
-            class="absolute right-0 top-full mt-2 z-50 w-56 bg-white border border-border rounded-lg shadow-nsc-card py-1"
-            @click.stop
-          >
             <button
-              v-for="item in expectedCloseMenuItems"
-              :key="item.key"
-              type="button"
-              class="w-full px-3 py-2 text-left text-xs text-foreground hover:bg-muted flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="!!item.disabled"
-              @click="item.onClick()"
+              @click.stop="showAddTagModal = true"
+              class="text-xs text-muted-foreground hover:text-primary font-medium hover:underline flex items-center gap-1 transition-colors whitespace-nowrap"
             >
-              {{ item.label }}
+              <Plus class="w-3 h-3" />
+              <span>tag</span>
             </button>
           </div>
         </div>
         
+        <!-- Assignee Row -->
+        <div v-if="task" class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          <!-- Assigned State -->
+          <div v-if="isAssigned" class="flex items-center gap-1.5">
+            <div
+              class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[8px] shrink-0"
+              :class="getRoleAvatarClass(ownerInfo.role)"
+            >
+              {{ getInitials(ownerInfo.name) }}
+            </div>
+            <span class="text-xs font-medium text-foreground truncate">{{ ownerInfo.name }}</span>
+            <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
+              <PopoverTrigger as-child>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  class="h-5 w-5"
+                  aria-label="Change assignee"
+                >
+                  <ChevronDown :size="10" stroke-width="2" aria-hidden="true" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
+                side="bottom"
+                align="end"
+              >
+                <AssigneeDropdownContent @select="handleAssigneeFromDropdown" />
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <!-- Unassigned State -->
+          <div v-else class="flex items-center gap-1.5">
+            <Info :size="12" class="shrink-0 text-muted-foreground" stroke-width="2" />
+            <span class="text-xs text-muted-foreground">Unassigned</span>
+            <ButtonGroup class="flex items-stretch gap-0 rounded-lg overflow-hidden">
+              <Button
+                variant="default"
+                size="sm"
+                class="rounded-r-none border-r border-white/20 bg-primary text-xs h-6 px-2"
+                @click="assignToSelf"
+              >
+                Assign to me
+              </Button>
+              <ButtonGroupSeparator />
+              <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    class="rounded-l-none border-0 -ml-px h-5 w-5"
+                    aria-label="Assign to someone"
+                  >
+                    <ChevronDown :size="10" stroke-width="2" aria-hidden="true" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
+                  side="bottom"
+                  align="start"
+                >
+                  <AssigneeDropdownContent @select="handleAssigneeFromDropdown" />
+                </PopoverContent>
+              </Popover>
+            </ButtonGroup>
+          </div>
+          
+          <!-- Separator and Date -->
+          <template v-if="showDueDate || showExpectedCloseDate">
+            <span class="text-muted-foreground">|</span>
+            <!-- Due Date -->
+            <div v-if="showDueDate" class="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <i class="fa-solid fa-calendar-day text-xs"></i>
+              <span>{{ dueDateLabel }}: {{ formattedDueDate }}</span>
+            </div>
+            
+            <!-- Expected Close Date -->
+            <div
+              v-if="showExpectedCloseDate"
+              class="relative"
+            >
+              <button
+                type="button"
+                class="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                :class="{ 'cursor-default': isTaskClosed }"
+                :aria-expanded="showExpectedCloseMenu && !isTaskClosed"
+                aria-haspopup="true"
+                aria-label="Expected close date"
+                @click.stop="!isTaskClosed && (showExpectedCloseMenu = !showExpectedCloseMenu)"
+              >
+                <i class="fa-solid fa-calendar-day text-xs"></i>
+                <span>Expected Close: {{ formattedExpectedCloseDate }}</span>
+                <ChevronDown
+                  v-if="!isTaskClosed"
+                  :size="10"
+                  stroke-width="2"
+                  class="shrink-0 transition-transform ml-1"
+                  :class="{ 'rotate-180': showExpectedCloseMenu }"
+                />
+              </button>
+              <div
+                v-if="showExpectedCloseMenu && !isTaskClosed && expectedCloseMenuItems.length > 0"
+                v-click-outside="() => (showExpectedCloseMenu = false)"
+                class="absolute left-0 top-full mt-2 z-50 w-56 bg-white border border-border rounded-lg shadow-nsc-card py-1"
+                @click.stop
+              >
+                <button
+                  v-for="item in expectedCloseMenuItems"
+                  :key="item.key"
+                  type="button"
+                  class="w-full px-3 py-2 text-left text-xs text-foreground hover:bg-muted flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  :disabled="!!item.disabled"
+                  @click="item.onClick()"
+                >
+                  {{ item.label }}
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
         <!-- Use MotorK Button component -->
         <Button 
           variant="secondary" 
@@ -110,16 +191,30 @@
         </Button>
       </div>
     </div>
+    
+    <!-- Add Tag Modal -->
+    <AddTagModal
+      :show="showAddTagModal"
+      :existing-tags="task?.tags || []"
+      @close="showAddTagModal = false"
+      @add="handleAddTag"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
-import { ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-vue-next'
+import { Button, Badge, ButtonGroup, ButtonGroupSeparator, Popover, PopoverTrigger, PopoverContent } from '@motork/component-library/future/primitives'
+import { ChevronLeft, ChevronRight, X, ChevronDown, Plus, Info } from 'lucide-vue-next'
 import TaskBadges from './shared/TaskBadges.vue'
 import { getTaskActionTitle } from '@/utils/taskActionTitle'
 import { formatDueDate } from '@/utils/formatters'
+import AddTagModal from '@/components/modals/AddTagModal.vue'
+import AssigneeDropdownContent from '@/components/tasks/AssigneeDropdownContent.vue'
+import { useUsersStore } from '@/stores/users'
+import { useUserStore } from '@/stores/user'
+import { useLeadsStore } from '@/stores/leads'
+import { useOpportunitiesStore } from '@/stores/opportunities'
 
 const props = defineProps({
   task: { 
@@ -136,9 +231,110 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['previous', 'next', 'close', 'postpone-expected-close'])
+const emit = defineEmits(['previous', 'next', 'close', 'postpone-expected-close', 'tag-updated', 'reassigned'])
 
 const showExpectedCloseMenu = ref(false)
+const showAddTagModal = ref(false)
+const assigneeDropdownOpen = ref(false)
+
+const usersStore = useUsersStore()
+const userStore = useUserStore()
+const leadsStore = useLeadsStore()
+const opportunitiesStore = useOpportunitiesStore()
+
+// Current user
+const currentUser = computed(() => userStore.currentUser)
+
+// Check if task is assigned
+const isAssigned = computed(() => {
+  return !!(props.task?.assignee || props.task?.owner || props.task?.assignedTo)
+})
+
+const ownerInfo = computed(() => {
+  const assigneeName = props.task?.assignee || props.task?.owner || props.task?.assignedTo || 'Unassigned'
+  const assigneeUser = usersStore.users?.find((u) => u.name === assigneeName)
+  return {
+    name: assigneeName,
+    team: assigneeUser?.team || props.task?.assigneeTeam || props.task?.team || 'No team',
+    dealership: assigneeUser?.dealership || props.task?.assigneeDealership || 'MotorK Dealership',
+    role: assigneeUser?.role || props.task?.assigneeRole || 'salesman'
+  }
+})
+
+// Helper functions
+const getInitials = (name) => {
+  if (!name || name === 'Unassigned') return '?'
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
+}
+
+const getRoleAvatarClass = (role) => {
+  const classes = {
+    'manager': 'bg-blue-100 text-blue-700',
+    'salesman': 'bg-purple-100 text-purple-700',
+    'operator': 'bg-orange-100 text-orange-700'
+  }
+  return classes[role] || 'bg-muted text-muted-foreground'
+}
+
+// Assign to self
+const assignToSelf = async () => {
+  if (!currentUser.value || !props.task) return
+  
+  try {
+    if (props.task.type === 'lead') {
+      await leadsStore.updateLead(props.task.id, { 
+        assignee: currentUser.value.name,
+        assigneeType: 'user',
+        assigneeTeam: currentUser.value.team,
+        assigneeDealership: currentUser.value.dealership,
+        assigneeRole: currentUser.value.role
+      })
+    } else if (props.task.type === 'opportunity') {
+      await opportunitiesStore.updateOpportunity(props.task.id, { 
+        assignee: currentUser.value.name,
+        assigneeType: 'user',
+        assigneeTeam: currentUser.value.team,
+        assigneeDealership: currentUser.value.dealership,
+        assigneeRole: currentUser.value.role
+      })
+    }
+    
+    emit('reassigned', currentUser.value)
+  } catch (error) {
+    console.error('Error assigning to self:', error)
+  }
+}
+
+async function applyAssignment(assignee) {
+  if (!props.task) return
+  
+  const updateData = {
+    assignee: assignee.name,
+    assigneeType: assignee.type,
+    assigneeTeam: assignee.team ?? assignee.name,
+    assigneeDealership: assignee.dealership,
+    assigneeRole: assignee.role
+  }
+  if (assignee.type === 'team') {
+    updateData.teamId = assignee.id
+  }
+  if (props.task.type === 'lead') {
+    await leadsStore.updateLead(props.task.id, updateData)
+  } else if (props.task.type === 'opportunity') {
+    await opportunitiesStore.updateOpportunity(props.task.id, updateData)
+  }
+  emit('reassigned', assignee)
+}
+
+function handleAssigneeFromDropdown(assignee) {
+  applyAssignment(assignee).catch((err) => console.error('Error assigning:', err))
+  assigneeDropdownOpen.value = false
+}
 
 // Due date for leads
 const showDueDate = computed(() => {
@@ -208,34 +404,27 @@ const taskTitle = computed(() => {
   return getTaskActionTitle(props.task)
 })
 
-const getTaskSubtitle = (task) => {
-  if (!task) return ''
+// Handle tag addition
+const handleAddTag = async (tagName) => {
+  if (!props.task) return
   
-  const parts = []
+  const currentTags = props.task.tags || []
   
-  // Vehicle info
-  if (task.vehicle || task.requestedCar) {
-    const vehicle = task.vehicle || task.requestedCar
-    if (vehicle.brand && vehicle.model) {
-      parts.push(`${vehicle.brand} ${vehicle.model} (${vehicle.year || 'N/A'})`)
-    } else if (vehicle.model) {
-      parts.push(`${vehicle.model} (${vehicle.year || 'N/A'})`)
-    }
+  // Check if tag already exists
+  if (currentTags.includes(tagName)) {
+    showAddTagModal.value = false
+    return
   }
   
-  // Source (next to vehicle if present)
-  if (task.source) {
-    parts.push(task.source)
-  }
+  const updatedTags = [...currentTags, tagName]
   
-  // Customer name
-  if (task.customer?.name) {
-    parts.push(task.customer.name)
-  } else if (task.customerName) {
-    parts.push(task.customerName)
+  try {
+    // Emit event to parent to handle tag update
+    emit('tag-updated', { taskId: props.task.id, taskType: props.task.type, tags: updatedTags })
+    showAddTagModal.value = false
+  } catch (error) {
+    console.error('Error adding tag:', error)
   }
-  
-  return parts.join(' • ')
 }
 
 </script>

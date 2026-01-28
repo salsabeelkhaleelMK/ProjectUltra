@@ -10,6 +10,8 @@
         @next="handleNext"
         @close="$emit('close')"
         @postpone-expected-close="handlePostponeExpectedClose"
+        @tag-updated="handleTagUpdated"
+        @reassigned="handleReassigned"
       />
 
       <!-- Center + Right Panels Row -->
@@ -102,6 +104,9 @@
                   :image-url="getCarImageUrl(task.requestedCar || task.vehicle)"
                   @open-ad="handleOpenAd"
                   @more-actions="handleMoreActions"
+                />
+                <OtherCustomerRequestsCard
+                  :task="task"
                 />
                 <TradeInsCard
                   :items="task.tradeIns || []"
@@ -227,6 +232,7 @@ import { useOpportunitiesStore } from '@/stores/opportunities'
 import TaskDetailHeader from './TaskDetailHeader.vue'
 import TaskManagementCard from './TaskManagementCard.vue'
 import TaskContactCard from './TaskContactCard.vue'
+import OtherCustomerRequestsCard from './OtherCustomerRequestsCard.vue'
 import VehicleRequestCard from './VehicleRequestCard.vue'
 import TaskActivityCard from './TaskActivityCard.vue'
 import TradeInsCard from '@/components/shared/TradeInsCard.vue'
@@ -592,6 +598,46 @@ const handleAppointmentSave = async (data) => {
     showAppointmentModal.value = false
   } catch (error) {
     console.error('Error saving appointment:', error)
+  }
+}
+
+// Handle tag updates
+const handleTagUpdated = async (data) => {
+  if (!props.storeAdapter || !props.task) return
+  
+  try {
+    const { tags } = data
+    if (props.task.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { tags })
+      // Reload the task to get updated data
+      if (props.storeAdapter.loadLeadById) {
+        await props.storeAdapter.loadLeadById(props.task.id)
+      }
+    } else if (props.task.type === 'opportunity') {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { tags })
+      // Reload the task to get updated data
+      if (props.storeAdapter.loadOpportunityById) {
+        await props.storeAdapter.loadOpportunityById(props.task.id)
+      }
+    }
+  } catch (error) {
+    console.error('Error updating tag:', error)
+  }
+}
+
+// Handle reassignment
+const handleReassigned = async (assignee) => {
+  if (!props.storeAdapter || !props.task) return
+  
+  try {
+    // Reload the task to get updated assignee data
+    if (props.task.type === 'lead' && props.storeAdapter.loadLeadById) {
+      await props.storeAdapter.loadLeadById(props.task.id)
+    } else if (props.task.type === 'opportunity' && props.storeAdapter.loadOpportunityById) {
+      await props.storeAdapter.loadOpportunityById(props.task.id)
+    }
+  } catch (error) {
+    console.error('Error reloading task after reassignment:', error)
   }
 }
 </script>
