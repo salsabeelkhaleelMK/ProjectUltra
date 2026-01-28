@@ -6,13 +6,13 @@
       :lead="type === 'lead' ? task : undefined"
       :opportunity="type === 'opportunity' ? task : undefined"
       :activities="activities"
-      v-bind="$attrs"
+      v-bind="filteredAttrs"
     />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 
 const props = defineProps({
   task: {
@@ -26,12 +26,23 @@ const props = defineProps({
   },
   managementWidget: {
     type: Object,
-    required: true
+    default: null
   },
   activities: {
     type: Array,
     default: () => []
   }
+})
+
+const attrs = useAttrs()
+
+// Filter out 'lead' attribute when type is 'opportunity' to avoid warnings
+const filteredAttrs = computed(() => {
+  const filtered = { ...attrs }
+  if (props.type === 'opportunity' && 'lead' in filtered) {
+    delete filtered.lead
+  }
+  return filtered
 })
 
 // Pass through all emits from the management widget

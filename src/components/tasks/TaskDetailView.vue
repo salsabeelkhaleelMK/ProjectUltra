@@ -9,6 +9,7 @@
         @previous="handlePrevious"
         @next="handleNext"
         @close="$emit('close')"
+        @postpone-expected-close="handlePostponeExpectedClose"
       />
 
       <!-- Center + Right Panels Row -->
@@ -18,6 +19,8 @@
           <div class="flex-1 min-h-0 overflow-y-auto">
             <div class="p-2">
               <TaskManagementCard
+                v-if="managementWidget && storeAdapter"
+                ref="managementCardRef"
                 :task="task"
                 :type="task.type"
                 :management-widget="managementWidget"
@@ -236,15 +239,15 @@ const props = defineProps({
   },
   managementWidget: { 
     type: Object, 
-    required: true 
+    default: null 
   },
   storeAdapter: { 
     type: Object, 
-    required: true 
+    default: null 
   },
   addNewConfig: { 
     type: Object, 
-    required: true 
+    default: null 
   },
   filteredTasks: { 
     type: Array, 
@@ -256,7 +259,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['task-navigate', 'close'])
+const emit = defineEmits(['task-navigate', 'close', 'postpone-expected-close'])
 
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
@@ -278,9 +281,18 @@ const showFinancingModal = ref(false)
 const showTradeInModal = ref(false)
 const showOfferModal = ref(false)
 const showAppointmentModal = ref(false)
+const managementCardRef = ref(null)
+
+// Handle postpone expected close date
+function handlePostponeExpectedClose() {
+  // Emit event - parent (Tasks.vue) will need to handle this
+  // For now, we'll use a simpler approach: the event bubbles up
+  emit('postpone-expected-close', props.task)
+}
 
 // Activities
 const allActivities = computed(() => {
+  if (!props.storeAdapter) return []
   return props.storeAdapter.currentActivities?.value || []
 })
 
@@ -328,8 +340,7 @@ const handleActivityClick = (activity) => {
   if (sidebarTab.value !== 'activity') {
     sidebarTab.value = 'activity'
   }
-  // Could open a modal here for detailed view
-  console.log('Activity clicked:', activity)
+  // TODO: open modal for detailed activity view
 }
 
 const toggleSummaryExpanded = (activityId) => {
@@ -343,15 +354,15 @@ const getCarImageUrl = (vehicle) => {
 }
 
 const handleOpenAd = () => {
-  console.log('Open ad clicked')
+  // TODO: open ad
 }
 
 const handleMoreActions = () => {
-  console.log('More actions clicked')
+  // TODO: more actions menu
 }
 
-const handleContactAction = (action) => {
-  console.log('Contact action:', action)
+const handleContactAction = () => {
+  // TODO: contact action
 }
 
 // Handle add activity from TaskActivityCard
@@ -381,6 +392,7 @@ const handleAddActivity = (activityType) => {
 
 // Activity modal save handlers
 const handleNoteSave = async (noteData) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'note',
@@ -395,6 +407,7 @@ const handleNoteSave = async (noteData) => {
 }
 
 const handleAttachmentSave = async (attachmentData) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'attachment',
@@ -410,6 +423,7 @@ const handleAttachmentSave = async (attachmentData) => {
 }
 
 const handleWhatsAppSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'whatsapp',
@@ -425,6 +439,7 @@ const handleWhatsAppSave = async (data) => {
 }
 
 const handleSMSSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'sms',
@@ -440,6 +455,7 @@ const handleSMSSave = async (data) => {
 }
 
 const handleEmailSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'email',
@@ -456,6 +472,7 @@ const handleEmailSave = async (data) => {
 }
 
 const handleFinancingSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'financing',
@@ -471,6 +488,7 @@ const handleFinancingSave = async (data) => {
 }
 
 const handleTradeInSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'tradein',
@@ -486,6 +504,7 @@ const handleTradeInSave = async (data) => {
 }
 
 const handleOfferSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'offer',
@@ -501,6 +520,7 @@ const handleOfferSave = async (data) => {
 }
 
 const handleAppointmentSave = async (data) => {
+  if (!props.storeAdapter || !props.task) return
   try {
     await props.storeAdapter.addActivity(props.task.id, {
       type: 'appointment',

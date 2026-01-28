@@ -511,9 +511,7 @@ const activeTab = ref('general')
 const availableStages = [
   'Qualified',
   'Awaiting Appointment',
-  'To be Called Back',
-  'In Negotiation',
-  'Needs Follow-up'
+  'In Negotiation'
 ]
 
 // Local copy of settings for editing

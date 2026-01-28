@@ -232,7 +232,7 @@ export const LEAD_TRANSITION_HANDLERS = {
         disqualifyReason: null,
         disqualifyCategory: null,
         isDuplicate: false,
-        stage: 'Open Lead',
+        stage: 'Open',
         status: 'Open',
         nextActionDue: null, // Clear any old due dates
         scheduledAppointment: null // Clear any old appointments

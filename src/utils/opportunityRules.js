@@ -94,71 +94,120 @@ export const OpportunityConditions = {
     return context.opportunity?.negotiationSubstatus === 'Offer Sent'
   },
   
+  'negotiation-contract-pending-substatus': (context) => {
+    return context.opportunity?.contractDate !== null && 
+           context.opportunity?.contractDate !== undefined
+  },
+  
   'negotiation-offer-feedback-substatus': (context) => {
     return context.opportunity?.negotiationSubstatus === 'Offer Feedback'
   },
-  
-  'negotiation-offer-accepted-substatus': (context) => {
-    return context.opportunity?.negotiationSubstatus === 'Offer Accepted'
-  },
-  
-  'negotiation-awaiting-response-substatus': (context) => {
-    return context.opportunity?.negotiationSubstatus === 'Offer Under Review' || 
-           context.opportunity?.negotiationSubstatus === 'Awaiting Response' // backward compatibility
-  },
-  
-  'negotiation-offer-under-review-substatus': (context) => {
-    return context.opportunity?.negotiationSubstatus === 'Offer Under Review' || 
-           context.opportunity?.negotiationSubstatus === 'Awaiting Response' // backward compatibility
-  },
-  
-  'negotiation-offer-sent-3-days': (context) => {
-    // Check if we need to auto-transition from Offer Sent to Offer Feedback
-    if (context.opportunity?.negotiationSubstatus !== 'Offer Sent') return false
-    if (!context.opportunity?.offers || context.opportunity.offers.length === 0) return false
-    
-    // Find most recent offer
-    const mostRecentOffer = context.opportunity.offers
-      .filter(o => o.status === 'active')
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
-    
-    if (!mostRecentOffer) return false
-    
-    const days = calculateDaysSince(mostRecentOffer.createdAt)
-    return days >= 3
-  },
 
   // Negotiation stage conditions
+  // NOTE: OFB task should NOT appear during negotiation phase - only in Closed Won - Awaiting Feedback
+  // TEMPORARILY ENABLED FOR EVALUATION - opportunity 33
   'negotiation-5-plus-days-no-contract-has-offers': (context) => {
-    // OFB only triggers from "Offer Under Review" status (not from Offer Sent or Offer Accepted)
-    const substatus = context.opportunity?.negotiationSubstatus
-    if (substatus !== 'Offer Under Review' && substatus !== 'Awaiting Response') {
+    // OFB never appears during negotiation phase per new requirements
+    // TEMPORARY: Enable for opportunity 33 evaluation
+    if (context.opportunity?.id === 33) {
+      // Check if has offers and no contract
+      if (!context.hasOffers) return false
+      if (context.opportunity.contractDate) return false
+      
+      // Check days since last activity (or creation if no lastActivity)
+      const date = context.opportunity.lastActivity || context.opportunity.createdAt
+      if (!date) return false
+      const days = calculateDaysSince(date)
+      return days >= 5
+    }
+    return false
+  },
+  
+  'contract-pending-5-plus-days': (context) => {
+    // Contract Feedback Task (CFB) - shows in Contract Pending substatus
+    // Only show if at least one contract exists AND at least one is accepted (signed).
+    // No CFB when contracts exist but none have been marked accepted.
+    const opp = context.opportunity
+    const hasAccepted = (c) => !!(c?.contractSigned || c?.esignatureCollectedDate)
+
+    let hasAnyAcceptedContract = false
+    let referenceDate = null
+
+    if (Array.isArray(opp?.contracts) && opp.contracts.length > 0) {
+      const accepted = opp.contracts.filter(hasAccepted)
+      hasAnyAcceptedContract = accepted.length > 0
+      if (hasAnyAcceptedContract) {
+        const latest = accepted.reduce((best, c) => {
+          const d = c.esignatureCollectedDate || c.contractDate
+          if (!d) return best
+          if (!best) return d
+          return new Date(d) > new Date(best) ? d : best
+        }, null)
+        referenceDate = latest
+      }
+    } else {
+      hasAnyAcceptedContract = !!(opp?.contractSigned || opp?.esignatureCollectedDate)
+      referenceDate = opp?.contractDate || opp?.esignatureCollectedDate
+    }
+
+    if (!hasAnyAcceptedContract || !referenceDate) {
       return false
     }
-    
-    // For 'In Negotiation' stage, only show if offers exist
-    if (context.stage === 'In Negotiation' && !context.hasOffers) {
+
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('cfbDays') || 5
+
+    const postponedDate = opp.postponedTasks?.cfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      if (daysSincePostpone < postponePeriod) return false
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+
+    try {
+      const dateObj = new Date(referenceDate)
+      if (isNaN(dateObj.getTime())) return false
+      const days = calculateDaysSince(dateObj.toISOString())
+      return days >= threshold
+    } catch (e) {
+      return false
+    }
+  },
+  
+  'closed-won-contract-feedback': (context) => {
+    // Contract Feedback Task (CFB) - shows in Closed Won stage
+    // Only show if a contract exists on the opportunity
+    const contractDate = context.opportunity?.contractDate
+    if (!contractDate || contractDate === null || contractDate === undefined || contractDate === '') {
       return false
     }
     
     const settingsStore = useSettingsStore()
-    const threshold = settingsStore.getSetting('ofbDays')
+    const threshold = settingsStore.getSetting('cfbDays') || 5
     
-    // Check if OFB was postponed
-    const postponedDate = context.opportunity.postponedTasks?.ofb
+    // Check if CFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.cfb
     if (postponedDate) {
       const daysSincePostpone = calculateDaysSince(postponedDate)
       const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
-      // Don't show task if still within postpone period
       if (daysSincePostpone < postponePeriod) return false
-      // If postpone period has passed, recalculate from postpone date
       const daysFromPostpone = calculateDaysSince(postponedDate)
-      return daysFromPostpone >= threshold && !context.opportunity.contractDate && context.hasOffers
+      return daysFromPostpone >= threshold
     }
     
-    // Normal condition check
-    const days = calculateDaysSince(context.opportunity.lastActivity || context.opportunity.createdAt)
-    return days >= threshold && !context.opportunity.contractDate && context.hasOffers
+    // Normal condition check - ensure contractDate is a valid date
+    try {
+      const contractDateObj = new Date(contractDate)
+      if (isNaN(contractDateObj.getTime())) {
+        return false // Invalid date
+      }
+      const days = calculateDaysSince(contractDateObj.toISOString())
+      return days >= threshold
+    } catch (e) {
+      return false // Error parsing date
+    }
   },
   
   'negotiation-offer-feedback-5-plus-days-no-appointment': (context) => {
@@ -234,13 +283,49 @@ export const OpportunityConditions = {
     return days >= threshold && !hasDelivery
   },
   
+  'delivery-delay-feedback-required': (context) => {
+    // Must be awaiting delivery (not yet delivered)
+    if (context.deliverySubstatus !== 'Awaiting Delivery') return false
+    
+    // Must have a delivery date set
+    if (!context.opportunity.deliveryDate) return false
+    
+    // Check that there's no actual delivery date yet
+    const actualDeliveryDate = context.opportunity.actualDeliveryDate || 
+      context.activities?.find(a => a.data?.actualDeliveryDate)?.data?.actualDeliveryDate
+    if (actualDeliveryDate) return false
+    
+    const settingsStore = useSettingsStore()
+    const threshold = settingsStore.getSetting('dfbDays') || 3
+    
+    // Check if DFB was postponed
+    const postponedDate = context.opportunity.postponedTasks?.dfb
+    if (postponedDate) {
+      const daysSincePostpone = calculateDaysSince(postponedDate)
+      const postponePeriod = settingsStore.getSetting('postponeTaskDays') || 7
+      // Don't show task if still within postpone period
+      if (daysSincePostpone < postponePeriod) return false
+      // If postpone period has passed, recalculate from postpone date
+      const daysFromPostpone = calculateDaysSince(postponedDate)
+      return daysFromPostpone >= threshold
+    }
+    
+    // Normal condition check - X days after scheduled delivery date
+    const days = calculateDaysSince(context.opportunity.deliveryDate)
+    
+    return days >= threshold
+  },
+  
   'delivery-feedback-required': (context) => {
     // Must be delivered
     if (context.deliverySubstatus !== 'Delivered') return false
     
     // Check actual delivery date (not scheduled deliveryDate)
+    // Support both actualDeliveryDate and deliveredDate for backward compatibility
     const actualDeliveryDate = context.opportunity.actualDeliveryDate || 
-      context.activities?.find(a => a.data?.actualDeliveryDate)?.data?.actualDeliveryDate
+      context.opportunity.deliveredDate ||
+      context.activities?.find(a => a.data?.actualDeliveryDate)?.data?.actualDeliveryDate ||
+      context.activities?.find(a => a.data?.deliveredDate)?.data?.deliveredDate
     
     if (!actualDeliveryDate) return false
     
@@ -436,30 +521,6 @@ export function isOpportunityClosed(stage) {
  */
 export const OpportunityValidations = {
   /**
-   * Check if offer can be marked as accepted
-   * @param {Object} opportunity - Opportunity object
-   * @returns {Object} { valid: boolean, error: string|null }
-   */
-  canMarkOfferAccepted: (opportunity) => {
-    if (!opportunity) {
-      return { valid: false, error: 'Opportunity not found' }
-    }
-    
-    // Must have at least one offer
-    if (!opportunity.offers || opportunity.offers.length === 0) {
-      return { valid: false, error: 'Cannot mark offer as accepted: No offers exist for this opportunity.' }
-    }
-    
-    // Must have at least one active offer
-    const activeOffers = opportunity.offers.filter(o => o.status === 'active')
-    if (activeOffers.length === 0) {
-      return { valid: false, error: 'Cannot mark offer as accepted: No active offers found.' }
-    }
-    
-    return { valid: true, error: null }
-  },
-  
-  /**
    * Check if contract can be created
    * @param {Object} opportunity - Opportunity object
    * @param {boolean} isFastDeal - Whether this is a fast deal (contract from Offer Sent directly)
@@ -472,32 +533,21 @@ export const OpportunityValidations = {
     
     // Fast deal path: can create contract from Offer Sent status
     if (isFastDeal) {
-      if (opportunity.negotiationSubstatus === 'Offer Sent' || opportunity.negotiationSubstatus === null) {
+      if (opportunity.negotiationSubstatus === 'Offer Sent' || 
+          opportunity.negotiationSubstatus === 'Awaiting Response' || // backward compatibility
+          opportunity.negotiationSubstatus === null) { // new offers default to Offer Sent
         return { valid: true, error: null }
       }
     }
     
-    // Normal path: must be in "Offer Accepted" status
-    if (opportunity.negotiationSubstatus !== 'Offer Accepted') {
-      return { 
-        valid: false, 
-        error: 'Cannot create contract: Offer must be in "Offer Accepted" status. Please mark the offer as accepted first.' 
-      }
+    // Normal path: can create contract from Offer Sent status
+    if (opportunity.negotiationSubstatus === 'Offer Sent' || 
+        opportunity.negotiationSubstatus === 'Awaiting Response' || // backward compatibility
+        opportunity.negotiationSubstatus === null) {
+      return { valid: true, error: null }
     }
     
     return { valid: true, error: null }
-  },
-  
-  /**
-   * Check if OFB task should trigger (only from Offer Under Review)
-   * @param {Object} opportunity - Opportunity object
-   * @returns {boolean}
-   */
-  canTriggerOFB: (opportunity) => {
-    if (!opportunity) return false
-    
-    const substatus = opportunity.negotiationSubstatus
-    return substatus === 'Offer Under Review' || substatus === 'Awaiting Response'
   }
 }
 

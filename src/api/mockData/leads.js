@@ -43,7 +43,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Premium', 'Automation'],
-    stage: 'Open Lead', // Maps to "New" - Brand new lead, no contact attempts yet
+    stage: 'Open', // Maps to "New" - Brand new lead, no contact attempts yet
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -406,7 +406,7 @@ export const mockLeads = [
     })(),
     callbackScheduled: true,
     tags: [],
-    stage: 'Open Lead', // Will map to "To be called back" due to callbackDate - customer requested specific callback time
+    stage: 'Open', // Will map to "To be called back" due to callbackDate - customer requested specific callback time
     isDisqualified: false,
     disqualifyReason: null,
     disqualifyCategory: null,
@@ -494,7 +494,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Urgent'],
-    stage: 'Open Lead', // NEW state with 1 failed contact attempt - OVERDUE
+    stage: 'Open', // NEW state with 1 failed contact attempt - OVERDUE
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -558,7 +558,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead', // NEW state with 2 contact attempts - one more attempt before auto-disqualify
+    stage: 'Open', // NEW state with 2 contact attempts - one more attempt before auto-disqualify
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -632,7 +632,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Premium'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -742,7 +742,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Performance'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -852,7 +852,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -901,7 +901,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Urgent'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -950,7 +950,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['VIP'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -999,7 +999,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['VIP', 'Premium'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1056,7 +1056,7 @@ export const mockLeads = [
     })(),
     callbackScheduled: true,
     tags: [],
-    stage: 'Open Lead', // Will map to "To be called back" due to callbackDate
+    stage: 'Open', // Will map to "To be called back" due to callbackDate
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1136,7 +1136,7 @@ export const mockLeads = [
     })(),
     callbackScheduled: true,
     tags: ['Hot'],
-    stage: 'Open Lead', // Will map to "To be called back" due to callbackDate
+    stage: 'Open', // Will map to "To be called back" due to callbackDate
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1448,7 +1448,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1495,7 +1495,7 @@ export const mockLeads = [
     })(),
     nextActionDue: null, // No deadline set yet - very fresh lead
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1546,7 +1546,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1597,7 +1597,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1648,7 +1648,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Corporate'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1699,7 +1699,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1843,7 +1843,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Corporate', 'Fleet', 'Premium'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1903,7 +1903,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Corporate', 'Fleet'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,
@@ -1957,7 +1957,7 @@ export const mockLeads = [
       return date.toISOString()
     })(),
     tags: ['Corporate', 'Marketing'],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null,
     scheduledAppointment: null,

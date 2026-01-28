@@ -236,5 +236,37 @@ export function getStageBadgeClass(stage) {
   return classes[stage] || 'bg-gray-100 text-gray-700'
 }
 
+/**
+ * Format date and time for display
+ * @param {string} dateString - ISO date string
+ * @returns {string} Formatted string like "Jan 5, 2:30 PM"
+ */
+export function formatDateTime(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
+/**
+ * Format expected close date for display
+ * @param {string} dateString - ISO date string
+ * @returns {string} Formatted string like "Jan 5, 2025"
+ */
+export function formatExpectedCloseDate(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+
 
 

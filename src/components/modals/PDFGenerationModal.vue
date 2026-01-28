@@ -4,10 +4,88 @@
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
       <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col p-0">
         <DialogHeader class="flex-shrink-0 p-6 pb-4 border-b border">
-          <DialogTitle>{{ documentType === 'contract' ? 'Generate Contract PDF' : 'Generate Offer PDF' }}</DialogTitle>
+          <DialogTitle>{{ documentType === 'contract' ? 'Generate Contract PDF' : 'Send Offer PDF' }}</DialogTitle>
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto p-6 w-full space-y-6">
+          <!-- Offer-specific UI: Customer Details, Email, Offer Details, Message -->
+          <template v-if="documentType === 'offer'">
+            <!-- Customer Details (Uneditable) -->
+            <div v-if="customer" class="bg-muted rounded-lg p-4 border border-border">
+              <Label class="text-sm font-semibold text-foreground mb-3 block">Customer Details</Label>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Name:</span>
+                  <span class="text-foreground">{{ customer.name || 'N/A' }}</span>
+                </div>
+                <div v-if="customer.phone" class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Phone:</span>
+                  <span class="text-foreground">{{ customer.phone }}</span>
+                </div>
+                <div v-if="customer.address" class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Address:</span>
+                  <span class="text-foreground">{{ customer.address }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Address (Editable) -->
+            <div>
+              <Label class="text-sm font-semibold text-foreground mb-2 block">Email Address <span class="text-red-600">*</span></Label>
+              <Input
+                v-model="emailAddress"
+                type="email"
+                placeholder="customer@example.com"
+                class="w-full"
+              />
+            </div>
+
+            <!-- Offer Details (Uneditable) -->
+            <div v-if="selectedOffer" class="bg-muted rounded-lg p-4 border border-border">
+              <Label class="text-sm font-semibold text-foreground mb-3 block">Offer Details</Label>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Vehicle:</span>
+                  <span class="text-foreground">{{ getOfferVehicleName(selectedOffer) }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Price:</span>
+                  <span class="text-foreground font-semibold">€ {{ formatCurrency(getOfferPrice(selectedOffer)) }}</span>
+                </div>
+                <div v-if="selectedOffer.createdAt" class="flex items-center gap-2">
+                  <span class="text-muted-foreground font-medium w-24">Created:</span>
+                  <span class="text-foreground">{{ formatDate(selectedOffer.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message Input -->
+            <div>
+              <Label class="text-sm font-semibold text-foreground mb-2 block">Message (Optional)</Label>
+              <Textarea
+                v-model="emailMessage"
+                rows="4"
+                placeholder="Add a personal message to accompany the offer..."
+                class="w-full"
+              />
+            </div>
+
+            <!-- Terms & Conditions Checkbox -->
+            <div class="flex items-start gap-3">
+              <input
+                type="checkbox"
+                :id="'terms-offer-' + _uid"
+                v-model="options.includeTermsAndConditions"
+                class="mt-1"
+              />
+              <label :for="'terms-offer-' + _uid" class="text-sm text-foreground cursor-pointer">
+                Include Terms & Conditions
+              </label>
+            </div>
+          </template>
+
+          <!-- Contract-specific UI (existing) -->
+          <template v-else>
           <!-- Document Type Selection (if not pre-selected) -->
           <div v-if="!preSelectedDocumentType">
             <Label class="text-sm font-semibold text-foreground mb-3 block">Document Type</Label>
@@ -41,65 +119,24 @@
             </div>
           </div>
 
-          <!-- Offer Selection (if document type is offer) -->
-          <div v-if="documentType === 'offer' && availableOffers && availableOffers.length > 0">
-            <Label class="text-sm font-semibold text-foreground mb-3 block">Select Offer</Label>
-            <Select v-model="selectedOfferId">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Select an offer..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="offer in availableOffers"
-                  :key="offer.id"
-                  :value="offer.id"
-                >
-                  {{ getOfferLabel(offer) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <!-- Template Selection -->
-          <div>
-            <Label class="text-sm font-semibold text-foreground mb-3 block">Template Style</Label>
-            <div class="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                :class="[
-                  'p-4 border-2 rounded-lg text-left transition-all',
-                  options.template === 'classic'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50'
-                ]"
-                @click="options.template = 'classic'"
-              >
-                <div class="font-semibold text-sm text-foreground mb-1">Classic</div>
-                <div class="text-xs text-muted-foreground">
-                  {{ documentType === 'contract' 
-                    ? 'Detailed with comprehensive information and legal sections' 
-                    : 'Includes VAT table, trade-in section, and vehicle images' }}
-                </div>
-              </button>
-              <button
-                type="button"
-                :class="[
-                  'p-4 border-2 rounded-lg text-left transition-all',
-                  options.template === 'express'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50'
-                ]"
-                @click="options.template = 'express'"
-              >
-                <div class="font-semibold text-sm text-foreground mb-1">Express</div>
-                <div class="text-xs text-muted-foreground">
-                  {{ documentType === 'contract' 
-                    ? 'Streamlined with essential information' 
-                    : 'Simplified condensed layout for stock vehicles' }}
-                </div>
-              </button>
+            <!-- Offer Selection (if document type is offer and multiple offers) -->
+            <div v-if="documentType === 'offer' && availableOffers && availableOffers.length > 1">
+              <Label class="text-sm font-semibold text-foreground mb-3 block">Select Offer</Label>
+              <Select v-model="selectedOfferId">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select an offer..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="offer in availableOffers"
+                    :key="offer.id"
+                    :value="offer.id"
+                  >
+                    {{ getOfferLabel(offer) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
 
           <!-- Language Selection -->
           <div>
@@ -118,37 +155,72 @@
             </Select>
           </div>
 
-          <!-- Customization Options -->
-          <div class="space-y-4">
-            <Label class="text-sm font-semibold text-foreground block">Options</Label>
-            
-            <div class="flex items-start gap-3">
-              <input
-                type="checkbox"
-                :id="'terms-' + _uid"
-                v-model="options.includeTermsAndConditions"
-                class="mt-1"
-              />
-              <label :for="'terms-' + _uid" class="text-sm text-foreground cursor-pointer">
-                Include Terms & Conditions
-              </label>
+            <!-- Template Selection (for contract) -->
+            <div>
+              <Label class="text-sm font-semibold text-foreground mb-3 block">Template Style</Label>
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  :class="[
+                    'p-4 border-2 rounded-lg text-left transition-all',
+                    options.template === 'classic'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  ]"
+                  @click="options.template = 'classic'"
+                >
+                  <div class="font-semibold text-sm text-foreground mb-1">Classic</div>
+                  <div class="text-xs text-muted-foreground">
+                    Detailed with comprehensive information and legal sections
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  :class="[
+                    'p-4 border-2 rounded-lg text-left transition-all',
+                    options.template === 'express'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  ]"
+                  @click="options.template = 'express'"
+                >
+                  <div class="font-semibold text-sm text-foreground mb-1">Express</div>
+                  <div class="text-xs text-muted-foreground">
+                    Streamlined with essential information
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <div 
-              v-if="documentType === 'contract'"
-              class="flex items-start gap-3"
-            >
-              <input
-                type="checkbox"
-                :id="'disclaimer-' + _uid"
-                v-model="options.includeDisclaimerPage"
-                class="mt-1"
-              />
-              <label :for="'disclaimer-' + _uid" class="text-sm text-foreground cursor-pointer">
-                Include Disclaimer Page (last page)
-              </label>
+            <!-- Customization Options (for contract) -->
+            <div class="space-y-4">
+              <Label class="text-sm font-semibold text-foreground block">Options</Label>
+              
+              <div class="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  :id="'terms-' + _uid"
+                  v-model="options.includeTermsAndConditions"
+                  class="mt-1"
+                />
+                <label :for="'terms-' + _uid" class="text-sm text-foreground cursor-pointer">
+                  Include Terms & Conditions
+                </label>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  :id="'disclaimer-' + _uid"
+                  v-model="options.includeDisclaimerPage"
+                  class="mt-1"
+                />
+                <label :for="'disclaimer-' + _uid" class="text-sm text-foreground cursor-pointer">
+                  Include Disclaimer Page (last page)
+                </label>
+              </div>
             </div>
-          </div>
+          </template>
 
           <!-- Error Message -->
           <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -162,30 +234,51 @@
             variant="outline"
             size="small"
             class="rounded-sm w-full sm:w-auto"
-            :disabled="isGenerating || isPreviewing"
+            :disabled="isGenerating || isPreviewing || isSending"
             @click="$emit('close')"
           />
-          <Button
-            label="Preview"
-            variant="outline"
-            size="small"
-            class="rounded-sm w-full sm:w-auto"
-            :disabled="!isValid || isGenerating || isPreviewing"
-            @click="handlePreview"
-          />
-          <Button
-            label="Generate PDF"
-            variant="primary"
-            size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-            :disabled="!isValid || isGenerating || isPreviewing"
-            @click="handleGenerate"
-          >
-            <template v-if="isGenerating">
-              <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-              Generating...
-            </template>
-          </Button>
+          <template v-if="documentType === 'offer'">
+            <Button
+              label="Send Offer PDF"
+              variant="primary"
+              size="small"
+              class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+              :disabled="!isValidForSend || isGenerating || isPreviewing || isSending"
+              @click="handleSend"
+            >
+              <template v-if="isSending">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                Sending...
+              </template>
+              <template v-else>
+                <i class="fa-solid fa-paper-plane mr-2"></i>
+                Send
+              </template>
+            </Button>
+          </template>
+          <template v-else>
+            <Button
+              label="Preview"
+              variant="outline"
+              size="small"
+              class="rounded-sm w-full sm:w-auto"
+              :disabled="!isValid || isGenerating || isPreviewing"
+              @click="handlePreview"
+            />
+            <Button
+              label="Generate PDF"
+              variant="primary"
+              size="small"
+              class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
+              :disabled="!isValid || isGenerating || isPreviewing"
+              @click="handleGenerate"
+            >
+              <template v-if="isGenerating">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                Generating...
+              </template>
+            </Button>
+          </template>
         </DialogFooter>
       </DialogContent>
     </DialogPortal>
@@ -194,7 +287,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { Button, Label } from '@motork/component-library/future/primitives'
+import { Button, Label, Input, Textarea } from '@motork/component-library/future/primitives'
 import {
   Dialog,
   DialogContent,
@@ -234,10 +327,14 @@ const props = defineProps({
   availableOffers: {
     type: Array,
     default: () => []
+  },
+  customer: {
+    type: Object,
+    default: null
   }
 })
 
-const emit = defineEmits(['close', 'generate', 'preview'])
+const emit = defineEmits(['close', 'generate', 'preview', 'send'])
 
 const {
   isGenerating,
@@ -250,12 +347,28 @@ const {
 const preSelectedDocumentType = computed(() => props.documentType !== null)
 const documentType = ref(props.documentType || 'contract')
 const selectedOfferId = ref(props.offerId)
+const emailAddress = ref(props.customer?.email || '')
+const emailMessage = ref('')
+const isSending = ref(false)
 const options = ref({
   template: 'classic',
   language: 'en',
   includeTermsAndConditions: true,
   includeDisclaimerPage: true
 })
+
+// Get selected offer details
+const selectedOffer = computed(() => {
+  if (documentType.value !== 'offer' || !selectedOfferId.value) return null
+  return props.availableOffers?.find(o => o.id === selectedOfferId.value) || null
+})
+
+// Initialize email from customer
+watch(() => props.customer, (customer) => {
+  if (customer?.email && documentType.value === 'offer') {
+    emailAddress.value = customer.email
+  }
+}, { immediate: true })
 
 const error = computed(() => pdfError.value)
 
@@ -281,7 +394,14 @@ watch(() => props.offerId, (newId) => {
   if (newId) {
     selectedOfferId.value = newId
   }
-})
+}, { immediate: true })
+
+// Auto-select offer if only one available
+watch(() => [props.availableOffers, documentType.value], ([offers, docType]) => {
+  if (docType === 'offer' && offers && offers.length === 1 && !selectedOfferId.value) {
+    selectedOfferId.value = offers[0].id
+  }
+}, { immediate: true })
 
 const isValid = computed(() => {
   if (documentType.value === 'offer') {
@@ -289,6 +409,37 @@ const isValid = computed(() => {
   }
   return true
 })
+
+const isValidForSend = computed(() => {
+  if (documentType.value !== 'offer') return false
+  return isValid.value && emailAddress.value && emailAddress.value.includes('@')
+})
+
+const getOfferVehicleName = (offer) => {
+  if (offer.data) {
+    const data = offer.data
+    return `${data.brand || ''} ${data.model || ''} (${data.year || ''})`
+  }
+  if (offer.vehicleBrand) {
+    return `${offer.vehicleBrand} ${offer.vehicleModel} (${offer.vehicleYear})`
+  }
+  return 'Vehicle'
+}
+
+const getOfferPrice = (offer) => {
+  return offer.price || offer.data?.price || 0
+}
+
+const formatCurrency = (value) => {
+  if (!value) return '0'
+  return new Intl.NumberFormat('en-US').format(value)
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
 const getOfferLabel = (offer) => {
   if (offer.data) {
@@ -368,6 +519,37 @@ const handlePreview = async () => {
     }
   } catch (err) {
     console.error('Error previewing PDF:', err)
+  }
+}
+
+const handleSend = async () => {
+  if (!isValidForSend.value) return
+
+  isSending.value = true
+  try {
+    const finalOptions = {
+      ...options.value,
+      includeDisclaimerPage: false
+    }
+
+    if (!selectedOfferId.value) {
+      error.value = 'Please select an offer'
+      return
+    }
+
+    emit('send', {
+      type: 'offer',
+      opportunityId: props.opportunityId,
+      offerId: selectedOfferId.value,
+      email: emailAddress.value,
+      message: emailMessage.value,
+      options: finalOptions
+    })
+  } catch (err) {
+    console.error('Error sending PDF:', err)
+    error.value = err.message || 'Failed to send PDF'
+  } finally {
+    isSending.value = false
   }
 }
 </script>

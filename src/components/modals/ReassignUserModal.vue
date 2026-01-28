@@ -108,6 +108,11 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'confirm'])
 
+// Prevent automatic attribute inheritance since DialogPortal uses Teleport
+defineOptions({
+  inheritAttrs: false
+})
+
 const usersStore = useUsersStore()
 const selectedAssignee = ref(null)
 const searchQuery = ref('')

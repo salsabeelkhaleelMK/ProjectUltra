@@ -15,17 +15,25 @@
     <!-- Dropdown menu -->
     <div 
       v-if="isOpen && menuItems.length > 0"
-      class="absolute top-full right-0 mt-2 z-50 dropdown-menu-small"
+      class="absolute right-0 top-full mt-2 z-50 w-56 bg-white border border-black/10 rounded-lg shadow-nsc-card py-1"
       v-click-outside="closeDropdown"
+      @click.stop
     >
-      <DropdownMenu :items="menuItems" className="w-56" />
+      <button
+        v-for="menuItem in menuItems"
+        :key="menuItem.key"
+        @click="menuItem.onClick"
+        :disabled="menuItem.disabled"
+        class="w-full px-3 py-2 text-left text-xs text-foreground hover:bg-muted flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {{ menuItem.label }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { DropdownMenu } from '@motork/component-library/future/primitives'
 
 const props = defineProps({
   actions: {
@@ -68,22 +76,4 @@ const menuItems = computed(() => {
 })
 </script>
 
-<style>
-/* Apply smaller text size to dropdown menu items - unscoped for higher specificity */
-.dropdown-menu-small button,
-.dropdown-menu-small a,
-.dropdown-menu-small [role="menuitem"],
-.dropdown-menu-small div[role="menuitem"],
-.dropdown-menu-small span,
-.dropdown-menu-small li button,
-.dropdown-menu-small li a {
-  font-size: var(--text-xs, 0.75rem) !important;
-  line-height: 1.5 !important;
-}
-
-/* Target nested elements more aggressively */
-.dropdown-menu-small * {
-  font-size: var(--text-xs, 0.75rem) !important;
-}
-</style>
 

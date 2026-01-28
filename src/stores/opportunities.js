@@ -121,12 +121,40 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     try {
       const currentOpp = currentOpportunity.value?.id === id ? currentOpportunity.value : opportunities.value.find(o => o.id === id)
       
+      // Auto-transition from "In Negotiation - Contract Pending" to "Closed Won - Awaiting Delivery"
+      // when both delivery date and e-signatures are completed
+      if (!updates.stage && currentOpp?.stage === 'In Negotiation' && currentOpp?.contractDate) {
+        const { getDisplayStage } = await import('@/utils/stageMapper')
+        const displayStage = getDisplayStage(currentOpp, 'opportunity')
+        
+        if (displayStage === 'In Negotiation - Contract Pending') {
+          // Check current state after applying updates
+          const hasDeliveryDate = updates.deliveryDate !== undefined ? updates.deliveryDate : currentOpp.deliveryDate
+          const hasESignature = updates.contractSigned !== undefined ? updates.contractSigned : 
+                               updates.esignatureCollectedDate !== undefined ? !!updates.esignatureCollectedDate :
+                               currentOpp.contractSigned || currentOpp.esignatureCollectedDate
+          
+          // Both steps completed - auto-transition to Closed Won
+          if (hasDeliveryDate && hasESignature) {
+            updates.stage = 'Closed Won'
+            updates.deliverySubstatus = 'Awaiting Delivery'
+            
+            // Track completion dates if not already set
+            if (updates.deliveryDate && !currentOpp.deliveryDateSetDate && !updates.deliveryDateSetDate) {
+              updates.deliveryDateSetDate = new Date().toISOString()
+            }
+            if ((updates.contractSigned || updates.esignatureCollectedDate) && !currentOpp.esignatureCollectedDate && !updates.esignatureCollectedDate) {
+              updates.esignatureCollectedDate = new Date().toISOString()
+            }
+          }
+        }
+      }
+      
       // Check if contract is being deleted (contractDate cleared)
       if (updates.contractDate === null && currentOpp?.contractDate) {
         // Contract deletion detected - revert offer status if auto-accepted
         const wasAutoAccepted = currentOpp.offerAcceptanceMethod === 'auto_via_contract'
-        const hasAcceptedOffer = currentOpp.negotiationSubstatus === 'Offer Accepted' || 
-                                (currentOpp.offers && currentOpp.offers.some(o => o.acceptance_method === 'auto_via_contract'))
+        const hasAcceptedOffer = currentOpp.offers && currentOpp.offers.some(o => o.acceptance_method === 'auto_via_contract')
         
         if (wasAutoAccepted || hasAcceptedOffer) {
           // Revert offer acceptance
@@ -143,7 +171,7 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
           }
           
           // Revert negotiation substatus
-          updates.negotiationSubstatus = 'Offer Under Review'
+          updates.negotiationSubstatus = 'Offer Sent'
           updates.offerAcceptanceDate = null
           updates.offerAcceptanceMethod = null
           updates.acceptedByUserId = null
@@ -192,15 +220,38 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
         currentOpportunity.value = updated
       }
       
+      // Check for auto-transition after update (if it happened)
+      if (updated.stage === 'Closed Won' && currentOpp?.stage === 'In Negotiation' && 
+          currentOpp?.contractDate && !updates.stage) {
+        // Auto-transition occurred - add activity
+        const { getDisplayStage } = await import('@/utils/stageMapper')
+        const previousDisplayStage = getDisplayStage(currentOpp, 'opportunity')
+        
+        if (previousDisplayStage === 'In Negotiation - Contract Pending') {
+          await addActivity(id, {
+            type: 'stage-transition',
+            user: 'System',
+            action: 'auto-transitioned to Closed Won - Awaiting Delivery',
+            content: 'Both delivery date and e-signatures completed. Opportunity moved to Closed Won - Awaiting Delivery',
+            data: {
+              fromStage: 'In Negotiation - Contract Pending',
+              toStage: 'Closed Won - Awaiting Delivery',
+              deliveryDateSetDate: updated.deliveryDateSetDate,
+              esignatureCollectedDate: updated.esignatureCollectedDate
+            },
+            timestamp: new Date().toISOString()
+          })
+        }
+      }
+      
       // Add audit log for contract deletion if needed
       if (updates.contractDate === null && currentOpp?.contractDate && 
-          (currentOpp.offerAcceptanceMethod === 'auto_via_contract' || 
-           currentOpp.negotiationSubstatus === 'Offer Accepted')) {
+          currentOpp.offerAcceptanceMethod === 'auto_via_contract') {
         await addActivity(id, {
           type: 'contract-deletion',
           user: 'System',
           action: 'contract deleted',
-          content: 'Contract deleted, offer reverted to Offer Under Review',
+          content: 'Contract deleted, offer reverted to Offer Sent',
           data: {
             wasAutoAccepted: currentOpp.offerAcceptanceMethod === 'auto_via_contract',
             previousSubstatus: currentOpp.negotiationSubstatus,
@@ -271,23 +322,31 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
       
       // Update local state
       const opp = opportunities.value.find(o => o.id === opportunityId)
+      
       if (opp) {
         if (!opp.offers) opp.offers = []
+        const wasFirstOffer = opp.offers.length === 0
         opp.offers.push(result)
         
         // Set stage and negotiationSubstatus if first offer
-        if (opp.offers.length === 1) {
+        if (wasFirstOffer) {
           opp.stage = 'In Negotiation'
           opp.negotiationSubstatus = 'Offer Sent'
+          // Persist to API
+          await opportunitiesApi.updateOpportunity(opportunityId, {
+            stage: 'In Negotiation',
+            negotiationSubstatus: 'Offer Sent'
+          })
         }
       }
       
       if (currentOpportunity.value?.id === opportunityId) {
         if (!currentOpportunity.value.offers) currentOpportunity.value.offers = []
+        const wasFirstOffer = currentOpportunity.value.offers.length === 0
         currentOpportunity.value.offers.push(result)
         
         // Set stage and negotiationSubstatus if first offer
-        if (currentOpportunity.value.offers.length === 1) {
+        if (wasFirstOffer) {
           currentOpportunity.value.stage = 'In Negotiation'
           currentOpportunity.value.negotiationSubstatus = 'Offer Sent'
         }
@@ -312,15 +371,30 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     }
   }
 
-  // Mark offer as accepted
-  const markOfferAccepted = async (opportunityId, offerId, metadata = {}) => {
+  // Add contract to opportunity's contracts array
+  const addContract = async (opportunityId, contractData) => {
     loading.value = true
     error.value = null
     try {
-      await opportunitiesApi.markOfferAccepted(opportunityId, offerId, metadata)
-      
-      // Reload opportunity to get updated data with metadata
-      await fetchOpportunityById(opportunityId)
+      const newContract = await opportunitiesApi.addContract(opportunityId, contractData)
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp) {
+        if (!opp.contracts) opp.contracts = []
+        opp.contracts.push(newContract)
+        if (opp.contracts.length === 1) {
+          opp.contractDate = newContract.contractDate
+        }
+        opp.lastActivity = newContract.contractDate || new Date().toISOString()
+      }
+      if (currentOpportunity.value?.id === opportunityId) {
+        if (!currentOpportunity.value.contracts) currentOpportunity.value.contracts = []
+        currentOpportunity.value.contracts.push(newContract)
+        if (currentOpportunity.value.contracts.length === 1) {
+          currentOpportunity.value.contractDate = newContract.contractDate
+        }
+        currentOpportunity.value.lastActivity = newContract.contractDate || new Date().toISOString()
+      }
+      return newContract
     } catch (err) {
       error.value = err.message
       throw err
@@ -351,6 +425,46 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
           offer.status = 'archived'
         }
       }
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Activate offer (change from archived to active)
+  // When activating an offer, deactivate all other active offers
+  const activateOffer = async (opportunityId, offerId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await opportunitiesApi.activateOffer(opportunityId, offerId)
+      
+      // Update local state - deactivate other active offers and activate the selected one
+      const opp = opportunities.value.find(o => o.id === opportunityId)
+      if (opp && opp.offers) {
+        opp.offers.forEach(o => {
+          if (o.id === offerId) {
+            o.status = 'active'
+          } else if (o.status === 'active' && o.acceptance_status !== 'accepted') {
+            o.status = 'archived'
+          }
+        })
+      }
+      
+      if (currentOpportunity.value?.id === opportunityId && currentOpportunity.value.offers) {
+        currentOpportunity.value.offers.forEach(o => {
+          if (o.id === offerId) {
+            o.status = 'active'
+          } else if (o.status === 'active' && o.acceptance_status !== 'accepted') {
+            o.status = 'archived'
+          }
+        })
+      }
+      
+      // Reload opportunity to ensure consistency
+      await fetchOpportunityById(opportunityId)
     } catch (err) {
       error.value = err.message
       throw err
@@ -496,8 +610,9 @@ export const useOpportunitiesStore = defineStore('opportunities', () => {
     addVehicle,
     createOffer,
     addOffer,
-    markOfferAccepted,
+    addContract,
     deleteOffer,
+    activateOffer,
     deleteContract,
     updateNegotiationSubstatus
   }

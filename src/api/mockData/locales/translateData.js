@@ -48,24 +48,17 @@ function translateFile(locale, fileName) {
     
     // Write translated file
     writeFileSync(filePath, newContent, 'utf8')
-    console.log(`✓ Translated ${filePath}`)
-    
+
   } catch (error) {
     console.error(`Error translating ${filePath}:`, error.message)
   }
 }
 
 // Translate all files for all locales
-console.log('Starting translation process...\n')
-
 for (const locale of locales) {
-  console.log(`Translating ${locale.toUpperCase()}...`)
   for (const file of files) {
     translateFile(locale, file)
   }
-  console.log()
 }
-
-console.log('Translation complete!')
 
 

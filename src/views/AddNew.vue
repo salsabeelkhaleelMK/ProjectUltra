@@ -133,7 +133,7 @@ const handleSubmit = async (formData) => {
           address: contact.address || ''
         },
         status: 'Open',
-        stage: 'Open Lead',
+        stage: 'Open',
         priority: 'Normal',
         source: vehicleData?.source || 'Direct',
         assignee: null,

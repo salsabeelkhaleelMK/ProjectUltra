@@ -397,7 +397,7 @@ export function useLeadManagementHandlers({ getLead, leadState, emit }) {
           disqualifyReason: null,
           disqualifyCategory: null,
           isDuplicate: false,
-          stage: 'Open Lead',
+          stage: 'Open',
           status: 'Open',
           nextActionDue: null, // Clear any old due dates
           scheduledAppointment: null // Clear any old appointments

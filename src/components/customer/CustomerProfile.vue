@@ -21,11 +21,39 @@
           <!-- Contact Details Card - Row 1, Col 1 (Desktop) -->
           <div class="h-auto">
             <CustomerContactDetailsCard
-              :email="task?.customer?.email || customerData?.email || ''"
-              :phone="task?.customer?.phone || customerData?.phone || ''"
-              :address="task?.customer?.address || customerData?.address || ''"
-              :title="customerData?.title || customerData?.salutation"
-              :job-title="customerData?.jobTitle || customerData?.title"
+              :name="customerData?.name || task?.customer?.name || ''"
+              :first-name="customerData?.firstName || ''"
+              :last-name="customerData?.lastName || ''"
+              :initials="customerData?.initials || task?.customer?.initials || ''"
+              :title="customerData?.title || customerData?.salutation || ''"
+              :salutation="customerData?.salutation || customerData?.title || ''"
+              :job-title="customerData?.jobTitle || ''"
+              :birth-date="customerData?.birthDate || ''"
+              :gender="customerData?.gender || ''"
+              :place-of-birth="customerData?.placeOfBirth || ''"
+              :email="customerData?.email || task?.customer?.email || ''"
+              :secondary-email="customerData?.secondaryEmail || ''"
+              :phone="customerData?.phone || task?.customer?.phone || ''"
+              :secondary-phone="customerData?.secondaryPhone || ''"
+              :mobile-phone="customerData?.mobilePhone || ''"
+              :preferred-contact-method="customerData?.preferredContactMethod || customerData?.preferredChannel || ''"
+              :preferred-channel="customerData?.preferredChannel || ''"
+              :address="customerData?.address || task?.customer?.address || ''"
+              :street-address1="customerData?.streetAddress1 || customerData?.streetAddress || customerData?.address?.streetLine1 || ''"
+              :street-address2="customerData?.streetAddress2 || customerData?.address?.streetLine2 || ''"
+              :city="customerData?.city || customerData?.address?.city || ''"
+              :postal-code="customerData?.postalCode || customerData?.zipCode || customerData?.address?.postalCode || ''"
+              :region="customerData?.region || customerData?.state || customerData?.county || customerData?.address?.region || ''"
+              :country="customerData?.country || customerData?.address?.country || ''"
+              :contact-custom-fields="customerData?.customFields || customerData?.contactCustomFields || {}"
+              :external-id="customerData?.externalId || customerData?.contactExternalId || ''"
+              :created-at="customerData?.createdAt || customerData?.createdDate || ''"
+              :created-date="customerData?.createdDate || customerData?.createdAt || ''"
+              :updated-at="customerData?.updatedAt || customerData?.lastUpdatedDate || customerData?.lastContact || ''"
+              :last-updated-date="customerData?.lastUpdatedDate || customerData?.updatedAt || ''"
+              :last-activity-date="customerData?.lastActivityDate || ''"
+              :is-master-contact="isMasterContact"
+              :account-name="accountData?.name || accountData?.companyName || ''"
               :loading="loadingCustomer"
             />
           </div>
@@ -45,6 +73,33 @@
             <AccountDetailsCard
               :account-data="accountData"
               :current-contact-id="customerId"
+              :account-status="accountData?.status || accountData?.accountStatus || 'Active'"
+              :company-website="accountData?.website || accountData?.companyWebsite || ''"
+              :company-phone="accountData?.companyPhone || accountData?.phone || ''"
+              :company-email="accountData?.companyEmail || accountData?.email || ''"
+              :company-address="accountData?.companyAddress || accountData?.address || ''"
+              :company-street-address1="accountData?.companyAddress?.streetLine1 || accountData?.streetAddress1 || accountData?.companyStreetAddress || accountData?.address?.streetLine1 || (typeof accountData?.address === 'string' ? accountData?.address?.split(',')[0] : '') || ''"
+              :company-street-address2="accountData?.companyAddress?.streetLine2 || accountData?.streetAddress2 || accountData?.address?.streetLine2 || ''"
+              :company-city="accountData?.companyAddress?.city || accountData?.city || accountData?.companyCity || accountData?.address?.city || ''"
+              :company-postal-code="accountData?.companyAddress?.postalCode || accountData?.postalCode || accountData?.zipCode || accountData?.companyPostalCode || accountData?.address?.postalCode || ''"
+              :company-region="accountData?.companyAddress?.region || accountData?.region || accountData?.state || accountData?.county || accountData?.companyRegion || accountData?.address?.region || ''"
+              :company-country="accountData?.companyAddress?.country || accountData?.country || accountData?.companyCountry || accountData?.address?.country || ''"
+              :fiscal-entity="accountData?.fiscalEntity || accountData?.fiscalEntityName || ''"
+              :account-external-id="accountData?.externalId || accountData?.accountExternalId || ''"
+              :account-custom-fields="accountData?.customFields || accountData?.accountCustomFields || {}"
+              :account-created-at="accountData?.createdAt || accountData?.createdDate || ''"
+              :created-date="accountData?.createdDate || accountData?.createdAt || ''"
+              :account-updated-at="accountData?.updatedAt || accountData?.lastUpdatedDate || accountData?.lastContact || ''"
+              :last-updated-date="accountData?.lastUpdatedDate || accountData?.updatedAt || ''"
+              :last-activity="accountData?.lastActivity || accountData?.lastActivityDate || accountData?.lastContact || ''"
+              :last-activity-date="accountData?.lastActivityDate || accountData?.lastActivity || ''"
+              :related-contacts-count="relatedContacts.length"
+              :related-leads-count="customerLeads.length"
+              :related-opportunities-count="customerOpportunities.length"
+              :related-vehicles-count="customerCars.length"
+              :account-tags="accountData?.tags || []"
+              :payment-terms="accountData?.paymentTerms || ''"
+              :credit-limit="accountData?.creditLimit || ''"
               :loading="loadingAccount"
             />
           </div>
@@ -204,6 +259,17 @@ const customer = computed(() => {
   return customerData.value || customersStore.currentCustomer
 })
 
+// Check if current contact is master contact
+const isMasterContact = computed(() => {
+  if (!accountData.value || !customerData.value) {
+    // Also check if contact has isMasterContact flag directly
+    return customerData.value?.isMasterContact === true
+  }
+  const masterId = accountData.value.masterContactId || accountData.value.masterContact?.id
+  const contactId = customerData.value.id || customerData.value.contactId
+  return (masterId && String(masterId) === String(contactId)) || customerData.value?.isMasterContact === true
+})
+
 // Get task from customer data
 const task = computed(() => {
   const cust = customer.value
@@ -301,15 +367,15 @@ const loadCustomerData = async () => {
     customerData.value = customer || customersStore.currentCustomer
     customerTasks.value = tasksResult.data || []
     
-    // Fetch account data if contact has account_id
-    const accountId = customerData.value?.account_id || customerData.value?.accountId
+    // Fetch account data if contact has accountId (support both account_id and accountId)
+    const accountId = customerData.value?.accountId || customerData.value?.account_id
     if (accountId) {
       try {
         loadingAccount.value = true
         accountData.value = await fetchAccountById(accountId)
         
-        // If account type is Company, fetch related contacts
-        if (accountData.value?.type === 'Company') {
+        // If account type is Company, fetch related contacts (support both type and accountType)
+        if (accountData.value?.type === 'Company' || accountData.value?.accountType === 'Company') {
           try {
             loadingRelatedContacts.value = true
             const relatedContactsResult = await fetchContactsByAccountId(accountId)

@@ -50,7 +50,7 @@ export const createLeadFromContact = async (contactId, carData) => {
     customerId: contact.customerId,
     requestedCar: carData,
     status: 'Open',
-    stage: 'Open Lead',
+    stage: 'Open',
     priority: 'Normal',
     source: carData.source || 'Direct',
     assignee: null,
@@ -174,7 +174,7 @@ export const createLeadFromOpportunity = async (opportunityData, activities) => 
     lastActivity: new Date().toISOString(),
     nextActionDue: '1h',
     tags: opportunityData.tags || [],
-    stage: 'Open Lead',
+    stage: 'Open',
     isDisqualified: false,
     disqualifyReason: null
   })
@@ -216,10 +216,10 @@ export const detectUrgentLeads = async (userId) => {
     return userByName && userByName.id === userId
   })
   
-  // Find leads in "Open Lead" stage for 7-14 days without conversion (urgent window)
+  // Find leads in "Open" stage for 7-14 days without conversion (urgent window)
   for (const lead of userLeads) {
-    // Check if lead is in Open Lead stage
-    if (lead.stage !== 'Open Lead') continue
+    // Check if lead is in Open stage
+    if (lead.stage !== 'Open') continue
     
     // Check if lead is disqualified
     if (lead.isDisqualified) continue

@@ -101,7 +101,7 @@ export class LeadRepository extends BaseRepository {
       lastActivity: new Date().toISOString(),
       nextActionDue: data.nextActionDue || null,
       tags: data.tags || [],
-      stage: data.stage || 'Open Lead',
+      stage: data.stage || 'Open',
       isDisqualified: data.isDisqualified || false,
       disqualifyReason: data.disqualifyReason || null,
       scheduledAppointment: data.scheduledAppointment || null,

@@ -11,41 +11,18 @@
                   Contract was signed {{ daysSinceContract }} days ago. Follow up on delivery status and collect customer feedback.
                 </p>
               </div>
-              <button
-                @click="$emit('postpone', 'cfb')"
-                class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted ml-4"
-              >
-                <i class="fa-solid fa-clock"></i>
-                <span>Postpone</span>
-              </button>
             </div>
           </div>
           <div class="flex flex-wrap gap-3 items-center">
             <Toggle
               variant="outline"
               :model-value="showSurvey"
-              @update:model-value="showSurvey = $event"
+              @update:model-value="handleToggleChange('survey', $event)"
               class="outcome-toggle-item"
             >
               <i class="fa-solid fa-clipboard-list"></i>
               <span>Complete Survey</span>
             </Toggle>
-            <Button
-              variant="outline"
-              @click="handlePrepareDelivery"
-              class="outcome-toggle-item"
-            >
-              <i class="fa-solid fa-truck"></i>
-              <span>Prepare for Delivery</span>
-            </Button>
-            <Button
-              variant="outline"
-              @click="handlePreDeliveryChecklist"
-              class="outcome-toggle-item"
-            >
-              <i class="fa-solid fa-clipboard-check"></i>
-              <span>Pre-Delivery Checklist</span>
-            </Button>
           </div>
         </div>
       </div>
@@ -58,22 +35,33 @@
         @submit="handleSubmit"
         @cancel="handleCancel"
       />
-      <div class="flex justify-end gap-2 pt-3">
+      <div class="flex justify-between items-center pt-3">
         <Button
           variant="secondary"
-          @click="handleCancel"
+          @click="$emit('postpone', 'cfb')"
+          class="flex items-center gap-2"
         >
-          Cancel
+          <i class="fa-solid fa-clock"></i>
+          <span>Postpone</span>
         </Button>
-        <Button
-          variant="default"
-          :disabled="!canSubmit"
-          @click="handleConfirm"
-        >
-          Submit Survey
-        </Button>
+        <div class="flex gap-2">
+          <Button
+            variant="secondary"
+            @click="handleCancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="default"
+            :disabled="!canSubmit"
+            @click="handleConfirm"
+          >
+            Submit Survey
+          </Button>
+        </div>
       </div>
     </div>
+    
   </div>
 </template>
 
@@ -95,7 +83,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'survey-submitted', 'survey-cancelled', 'prepare-delivery', 'pre-delivery-checklist', 'postpone'])
+const emit = defineEmits(['close', 'survey-submitted', 'survey-cancelled', 'postpone'])
 
 const opportunitiesStore = useOpportunitiesStore()
 const userStore = useUserStore()
@@ -118,15 +106,7 @@ const daysSinceContract = computed(() => {
 const handleSubmit = async (surveyData) => {
   try {
     const opp = props.opportunity
-    const { responses, triggerActions, deliveryDate } = surveyData
-    
-    // Auto-populate delivery date if provided in survey
-    if (deliveryDate && triggerActions.deliveryDate) {
-      await opportunitiesStore.updateOpportunity(opp.id, {
-        deliveryDate: deliveryDate,
-        deliverySubstatus: 'Awaiting Delivery'
-      })
-    }
+    const { responses, triggerActions } = surveyData
     
     // Save survey as activity
     await opportunitiesStore.addActivity(opp.id, {
@@ -137,7 +117,6 @@ const handleSubmit = async (surveyData) => {
       data: {
         responses,
         triggerActions,
-        deliveryDate,
         timestamp: surveyData.timestamp
       },
       timestamp: surveyData.timestamp
@@ -174,22 +153,6 @@ const handleSubmit = async (surveyData) => {
             trigger: 'document-clarity',
             recipients: ['Compliance/Legal team'],
             surveyResponse: responses.q2
-          },
-          timestamp: new Date().toISOString()
-        })
-      )
-    }
-    
-    if (triggerActions.deliveryDate && deliveryDate) {
-      triggerActivityPromises.push(
-        opportunitiesStore.addActivity(opp.id, {
-          type: 'survey-trigger',
-          user: userStore.currentUser?.name || 'You',
-          action: 'auto-populated delivery date',
-          content: `Delivery date set to ${deliveryDate} from survey`,
-          data: {
-            trigger: 'delivery-date',
-            deliveryDate: deliveryDate
           },
           timestamp: new Date().toISOString()
         })
@@ -237,11 +200,15 @@ const handleCancel = () => {
   emit('survey-cancelled', { opportunity: props.opportunity })
 }
 
-const handlePrepareDelivery = () => {
-  emit('prepare-delivery', props.opportunity)
-}
-
-const handlePreDeliveryChecklist = () => {
-  emit('pre-delivery-checklist', props.opportunity)
+const handleToggleChange = (type, value) => {
+  // Reset all toggles first
+  showSurvey.value = false
+  
+  // If the toggle is being turned on, set only that one
+  if (value) {
+    if (type === 'survey') {
+      showSurvey.value = true
+    }
+  }
 }
 </script>

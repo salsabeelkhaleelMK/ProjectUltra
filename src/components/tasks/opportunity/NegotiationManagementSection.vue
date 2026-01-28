@@ -7,42 +7,46 @@
             <h4 class="font-bold text-foreground text-sm">Manage Offers & Follow Up</h4>
             <p class="text-sm text-muted-foreground mt-0.5">
               <template v-if="opportunity.offers && opportunity.offers.length > 0">
-                {{ (opportunity.negotiationSubstatus === 'Offer Under Review' || opportunity.negotiationSubstatus === 'Awaiting Response' || opportunity.negotiationSubstatus === 'Offer Feedback') ? 'Request feedback on pending offers' : 'Follow up with customer about offers' }}
+                <template v-if="meetsOFBCondition">
+                  This opportunity has been in negotiation for {{ daysInNegotiation }} days without a contract. Follow up with customer to get feedback and move forward.
+                </template>
+                <template v-else>
+                  Follow up with customer about offers
+                </template>
               </template>
               <template v-else>
-                {{ (opportunity.negotiationSubstatus === 'Offer Under Review' || opportunity.negotiationSubstatus === 'Awaiting Response' || opportunity.negotiationSubstatus === 'Offer Feedback') ? 'Create an offer and request feedback' : 'Create an offer to continue negotiation' }}
+                Create an offer to continue negotiation
               </template>
             </p>
           </div>
-          <!-- Offers Carousel (before action buttons) -->
-          <div v-if="opportunity.offers && opportunity.offers.length > 0" class="mb-4">
-            <OfferCarousel
-              :offers="opportunity.offers"
-              :opportunity-id="opportunity.id"
-              @offer-accepted="$emit('offer-accepted', $event)"
-            />
-          </div>
-          <div v-else class="mb-4 p-4 bg-muted rounded-lg">
+          <!-- Offers Carousel is now shown globally in OpportunityManagementWidget for all stages -->
+          <div v-if="!opportunity.offers || opportunity.offers.length === 0" class="mb-4 p-4 bg-muted rounded-lg">
             <p class="text-sm text-muted-foreground">No offers yet. Create your first offer to continue.</p>
           </div>
           <div class="flex flex-wrap gap-3 items-center">
-            <!-- Primary Actions for Offer Under Review -->
-            <template v-if="opportunity.negotiationSubstatus === 'Offer Under Review' || opportunity.negotiationSubstatus === 'Awaiting Response'">
-              <Button
-                variant="default"
-                @click="$emit('mark-offer-accepted')"
-                class="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <i class="fa-solid fa-check-circle mr-2"></i>
-                Mark as Accepted
-              </Button>
-              <Button
-                variant="outline"
-                @click="$emit('update:show-add-offer-section', true); $emit('update:show-negotiation-section', false)"
-              >
-                <i class="fa-solid fa-plus mr-2"></i>
-                Create Another Offer
-              </Button>
+            <!-- Actions for Offer Sent -->
+            <template v-if="opportunity.negotiationSubstatus === 'Offer Sent'">
+              <div class="outcome-toggle-group flex flex-wrap gap-3">
+                <Toggle
+                  variant="outline"
+                  :model-value="showNegotiationSection"
+                  @update:model-value="(p) => { $emit('update:show-negotiation-section', p); if (p) { $emit('update:show-add-offer-section', false); $emit('update:show-survey-section', false); } else { $emit('reset-negotiation-form') } }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-phone-volume"></i>
+                  <span>Follow Up</span>
+                </Toggle>
+                <Toggle
+                  v-if="meetsOFBCondition"
+                  variant="outline"
+                  :model-value="showSurveySection"
+                  @update:model-value="(p) => { $emit('update:show-survey-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-add-offer-section', false); } }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span>Complete Survey</span>
+                </Toggle>
+              </div>
             </template>
             
             <!-- Regular Actions for other substatuses -->
@@ -51,7 +55,7 @@
                 <Toggle
                   variant="outline"
                   :model-value="showNegotiationSection"
-                  @update:model-value="(p) => { $emit('update:show-negotiation-section', p); if (p) $emit('update:show-add-offer-section', false); else { $emit('reset-negotiation-form') } }"
+                  @update:model-value="(p) => { $emit('update:show-negotiation-section', p); if (p) { $emit('update:show-add-offer-section', false); $emit('update:show-survey-section', false); } else { $emit('reset-negotiation-form') } }"
                   class="outcome-toggle-item"
                 >
                   <i class="fa-solid fa-phone-volume"></i>
@@ -60,11 +64,21 @@
                 <Toggle
                   variant="outline"
                   :model-value="showAddOfferSection"
-                  @update:model-value="(p) => { $emit('update:show-add-offer-section', p); if (p) $emit('update:show-negotiation-section', false) }"
+                  @update:model-value="(p) => { $emit('update:show-add-offer-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-survey-section', false); } }"
                   class="outcome-toggle-item"
                 >
                   <i class="fa-solid fa-plus"></i>
                   <span>Add Offer</span>
+                </Toggle>
+                <Toggle
+                  v-if="meetsOFBCondition"
+                  variant="outline"
+                  :model-value="showSurveySection"
+                  @update:model-value="(p) => { $emit('update:show-survey-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-add-offer-section', false); } }"
+                  class="outcome-toggle-item"
+                >
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span>Complete Survey</span>
                 </Toggle>
               </div>
             </template>
@@ -73,7 +87,7 @@
             <SecondaryActionsDropdown
               v-if="secondaryActions && secondaryActions.length > 0"
               :actions="secondaryActions"
-              @action-selected="$emit('secondary-action', $event)"
+              @action-selected="handleSecondaryActionClick"
             />
           </div>
         </div>
@@ -213,13 +227,39 @@
         </Button>
       </div>
       
-      <!-- OFB Task Widget (only in expanded view, only for Offer Under Review status) -->
-      <div v-if="shouldShowOFBTask" class="space-y-4">
+      <!-- OFB Survey Section (only when toggle is active and OFB condition is met) -->
+      <div v-if="showSurveySection && meetsOFBCondition" class="space-y-4">
         <OFBTask
+          ref="ofbTaskRef"
           :opportunity="opportunity"
-          @offer-accepted="$emit('offer-accepted', $event)"
-          @postpone="$emit('ofb-postpone', $event)"
+          @submit="handleSurveySubmit"
+          @postpone="handleSurveyPostpone"
         />
+        <div class="flex justify-between items-center pt-3">
+          <Button
+            variant="secondary"
+            @click="$emit('ofb-postpone', 'ofb')"
+            class="flex items-center gap-2"
+          >
+            <i class="fa-solid fa-clock"></i>
+            <span>Postpone</span>
+          </Button>
+          <div class="flex gap-2">
+            <Button
+              variant="secondary"
+              @click="handleSurveyCancel"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              :disabled="!canSubmitSurvey"
+              @click="handleSurveyConfirm"
+            >
+              Submit Survey
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -230,7 +270,6 @@ import { computed, ref } from 'vue'
 import { Button, Toggle, Label, Textarea } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
-import OfferCarousel from '@/components/shared/OfferCarousel.vue'
 import OfferWidget from '@/components/customer/activities/OfferWidget.vue'
 import OFBTask from '@/components/tasks/opportunity/OFBTask.vue'
 import { OpportunityConditions } from '@/utils/opportunityRules'
@@ -245,6 +284,10 @@ const props = defineProps({
     default: false
   },
   showAddOfferSection: {
+    type: Boolean,
+    default: false
+  },
+  showSurveySection: {
     type: Boolean,
     default: false
   },
@@ -281,6 +324,7 @@ const props = defineProps({
 const emit = defineEmits([
   'update:show-negotiation-section',
   'update:show-add-offer-section',
+  'update:show-survey-section',
   'update:negotiation-channel',
   'update:negotiation-message',
   'update:negotiation-selected-offer-id',
@@ -293,21 +337,127 @@ const emit = defineEmits([
   'offer-accepted',
   'mark-offer-accepted',
   'secondary-action',
-  'ofb-postpone'
+  'ofb-postpone',
+  'survey-submitted',
+  'survey-cancelled'
 ])
 
 const addOfferWidgetRef = ref(null)
+const ofbTaskRef = ref(null)
 
-// Check if OFB task should be shown (only in expanded view, only for Offer Under Review)
-const shouldShowOFBTask = computed(() => {
-  // Only show when negotiation section or add offer section is expanded
-  if (!props.showNegotiationSection && !props.showAddOfferSection) {
+const hasOffers = computed(() => {
+  return props.opportunity?.offers && props.opportunity.offers.length > 0
+})
+
+const daysInNegotiation = computed(() => {
+  const date = props.opportunity.lastActivity || props.opportunity.createdAt
+  if (!date) return 0
+  const negotiationDate = new Date(date)
+  const now = new Date()
+  const diffTime = Math.abs(now - negotiationDate)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+})
+
+const canSubmitSurvey = computed(() => {
+  return ofbTaskRef.value?.isValid || false
+})
+
+const handleSurveyConfirm = () => {
+  if (ofbTaskRef.value) {
+    ofbTaskRef.value.submit()
+  }
+}
+
+const handleSurveySubmit = (surveyData) => {
+  emit('survey-submitted', { opportunity: props.opportunity, surveyData })
+  emit('update:show-survey-section', false)
+}
+
+const handleSurveyCancel = () => {
+  emit('update:show-survey-section', false)
+  emit('survey-cancelled', { opportunity: props.opportunity })
+}
+
+const handleSurveyPostpone = (event) => {
+  emit('ofb-postpone', event)
+  emit('update:show-survey-section', false)
+}
+
+// Handle secondary action clicks - toggle appropriate form sections
+const handleSecondaryActionClick = (action) => {
+  // Map action keys to form sections
+  // Actions that should toggle Add Offer form
+  const addOfferActions = ['add-offer', 'create-offer']
+  // Actions that should toggle Follow Up form
+  const followUpActions = ['follow-up', 'request-feedback', 'collect-feedback', 'reassign', 'schedule-appointment', 'close-lost']
+  
+  if (addOfferActions.includes(action.key)) {
+    // Toggle add offer section
+    const newValue = !props.showAddOfferSection
+    emit('update:show-add-offer-section', newValue)
+    if (newValue) {
+      emit('update:show-negotiation-section', false)
+      emit('update:show-survey-section', false)
+    }
+  } else if (followUpActions.includes(action.key)) {
+    // Toggle negotiation/follow-up section (default for most actions)
+    const newValue = !props.showNegotiationSection
+    emit('update:show-negotiation-section', newValue)
+    if (newValue) {
+      emit('update:show-add-offer-section', false)
+      emit('update:show-survey-section', false)
+    } else {
+      emit('reset-negotiation-form')
+    }
+  } else {
+    // For any other action, default to follow-up form
+    const newValue = !props.showNegotiationSection
+    emit('update:show-negotiation-section', newValue)
+    if (newValue) {
+      emit('update:show-add-offer-section', false)
+      emit('update:show-survey-section', false)
+    } else {
+      emit('reset-negotiation-form')
+    }
+  }
+  
+  // Still emit the secondary-action event for parent to handle other logic
+  emit('secondary-action', action)
+}
+
+// Check if OFB condition is met (for subtitle display)
+const meetsOFBCondition = computed(() => {
+  // Only check for "Offer Sent" status
+  const substatus = props.opportunity?.negotiationSubstatus
+  if (substatus !== 'Offer Sent') {
     return false
   }
   
-  // Only show for "Offer Under Review" status
+  // Check OFB condition
+  const context = {
+    opportunity: props.opportunity,
+    hasOffers: props.opportunity?.offers && props.opportunity.offers.length > 0,
+    stage: 'In Negotiation',
+    activities: []
+  }
+  
+  return OpportunityConditions['negotiation-5-plus-days-no-contract-has-offers'](context)
+})
+
+// Check if OFB task should be shown (only in expanded view, only for Offer Sent)
+const shouldShowOFBTask = computed(() => {
+  // TEMPORARY: For opportunity 33 evaluation, show even when not expanded
+  const isEvaluationMode = props.opportunity?.id === 33
+  
+  // Only show when negotiation section or add offer section is expanded (unless evaluation mode)
+  if (!isEvaluationMode && !props.showNegotiationSection && !props.showAddOfferSection) {
+    return false
+  }
+  
+  // Only show for "Offer Sent" status
   const substatus = props.opportunity?.negotiationSubstatus
-  if (substatus !== 'Offer Under Review' && substatus !== 'Awaiting Response') {
+  if (substatus !== 'Offer Sent') {
     return false
   }
   
@@ -333,6 +483,7 @@ function formatCurrency(value) {
 
 // Expose refs for parent component
 defineExpose({
-  addOfferWidgetRef
+  addOfferWidgetRef,
+  ofbTaskRef
 })
 </script>

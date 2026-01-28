@@ -35,7 +35,14 @@
                 v-if="!isAppointmentToday"
                 variant="outline"
                 :model-value="showRescheduleSection"
-                @update:model-value="(p) => { $emit('update:show-reschedule-section', p); if (p) { $emit('update:show-ns-task-section', false); $emit('update:show-offer-assignment-section', false) } }"
+                @update:model-value="(p) => { 
+                  $emit('update:show-reschedule-section', p); 
+                  if (p) { 
+                    $emit('update:show-ns-task-section', false); 
+                    $emit('update:show-offer-assignment-section', false);
+                    activeSecondaryAction.value = null; // Hide secondary action forms
+                  } 
+                }"
                 class="outcome-toggle-item"
               >
                 <i class="fa-solid fa-calendar-days"></i>
@@ -45,7 +52,14 @@
                 v-if="isAppointmentToday"
                 variant="outline"
                 :model-value="showNsTaskSection"
-                @update:model-value="(p) => { if (p) $emit('mark-no-show'); else $emit('update:show-ns-task-section', false) }"
+                @update:model-value="(p) => { 
+                  if (p) {
+                    $emit('mark-no-show');
+                    activeSecondaryAction.value = null; // Hide secondary action forms
+                  } else {
+                    $emit('update:show-ns-task-section', false);
+                  }
+                }"
                 class="outcome-toggle-item"
               >
                 <i class="fa-solid fa-user-slash"></i>
@@ -55,7 +69,14 @@
                 v-if="isAppointmentToday"
                 variant="outline"
                 :model-value="showOfferAssignmentSection"
-                @update:model-value="(p) => { if (p) $emit('mark-showed-up'); else $emit('update:show-offer-assignment-section', false) }"
+                @update:model-value="(p) => { 
+                  if (p) {
+                    $emit('mark-showed-up');
+                    activeSecondaryAction.value = null; // Hide secondary action forms
+                  } else {
+                    $emit('update:show-offer-assignment-section', false);
+                  }
+                }"
                 class="outcome-toggle-item"
               >
                 <i class="fa-solid fa-user-check"></i>
@@ -67,7 +88,7 @@
             <SecondaryActionsDropdown
               v-if="secondaryActions && secondaryActions.length > 0"
               :actions="secondaryActions"
-              @action-selected="$emit('secondary-action', $event)"
+              @action-selected="handleSecondaryActionSelected"
             />
           </div>
         </div>
@@ -85,6 +106,16 @@
           @cancel="$emit('reschedule-cancel')"
         />
       </div>
+      
+      <!-- Secondary Action Forms - Show inline when selected from dropdown -->
+      <CloseAsLostCard
+        v-if="activeSecondaryAction === 'close-lost'"
+        ref="closeAsLostCardRef"
+        :preselected-reason="closeAsLostReason"
+        :preselected-notes="closeAsLostNotes"
+        @cancel="handleCancelCloseAsLost"
+        @confirm="handleConfirmCloseAsLost"
+      />
       
       <!-- Inline NS Task Section -->
       <div v-if="showNsTaskSection">
@@ -167,14 +198,17 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Button, Toggle } from '@motork/component-library/future/primitives'
+import { formatDateTime } from '@/utils/formatters'
+import { useCloseAsLost } from '@/composables/useCloseAsLost'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
 import OpportunityScheduleForm from '@/components/tasks/opportunity/OpportunityScheduleForm.vue'
 import NS1Task from '@/components/tasks/opportunity/NS1Task.vue'
 import NS2Task from '@/components/tasks/opportunity/NS2Task.vue'
 import NS3Task from '@/components/tasks/opportunity/NS3Task.vue'
 import OfferAssignmentTask from '@/components/tasks/opportunity/OfferAssignmentTask.vue'
+import CloseAsLostCard from '@/components/shared/CloseAsLostCard.vue'
 
 const props = defineProps({
   opportunity: {
@@ -217,10 +251,6 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  formatDateTime: {
-    type: Function,
-    required: true
-  },
   customerName: {
     type: String,
     default: ''
@@ -252,7 +282,8 @@ const emit = defineEmits([
   'offer-assignment-cancel',
   'offer-assignment-confirm',
   'secondary-action',
-  'customer-click'
+  'customer-click',
+  'close-as-lost-confirmed'
 ])
 
 const scheduleFormRef = ref(null)
@@ -261,9 +292,75 @@ const ns2TaskRef = ref(null)
 const ns3TaskRef = ref(null)
 const offerAssignmentTaskRef = ref(null)
 
+// Track which secondary action form is currently active
+const activeSecondaryAction = ref(null)
+const { reason: closeAsLostReason, notes: closeAsLostNotes, cardRef: closeAsLostCardRef, reset: resetCloseAsLost } = useCloseAsLost()
+
+// Actions that should show forms inline (others will be handled directly)
+const actionsWithForms = ['close-lost']
+
 function handleCustomerClick(event) {
   emit('customer-click', event)
 }
+
+function handleSecondaryActionSelected(action) {
+  // If this action has a form, show it inline and hide other sections
+  if (actionsWithForms.includes(action.key)) {
+    // Toggle: if same action is selected, hide it; otherwise show it and hide others
+    if (activeSecondaryAction.value === action.key) {
+      activeSecondaryAction.value = null
+    } else {
+      activeSecondaryAction.value = action.key
+      // Hide other sections
+      emit('update:show-reschedule-section', false)
+      emit('update:show-ns-task-section', false)
+      emit('update:show-offer-assignment-section', false)
+      
+      // Initialize form data if needed
+      if (action.key === 'close-lost') {
+        resetCloseAsLost()
+      }
+    }
+  } else {
+    // For actions without forms, emit the event normally
+    emit('secondary-action', action)
+  }
+}
+
+function handleCancelCloseAsLost() {
+  activeSecondaryAction.value = null
+  resetCloseAsLost()
+}
+
+function handleConfirmCloseAsLost(data) {
+  emit('close-as-lost-confirmed', {
+    reason: data.reason,
+    notes: data.notes
+  })
+  // Reset after confirmation
+  activeSecondaryAction.value = null
+  closeAsLostReason.value = ''
+  closeAsLostNotes.value = ''
+}
+
+// Watch for prop changes to hide secondary action form when other sections are shown
+watch(() => props.showRescheduleSection, (newVal) => {
+  if (newVal) {
+    activeSecondaryAction.value = null
+  }
+})
+
+watch(() => props.showNsTaskSection, (newVal) => {
+  if (newVal) {
+    activeSecondaryAction.value = null
+  }
+})
+
+watch(() => props.showOfferAssignmentSection, (newVal) => {
+  if (newVal) {
+    activeSecondaryAction.value = null
+  }
+})
 
 // Expose refs for parent component
 defineExpose({
@@ -271,7 +368,8 @@ defineExpose({
   ns1TaskRef,
   ns2TaskRef,
   ns3TaskRef,
-  offerAssignmentTaskRef
+  offerAssignmentTaskRef,
+  closeAsLostCardRef
 })
 </script>
 

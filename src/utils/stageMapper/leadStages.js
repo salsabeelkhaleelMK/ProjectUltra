@@ -50,7 +50,7 @@ export function calculateLeadDisplayStage(lead) {
       return LEAD_STAGES.TO_BE_CALLED_BACK
     }
     
-    // Default: New lead (for 'Open Lead' and any other active status)
+    // Default: New lead (for 'Open' and any other active status)
     // This is the safe fallback - all active leads default to New
     return LEAD_STAGES.NEW
   }

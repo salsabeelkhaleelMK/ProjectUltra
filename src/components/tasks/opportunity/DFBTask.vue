@@ -6,9 +6,13 @@
           <div class="mb-3">
             <div class="flex justify-between items-start">
               <div class="flex-1">
-                <h4 class="font-bold text-foreground text-sm">Post-Delivery Customer Satisfaction Survey</h4>
+                <h4 class="font-bold text-foreground text-sm">
+                  {{ isAwaitingDelivery ? 'Delivery Delay Feedback' : 'Post-Delivery Customer Satisfaction Survey' }}
+                </h4>
                 <p class="text-sm text-muted-foreground mt-0.5">
-                  Collect feedback from the customer about their delivery experience
+                  {{ isAwaitingDelivery 
+                    ? 'Get feedback on delivery delay and check progress' 
+                    : 'Collect feedback from the customer about their delivery experience' }}
                 </p>
               </div>
               <button
@@ -29,6 +33,16 @@
             >
               <i class="fa-solid fa-clipboard-list"></i>
               <span>Complete Survey</span>
+            </Toggle>
+            <Toggle
+              v-if="isAwaitingDelivery"
+              variant="outline"
+              :model-value="showReschedule"
+              @update:model-value="showReschedule = $event"
+              class="outcome-toggle-item"
+            >
+              <i class="fa-solid fa-calendar-days"></i>
+              <span>Reschedule Delivery</span>
             </Toggle>
           </div>
         </div>
@@ -58,6 +72,44 @@
         </Button>
       </div>
     </div>
+    
+    <div v-if="showReschedule" class="px-4 py-4 space-y-4">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">New Delivery Date</label>
+          <input
+            v-model="rescheduleForm.newDeliveryDate"
+            type="date"
+            :min="minRescheduleDate"
+            class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">Reason (Optional)</label>
+          <textarea
+            v-model="rescheduleForm.reason"
+            rows="3"
+            class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+            placeholder="Reason for rescheduling..."
+          />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-3">
+        <Button
+          variant="secondary"
+          @click="handleCancelReschedule"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="default"
+          :disabled="!canSubmitReschedule"
+          @click="handleConfirmReschedule"
+        >
+          Reschedule Delivery
+        </Button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -67,6 +119,7 @@ import { Button, Toggle } from '@motork/component-library/future/primitives'
 import PostDeliverySurvey from '@/components/tasks/opportunity/PostDeliverySurvey.vue'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
+import { getDeliverySubstatus } from '@/utils/stageMapper'
 
 const props = defineProps({
   opportunity: {
@@ -79,16 +132,40 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'survey-submitted', 'survey-cancelled', 'postpone'])
+const emit = defineEmits(['close', 'survey-submitted', 'survey-cancelled', 'postpone', 'reschedule-delivery'])
 
 const opportunitiesStore = useOpportunitiesStore()
 const userStore = useUserStore()
 
 const showSurvey = ref(false)
+const showReschedule = ref(false)
 const surveyRef = ref(null)
+
+const deliverySubstatus = computed(() => {
+  return getDeliverySubstatus(props.opportunity, props.activities)
+})
+
+const isAwaitingDelivery = computed(() => {
+  return deliverySubstatus.value === 'Awaiting Delivery'
+})
 
 const canSubmit = computed(() => {
   return surveyRef.value?.isValid || false
+})
+
+const rescheduleForm = ref({
+  newDeliveryDate: '',
+  reason: ''
+})
+
+const minRescheduleDate = computed(() => {
+  const today = new Date()
+  today.setDate(today.getDate() + 1)
+  return today.toISOString().split('T')[0]
+})
+
+const canSubmitReschedule = computed(() => {
+  return !!rescheduleForm.value.newDeliveryDate
 })
 
 const handleSubmit = async (surveyData) => {
@@ -203,5 +280,24 @@ const handleConfirm = () => {
 const handleCancel = () => {
   showSurvey.value = false
   emit('survey-cancelled', { opportunity: props.opportunity })
+}
+
+const handleCancelReschedule = () => {
+  showReschedule.value = false
+  rescheduleForm.value = { newDeliveryDate: '', reason: '' }
+}
+
+const handleConfirmReschedule = async () => {
+  try {
+    emit('reschedule-delivery', {
+      opportunity: props.opportunity,
+      newDeliveryDate: rescheduleForm.value.newDeliveryDate,
+      reason: rescheduleForm.value.reason
+    })
+    showReschedule.value = false
+    rescheduleForm.value = { newDeliveryDate: '', reason: '' }
+  } catch (error) {
+    console.error('Failed to reschedule delivery:', error)
+  }
 }
 </script>

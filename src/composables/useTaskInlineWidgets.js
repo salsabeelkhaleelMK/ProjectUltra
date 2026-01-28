@@ -19,10 +19,11 @@ export function useTaskInlineWidgets({ store, taskId, getTabForItemType, isOverv
 
   const filteredInlineContent = computed(() => {
     const baseItems = [
-      ...store.currentActivities.value,
-      ...inlineContent.value.filter(item => !item.activityId)
+      ...(store.currentActivities?.value || []),
+      ...(inlineContent.value || []).filter(item => item != null && !item.activityId)
     ]
     return baseItems
+      .filter(item => item != null && item.id != null && item.type != null)
       .filter(item => {
         const tabKey = getTabForItemType(item.type)
         if (activeTab.value === 'overview') return tabKey === 'overview'

@@ -67,20 +67,31 @@
         <ExternalLink :size="16" />
         <span>Open Ad</span>
       </Button>
-      <Button
-        variant="secondary"
-        size="icon-sm"
-        @click="$emit('more-actions')"
-      >
-        <MoreVertical :size="16" />
-      </Button>
+      <div class="relative">
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          @click.stop="toggleMenu"
+        >
+          <MoreVertical :size="16" />
+        </Button>
+        
+        <!-- Dropdown Menu -->
+        <div 
+          v-if="showMenu"
+          v-click-outside="closeMenu"
+          class="absolute right-0 top-full mt-1 z-50"
+        >
+          <DropdownMenu :items="menuItems" className="w-48" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button } from '@motork/component-library/future/primitives'
+import { Button, DropdownMenu } from '@motork/component-library/future/primitives'
 import { Car, ExternalLink, MoreVertical } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -102,9 +113,37 @@ const props = defineProps({
   }
 })
 
-defineEmits(['open-ad', 'more-actions'])
+const emit = defineEmits(['open-ad', 'more-actions', 'edit-vehicle', 'remove-vehicle'])
 
 const imageError = ref(false)
+const showMenu = ref(false)
+
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value
+}
+
+const closeMenu = () => {
+  showMenu.value = false
+}
+
+const menuItems = computed(() => [
+  {
+    key: 'edit',
+    label: 'Edit vehicle',
+    onClick: () => {
+      emit('edit-vehicle')
+      closeMenu()
+    }
+  },
+  {
+    key: 'remove',
+    label: 'Remove vehicle',
+    onClick: () => {
+      emit('remove-vehicle')
+      closeMenu()
+    }
+  }
+])
 
 const vehicleName = computed(() => {
   const parts = []

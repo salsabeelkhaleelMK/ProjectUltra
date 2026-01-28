@@ -30,12 +30,6 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
-      },
-      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -104,12 +98,6 @@ export const OPPORTUNITY_STATE_CONFIG = {
         description: 'Choose a vehicle for this opportunity'
       },
       {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
-      },
-      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
@@ -123,36 +111,24 @@ export const OPPORTUNITY_STATE_CONFIG = {
 
   'Appointment Scheduled': {
     primaryAction: {
-      key: 'view-or-schedule-appointment',
-      title: (context) => context.scheduledAppointment ? 'Next Appointment' : 'Schedule Appointment',
+      key: 'reschedule',
+      title: 'Reschedule Appointment',
       description: (context) => {
         if (context.scheduledAppointment && context.scheduledAppointment.start) {
           return `Scheduled for ${context.formatDateTime ? context.formatDateTime(context.scheduledAppointment.start) : new Date(context.scheduledAppointment.start).toLocaleString()}`
         }
         return 'Schedule an appointment to move forward'
       },
-      label: (context) => context.scheduledAppointment ? 'View Appointment' : 'Schedule Appointment',
-      icon: 'fa-solid fa-calendar-check',
+      label: 'Reschedule',
+      icon: 'fa-solid fa-calendar-days',
       buttonClass: 'bg-purple-600 hover:bg-purple-700 text-white',
       colorScheme: { background: 'bg-purple-50/50', border: 'border-purple-100' }
     },
     secondaryActions: [
       {
-        key: 'reschedule',
-        label: 'Reschedule',
-        icon: 'fa-solid fa-calendar-days',
-        description: 'Change appointment date/time'
-      },
-      {
         key: 'cancel-appointment',
         label: 'Cancel Appointment',
         icon: 'fa-solid fa-calendar-xmark'
-      },
-      {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
       },
       {
         key: 'close-lost',
@@ -165,107 +141,30 @@ export const OPPORTUNITY_STATE_CONFIG = {
     ]
   },
 
-  'To be Called Back': {
-    primaryAction: {
-      key: 'call-prospect',
-      title: 'Call Prospect',
-      description: 'Customer requested a callback. Follow up to maintain engagement',
-      label: 'Initiate Call',
-      icon: 'fa-solid fa-phone',
-      buttonClass: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-      colorScheme: { background: 'bg-indigo-50/50', border: 'border-indigo-100' }
-    },
-    secondaryActions: [
-      {
-        key: 'schedule-appointment',
-        label: 'Schedule Appointment',
-        icon: 'fa-solid fa-calendar-plus',
-        conditional: 'no-appointment'
-      },
-      {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
-      },
-      {
-        key: 'close-lost',
-        label: 'Close as Lost',
-        icon: 'fa-solid fa-xmark'
-      }
-    ],
-    taskWidgets: []
-  },
-
   'In Negotiation': {
     primaryAction: (context) => {
-      const substatus = context.opportunity?.negotiationSubstatus
-      
-      // Offer Under Review substatus (3+ days since offer)
-      if (substatus === 'Offer Under Review' || substatus === 'Awaiting Response') {
+      // Default: No offers yet - show create offer action
+      if (!context.hasOffers) {
         return {
-          key: 'mark-offer-accepted',
-          title: 'Mark Offer as Accepted',
-          description: 'Customer has accepted the offer (verbally or via contract). Mark it as accepted to proceed to contract phase.',
-          label: 'Mark as Accepted',
-          icon: 'fa-solid fa-check-circle',
-          buttonClass: 'bg-green-600 hover:bg-green-700 text-white',
-          colorScheme: { background: 'bg-green-50/50', border: 'border-green-100' }
-        }
-      }
-      
-      // Offer Feedback substatus (backward compatibility)
-      if (substatus === 'Offer Feedback') {
-        return {
-          key: 'request-feedback',
-          title: 'Request Offer Feedback',
-          description: 'Get customer response on pending offer(s) and push forward',
-          label: 'Request Feedback',
-          icon: 'fa-solid fa-comments',
+          key: 'create-offer',
+          title: 'Create Offer',
+          description: 'Create initial offer to begin negotiation',
+          label: 'Create Offer',
+          icon: 'fa-solid fa-file-invoice-dollar',
           buttonClass: 'bg-yellow-600 hover:bg-yellow-700 text-white',
           colorScheme: { background: 'bg-yellow-50/50', border: 'border-yellow-100' }
         }
       }
       
-      // Offer Sent substatus (default for new offers)
-      return {
-        key: 'follow-up-offer',
-        title: 'Follow Up on Offer',
-        description: context.hasOffers 
-          ? 'Follow up to gauge customer interest and move forward'
-          : 'Create initial offer to begin negotiation',
-        label: context.hasOffers ? 'Follow Up' : 'Create Offer',
-        icon: 'fa-solid fa-phone-volume',
-        buttonClass: 'bg-yellow-600 hover:bg-yellow-700 text-white',
-        colorScheme: { background: 'bg-yellow-50/50', border: 'border-yellow-100' }
-      }
+      // Has offers but no substatus or unknown substatus - default to Offer Sent behavior
+      return null
     },
     secondaryActions: [
-      {
-        key: 'mark-offer-accepted',
-        label: 'Mark Offer Accepted',
-        icon: 'fa-solid fa-check-circle',
-        description: 'Mark an offer as accepted and move to Offer Accepted status',
-        conditional: 'has-offers'
-      },
       {
         key: 'add-offer',
         label: 'Create Another Offer',
         icon: 'fa-solid fa-file-invoice-dollar',
         description: 'Create an additional offer if terms need adjustment'
-      },
-      {
-        key: 'request-decision',
-        label: 'Request Decision from Prospect',
-        icon: 'fa-solid fa-circle-question',
-        description: 'Follow up to get the customer\'s yes/no answer on the offer',
-        conditional: 'negotiation-offer-under-review-substatus'
-      },
-      {
-        key: 'add-contract',
-        label: 'Add Contract',
-        icon: 'fa-solid fa-file-contract',
-        description: 'Customer accepted - add contract to proceed'
       },
       {
         key: 'reassign',
@@ -280,56 +179,24 @@ export const OPPORTUNITY_STATE_CONFIG = {
         conditional: 'no-appointment'
       },
       {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
-      },
-      {
         key: 'close-lost',
         label: 'Close as Lost',
         icon: 'fa-solid fa-xmark'
       }
     ],
     taskWidgets: [
-      // OFB task removed from primary task widgets - now shown in expanded view of NegotiationManagementSection
       { type: 'NFU', condition: 'negotiation-offer-feedback-5-plus-days-no-appointment' }
     ]
   },
 
-  'Needs Follow-up': {
-    primaryAction: {
-      key: 'request-decision',
-      title: 'Request Customer Decision',
-      description: 'Offer has been pending. Time to request a decision',
-      label: 'Request Decision',
-      icon: 'fa-solid fa-circle-question',
-      buttonClass: 'bg-pink-600 hover:bg-pink-700 text-white',
-      colorScheme: { background: 'bg-pink-50/50', border: 'border-pink-100' }
-    },
+  'In Negotiation - Offer Sent': {
+    primaryAction: null, // Actions are in NegotiationManagementSection
     secondaryActions: [
       {
-        key: 'add-contract',
-        label: 'Add Contract',
-        icon: 'fa-solid fa-file-contract',
-        description: 'Customer accepted - add contract to proceed'
-      },
-      {
         key: 'add-offer',
-        label: 'Send New Offer',
-        icon: 'fa-solid fa-file-invoice-dollar'
-      },
-      {
-        key: 'schedule-appointment',
-        label: 'Schedule Meeting',
-        icon: 'fa-solid fa-calendar-plus',
-        conditional: 'no-appointment'
-      },
-      {
-        key: 'extend-expected-close-date',
-        label: 'Extend Expected Close Date',
-        icon: 'fa-solid fa-calendar-day',
-        description: 'Extend the expected close date for this opportunity'
+        label: 'Create Another Offer',
+        icon: 'fa-solid fa-file-invoice-dollar',
+        description: 'Create an additional offer if terms need adjustment'
       },
       {
         key: 'close-lost',
@@ -337,21 +204,44 @@ export const OPPORTUNITY_STATE_CONFIG = {
         icon: 'fa-solid fa-xmark'
       }
     ],
-    taskWidgets: [
-      { type: 'OFB', condition: 'negotiation-5-plus-days-no-contract-has-offers' },
-      { type: 'NFU', condition: 'negotiation-5-plus-days-no-contract-no-future-appointment-has-offers' }
-    ]
+    taskWidgets: [] // Manage Offers & Follow Up card handles this
   },
 
-  'Offer Accepted': {
-    primaryAction: {
-      key: 'create-contract',
-      title: 'Create Contract',
-      description: 'Customer has accepted the offer. Create a contract to finalize the deal.',
-      label: 'Create Contract',
-      icon: 'fa-solid fa-file-contract',
-      buttonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-      colorScheme: { background: 'bg-emerald-50/50', border: 'border-emerald-100' }
+  'In Negotiation - Contract Pending': {
+    // Sequential primary actions: Step 1 (Set Delivery Date) → Step 2 (Collect e-signatures)
+    primaryAction: (context) => {
+      const opp = context.opportunity
+      const hasDeliveryDate = !!opp.deliveryDate
+      const hasESignature = !!opp.contractSigned || !!opp.esignatureCollectedDate
+      
+      // Step 2: Collect e-signatures (only shows after Step 1 is done)
+      if (hasDeliveryDate && !hasESignature) {
+        return {
+          key: 'collect-esignatures',
+          title: 'Collect e-signatures',
+          description: 'Get the formal contract signed electronically by the customer',
+          label: 'Collect e-signatures',
+          icon: 'fa-solid fa-file-signature',
+          buttonClass: 'bg-blue-600 hover:bg-blue-700 text-white',
+          colorScheme: { background: 'bg-blue-50/50', border: 'border-blue-100' }
+        }
+      }
+      
+      // Step 1: Set Delivery Date (shows first)
+      if (!hasDeliveryDate) {
+        return {
+          key: 'set-delivery-date',
+          title: 'Set Delivery Date',
+          description: 'Schedule the delivery date for the vehicle',
+          label: 'Set Delivery Date',
+          icon: 'fa-solid fa-truck',
+          buttonClass: 'bg-green-600 hover:bg-green-700 text-white',
+          colorScheme: { background: 'bg-green-50/50', border: 'border-green-100' }
+        }
+      }
+      
+      // Both completed - should auto-transition (handled in store)
+      return null
     },
     secondaryActions: [
       {
@@ -363,64 +253,31 @@ export const OPPORTUNITY_STATE_CONFIG = {
       {
         key: 'close-lost',
         label: 'Close as Lost',
-        icon: 'fa-solid fa-xmark',
-        description: 'End negotiation if customer changes mind'
+        icon: 'fa-solid fa-xmark'
       }
     ],
-    taskWidgets: []
+    // NOTE: CFB (Contract Feedback Task) is ONLY in Contract Pending stage
+    // DFB (Delivery Feedback Task) is NOT in Contract Pending - it only appears in Closed Won stage
+    taskWidgets: [
+      { type: 'CFB', condition: 'contract-pending-5-plus-days' }
+    ]
   },
 
-  'In Negotiation - Contract Pending': {
-    primaryAction: {
-      key: 'finalize-contract',
-      title: 'Collect e-signatures, finalize contract',
-      description: 'Get the formal contract signed electronically by the customer. Finalize all contractual terms and conditions. Ensure all required signatures are collected. Set the official Contract Date when customer signs.',
-      label: 'Collect Signatures',
-      icon: 'fa-solid fa-file-signature',
-      buttonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-      colorScheme: { background: 'bg-emerald-50/50', border: 'border-emerald-100' }
-    },
-    secondaryActions: [
-      {
-        key: 'add-offer',
-        label: 'Add offer',
-        icon: 'fa-solid fa-file-invoice-dollar',
-        description: 'Create additional offers if terms need adjustment'
-      },
-      {
-        key: 'extend-deadline',
-        label: 'Extend deadline',
-        icon: 'fa-solid fa-clock',
-        description: 'Give customer more time to review/sign'
-      },
-      {
-        key: 'close-lost',
-        label: 'Close as Lost',
-        icon: 'fa-solid fa-xmark',
-        description: 'End negotiation if customer changes mind'
-      },
-      {
-        key: 'schedule-appointment',
-        label: 'Schedule appointment',
-        icon: 'fa-solid fa-calendar-plus',
-        description: 'Book delivery or signing meeting'
-      }
-    ],
-    taskWidgets: []
-  },
+
 
   'Closed Won': {
     // Primary action varies based on delivery substatus
     primaryAction: (context) => {
       const substatus = context.deliverySubstatus
       
-      // Delivered: Collect feedback
+      // Delivered: Show both Collect Feedback and Complete Checklist options
       if (substatus === 'Delivered') {
+        // Default to Collect Feedback, but Complete Checklist can be accessed via secondary
         return {
           key: 'collect-feedback',
           title: 'Post-Delivery Follow-up',
-          description: 'Vehicle delivered. Collect customer feedback',
-          label: 'Collect Feedback',
+          description: 'Vehicle delivered. Collect customer feedback or complete delivery checklist',
+          label: 'Confirm Satisfaction',
           icon: 'fa-solid fa-comment',
           buttonClass: 'bg-green-600 hover:bg-green-700 text-white',
           colorScheme: { background: 'bg-green-50/50', border: 'border-green-100' }
@@ -454,9 +311,31 @@ export const OPPORTUNITY_STATE_CONFIG = {
     secondaryActions: [
       {
         key: 'collect-feedback',
-        label: 'Collect Feedback',
+        label: 'Request Feedback',
         icon: 'fa-solid fa-comment',
-        conditional: 'is-delivered'
+        conditional: 'is-delivered',
+        description: 'Collect customer feedback about delivery experience'
+      },
+      {
+        key: 'complete-checklist',
+        label: 'Complete Checklist',
+        icon: 'fa-solid fa-clipboard-check',
+        conditional: 'is-delivered',
+        description: 'Complete post-delivery checklist and documentation'
+      },
+      {
+        key: 'reschedule-delivery',
+        label: 'Reschedule',
+        icon: 'fa-solid fa-calendar-days',
+        conditional: 'is-awaiting-delivery',
+        description: 'Reschedule the delivery date'
+      },
+      {
+        key: 'archive',
+        label: 'Archive',
+        icon: 'fa-solid fa-archive',
+        conditional: 'is-delivered',
+        description: 'Archive this completed opportunity'
       },
       {
         key: 'close-lost',
@@ -464,8 +343,13 @@ export const OPPORTUNITY_STATE_CONFIG = {
         icon: 'fa-solid fa-xmark'
       }
     ],
+    // NOTE: Task widgets for Closed Won:
+    // - CFB (Contract Feedback) shows if contract exists and is 5+ days old
+    // - "Awaiting Delivery" substatus: Shows DFB (delivery delay feedback)
+    // - "Delivered" substatus: Shows DFB (post-delivery feedback)
     taskWidgets: [
-      { type: 'CFB', condition: 'contract-7-plus-days-no-delivery' },
+      { type: 'CFB', condition: 'closed-won-contract-feedback' },
+      { type: 'DFB', condition: 'delivery-delay-feedback-required' },
       { type: 'DFB', condition: 'delivery-feedback-required' }
     ]
   },

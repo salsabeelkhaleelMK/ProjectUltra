@@ -113,15 +113,18 @@ export function useOpportunityActions(opportunity, scheduledAppointment, activit
   const secondaryActions = computed(() => {
     const ctx = contextWithWidget.value
     const availableActions = getAvailableSecondaryActions(ctx.stage, ctx)
+    const primaryKey = primaryAction.value?.key
     
-    return availableActions.map(action => {
-      const handler = handlers[action.key]
-      
-      return {
-        ...action,
-        handler: handler || (() => {})
-      }
-    })
+    return availableActions
+      .filter(action => action.key !== primaryKey) // Filter out primary action
+      .map(action => {
+        const handler = handlers[action.key]
+        
+        return {
+          ...action,
+          handler: handler || (() => {})
+        }
+      })
   })
 
   // Check if opportunity is closed

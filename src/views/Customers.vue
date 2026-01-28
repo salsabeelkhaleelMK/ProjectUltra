@@ -385,7 +385,7 @@ onMounted(async () => {
   border-right: none !important;
   border-bottom: none !important;
   margin: 0 !important;
-  padding: 12px 16px !important;
+  padding: 6px 16px 12px 16px !important;
   position: relative !important;
   box-shadow: none !important;
   height: 100% !important;

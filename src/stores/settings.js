@@ -25,9 +25,7 @@ const DEFAULT_SETTINGS = {
   abandonedEligibleStages: [
     'Qualified',
     'Awaiting Appointment',
-    'To be Called Back',
-    'In Negotiation',
-    'Needs Follow-up'
+    'In Negotiation'
   ],
   
   // Lead Thresholds

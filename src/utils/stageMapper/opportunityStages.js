@@ -55,35 +55,17 @@ function hasScheduledAppointment(opportunity, activities) {
 /**
  * Check and auto-transition negotiation substatus if needed
  * Returns updated substatus if changed, or current substatus if unchanged
+ * 
+ * Migrates legacy "Awaiting Response" to "Offer Sent"
  */
 export function checkNegotiationSubstatusTransition(opportunity) {
-  // Only check for opportunities in In Negotiation stage with Offer Sent substatus
-  if (opportunity.stage !== 'In Negotiation' || opportunity.negotiationSubstatus !== 'Offer Sent') {
-    return opportunity.negotiationSubstatus
+  // Migrate legacy "Awaiting Response" to "Offer Sent"
+  if (opportunity.stage === 'In Negotiation' && 
+      opportunity.negotiationSubstatus === 'Awaiting Response') {
+    return 'Offer Sent'
   }
   
-  // Check if offers exist
-  if (!opportunity.offers || opportunity.offers.length === 0) {
-    return opportunity.negotiationSubstatus
-  }
-  
-  // Find most recent active offer
-  const mostRecentOffer = opportunity.offers
-    .filter(o => o.status === 'active')
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
-  
-  if (!mostRecentOffer) {
-    return opportunity.negotiationSubstatus
-  }
-  
-  // Check if offer is 3+ days old
-  const daysSinceOffer = calculateDaysSince(mostRecentOffer.createdAt)
-  
-  if (daysSinceOffer >= 3) {
-    // Auto-transition to Offer Under Review
-    return 'Offer Under Review'
-  }
-  
+  // No transition needed for other cases
   return opportunity.negotiationSubstatus
 }
 
@@ -117,78 +99,50 @@ export function calculateOpportunityDisplayStage(opportunity) {
   
   // In Negotiation and substates
   if (apiStatus === API_STATUSES.IN_NEGOTIATION) {
-    // Contract Pending (substage): offer accepted and/or contract date set
-    if (opportunity.contractDate && !hasContract(opportunity, activities)) {
-      return OPPORTUNITY_STAGES.CONTRACT_PENDING
+    // Contract Pending (substage): contract date set OR offer is accepted
+    const hasAcceptedOffer = opportunity.offers && opportunity.offers.some(
+      offer => offer.status === 'accepted' || offer.acceptance_status === 'accepted'
+    )
+    
+    if (opportunity.contractDate || hasAcceptedOffer) {
+      return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Contract Pending`
     }
     
     // Check negotiationSubstatus if present
     if (opportunity.negotiationSubstatus) {
-      // Offer Accepted - show as standalone "Offer Accepted" status (not "In Negotiation - Offer Accepted")
-      // This is a distinct stage between "Offer Under Review" and "Contract Pending"
-      if (opportunity.negotiationSubstatus === 'Offer Accepted') {
-        return 'Offer Accepted'
+      // Offer Sent - show as "In Negotiation - Offer Sent"
+      if (opportunity.negotiationSubstatus === 'Offer Sent') {
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
       }
       
-      // Offer Under Review - show as "In Negotiation - Offer Under Review"
-      if (opportunity.negotiationSubstatus === 'Offer Under Review') {
-        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
-      }
-      
-      // Backward compatibility: old "Awaiting Response" substatus
+      // Migrate legacy "Awaiting Response" to "Offer Sent"
       if (opportunity.negotiationSubstatus === 'Awaiting Response') {
-        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
+        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
       }
       
       // Offer Feedback - show as "In Negotiation - Offer Feedback" (backward compatibility)
       if (opportunity.negotiationSubstatus === 'Offer Feedback') {
         return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Feedback`
       }
-      
-      // Offer Sent - show as "In Negotiation - Offer Sent"
-      if (opportunity.negotiationSubstatus === 'Offer Sent') {
-        return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
-      }
     }
     
-    // Legacy: Check if offer has been pending for 3+ days (for old data without negotiationSubstatus)
-    const lastOffer = getLastOffer(activities)
-    if (lastOffer) {
-      const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
-      
-      // Auto-transition to Needs Follow-up after 3 days
-      if (daysSinceOffer >= 3) {
-        return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
-      }
-    }
-    
-    return OPPORTUNITY_STAGES.IN_NEGOTIATION
+    // In Negotiation stage must have explicit substatus
+    // If no substatus, default to Offer Sent (should not happen in practice)
+    return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
   }
   
   // Backward compatibility: old "Offer Sent" data
   if (apiStatus === 'Offer Sent') {
-    const lastOffer = getLastOffer(activities)
-    if (lastOffer) {
-      const daysSinceOffer = calculateDaysSince(lastOffer.timestamp)
-      if (daysSinceOffer >= 3) {
-        return OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP
-      }
-    }
-    return OPPORTUNITY_STAGES.IN_NEGOTIATION
+    return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
   }
   
-  // Backward compatibility: old "Awaiting Response" data
+  // Backward compatibility: old "Awaiting Response" data - migrate to "Offer Sent"
   if (apiStatus === 'Awaiting Response') {
-    return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Under Review`
+    return `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`
   }
   
   // Qualified and early stages
   if (apiStatus === API_STATUSES.QUALIFIED || apiStatus === API_STATUSES.OPEN) {
-    // Callback scheduled
-    if (opportunity.callbackDate) {
-      return OPPORTUNITY_STAGES.TO_BE_CALLED_BACK
-    }
-    
     // Check for appointment
     const hasAppointment = opportunity.scheduledAppointment || hasScheduledAppointment(opportunity, activities)
     if (hasAppointment) {
@@ -247,11 +201,9 @@ export function mapOpportunityStageToApiStatus(displayStage) {
     [OPPORTUNITY_STAGES.QUALIFIED]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED]: API_STATUSES.QUALIFIED,
-    [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: API_STATUSES.QUALIFIED,
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: API_STATUSES.IN_NEGOTIATION,
-    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: API_STATUSES.IN_NEGOTIATION,
-    'Offer Accepted': API_STATUSES.IN_NEGOTIATION,
-    [OPPORTUNITY_STAGES.CONTRACT_PENDING]: API_STATUSES.IN_NEGOTIATION,
+    [`${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`]: API_STATUSES.IN_NEGOTIATION,
+    [`${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Contract Pending`]: API_STATUSES.IN_NEGOTIATION,
     [OPPORTUNITY_STAGES.CLOSED_WON]: API_STATUSES.CLOSED_WON,
     [OPPORTUNITY_STAGES.CLOSED_LOST]: API_STATUSES.CLOSED_LOST,
     [OPPORTUNITY_STAGES.ABANDONED]: API_STATUSES.QUALIFIED // Abandoned maps back to Qualified for API
@@ -268,7 +220,6 @@ export function getOpportunityTransitions() {
     [OPPORTUNITY_STAGES.QUALIFIED]: [
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
       OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,
-      OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
@@ -276,40 +227,26 @@ export function getOpportunityTransitions() {
     [OPPORTUNITY_STAGES.AWAITING_APPOINTMENT]: [
       OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,  // When appointment is scheduled
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
     [OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED]: [
       OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.TO_BE_CALLED_BACK,
       OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,  // If appointment cancelled
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
-    [OPPORTUNITY_STAGES.TO_BE_CALLED_BACK]: [
-      OPPORTUNITY_STAGES.AWAITING_APPOINTMENT,
-      OPPORTUNITY_STAGES.APPOINTMENT_SCHEDULED,
-      OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.CLOSED_LOST,
-      OPPORTUNITY_STAGES.ABANDONED
-    ],
     [OPPORTUNITY_STAGES.IN_NEGOTIATION]: [
-      OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP,
-      'Offer Accepted',
-      OPPORTUNITY_STAGES.CONTRACT_PENDING,
+      `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Contract Pending`,
       OPPORTUNITY_STAGES.CLOSED_LOST,
       OPPORTUNITY_STAGES.ABANDONED
     ],
-    [OPPORTUNITY_STAGES.NEEDS_FOLLOW_UP]: [
-      'Offer Accepted',
-      OPPORTUNITY_STAGES.CONTRACT_PENDING,
-      OPPORTUNITY_STAGES.IN_NEGOTIATION,
-      OPPORTUNITY_STAGES.CLOSED_LOST,
-      OPPORTUNITY_STAGES.ABANDONED
+    [`${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Offer Sent`]: [
+      `${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Contract Pending`,
+      OPPORTUNITY_STAGES.CLOSED_LOST
     ],
-    ['Offer Accepted']: [
-      OPPORTUNITY_STAGES.CONTRACT_PENDING,
+    [`${OPPORTUNITY_STAGES.IN_NEGOTIATION} - Contract Pending`]: [
+      OPPORTUNITY_STAGES.CLOSED_WON,
       OPPORTUNITY_STAGES.CLOSED_LOST
     ],
     [OPPORTUNITY_STAGES.CONTRACT_PENDING]: [

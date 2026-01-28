@@ -40,7 +40,7 @@
         <!-- Content area with feed -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
           <!-- Tabs -->
-          <div class="mb-2 -mt-2">
+          <div class="mb-4 -mt-1 pb-2">
             <Tabs 
               v-model="activeTab"
               :tabs="tabs"
@@ -90,7 +90,7 @@
             <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
               <FeedItemCard
                 v-for="item in filteredInlineContent"
-                :key="item.id"
+                :key="item?.id || `feed-${item?.timestamp || Date.now()}`"
                 :item="item"
                 :task-type="type"
                 :customer-initials="'SK'"
@@ -201,7 +201,7 @@
               <div v-if="filteredInlineContent.length > 0" class="space-y-4 mb-6 px-1">
                 <FeedItemCard
                   v-for="item in filteredInlineContent"
-                  :key="item.id"
+                  :key="item?.id || `feed-${item?.timestamp || Date.now()}`"
                   :item="item"
                   :task-type="type"
                   :customer-initials="'SK'"
@@ -331,14 +331,15 @@
                 </div>
                 
                 <div v-else class="space-y-6 h-full overflow-y-auto pr-2">
-                  <div v-for="activity in allActivities" :key="activity.id" class="flex gap-4 relative">
+                  <div v-for="activity in allActivities" :key="activity?.id || `activity-${activity?.timestamp || Date.now()}`" class="flex gap-4 relative">
                     <div 
+                      v-if="activity && activity.type"
                       class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
                       :class="getActivityIconClass(activity.type)"
                     >
                       <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
                     </div>
-                    <div class="flex-1 min-w-0">
+                    <div v-if="activity" class="flex-1 min-w-0">
                       <div class="text-sm text-muted-foreground leading-snug">
                         <span class="font-bold">{{ activity.user }}</span> {{ activity.action }}
                       </div>
@@ -406,7 +407,7 @@
           <div v-if="enrichFeedItems.length > 0" class="space-y-4 mt-4">
             <FeedItemCard
               v-for="item in enrichFeedItems"
-              :key="item.id"
+              :key="item?.id || `enrich-${item?.timestamp || Date.now()}`"
               :item="item"
               :task-type="type"
               :customer-initials="task.customer?.initials || 'SK'"
@@ -682,7 +683,8 @@ const enrichFeedItems = computed(() => {
   
   // First, get activities from store adapter (this is the primary source of loaded activities)
   if (props.storeAdapter?.currentActivities?.value) {
-    const storeActivities = props.storeAdapter.currentActivities.value.filter(a => enrichTypes.includes(a.type))
+    const storeActivities = props.storeAdapter.currentActivities.value
+      .filter(a => a != null && a.id != null && enrichTypes.includes(a?.type))
     storeActivities.forEach(a => {
       if (!seenIds.has(a.id)) {
         seenIds.add(a.id)
@@ -693,7 +695,8 @@ const enrichFeedItems = computed(() => {
   
   // Also check props.task.activities as fallback (may contain activities not yet in store)
   if (props.task.activities) {
-    const taskActivities = props.task.activities.filter(a => enrichTypes.includes(a.type))
+    const taskActivities = props.task.activities
+      .filter(a => a != null && a.id != null && enrichTypes.includes(a?.type))
     taskActivities.forEach(a => {
       if (!seenIds.has(a.id)) {
         seenIds.add(a.id)
@@ -703,7 +706,8 @@ const enrichFeedItems = computed(() => {
   }
   
   // Also include inline content that matches enrich types (for newly added items in current session)
-  const enrichInlineContent = inlineContent.value.filter(item => enrichTypes.includes(item.type))
+  const enrichInlineContent = (inlineContent.value || [])
+    .filter(item => item != null && item.id != null && enrichTypes.includes(item?.type))
   enrichInlineContent.forEach(item => {
     if (!seenIds.has(item.id)) {
       seenIds.add(item.id)
@@ -711,8 +715,11 @@ const enrichFeedItems = computed(() => {
     }
   })
   
+  // Filter out any null items before sorting
+  const validItems = items.filter(item => item != null && item.id != null)
+  
   // Sort by timestamp descending (newest first)
-  return items.sort((a, b) => {
+  return validItems.sort((a, b) => {
     const dateA = new Date(a.timestamp || 0)
     const dateB = new Date(b.timestamp || 0)
     return dateB - dateA
@@ -1287,9 +1294,8 @@ const handleEmailSave = async (data) => {
 }
 
 // Activity card handlers
-const handleActivityClick = (activity) => {
-  // Could open a modal here for detailed view
-  console.log('Activity clicked:', activity)
+const handleActivityClick = () => {
+  // TODO: open modal for detailed activity view
 }
 
 const toggleSummaryExpanded = (activityId) => {
@@ -1319,10 +1325,14 @@ const tabs = computed(() => {
   return base
 })
 
-const allActivities = computed(() => [
-  ...props.storeAdapter.currentActivities.value,
-  ...inlineContent.value
-])
+const allActivities = computed(() => {
+  const activities = [
+    ...(props.storeAdapter?.currentActivities?.value || []),
+    ...(inlineContent.value || [])
+  ]
+  // Filter out null/undefined activities to prevent unmount errors
+  return activities.filter(activity => activity != null && activity.id != null)
+})
 
 // Computed title for overview modals
 const overviewModalTitle = computed(() => {

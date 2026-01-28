@@ -104,7 +104,7 @@ export const convertContactToLead = async (contactId) => {
     requestedCar: contact.requestedCar,
     source: contact.source || 'Direct',
     tags: contact.tags || [],
-    stage: 'Open Lead',
+    stage: 'Open',
     status: 'Open',
     priority: 'Normal'
   })
