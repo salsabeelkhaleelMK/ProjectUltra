@@ -1,8 +1,24 @@
 <template>
   <div class="mb-8">
     <div class="bg-white">
+      <!-- Search bar with AI mode: above filter bar and table -->
+      <div class="mb-1">
+        <UnifiedSearchBar
+          active-tab="leads"
+          placeholder="Search leads..."
+          :pagination="pagination"
+          :assignee-options="assigneeOptions"
+          :request-type-options="requestTypeOptions"
+          :status-options="leadsStatusOptions"
+          :source-options="leadsSourceOptions"
+          @update:globalFilter="globalFilter = $event"
+          @update:columnFilters="columnFilters = $event"
+          @update:pagination="pagination = $event"
+        />
+      </div>
+      <div class="data-table-inner table-search-wrapper">
       <DataTable 
-        :data="rows" 
+        :data="paginatedData" 
         :columns="columns"
         :meta="tableMeta"
         @row-click="handleRowClick"
@@ -13,9 +29,8 @@
         v-model:globalFilter="globalFilter"
         v-model:sorting="sorting"
         v-model:columnFilters="columnFilters"
-        v-model:rowSelection="rowSelection"
         :paginationOptions="{
-          rowCount: rows.length
+          rowCount: totalFilteredCount
         }"
         :globalFilterOptions="{
           debounce: 300,
@@ -57,6 +72,7 @@
           </div>
         </template>
       </DataTable>
+      </div>
     </div>
   </div>
 </template>
@@ -65,10 +81,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
+import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
 import { useLeadsStore } from '@/stores/leads'
 import { formatDueDate, formatDeadlineFull, getDeadlineStatus } from '@/utils/formatters'
 import { useCustomersTable } from '@/composables/useCustomersTable'
 import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useDataTableData } from '@/composables/useDataTableData'
+
+const emit = defineEmits(['row-click'])
 
 const leadsStore = useLeadsStore()
 
@@ -77,15 +97,11 @@ const showDisqualified = ref(false)
 // Row selection
 const { rowSelection, selectedCount, hasSelection, getSelectedRows, clearSelection } = useTableRowSelection((row) => row.id)
 
-// DataTable state management
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10
-})
-
+// DataTable state (local to this tab)
+const pagination = ref({ pageIndex: 0, pageSize: 10 })
 const globalFilter = ref('')
-const sorting = ref([])
 const columnFilters = ref([])
+const sorting = ref([])
 
 const formatDate = (dateString) => {
   if (!dateString) return '-'
@@ -136,8 +152,6 @@ const rows = computed(() => {
   }))
 })
 
-const emit = defineEmits(['row-click'])
-
 const handleRowClick = (row) => {
   if (row.id.startsWith('lead-')) {
     emit('row-click', row)
@@ -147,10 +161,50 @@ const handleRowClick = (row) => {
 const activeTab = ref('open-leads')
 const { columns, filterDefinitions, tableMeta } = useCustomersTable(activeTab, handleRowClick)
 
+const { paginatedData, sortedData, totalFilteredCount } = useDataTableData({
+  rawData: rows,
+  columns,
+  globalFilter,
+  columnFilters,
+  sorting,
+  pagination,
+  filterDefs: filterDefinitions,
+  searchableFields: (row) => [
+    row.customer,
+    row.email,
+    row.status,
+    row.car,
+    row.carStatus,
+    row.requestType,
+    row.source,
+    row.assignee,
+    row.nextActionFull ?? row.nextAction,
+    row.createdAt,
+    row.lastActivity
+  ]
+})
+
+const assigneeOptions = computed(() => {
+  const names = [...new Set(rows.value.map(r => r.assignee).filter(Boolean))]
+  return names.map(name => ({ value: name, label: name }))
+})
+const requestTypeOptions = [
+  { value: 'Test Drive', label: 'Test Drive' },
+  { value: 'Quotation', label: 'Quotation' },
+  { value: 'Generic sales', label: 'Generic sales' }
+]
+const leadsStatusOptions = computed(() => {
+  const def = filterDefinitions.value?.find(d => d.key === 'status')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
+})
+const leadsSourceOptions = computed(() => {
+  const def = filterDefinitions.value?.find(d => d.key === 'source')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
+})
 
 // Bulk delete handler
 const handleBulkDelete = () => {
-  const selectedRows = getSelectedRows(rows.value)
+  const selectedRows = getSelectedRows(sortedData.value)
   
   if (selectedRows.length === 0) return
   
@@ -189,6 +243,13 @@ onMounted(async () => {
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
+}
+
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to table container so our bar stays visible */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
 }
 
 /* Enable horizontal and vertical scrolling */

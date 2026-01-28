@@ -1,8 +1,20 @@
 <template>
   <div class="mb-8">
     <div class="bg-white">
+      <div class="mb-1">
+      <UnifiedSearchBar
+        active-tab="customers"
+        placeholder="Search customers..."
+        :pagination="pagination"
+        :source-options="customersSourceOptions"
+        @update:globalFilter="globalFilter = $event"
+        @update:columnFilters="columnFilters = $event"
+        @update:pagination="pagination = $event"
+      />
+      </div>
+      <div class="data-table-inner table-search-wrapper">
       <DataTable 
-        :data="rows" 
+        :data="paginatedData" 
         :columns="columns"
         :meta="tableMeta"
         @row-click="handleRowClick"
@@ -15,7 +27,7 @@
         v-model:columnFilters="columnFilters"
         v-model:rowSelection="rowSelection"
         :paginationOptions="{
-          rowCount: rows.length
+          rowCount: totalFilteredCount
         }"
         :globalFilterOptions="{
           debounce: 300,
@@ -57,6 +69,7 @@
           </div>
         </template>
       </DataTable>
+      </div>
     </div>
   </div>
 </template>
@@ -65,10 +78,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
+import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
 import { useCustomersStore } from '@/stores/customers'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useCustomersTable } from '@/composables/useCustomersTable'
 import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useDataTableData, getNestedProperty } from '@/composables/useDataTableData'
 
 const customersStore = useCustomersStore()
 const opportunitiesStore = useOpportunitiesStore()
@@ -78,15 +93,13 @@ const contactFilterType = ref('all') // 'all', 'contacts', 'accounts'
 // Row selection
 const { rowSelection, selectedCount, hasSelection, getSelectedRows, clearSelection } = useTableRowSelection((row) => row.id)
 
-// DataTable state management
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10
-})
+const emit = defineEmits(['row-click'])
 
+// DataTable state (local to this tab)
+const pagination = ref({ pageIndex: 0, pageSize: 10 })
 const globalFilter = ref('')
-const sorting = ref([])
 const columnFilters = ref([])
+const sorting = ref([])
 
 // Helper to extract location from address
 const getLocation = (address) => {
@@ -141,8 +154,6 @@ const rows = computed(() => {
   }))
 })
 
-const emit = defineEmits(['row-click'])
-
 const handleRowClick = (row) => {
   if (row.stageKey === 'customers') {
     emit('row-click', row)
@@ -152,10 +163,43 @@ const handleRowClick = (row) => {
 const activeTab = ref('customers')
 const { columns, filterDefinitions, tableMeta } = useCustomersTable(activeTab, handleRowClick)
 
+const getCustomerFilterValue = (row, key) => {
+  if (key === 'company') return row.type === 'account'
+  if (key === 'source') return row.accountOwner
+  return getNestedProperty(row, key)
+}
+const { paginatedData, sortedData, totalFilteredCount } = useDataTableData({
+  rawData: rows,
+  columns,
+  globalFilter,
+  columnFilters,
+  sorting,
+  pagination,
+  filterDefs: filterDefinitions,
+  searchableFields: (row) => [
+    row.customer,
+    row.name,
+    row.accountOwner,
+    row.telephone,
+    row.location,
+    row.accountType,
+    row.createdAt,
+    row.updatedAt,
+    row.lastActivity,
+    row.openOpportunities != null ? String(row.openOpportunities) : null,
+    row.wonOpportunities != null ? String(row.wonOpportunities) : null
+  ],
+  getFilterValue: getCustomerFilterValue
+})
+
+const customersSourceOptions = computed(() => {
+  const def = filterDefinitions.value?.find(d => d.key === 'source')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
+})
 
 // Bulk delete handler
 const handleBulkDelete = () => {
-  const selectedRows = getSelectedRows(rows.value)
+  const selectedRows = getSelectedRows(sortedData.value)
   
   if (selectedRows.length === 0) return
   
@@ -195,6 +239,13 @@ onMounted(async () => {
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
+}
+
+/* Hide built-in DataTable search row only (UnifiedSearchBar is used above the table) */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
 }
 
 /* Enable horizontal and vertical scrolling */

@@ -272,10 +272,16 @@
                   variant="outline"
                   :model-value="rescheduleTime === 'monday'"
                   @update:model-value="(p) => p && setRescheduleTime('monday')"
-                  class="followup-toggle-item"
+                  class="followup-toggle-item mk-ai-mode-active-toggle"
                 >
-                  <i class="fa-solid fa-sparkles text-xs"></i>
-                  AI suggestion
+                  <Sparkles
+                    :size="14"
+                    class="mk-sparkles-icon shrink-0"
+                    :fill="rescheduleTime === 'monday' ? 'url(#sparkles-gradient)' : 'currentColor'"
+                    :stroke="rescheduleTime === 'monday' ? 'none' : 'currentColor'"
+                    :stroke-width="rescheduleTime === 'monday' ? 0 : 1.5"
+                  />
+                  Suggest AI time
                 </Toggle>
                 <Toggle
                   variant="outline"
@@ -885,7 +891,7 @@ import {
   DialogPortal,
   DialogTitle
 } from '@motork/component-library/future/primitives'
-import { Check, PhoneOff, ThumbsDown, RotateCcw } from 'lucide-vue-next'
+import { Check, PhoneOff, ThumbsDown, RotateCcw, Sparkles } from 'lucide-vue-next'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'

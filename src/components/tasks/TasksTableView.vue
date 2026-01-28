@@ -56,11 +56,27 @@
         </div>
       </div>
     </header>
-    
-    <!-- Content -->
-    <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
+
+    <!-- Search bar with AI mode: above filter bar and table -->
+    <div class="shrink-0 px-4 md:px-8 pt-4 pb-1 bg-white">
+      <UnifiedSearchBar
+        active-tab="opportunities"
+        placeholder="Search tasks..."
+        :pagination="pagination"
+        :assignee-options="assigneeOptions"
+        :request-type-options="requestTypeOptions"
+        :status-options="tasksStatusOptions"
+        :source-options="tasksSourceOptions"
+        @update:global-filter="globalFilter = $event"
+        @update:column-filters="columnFilters = $event"
+        @update:pagination="pagination = $event"
+      />
+    </div>
+
+    <!-- Table: scrollable area (hide built-in search row inside this wrapper only) -->
+    <div class="flex-1 overflow-y-auto px-4 md:px-8 pb-4 md:pb-8 bg-white min-h-0 data-table-inner table-search-wrapper">
       <DataTable 
-            :data="filteredTasks" 
+            :data="paginatedData" 
             :columns="columns"
             :meta="tableMeta"
             @row-click="handleRowClick"
@@ -74,7 +90,7 @@
             v-model:columnVisibility="columnVisibility"
             v-model:rowSelection="rowSelection"
             :paginationOptions="{
-              rowCount: filteredTasks.length
+              rowCount: totalFilteredCount
             }"
             :globalFilterOptions="{
               debounce: 300,
@@ -126,11 +142,13 @@ import { ref, computed, h } from 'vue'
 import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
+import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
 import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'
 import { calculateLeadUrgency, getUrgencyIcon, getUrgencyColorClass } from '@/composables/useLeadUrgency'
 import { useSettingsStore } from '@/stores/settings'
 import { useTasksTableFilters } from '@/composables/useTasksTableFilters'
 import { useTableRowSelection } from '@/composables/useTableRowSelection'
+import { useDataTableData, getNestedProperty } from '@/composables/useDataTableData'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 
@@ -177,11 +195,22 @@ const { filterDefinitions } = useTasksTableFilters({
   tasks: computed(() => props.tasks)
 })
 
-// Sync searchQuery with globalFilter for DataTable
-const filteredTasks = computed(() => {
-  // DataTable handles filtering via globalFilter, so we can return all tasks
-  // The searchQuery is kept for backward compatibility but DataTable uses globalFilter
-  return props.tasks
+const assigneeOptions = computed(() => {
+  const names = [...new Set(props.tasks.map(t => t.assignee).filter(Boolean))]
+  return names.map(name => ({ value: name, label: name }))
+})
+const requestTypeOptions = [
+  { value: 'Test Drive', label: 'Test Drive' },
+  { value: 'Quotation', label: 'Quotation' },
+  { value: 'Generic sales', label: 'Generic sales' }
+]
+const tasksStatusOptions = computed(() => {
+  const def = filterDefinitions.value?.find(d => d.key === 'status')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
+})
+const tasksSourceOptions = computed(() => {
+  const def = filterDefinitions.value?.find(d => d.key === 'source')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
 })
 
 const isSelected = (task) => {
@@ -321,7 +350,7 @@ const columns = computed(() => [
     meta: { title: 'Due Date' },
     cell: ({ row }) => {
       const task = row.original
-      const date = task.nextActionDue
+      const date = task.nextActionDue ?? task.dueDate
       if (!date) {
         return h('span', { class: 'text-meta' }, 'Not set')
       }
@@ -436,6 +465,54 @@ const columns = computed(() => [
   }] : [])
 ])
 
+// Filter → sort → paginate for DataTable (guide pattern) - must be after columns
+const getTaskFilterValue = (row, key) => {
+  if (key === 'requestedCarBrand') {
+    const car = row.type === 'lead' ? row.requestedCar : row.vehicle
+    return car?.brand
+  }
+  if (key === 'status') {
+    return row.type === 'lead' ? row.status : (row.displayStage ?? row.stage)
+  }
+  return getNestedProperty(row, key)
+}
+
+/** Due-date display label for table and search (same as getDateDisplay; "Not set" excluded from search). */
+function getDueDateSearchLabel(row) {
+  const raw = row.nextActionDue ?? row.dueDate
+  if (!raw) return null
+  const label = getDateDisplay(raw)
+  return label === 'Not set' ? null : label
+}
+
+const { paginatedData, sortedData, totalFilteredCount } = useDataTableData({
+  rawData: computed(() => props.tasks),
+  columns,
+  globalFilter,
+  columnFilters,
+  sorting,
+  pagination,
+  filterDefs: filterDefinitions,
+  searchableFields: (row) => [
+    row.customer?.name,
+    row.customer?.email,
+    row.customer?.phone,
+    getVehicleInfo(row),
+    row.type === 'lead' ? row.status : (row.displayStage ?? row.stage),
+    row.type,
+    row.source,
+    row.assignee,
+    getDueDateSearchLabel(row),
+    getCarPrice(row) != null ? String(getCarPrice(row)) : null,
+    row.contactAttempts?.length,
+    row.createdAt,
+    row.type === 'lead' ? (calculateLeadUrgency(row).level ?? null) : null,
+    row.compositeId,
+    row.id
+  ],
+  getFilterValue: getTaskFilterValue
+})
+
 const handleRowClick = (record) => {
   // Set search filter to task ID to highlight the clicked record
   globalFilter.value = String(record.id)
@@ -445,7 +522,7 @@ const handleRowClick = (record) => {
 
 // Bulk delete handler
 const handleBulkDelete = () => {
-  const selectedTasks = getSelectedRows(filteredTasks.value)
+  const selectedTasks = getSelectedRows(sortedData.value)
   
   if (selectedTasks.length === 0) return
   
@@ -498,6 +575,13 @@ const tableMeta = computed(() => ({
 
 :deep(tbody tr:last-child) {
   border-bottom: none !important;
+}
+
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to table container */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
 }
 
 /* Enable horizontal and vertical scrolling */

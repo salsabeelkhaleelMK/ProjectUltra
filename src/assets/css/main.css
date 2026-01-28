@@ -633,30 +633,6 @@ button[class*="size-icon-lg"] {
 }
 
 /* ========================================
-   Button Icon Spacing
-   ======================================== */
-
-/* Buttons with icons and text */
-button > svg:not(:only-child),
-button > i:not(:only-child) {
-  margin-right: 0.5rem;
-}
-
-button > svg:last-child:not(:only-child),
-button > i:last-child:not(:only-child) {
-  margin-right: 0;
-  margin-left: 0.5rem;
-}
-
-/* Icon-only buttons should not have margin */
-button[data-size*="icon"] > svg,
-button[data-size*="icon"] > i,
-button[class*="size-icon"] > svg,
-button[class*="size-icon"] > i {
-  margin: 0 !important;
-}
-
-/* ========================================
    Tabs Styling - Match Reference Project Exactly
    ======================================== */
 
@@ -787,6 +763,106 @@ button[data-state="active"][role="tab"]:not(.no-indicator)::after {
   height: 2px;
   background-color: #2563eb;
   z-index: 10;
+}
+
+/* ========================================
+   AI Mode Activated (reusable)
+   Same look for: global search AI Mode button (when on),
+   Extract with AI button, Suggest AI time toggle (when selected).
+   ======================================== */
+
+:root {
+  --ai-mode-from: #4f46e5;
+  --ai-mode-via: #9333ea;
+  --ai-mode-to: #db2777;
+  --ai-mode-from-hover: #6366f1;
+  --ai-mode-via-hover: #a855f7;
+  --ai-mode-to-hover: #ec4899;
+}
+
+/* Base state: gradient applies as soon as class is on (e.g. AI mode on / clicked) */
+button.mk-ai-mode-active,
+.mk-ai-mode-active {
+  background: linear-gradient(to right, var(--ai-mode-from), var(--ai-mode-via), var(--ai-mode-to)) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+button.mk-ai-mode-active:hover:not(:disabled),
+.mk-ai-mode-active:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--ai-mode-from-hover), var(--ai-mode-via-hover), var(--ai-mode-to-hover)) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Toggle in LQTask "Suggest AI time" (Next call attempt) when selected – same style as AI Mode button */
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[data-state="on"],
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[aria-pressed="true"],
+button.mk-ai-mode-active-toggle[data-state="on"],
+button.mk-ai-mode-active-toggle[aria-pressed="true"] {
+  background: linear-gradient(to right, var(--ai-mode-from), var(--ai-mode-via), var(--ai-mode-to)) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[data-state="on"]:hover:not(:disabled),
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[aria-pressed="true"]:hover:not(:disabled),
+button.mk-ai-mode-active-toggle[data-state="on"]:hover:not(:disabled),
+button.mk-ai-mode-active-toggle[aria-pressed="true"]:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--ai-mode-from-hover), var(--ai-mode-via-hover), var(--ai-mode-to-hover)) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Sparkles icon inside AI mode buttons – use gradient fill when in global doc */
+.mk-ai-mode-active .mk-sparkles-icon,
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon,
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[aria-pressed="true"] .mk-sparkles-icon,
+.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon,
+.mk-ai-mode-active-toggle[aria-pressed="true"] .mk-sparkles-icon {
+  fill: url(#sparkles-gradient) !important;
+  stroke: none !important;
+  color: white !important;
+}
+
+.mk-ai-mode-active .mk-sparkles-icon path,
+.mk-ai-mode-active .mk-sparkles-icon circle,
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon path,
+.reschedule-toggle-group button.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon circle,
+.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon path,
+.mk-ai-mode-active-toggle[data-state="on"] .mk-sparkles-icon circle,
+.mk-ai-mode-active-toggle[aria-pressed="true"] .mk-sparkles-icon path,
+.mk-ai-mode-active-toggle[aria-pressed="true"] .mk-sparkles-icon circle {
+  fill: url(#sparkles-gradient) !important;
+  stroke: none !important;
+}
+
+/* ========================================
+   UnifiedSearchBar - AI Mode Sparkles
+   ======================================== */
+
+.sparkles-gradient svg {
+  fill: url(#sparkles-gradient) !important;
+}
+
+.sparkles-gradient path,
+.sparkles-gradient circle,
+.sparkles-gradient line,
+.sparkles-gradient polygon {
+  fill: url(#sparkles-gradient) !important;
+  stroke: none !important;
+  stroke-width: 0 !important;
+}
+
+.sparkles-wrapper div.relative.inline-flex.items-center {
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  color: rgba(24, 24, 27, 1) !important;
 }
 
 /* ========================================

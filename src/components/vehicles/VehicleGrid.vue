@@ -1,4 +1,5 @@
 <template>
+  <div class="data-table-inner table-search-wrapper">
   <DataTable 
     :data="filteredVehicles" 
     :columns="columns"
@@ -14,7 +15,7 @@
     v-model:columnFilters="columnFiltersModel"
     v-model:rowSelection="rowSelection"
     :paginationOptions="{
-      rowCount: filteredVehicles.length
+      rowCount: rowCount ?? filteredVehicles.length
     }"
     :globalFilterOptions="{
       debounce: 300,
@@ -61,6 +62,7 @@
       </div>
     </template>
   </DataTable>
+  </div>
 </template>
 
 <script setup>
@@ -106,6 +108,10 @@ const props = defineProps({
   columnFilters: {
     type: Array,
     required: true
+  },
+  rowCount: {
+    type: Number,
+    default: undefined
   }
 })
 
@@ -219,12 +225,11 @@ const columnFiltersModel = computed({
   border: none !important;
 }
 
-/* Search input - white background like reference */
-:deep(input[type="search"]),
-:deep(input[placeholder*="Search"]),
-:deep([data-slot="table-search"] input) {
-  background-color: white !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to this wrapper */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
 }
 
 /* Filter button - white background like reference */

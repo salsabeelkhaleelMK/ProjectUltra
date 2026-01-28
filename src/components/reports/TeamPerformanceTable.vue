@@ -14,20 +14,31 @@
   </div>
   
   <!-- Actual Content -->
-  <DataTable 
-    v-else
-    :data="teamMembers" 
-    :columns="columns"
-    :pagination="pagination"
-    :sorting="sorting"
-    :pagination-options="{
-      rowCount: teamMembers.length,
-      pageSizeOptions: [10, 20, 50]
-    }"
-    @update:pagination="pagination = $event"
-    @update:sorting="sorting = $event"
-    class="h-full"
-  >
+  <div v-else>
+    <div class="mb-1">
+    <UnifiedSearchBar
+      active-tab="opportunities"
+      placeholder="Search team performance..."
+      :pagination="pagination"
+      @update:globalFilter="globalFilter = $event"
+      @update:columnFilters="columnFilters = $event"
+      @update:pagination="pagination = $event"
+    />
+    </div>
+    <div class="data-table-inner table-search-wrapper">
+    <DataTable 
+      :data="paginatedData" 
+      :columns="columns"
+      :pagination="pagination"
+      :sorting="sorting"
+      :pagination-options="{
+        rowCount: totalFilteredCount,
+        pageSizeOptions: [10, 20, 50]
+      }"
+      @update:pagination="pagination = $event"
+      @update:sorting="sorting = $event"
+      class="h-full"
+    >
     <template #toolbar>
       <div class="flex items-center gap-2">
         <Trophy :size="16" class="text-foreground" />
@@ -41,6 +52,8 @@
       </div>
     </template>
   </DataTable>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -48,6 +61,8 @@ import { ref, computed, h } from 'vue'
 import { ChevronDown, Trophy } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button, Avatar, AvatarFallback } from '@motork/component-library/future/primitives'
+import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
+import { useDataTableData } from '@/composables/useDataTableData'
 
 const props = defineProps({
   teamMembers: {
@@ -67,6 +82,9 @@ const pagination = ref({
 })
 
 const sorting = ref([])
+const globalFilter = ref('')
+const columnFilters = ref([])
+const filterDefsRef = ref([])
 
 const getInitials = (name) => {
   if (!name) return 'U'
@@ -149,6 +167,29 @@ const columns = computed(() => [
     }
   }
 ])
+
+// Filter (global + column), sort, paginate
+const searchableFields = (row) => [
+  row.name,
+  row.leads != null ? String(row.leads) : null,
+  row.qualifiedLeads != null ? String(row.qualifiedLeads) : null,
+  row.qualifiedPercentage != null ? String(row.qualifiedPercentage) : null,
+  row.opportunities != null ? String(row.opportunities) : null,
+  row.inNegotiation != null ? String(row.inNegotiation) : null,
+  row.inNegotiationPercentage != null ? String(row.inNegotiationPercentage) : null,
+  row.won != null ? String(row.won) : null,
+  row.wonPercentage != null ? String(row.wonPercentage) : null
+]
+const { paginatedData, totalFilteredCount } = useDataTableData({
+  rawData: computed(() => props.teamMembers),
+  columns,
+  globalFilter,
+  columnFilters,
+  sorting,
+  pagination,
+  filterDefs: filterDefsRef,
+  searchableFields,
+})
 </script>
 
 <style scoped>
@@ -214,6 +255,13 @@ const columns = computed(() => [
 :deep(footer button[role="combobox"]) {
   background-color: transparent !important;
   border: none !important;
+}
+
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
 }
 
 /* Search input - white background like reference */

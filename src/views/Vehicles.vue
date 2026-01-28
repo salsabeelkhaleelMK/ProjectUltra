@@ -17,6 +17,19 @@
     
     <!-- Content with padding -->
     <div class="p-4 md:p-8">
+      <!-- Search bar with AI mode: on top of filter bar and table -->
+      <div class="mb-1">
+        <UnifiedSearchBar
+          active-tab="vehicles"
+          placeholder="Search vehicles..."
+          :pagination="pagination"
+          :status-options="vehicleStatusOptions"
+          :volvo-model-options="volvoModelOptions"
+          @update:global-filter="globalFilter = $event"
+          @update:column-filters="columnFilters = $event"
+          @update:pagination="pagination = $event"
+        />
+      </div>
       <!-- Filter Tabs -->
       <VehicleFilters
         :vehicle-tabs="vehicleTabs"
@@ -26,7 +39,8 @@
 
       <!-- Table -->
       <VehicleGrid
-        :filtered-vehicles="filteredVehicles"
+        :filtered-vehicles="paginatedData"
+        :row-count="totalFilteredCount"
         :columns="columns"
         :loading="vehiclesStore.loading"
         :table-meta="tableMeta"
@@ -248,7 +262,9 @@ import {
 } from '@motork/component-library/future/primitives'
 import VehicleFilters from '@/components/vehicles/VehicleFilters.vue'
 import VehicleGrid from '@/components/vehicles/VehicleGrid.vue'
+import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
 import { useVehicleDetail } from '@/composables/useVehicleDetail'
+import { useDataTableData } from '@/composables/useDataTableData'
 
 const router = useRouter()
 
@@ -366,6 +382,21 @@ const filterDefinitions = [
     aiHint: 'Number of days in stock'
   }
 ]
+
+const vehicleStatusOptions = computed(() => {
+  const def = filterDefinitions.find(d => d.key === 'status')
+  return def?.options?.map(o => ({ value: o.value, label: o.label })) ?? []
+})
+const volvoModelOptions = computed(() => [
+  { value: 'XC90', label: 'XC90' },
+  { value: 'XC60', label: 'XC60' },
+  { value: 'XC40', label: 'XC40' },
+  { value: 'V90', label: 'V90' },
+  { value: 'V60', label: 'V60' },
+  { value: 'V40', label: 'V40' },
+  { value: 'S90', label: 'S90' },
+  { value: 'S60', label: 'S60' }
+])
 
 onMounted(() => {
   vehiclesStore.fetchVehicles()
@@ -663,5 +694,34 @@ const columns = computed(() => {
       }
     ]
   }
+})
+
+// Filter → sort → paginate for DataTable (guide pattern)
+const filterDefsRef = computed(() => filterDefinitions)
+const { paginatedData, totalFilteredCount } = useDataTableData({
+  rawData: filteredVehicles,
+  columns,
+  globalFilter,
+  columnFilters,
+  sorting,
+  pagination,
+  filterDefs: filterDefsRef,
+  searchableFields: (row) => [
+    row.brand,
+    row.model,
+    row.vin,
+    row.status,
+    getVehicleType(row),
+    row.year,
+    row.fuelType,
+    row.gearType,
+    row.registration,
+    row.kilometers != null ? String(row.kilometers) : null,
+    row.stockDays != null ? String(row.stockDays) : null,
+    row.dealership,
+    row.plates,
+    row.owner,
+    row.price != null ? String(row.price) : null
+  ]
 })
 </script>
