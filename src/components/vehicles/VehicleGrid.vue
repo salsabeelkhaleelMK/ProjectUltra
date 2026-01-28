@@ -223,6 +223,13 @@ const columnFiltersModel = computed({
   border: none !important;
 }
 
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to this wrapper */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
+}
+
 /* Filter button - white background like reference */
 :deep(button[aria-label*="filter"]),
 :deep(button[aria-label*="Filter"]),

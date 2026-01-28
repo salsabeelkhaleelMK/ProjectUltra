@@ -274,8 +274,14 @@
                   @update:model-value="(p) => p && setRescheduleTime('monday')"
                   class="followup-toggle-item mk-ai-mode-active-toggle"
                 >
-                  <Sparkles class="w-3 h-3 shrink-0" />
-                  AI suggestion
+                  <Sparkles
+                    :size="14"
+                    class="mk-sparkles-icon shrink-0"
+                    :fill="rescheduleTime === 'monday' ? 'url(#sparkles-gradient)' : 'currentColor'"
+                    :stroke="rescheduleTime === 'monday' ? 'none' : 'currentColor'"
+                    :stroke-width="rescheduleTime === 'monday' ? 0 : 1.5"
+                  />
+                  Suggest AI time
                 </Toggle>
                 <Toggle
                   variant="outline"

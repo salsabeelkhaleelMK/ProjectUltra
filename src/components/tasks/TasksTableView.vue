@@ -577,6 +577,13 @@ const tableMeta = computed(() => ({
   border-bottom: none !important;
 }
 
+/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to table container */
+.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
+.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
+  display: none !important;
+}
+
 /* Remove any dark borders from table container */
 :deep([data-slot="table-container"]),
 :deep(.table-wrapper) {

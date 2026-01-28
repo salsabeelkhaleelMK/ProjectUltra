@@ -833,8 +833,9 @@
       :show="showFinancingModal"
       task-type="opportunity"
       :task-id="opportunity.id"
+      :purchase-method="editingFinancingOption"
       @save="handleFinancingSave"
-      @close="showFinancingModal = false"
+      @close="showFinancingModal = false; editingFinancingOption = null"
     />
 
     <AddVehicleModal
@@ -843,8 +844,9 @@
       mode="tradein"
       task-type="opportunity"
       :task-id="opportunity.id"
+      :item="editingTradeIn"
       @save="handleTradeInSave"
-      @close="showTradeInModal = false"
+      @close="showTradeInModal = false; editingTradeIn = null"
     />
 
     <PDFPreviewModal
@@ -875,8 +877,10 @@
     :opportunity="opportunity"
     @confirm="handleOfferCreatedFromModal"
     @cancel="closeCreateOfferModal"
-    @open-add-tradein="showTradeInModal = true"
-    @open-add-financing="showFinancingModal = true"
+    @open-add-tradein="editingTradeIn = null; showTradeInModal = true"
+    @open-add-financing="editingFinancingOption = null; showFinancingModal = true"
+    @open-edit-tradein="(t) => { editingTradeIn = t; showTradeInModal = true }"
+    @open-edit-financing="(f) => { editingFinancingOption = f; showFinancingModal = true }"
   />
 
   <PostponeTaskDialog
@@ -1530,6 +1534,8 @@ const showViewAppointment = ref(false)
 const showEditAppointment = ref(false)
 const showTradeInModal = ref(false)
 const showFinancingModal = ref(false)
+const editingTradeIn = ref(null)
+const editingFinancingOption = ref(null)
 const recommendedCars = ref([])
 
 // PDF Generation state

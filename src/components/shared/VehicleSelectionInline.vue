@@ -8,25 +8,7 @@
     </div>
 
     <template v-if="showStockSection">
-      <div v-if="allRecommendedVehicles.length" class="space-y-3">
-        <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
-          <Sparkles class="size-4 text-primary" />
-          Recommended
-        </h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          <VehicleCard
-            v-for="vehicle in allRecommendedVehicles"
-            :key="vehicle.id"
-            :vehicle="vehicle"
-            :badge="vehicle.isRequested ? 'Requested' : 'Recommended'"
-            :stock-days="vehicle.stockDays"
-            :selected="selectedVehicleId === vehicle.id"
-            @select="handleSelectVehicle(vehicle, vehicle.isRequested ? 'requested' : 'recommended')"
-          />
-        </div>
-      </div>
-
-      <div class="space-y-3">
+      <div class="space-y-4">
         <div class="relative">
           <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -36,6 +18,21 @@
             class="w-full pl-9 bg-background border-border"
           />
         </div>
+
+        <div v-if="allRecommendedVehicles.length && !searchQuery.trim()" class="space-y-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <VehicleCard
+              v-for="vehicle in allRecommendedVehicles"
+              :key="vehicle.id"
+              :vehicle="vehicle"
+              :badge="vehicle.isRequested ? 'Requested' : 'Recommended'"
+              :stock-days="vehicle.stockDays"
+              :selected="selectedVehicleId === vehicle.id"
+              @select="handleSelectVehicle(vehicle, vehicle.isRequested ? 'requested' : 'recommended')"
+            />
+          </div>
+        </div>
+
         <template v-if="searchQuery.trim()">
           <div v-if="searchResults.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             <VehicleCard
@@ -55,14 +52,9 @@
           </div>
         </template>
       </div>
-
     </template>
 
     <div v-if="showConfigureSection" class="space-y-4">
-      <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
-        <Settings class="size-4 text-primary" />
-        Configure Custom Vehicle
-      </h3>
       <div class="rounded-lg border border-border bg-muted p-4 space-y-4">
         <p class="text-sm text-muted-foreground">
           Build a custom configuration with specific options and features.
@@ -138,7 +130,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { ChevronLeft, Search, Settings, Sparkles } from 'lucide-vue-next'
+import { ChevronLeft, Search, Settings } from 'lucide-vue-next'
 import { Button, Input, Label } from '@motork/component-library/future/primitives'
 import VehicleCard from '@/components/shared/vehicles/VehicleCard.vue'
 import { fetchVehicles } from '@/api/vehicles'
@@ -222,13 +214,15 @@ const allRecommendedVehicles = computed(() => {
 const filteredStock = computed(() => {
   if (!vehicles.value?.length) return []
   let filtered = [...vehicles.value]
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase().trim()
+  const q = searchQuery.value?.trim()
+  if (q) {
+    const lower = q.toLowerCase()
     filtered = filtered.filter(
       (v) =>
-        v.brand?.toLowerCase().includes(q) ||
-        v.model?.toLowerCase().includes(q) ||
-        String(v.year).includes(q)
+        v.brand?.toLowerCase().includes(lower) ||
+        v.model?.toLowerCase().includes(lower) ||
+        String(v.year ?? '').includes(q) ||
+        v.vin?.toLowerCase().includes(lower)
     )
   }
   return filtered
@@ -238,9 +232,11 @@ const recommendedIds = computed(() =>
   new Set(allRecommendedVehicles.value.map((v) => v.id).filter(Boolean))
 )
 
-const searchResults = computed(() =>
-  filteredStock.value.filter((v) => !recommendedIds.value.has(v.id))
-)
+const searchResults = computed(() => {
+  const q = searchQuery.value?.trim()
+  if (!q) return []
+  return filteredStock.value
+})
 
 const isCustomVehicleValid = computed(
   () =>
