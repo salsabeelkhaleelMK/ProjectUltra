@@ -8,7 +8,7 @@
         @click="selectedChannel = channel.id" 
         :class="chipClass(channel.id)"
       >
-        <i :class="[channel.icon, 'text-sm']"></i>
+        <component :is="getLucideIcon(channel.icon)" class="w-4 h-4 shrink-0 text-sm" />
         <span class="text-xs font-bold uppercase tracking-wider">{{ channel.label }}</span>
       </button>
     </div>
@@ -58,7 +58,7 @@
         @click="selectedChannel = channel.id" 
         :class="chipClass(channel.id)"
       >
-        <i :class="[channel.icon, 'text-sm']"></i>
+        <component :is="getLucideIcon(channel.icon)" class="w-4 h-4 shrink-0 text-sm" />
         <span class="text-xs font-bold uppercase tracking-wider">{{ channel.label }}</span>
       </button>
     </div>
@@ -101,6 +101,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import EmailForm from '@/components/shared/communication/EmailForm.vue'
 import SMSForm from '@/components/shared/communication/SMSForm.vue'
 import WhatsAppForm from '@/components/shared/communication/WhatsAppForm.vue'

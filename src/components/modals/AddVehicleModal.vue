@@ -2,43 +2,46 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col">
+      <DialogContent
+        class="w-full sm:max-w-lg max-h-[calc(100vh-4rem)] flex flex-col"
+        :show-close-button="true"
+      >
         <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ getTitle() }}</DialogTitle>
+          <DialogDescription>{{ getDescription() }}</DialogDescription>
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto py-4 w-full">
-          <!-- Vehicle Type Selection (only when mode is 'vehicle' and no item is being edited) -->
-          <!-- Skip selection screen when mode is 'tradein' - go directly to form -->
-          <div v-if="mode === 'vehicle' && !item && !selectedVehicleType" class="space-y-4 py-4 w-full">
-          <p class="text-muted-foreground text-sm mb-4">Select the type of vehicle you want to add:</p>
+          <div class="grid gap-4">
+            <div v-if="mode === 'vehicle' && !item && !selectedVehicleType" class="grid gap-4">
+          <p class="text-sm text-muted-foreground">Select the type of vehicle you want to add:</p>
           <div class="grid grid-cols-1 gap-3">
             <Button
-              label="Drove"
               variant="outline"
-              size="small"
               class="w-full justify-start"
               @click="selectedVehicleType = 'drove'"
-            />
+            >
+              Drove
+            </Button>
             <Button
-              label="Requested"
               variant="outline"
-              size="small"
               class="w-full justify-start"
               @click="selectedVehicleType = 'requested'"
-            />
+            >
+              Requested
+            </Button>
             <Button
-              label="Trade-In"
               variant="outline"
-              size="small"
               class="w-full justify-start"
               @click="selectedVehicleType = 'tradein'"
-            />
-          </div>
-          </div>
+            >
+              Trade-In
+            </Button>
+            </div>
+            </div>
 
-          <div v-else class="space-y-6 w-full">
-          <!-- Trade-In Fields (simplified) -->
+            <div v-else class="grid gap-4">
+          <!-- Trade-In Fields -->
           <template v-if="isTradeIn">
             <!-- Brand and Model in same row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,7 +172,7 @@
                   v-model="vehicleData.brand"
                   type="text" 
                   placeholder="e.g., Volkswagen" 
-                  class="w-full h-10"
+                  class="w-full"
                   required
                 />
               </div>
@@ -179,7 +182,7 @@
                   v-model="vehicleData.model"
                   type="text" 
                   placeholder="e.g., ID.4" 
-                  class="w-full h-10"
+                  class="w-full"
                   required
                 />
               </div>
@@ -189,7 +192,7 @@
                   v-model="vehicleData.year"
                   type="number" 
                   placeholder="e.g., 2024" 
-                  class="w-full h-10"
+                  class="w-full"
                   min="1900"
                   :max="new Date().getFullYear() + 1"
                   required
@@ -204,7 +207,7 @@
                 v-model="vehicleData.version"
                 type="text" 
                 placeholder="e.g., Premium Plus" 
-                class="w-full h-10"
+                class="w-full"
               />
             </div>
 
@@ -216,7 +219,7 @@
                   v-model="vehicleData.vin"
                   type="text" 
                   placeholder="Vehicle Identification Number" 
-                  class="w-full h-10"
+                  class="w-full"
                 />
               </div>
               <div class="space-y-2">
@@ -225,7 +228,7 @@
                   v-model="vehicleData.plates"
                   type="text" 
                   placeholder="License plate number" 
-                  class="w-full h-10"
+                  class="w-full"
                 />
               </div>
             </div>
@@ -235,7 +238,7 @@
               <div class="space-y-2">
                 <Label class="block text-sm font-semibold text-foreground">Fuel Type</Label>
                 <Select v-model="vehicleData.fuelType">
-                  <SelectTrigger class="w-full h-10">
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select fuel type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -250,7 +253,7 @@
               <div class="space-y-2">
                 <Label class="block text-sm font-semibold text-foreground">Gear Type</Label>
                 <Select v-model="vehicleData.gearType">
-                  <SelectTrigger class="w-full h-10">
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select gear type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -266,7 +269,7 @@
                   v-model.number="vehicleData.kilometers"
                   type="number" 
                   placeholder="0" 
-                  class="w-full h-10"
+                  class="w-full"
                   min="0"
                 />
               </div>
@@ -279,7 +282,7 @@
                 v-model="vehicleData.registration"
                 type="text" 
                 placeholder="MM/YYYY (e.g., 01/2024)" 
-                class="w-full h-10"
+                class="w-full"
               />
             </div>
 
@@ -291,7 +294,7 @@
                   v-model="vehicleData.ownedSince"
                   type="text" 
                   placeholder="MM/YYYY (e.g., 01/2024)" 
-                  class="w-full h-10"
+                  class="w-full"
                 />
               </div>
               <div class="space-y-2">
@@ -300,7 +303,7 @@
                   v-model="vehicleData.owner"
                   type="text" 
                   placeholder="Owner name" 
-                  class="w-full h-10"
+                  class="w-full"
                 />
               </div>
             </div>
@@ -309,7 +312,7 @@
               <div class="space-y-2">
                 <Label class="block text-sm font-semibold text-foreground">Ownership Type</Label>
                 <Select v-model="vehicleData.ownershipType">
-                  <SelectTrigger class="w-full h-10">
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select ownership type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -328,27 +331,42 @@
                 v-model="vehicleData.warrantyInfo"
                 rows="4"
                 placeholder="Warranty information..." 
-                class="w-full min-h-[100px] resize-none"
+                class="w-full resize-none"
               />
             </div>
-          </template>
+            </template>
+            </div>
           </div>
         </div>
 
-        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="$emit('close')"
-          />
-          <Button
-            :label="isTradeIn ? 'Save Trade-In' : 'Add Vehicle'"
-            variant="default"
-            size="small"
-            :disabled="!isValid"
-            @click="handleSubmit"
-          />
+        <DialogFooter class="flex-shrink-0 flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
+          <div class="flex gap-3 order-2 sm:order-1">
+            <Button
+              v-if="item"
+              variant="destructive"
+              class="rounded-sm w-full sm:w-auto"
+              @click="$emit('delete')"
+            >
+              Delete
+            </Button>
+          </div>
+          <div class="flex flex-col-reverse sm:flex-row gap-3 flex-1 sm:justify-end order-1 sm:order-2">
+            <Button
+              variant="outline"
+              class="rounded-sm w-full sm:w-auto"
+              @click="$emit('close')"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              class="rounded-sm w-full sm:w-auto"
+              :disabled="!isValid"
+              @click="handleSubmit"
+            >
+              {{ item ? 'Update Trade-In' : (isTradeIn ? 'Save Trade-In' : 'Add Vehicle') }}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </DialogPortal>
@@ -357,7 +375,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { 
+import {
   Button,
   Input,
   Label,
@@ -366,11 +384,10 @@ import {
   SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectValue
-} from '@motork/component-library/future/primitives'
-import {
+  SelectValue,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,
@@ -402,7 +419,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save', 'delete'])
 
 // Auto-set to 'tradein' when mode is 'tradein', otherwise null
 const selectedVehicleType = ref(props.mode === 'tradein' ? 'tradein' : null) // 'drove', 'requested', 'tradein', or null
@@ -423,6 +440,7 @@ const isTradeIn = computed(() => {
 
 // Get modal title based on context
 const getTitle = () => {
+  if (props.item) return 'Edit Trade-In'
   if (props.mode === 'tradein') return 'Add Trade-In Vehicle'
   if (selectedVehicleType.value === 'tradein') return 'Add Trade-In Vehicle'
   if (selectedVehicleType.value === 'drove') return 'Add Drove Vehicle'
@@ -465,43 +483,73 @@ const vehicleData = ref({
 })
 
 
-// Load existing item data if editing
-onMounted(() => {
-  if (props.item) {
-    if (props.item.data) {
-      // Load vehicle data from activity
-      vehicleData.value = {
-        brand: props.item.data.brand || '',
-        model: props.item.data.model || '',
-        year: props.item.data.year || '',
-        version: props.item.data.version || '',
-        vin: props.item.data.vin || '',
-        plates: props.item.data.plate || props.item.data.plates || '',
-        fuelType: props.item.data.fuelType || '',
-        gearType: props.item.data.gearType || '',
-        kilometers: props.item.data.km || props.item.data.kilometers || '',
-        registration: props.item.data.date || props.item.data.registration || '',
-        owner: props.item.data.owner || '',
-        ownershipType: props.item.data.ownershipType || '',
-        ownedSince: props.item.data.ownedSince || '',
-        warrantyInfo: props.item.data.warrantyInfo || '',
-        note: props.item.data.note || '',
-        stockDays: null,
-        valuation: props.item.data.tradeInPrice ?? null
-      }
-
-    }
+function parseLabelToVehicle(label) {
+  if (!label || typeof label !== 'string') return { brand: '', model: '', year: '' }
+  const withYear = label.match(/^(.+?)\s*\((\d{4})\)\s*$/)
+  if (withYear) {
+    const rest = withYear[1].trim()
+    const year = withYear[2]
+    const parts = rest.split(/\s+/)
+    const brand = parts[0] || ''
+    const model = parts.slice(1).join(' ') || ''
+    return { brand, model, year }
   }
-})
+  const parts = label.trim().split(/\s+/)
+  const brand = parts[0] || ''
+  const model = parts.slice(1).join(' ') || ''
+  return { brand, model, year: '' }
+}
 
-// Reset form when modal closes
-watch(() => props.show, (isOpen) => {
-  if (!isOpen) {
-    selectedVehicleType.value = null
+function loadItemIntoForm(item) {
+  if (!item) return
+  if (item.data) {
     vehicleData.value = {
-      brand: '',
-      model: '',
-      year: '',
+      brand: item.data.brand || '',
+      model: item.data.model || '',
+      year: item.data.year || '',
+      version: item.data.version || '',
+      vin: item.data.vin || '',
+      plates: item.data.plate || item.data.plates || '',
+      fuelType: item.data.fuelType || '',
+      gearType: item.data.gearType || '',
+      kilometers: item.data.km || item.data.kilometers || '',
+      registration: item.data.date || item.data.registration || '',
+      owner: item.data.owner || '',
+      ownershipType: item.data.ownershipType || '',
+      ownedSince: item.data.ownedSince || '',
+      warrantyInfo: item.data.warrantyInfo || '',
+      note: item.data.note || '',
+      stockDays: null,
+      valuation: item.data.tradeInPrice ?? null
+    }
+  } else if (item.vehicle) {
+    const v = item.vehicle
+    vehicleData.value = {
+      brand: v.brand || '',
+      model: v.model || '',
+      year: v.year || '',
+      version: v.version || '',
+      vin: v.vin || '',
+      plates: v.plates || '',
+      fuelType: v.fuelType || '',
+      gearType: v.gearType || '',
+      kilometers: v.kilometers ?? '',
+      registration: v.registration || '',
+      owner: v.owner || '',
+      ownershipType: v.ownershipType || '',
+      ownedSince: v.ownedSince || '',
+      warrantyInfo: v.warrantyInfo || '',
+      note: v.note || '',
+      stockDays: null,
+      valuation: item.valuation ?? (item.valuationDetail?.tradeInPrice ?? null)
+    }
+  } else {
+    const { brand, model, year } = parseLabelToVehicle(item.label)
+    const valuation = item.valuation != null ? (typeof item.valuation === 'number' ? item.valuation : parseFloat(item.valuation)) : null
+    vehicleData.value = {
+      brand,
+      model,
+      year: year || '',
       version: '',
       vin: '',
       plates: '',
@@ -515,10 +563,50 @@ watch(() => props.show, (isOpen) => {
       warrantyInfo: '',
       note: '',
       stockDays: null,
-      valuation: null
+      valuation
     }
   }
+}
+
+onMounted(() => {
+  if (props.item) loadItemIntoForm(props.item)
 })
+
+const resetForm = () => {
+  vehicleData.value = {
+    brand: '',
+    model: '',
+    year: '',
+    version: '',
+    vin: '',
+    plates: '',
+    fuelType: '',
+    gearType: '',
+    kilometers: '',
+    registration: '',
+    owner: '',
+    ownershipType: '',
+    ownedSince: '',
+    warrantyInfo: '',
+    note: '',
+    stockDays: null,
+    valuation: null
+  }
+}
+
+watch(() => [props.show, props.item], ([isOpen, item]) => {
+  if (isOpen && item) {
+    selectedVehicleType.value = 'tradein'
+    loadItemIntoForm(item)
+  } else if (isOpen && !item) {
+    selectedVehicleType.value = props.mode === 'tradein' ? 'tradein' : null
+    resetForm()
+  }
+  if (!isOpen) {
+    selectedVehicleType.value = null
+    resetForm()
+  }
+}, { immediate: true })
 
 const isValid = computed(() => {
   return !!vehicleData.value.brand && !!vehicleData.value.model && !!vehicleData.value.year

@@ -106,7 +106,8 @@
     "assignToMe": "Assign to me",
     "assignToSomeone": "Assign to someone",
     "searchPlaceholder": "Search users or teams…",
-    "noAssigneesFound": "No assignees found"
+    "noAssigneesFound": "No assignees found",
+    "teamsLabel": "Teams"
   }
 }
 

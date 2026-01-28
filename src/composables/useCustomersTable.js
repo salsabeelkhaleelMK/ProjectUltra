@@ -1,4 +1,5 @@
 import { computed, h } from 'vue'
+import { getLucideIcon } from '@/utils/lucideIcons'
 
 /**
  * Composable for Customers table configuration
@@ -241,7 +242,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
               h('div', {
                 class: `text-fluid-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
               }, [
-                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-fluid-xs` }) : null,
+                rowData.deadlineStatus?.iconClass ? h(getLucideIcon(rowData.deadlineStatus.iconClass), { size: 14, class: 'shrink-0 text-fluid-xs' }) : null,
                 h('span', rowData.nextAction)
               ])
             ])
@@ -253,7 +254,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Requested car' },
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
-              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-fluid-sm' }),
+              h(getLucideIcon('fa-brands fa-volkswagen'), { size: 14, class: 'shrink-0 text-gray-400 text-fluid-sm' }),
               h('span', { class: 'text-fluid-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
             ])
           }
@@ -375,7 +376,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
               h('div', {
                 class: `text-fluid-xs flex items-center gap-1 ${rowData.deadlineStatus?.textClass || 'text-gray-500'}`
               }, [
-                rowData.deadlineStatus?.icon ? h('i', { class: `fa-solid ${rowData.deadlineStatus.icon} text-fluid-xs` }) : null,
+                rowData.deadlineStatus?.iconClass ? h(getLucideIcon(rowData.deadlineStatus.iconClass), { size: 14, class: 'shrink-0 text-fluid-xs' }) : null,
                 h('span', rowData.nextAction)
               ])
             ])
@@ -387,7 +388,7 @@ export function useCustomersTable(activeTab, handleRowClick) {
           meta: { title: 'Offered car' },
           cell: ({ row }) => {
             return h('div', { class: 'flex items-center gap-2' }, [
-              h('i', { class: 'fa-brands fa-volkswagen text-gray-400 text-fluid-sm' }),
+              h(getLucideIcon('fa-brands fa-volkswagen'), { size: 14, class: 'shrink-0 text-gray-400 text-fluid-sm' }),
               h('span', { class: 'text-fluid-sm font-medium text-gray-900 truncate max-w-[120px]' }, row.original.car || 'N/A')
             ])
           }

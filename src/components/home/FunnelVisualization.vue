@@ -2,7 +2,7 @@
   <div class="bg-white rounded-xl border border-gray-100 shadow-nsc-card p-4 md:p-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-bold text-gray-900">Full funnel</h3>
-      <i class="fa-solid fa-filter text-gray-400 text-sm"></i>
+      <Filter class="w-4 h-4 shrink-0 text-muted-foreground" />
     </div>
 
     <div class="flex flex-col md:flex-row gap-6 items-start">
@@ -91,6 +91,8 @@
 </template>
 
 <script setup>
+import { Filter } from 'lucide-vue-next'
+
 const props = defineProps({
   stages: {
     type: Array,

@@ -12,14 +12,14 @@
           <div class="flex-1 overflow-auto bg-muted p-4">
             <div v-if="loading" class="flex items-center justify-center h-full">
               <div class="text-center">
-                <i class="fa-solid fa-spinner fa-spin text-4xl text-muted-foreground mb-4"></i>
+                <Loader2 class="w-10 h-10 shrink-0 text-muted-foreground mb-4 animate-spin" />
                 <p class="text-sm text-muted-foreground">Loading PDF preview...</p>
               </div>
             </div>
             
             <div v-else-if="error" class="flex items-center justify-center h-full">
               <div class="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
-                <i class="fa-solid fa-exclamation-circle text-4xl text-red-600 mb-4"></i>
+                <AlertTriangle class="w-10 h-10 shrink-0 text-red-600 mb-4" />
                 <p class="text-sm text-red-600 font-semibold mb-2">Failed to load PDF</p>
                 <p class="text-xs text-red-500">{{ error }}</p>
               </div>
@@ -56,7 +56,7 @@
             :disabled="!pdfUrl || loading"
             @click="handlePrint"
           >
-            <i class="fa-solid fa-print mr-2"></i>
+            <Printer class="w-4 h-4 shrink-0 mr-2" />
           </Button>
           <Button
             label="Email"
@@ -66,7 +66,7 @@
             :disabled="!pdfUrl || loading"
             @click="handleEmail"
           >
-            <i class="fa-solid fa-envelope mr-2"></i>
+            <Mail class="w-4 h-4 shrink-0 mr-2" />
           </Button>
           <Button
             label="Download"
@@ -76,7 +76,7 @@
             :disabled="!pdfUrl || loading"
             @click="handleDownload"
           >
-            <i class="fa-solid fa-download mr-2"></i>
+            <Download class="w-4 h-4 shrink-0 mr-2" />
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -86,6 +86,7 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { Loader2, AlertTriangle, Printer, Mail, Download } from 'lucide-vue-next'
 import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,

@@ -1,29 +1,28 @@
 <template>
-  <div class="overflow-hidden rounded-lg bg-white shadow-nsc-card p-4 flex flex-col w-full">
-    <h3 class="text-base font-medium text-foreground leading-6 mb-4">Trade-ins</h3>
+  <div class="overflow-hidden rounded-lg bg-white shadow-nsc-card p-4 flex flex-col gap-4 w-full">
+    <div class="flex items-center justify-between gap-2">
+      <h3 class="text-base font-medium text-foreground leading-6">Trade-ins</h3>
+      <Button
+        variant="secondary"
+        size="sm"
+        class="gap-1.5 shrink-0"
+        @click="$emit('open-add')"
+      >
+        <Plus class="size-3.5" />
+        Add
+      </Button>
+    </div>
     <ul v-if="items.length" class="space-y-1.5">
       <li
         v-for="t in items"
         :key="t.id"
-        class="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg border border-border bg-muted/50 text-sm"
+        class="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg border border-border bg-muted/50 text-sm cursor-pointer hover:bg-muted transition-colors"
+        @click="$emit('open-edit', t)"
       >
         <span class="font-medium text-foreground">{{ t.label }}</span>
         <span v-if="t.valuation != null" class="text-muted-foreground shrink-0 text-xs">€ {{ formatCurrency(t.valuation) }}</span>
       </li>
     </ul>
-    <p v-else class="text-sm text-muted-foreground py-2">No trade-ins added yet</p>
-
-    <div class="pt-3 mt-3 border-t border-border">
-      <Button
-        variant="outline"
-        size="sm"
-        class="w-full gap-2"
-        @click="$emit('open-add')"
-      >
-        <Plus class="size-4" />
-        Add trade-in
-      </Button>
-    </div>
   </div>
 </template>
 
@@ -38,7 +37,7 @@ defineProps({
   }
 })
 
-defineEmits(['open-add'])
+defineEmits(['open-add', 'open-edit'])
 
 function formatCurrency(val) {
   if (val == null) return '0'

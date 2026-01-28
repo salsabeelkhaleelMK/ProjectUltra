@@ -38,9 +38,9 @@
           </div>
         </div>
         
-        <!-- Assignee Row -->
-        <div v-if="task" class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-          <!-- Assigned State -->
+        <!-- Assignee Row: only show assignee when assigned; unassigned state is shown in the blue banner below -->
+        <div v-if="task && (isAssigned || showDueDate || showExpectedCloseDate)" class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          <!-- Assigned: compact avatar + name + change dropdown -->
           <div v-if="isAssigned" class="flex items-center gap-1.5">
             <div
               class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[8px] shrink-0"
@@ -61,7 +61,7 @@
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
+                class="w-auto p-0 rounded-lg shadow-nsc-card bg-background"
                 side="bottom"
                 align="end"
               >
@@ -69,49 +69,13 @@
               </PopoverContent>
             </Popover>
           </div>
-          
-          <!-- Unassigned State -->
-          <div v-else class="flex items-center gap-1.5">
-            <Info :size="12" class="shrink-0 text-muted-foreground" stroke-width="2" />
-            <span class="text-xs text-muted-foreground">Unassigned</span>
-            <ButtonGroup class="flex items-stretch gap-0 rounded-lg overflow-hidden">
-              <Button
-                variant="default"
-                size="sm"
-                class="rounded-r-none border-r border-white/20 bg-primary text-xs h-6 px-2"
-                @click="assignToSelf"
-              >
-                Assign to me
-              </Button>
-              <ButtonGroupSeparator />
-              <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
-                <PopoverTrigger as-child>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    class="rounded-l-none border-0 -ml-px h-5 w-5"
-                    aria-label="Assign to someone"
-                  >
-                    <ChevronDown :size="10" stroke-width="2" aria-hidden="true" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
-                  side="bottom"
-                  align="start"
-                >
-                  <AssigneeDropdownContent @select="handleAssigneeFromDropdown" />
-                </PopoverContent>
-              </Popover>
-            </ButtonGroup>
-          </div>
-          
-          <!-- Separator and Date -->
+
+          <!-- Separator and Date (separator only when we have assignee + dates) -->
           <template v-if="showDueDate || showExpectedCloseDate">
-            <span class="text-muted-foreground">|</span>
+            <span v-if="isAssigned" class="text-muted-foreground">|</span>
             <!-- Due Date -->
             <div v-if="showDueDate" class="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <i class="fa-solid fa-calendar-day text-xs"></i>
+              <CalendarDays class="w-3 h-3 shrink-0" />
               <span>{{ dueDateLabel }}: {{ formattedDueDate }}</span>
             </div>
             
@@ -129,7 +93,7 @@
                 aria-label="Expected close date"
                 @click.stop="!isTaskClosed && (showExpectedCloseMenu = !showExpectedCloseMenu)"
               >
-                <i class="fa-solid fa-calendar-day text-xs"></i>
+                <CalendarDays class="w-3 h-3 shrink-0" />
                 <span>Expected Close: {{ formattedExpectedCloseDate }}</span>
                 <ChevronDown
                   v-if="!isTaskClosed"
@@ -204,15 +168,14 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Button, Badge, ButtonGroup, ButtonGroupSeparator, Popover, PopoverTrigger, PopoverContent } from '@motork/component-library/future/primitives'
-import { ChevronLeft, ChevronRight, X, ChevronDown, Plus, Info } from 'lucide-vue-next'
+import { Button, Badge, Popover, PopoverTrigger, PopoverContent } from '@motork/component-library/future/primitives'
+import { ChevronLeft, ChevronRight, X, ChevronDown, Plus, CalendarDays } from 'lucide-vue-next'
 import TaskBadges from './shared/TaskBadges.vue'
 import { getTaskActionTitle } from '@/utils/taskActionTitle'
 import { formatDueDate } from '@/utils/formatters'
 import AddTagModal from '@/components/modals/AddTagModal.vue'
 import AssigneeDropdownContent from '@/components/tasks/AssigneeDropdownContent.vue'
 import { useUsersStore } from '@/stores/users'
-import { useUserStore } from '@/stores/user'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 
@@ -238,12 +201,8 @@ const showAddTagModal = ref(false)
 const assigneeDropdownOpen = ref(false)
 
 const usersStore = useUsersStore()
-const userStore = useUserStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
-
-// Current user
-const currentUser = computed(() => userStore.currentUser)
 
 // Check if task is assigned
 const isAssigned = computed(() => {
@@ -279,35 +238,6 @@ const getRoleAvatarClass = (role) => {
     'operator': 'bg-orange-100 text-orange-700'
   }
   return classes[role] || 'bg-muted text-muted-foreground'
-}
-
-// Assign to self
-const assignToSelf = async () => {
-  if (!currentUser.value || !props.task) return
-  
-  try {
-    if (props.task.type === 'lead') {
-      await leadsStore.updateLead(props.task.id, { 
-        assignee: currentUser.value.name,
-        assigneeType: 'user',
-        assigneeTeam: currentUser.value.team,
-        assigneeDealership: currentUser.value.dealership,
-        assigneeRole: currentUser.value.role
-      })
-    } else if (props.task.type === 'opportunity') {
-      await opportunitiesStore.updateOpportunity(props.task.id, { 
-        assignee: currentUser.value.name,
-        assigneeType: 'user',
-        assigneeTeam: currentUser.value.team,
-        assigneeDealership: currentUser.value.dealership,
-        assigneeRole: currentUser.value.role
-      })
-    }
-    
-    emit('reassigned', currentUser.value)
-  } catch (error) {
-    console.error('Error assigning to self:', error)
-  }
 }
 
 async function applyAssignment(assignee) {
@@ -405,12 +335,11 @@ const taskTitle = computed(() => {
 })
 
 // Handle tag addition
-const handleAddTag = async (tagName) => {
+const handleAddTag = async (payload) => {
   if (!props.task) return
-  
+  const tagName = typeof payload === 'string' ? payload : payload.name
   const currentTags = props.task.tags || []
   
-  // Check if tag already exists
   if (currentTags.includes(tagName)) {
     showAddTagModal.value = false
     return

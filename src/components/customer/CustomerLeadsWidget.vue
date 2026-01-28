@@ -3,7 +3,7 @@
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-4 px-1">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-user-circle text-foreground"></i>
+        <UserCircle class="w-4 h-4 shrink-0 text-foreground" />
         <h2 class="text-sm font-semibold text-foreground leading-5">Leads</h2>
         <Badge
           :text="String(leads.length)"
@@ -15,7 +15,7 @@
         @click="$emit('add-lead')"
         class="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
       >
-        <i class="fa-solid fa-plus text-xs"></i>
+        <Plus class="w-3 h-3 shrink-0" />
         <span>Add Lead</span>
       </button>
     </div>
@@ -31,7 +31,7 @@
         <div 
           class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border bg-orange-100 text-orange-600 border-orange-200"
         >
-          <i class="fa-solid fa-user-circle text-sm"></i>
+          <UserCircle class="w-4 h-4 shrink-0" />
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
@@ -47,18 +47,18 @@
                 class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
                 title="Open in new tab"
               >
-                <i class="fa-solid fa-external-link text-sm"></i>
+                <ExternalLink class="w-4 h-4 shrink-0" />
               </button>
             </div>
           </div>
           <div class="text-sm text-muted-foreground">
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
               <span v-if="lead.assignee" class="flex items-center gap-1">
-                <i class="fa-solid fa-user text-xs"></i>
+                <User class="w-3 h-3 shrink-0" />
                 {{ lead.assignee }}
               </span>
               <span v-if="lead.requestedCar" class="flex items-center gap-1">
-                <i class="fa-solid fa-car text-xs"></i>
+                <Car class="w-3 h-3 shrink-0" />
                 {{ lead.requestedCar.brand }} {{ lead.requestedCar.model }}
               </span>
             </div>
@@ -78,7 +78,7 @@
                   />
                   <span class="text-xs text-muted-foreground font-medium truncate">{{ task.description }}</span>
                 </div>
-                <i class="fa-solid fa-chevron-right text-xs text-muted-foreground opacity-50"></i>
+                <ChevronRight class="w-3 h-3 shrink-0 text-muted-foreground opacity-50" />
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@
     
     <!-- Empty State -->
     <div v-else class="text-center py-8 text-muted-foreground mb-6">
-      <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
+      <Inbox class="w-6 h-6 shrink-0 mb-2 opacity-30" />
       <p class="text-xs">No leads associated with this customer</p>
     </div>
   </div>
@@ -96,6 +96,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { UserCircle, Plus, ExternalLink, User, Car, ChevronRight, Inbox } from 'lucide-vue-next'
 import { Badge } from '@motork/component-library/future/primitives'
 
 const props = defineProps({

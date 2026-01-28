@@ -9,13 +9,13 @@
         class="w-full px-4 py-3 text-left border border-border rounded-lg hover:bg-muted transition-all flex items-center gap-3 group"
       >
         <div class="w-10 h-10 rounded-lg bg-brand-blue/10 flex items-center justify-center group-hover:bg-brand-blue/20 transition-colors">
-          <i class="fa-solid fa-phone text-brand-blue"></i>
+          <Phone class="w-4 h-4 shrink-0 text-brand-blue" />
         </div>
         <div class="flex-1">
           <p class="font-bold text-sm text-foreground uppercase tracking-tight">Call with Outbound</p>
           <p class="text-xs text-muted-foreground uppercase">Use external calling system</p>
         </div>
-        <i class="fa-solid fa-chevron-right text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        <ChevronRight class="w-3 h-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
       
       <button
@@ -23,13 +23,13 @@
         class="w-full px-4 py-3 text-left border border-border rounded-lg hover:bg-muted transition-all flex items-center gap-3 group"
       >
         <div class="w-10 h-10 rounded-lg bg-brand-slate/10 flex items-center justify-center group-hover:bg-brand-slate/20 transition-colors">
-          <i class="fa-solid fa-phone-volume text-brand-slate"></i>
+          <Phone class="w-4 h-4 shrink-0 text-brand-slate" />
         </div>
         <div class="flex-1">
           <p class="font-bold text-sm text-foreground uppercase tracking-tight">Call with PBX</p>
           <p class="text-xs text-muted-foreground uppercase">Use internal phone system</p>
         </div>
-        <i class="fa-solid fa-chevron-right text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        <ChevronRight class="w-3 h-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
       
       <button
@@ -37,13 +37,13 @@
         class="w-full px-4 py-3 text-left border border-border rounded-lg hover:bg-muted transition-all flex items-center gap-3 group"
       >
         <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-          <i class="fa-solid fa-copy text-gray-600"></i>
+          <Copy class="w-4 h-4 shrink-0 text-muted-foreground" />
         </div>
         <div class="flex-1">
           <p class="font-bold text-sm text-foreground uppercase tracking-tight">Copy Number</p>
           <p class="text-xs text-muted-foreground uppercase">{{ phoneNumber }}</p>
         </div>
-        <i class="fa-solid fa-chevron-right text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"></i>
+        <ChevronRight class="w-3 h-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
     </div>
 
@@ -71,6 +71,7 @@
 </template>
 
 <script setup>
+import { Phone, ChevronRight, Copy } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
 

@@ -36,6 +36,14 @@ alwaysApply: true
 
 - Files >200 lines or mixed responsibilities → extract subcomponents or composables. Prefer composition over extending large files.
 
-## 8. Modals
+## 8. Modals / Dialogs
 
-- Use **Motork Dialog** primitives (`@motork/component-library/future/primitives`: Dialog, DialogContent, DialogHeader, etc.); no custom modal wrappers. Use **ComingSoonModal** (`@/components/modals/ComingSoonModal.vue`) for unimplemented features.
+- Use **Motork Dialog** primitives (`@motork/component-library/future/primitives`: Dialog, DialogContent, DialogHeader, DialogFooter, DialogOverlay, DialogPortal, DialogTitle); no custom modal wrappers. Use **ComingSoonModal** (`@/components/modals/ComingSoonModal.vue`) for unimplemented features.
+- **Structure and styling** (apply to every new or updated dialog):
+  - **Root**: `<Dialog :open="show" @update:open="handleOpenChange">` → `<DialogPortal>` → `<DialogOverlay>` + `<DialogContent>`.
+  - **Overlay**: `class="fixed inset-0 z-50 bg-black/50"`.
+  - **DialogContent**: `class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col"` (use `sm:max-w-lg` or `sm:max-w-md` for smaller dialogs), `:show-close-button="true"`.
+  - **DialogHeader**: `class="shrink-0"`. Use `DialogTitle`; add `DialogDescription` only when a short subtitle is needed.
+  - **Body**: Wrapper `class="flex-1 overflow-y-auto py-4 w-full space-y-6"` (or `py-4 w-full` with inner spacing). Use theme tokens for labels and text (`text-foreground`, `text-muted-foreground`, etc.).
+  - **DialogFooter**: `class="shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3"`. Cancel = `Button variant="outline"`, primary action = `Button variant="default"`. Buttons: `class="rounded-sm w-full sm:w-auto"`. Primary disabled when form invalid or saving; disabled state uses same blue at 50% opacity (see main.css).
+  - **Single-choice options** (e.g. type, outcome): Use individual **Toggle** buttons (`variant="outline"`), not radio buttons. Wrap in `class="outcome-toggle-group flex flex-wrap gap-3"`, each Toggle `class="outcome-toggle-item"`. Bind with `:model-value="formData.type === 'VALUE'"` and `@update:model-value="(p) => selectOption(p ? 'VALUE' : '')"` so one selection works like a radio (and clicking again clears).

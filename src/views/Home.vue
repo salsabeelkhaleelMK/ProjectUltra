@@ -15,7 +15,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-foreground"></i>
+                <Zap class="w-4 h-4 shrink-0 text-foreground" />
                 <h2 class="text-sm font-medium text-foreground leading-5">Quick Actions</h2>
                 <Badge
                   v-if="totalNotificationsCount > 0"
@@ -54,7 +54,7 @@
                 <!-- Actual Content -->
                 <template v-else>
                   <div v-if="notifications.length === 0" class="text-center py-8 text-muted-foreground">
-                    <i class="fa-solid fa-check-circle text-4xl mb-2 text-muted-foreground opacity-50"></i>
+                    <CheckCircle class="w-10 h-10 shrink-0 mb-2 text-muted-foreground opacity-50" />
                     <p class="text-sm">All caught up!</p>
                     <p class="text-xs mt-1">No quick actions needed</p>
                   </div>
@@ -81,7 +81,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-tasks text-foreground"></i>
+                <ListTodo class="w-4 h-4 shrink-0 text-foreground" />
                 <h2 class="text-sm font-medium text-foreground leading-5">Tasks Due Today</h2>
                 <Badge
                   v-if="tasksDueToday.length > 0"
@@ -110,7 +110,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-calendar text-foreground"></i>
+                <Calendar class="w-4 h-4 shrink-0 text-foreground" />
                 <h2 class="text-sm font-medium text-foreground leading-5">Appointments Today</h2>
                 <Badge
                   v-if="appointmentsToday.length > 0"
@@ -148,6 +148,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { Zap, CheckCircle, ListTodo, Calendar } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useActionableQuestions } from '@/composables/useActionableQuestions'

@@ -50,7 +50,7 @@
             </div>
             <div class="text-xs text-muted-foreground mt-0.5 truncate">{{ event.customer }}</div>
             <div class="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
-              <i class="fa-solid fa-location-dot text-xs"></i>
+              <MapPin class="w-3 h-3 shrink-0" />
               {{ event.location }}
             </div>
           </div>
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { Calendar } from 'lucide-vue-next'
+import { Calendar, MapPin } from 'lucide-vue-next'
 
 defineProps({
   events: {

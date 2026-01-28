@@ -107,7 +107,8 @@
           @click="showAdvanced = !showAdvanced"
           class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <i class="fa-solid" :class="showAdvanced ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <ChevronDown v-if="showAdvanced" class="w-4 h-4 shrink-0" />
+          <ChevronRight v-else class="w-4 h-4 shrink-0" />
           Advanced Details (Optional)
         </button>
         
@@ -192,6 +193,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { ChevronDown, ChevronRight } from 'lucide-vue-next'
 import { 
   Button,
   Input,

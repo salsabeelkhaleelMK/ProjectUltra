@@ -4,7 +4,7 @@
       class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border"
       :class="getItemIconClass(item.type)"
     >
-      <i :class="getItemIcon(item.type)" class="text-sm"></i>
+      <component :is="getLucideIcon(getItemIcon(item.type))" class="w-4 h-4 shrink-0" />
     </div>
     <div class="flex-1">
       <div class="flex items-center gap-2 mb-1">
@@ -18,7 +18,7 @@
             class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
             title="More actions"
           >
-            <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+            <MoreVertical class="w-4 h-4 shrink-0" />
           </button>
           
           <!-- Dropdown Menu -->
@@ -33,7 +33,7 @@
       </div>
       <div v-if="item.content" class="text-sm text-muted-foreground">{{ item.content }}</div>
       <div v-if="item.fileName" class="text-sm text-muted-foreground flex items-center gap-2">
-        <i class="fa-solid fa-paperclip text-gray-400"></i>
+        <Paperclip class="w-4 h-4 shrink-0 text-muted-foreground" />
         <span>{{ item.fileName }}</span>
       </div>
       <div v-if="item.data" class="mt-2">
@@ -46,19 +46,19 @@
               <p v-if="item.data.version" class="text-sm text-muted-foreground mt-0.5">{{ item.data.version }}</p>
               <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
               <div v-if="item.data.year">
-                <i class="fa-regular fa-calendar mr-1"></i>{{ item.data.year }}
+                <Calendar class="w-4 h-4 shrink-0 mr-1 inline" />{{ item.data.year }}
               </div>
               <div v-if="item.data.km">
-                <i class="fa-solid fa-road mr-1"></i>{{ item.data.km }} km
+                <Car class="w-4 h-4 shrink-0 mr-1 inline" />{{ item.data.km }} km
               </div>
               <div v-if="item.data.plate">
-                <i class="fa-solid fa-id-card mr-1"></i>{{ item.data.plate }}
+                <UserCircle class="w-4 h-4 shrink-0 mr-1 inline" />{{ item.data.plate }}
               </div>
               <div v-if="item.data.date">
-                <i class="fa-regular fa-calendar-check mr-1"></i>{{ formatDate(item.data.date) }}
+                <CalendarCheck class="w-4 h-4 shrink-0 mr-1 inline" />{{ formatDate(item.data.date) }}
               </div>
               <div v-if="item.data.class">
-                <i class="fa-solid fa-car mr-1"></i>{{ item.data.class }}
+                <Car class="w-4 h-4 shrink-0 mr-1 inline" />{{ item.data.class }}
               </div>
             </div>
           </div>
@@ -148,6 +148,8 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { MoreVertical, Paperclip, Calendar, Car, UserCircle, CalendarCheck } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import { DropdownMenu } from '@motork/component-library/future/primitives'
 import AppointmentWidget from '@/components/customer/activities/AppointmentWidget.vue'
 import OfferCarousel from '@/components/shared/OfferCarousel.vue'

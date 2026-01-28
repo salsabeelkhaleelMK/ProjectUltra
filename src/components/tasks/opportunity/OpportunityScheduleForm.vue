@@ -76,7 +76,7 @@
                 @click="previousMonth"
                 class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
+                <ChevronLeft class="w-4 h-4 shrink-0 text-muted-foreground" />
               </button>
               <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
               <button
@@ -84,7 +84,7 @@
                 @click="nextMonth"
                 class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
+                <ChevronRight class="w-4 h-4 shrink-0 text-muted-foreground" />
               </button>
             </div>
             <div class="grid grid-cols-7 gap-1 mb-2">
@@ -108,19 +108,17 @@
           </div>
           <div class="p-6">
             <h6 class="text-sm font-semibold text-foreground mb-4">{{ selectedDateLabel }}</h6>
-            <div v-if="selectedDate && availableScheduleSlots.length > 0" class="space-y-2">
-              <button
+            <div v-if="selectedDate && availableScheduleSlots.length > 0" class="schedule-slot-toggle-group flex flex-col gap-2 w-full space-y-2">
+              <Toggle
                 v-for="slot in availableScheduleSlots"
                 :key="slot"
-                type="button"
-                @click="selectedSlot = slot"
-                class="w-full py-2 px-4 border-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                :class="selectedSlot === slot
-                  ? 'border-primary bg-muted text-foreground'
-                  : 'border-border text-muted-foreground hover:border-primary/30'"
+                variant="outline"
+                :model-value="selectedSlot === slot"
+                @update:model-value="(p) => (selectedSlot = p ? slot : '')"
+                class="schedule-slot-toggle-item"
               >
                 {{ slot }}
-              </button>
+              </Toggle>
             </div>
             <div v-else-if="selectedDate && availableScheduleSlots.length === 0" class="text-sm text-muted-foreground py-4 text-center">
               No available time slots for this date
@@ -170,7 +168,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { Button, Label } from '@motork/component-library/future/primitives'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Button, Label, Toggle } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import { useUsersStore } from '@/stores/users'
 import { getAvailabilityForAssignee } from '@/services/availabilityService'

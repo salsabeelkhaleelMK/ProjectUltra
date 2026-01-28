@@ -1,9 +1,9 @@
 <template>
   <TaskManagementWidget :task="lead" hide-title hide-border>
     <template #primary-action>
-      <!-- NEW: TaskAssignee Component (shows first, extremely compact) -->
+      <!-- Blue banner with Assign to me only when unassigned; assigned state is in header -->
       <TaskAssignee
-        v-if="!leadState.isClosed.value"
+        v-if="!leadState.isClosed.value && !(lead.assignee || lead.owner || lead.assignedTo)"
         :task="lead"
         task-type="lead"
         @reassigned="handleOwnerReassigned"
@@ -62,7 +62,7 @@
           class="flex items-center gap-2"
         >
           <span>Reopen Lead</span>
-          <i class="fa-solid fa-rotate-left"></i>
+          <RotateCcw class="w-4 h-4 shrink-0" />
         </Button>
       </div>
     </template>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { RotateCcw } from 'lucide-vue-next'
 import { toRef } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
 import { useLeadsStore } from '@/stores/leads'

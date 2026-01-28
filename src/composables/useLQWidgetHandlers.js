@@ -76,16 +76,13 @@ export function useLQWidgetHandlers(emit, callState, outcomeState, lead, contact
     emit('call-attempt-logged', attempt)
     emit('validated', { scheduleFollowUp: false })
 
-    // Determine assignee name based on method
+    // Determine assignee name based on method (team or salesperson from form, or assignment for assign-only fallback)
     let assigneeName = 'Unassigned'
+    const formAssignee = qualificationSelectedSalesman.value?.name || qualificationSelectedTeam.value?.name
     if (qualificationMethod.value === 'assign-and-schedule') {
-      if (qualificationSelectedSalesman.value) {
-        assigneeName = qualificationSelectedSalesman.value.name
-      } else if (qualificationSelectedTeam.value) {
-        assigneeName = qualificationSelectedTeam.value.name
-      }
+      assigneeName = formAssignee || 'Unassigned'
     } else {
-      assigneeName = assignment.value?.assignee?.name || 'Unassigned'
+      assigneeName = formAssignee || assignment.value?.assignee?.name || 'Unassigned'
     }
 
     let meeting = null

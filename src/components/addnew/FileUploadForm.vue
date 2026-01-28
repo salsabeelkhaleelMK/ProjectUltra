@@ -20,7 +20,7 @@
           :class="{ 'opacity-50 cursor-not-allowed': loading, 'border-border': !loading }"
         >
           <CardContent class="text-center py-8">
-            <i class="fa-solid fa-cloud-arrow-up text-4xl text-muted-foreground mb-3"></i>
+            <Upload class="w-10 h-10 shrink-0 text-muted-foreground mb-3" />
             <p class="text-foreground text-sm font-bold mb-1">
               {{ selectedFile ? selectedFile.name : 'Click to upload or drag and drop' }}
             </p>
@@ -30,7 +30,7 @@
       </div>
       <Card v-if="error" class="bg-red-50 border-red-200 mt-2">
         <CardContent class="flex items-start gap-2 p-3">
-          <i class="fa-solid fa-exclamation-circle text-red-600 mt-0.5 text-sm"></i>
+          <AlertTriangle class="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
           <span class="text-xs text-red-700">{{ error }}</span>
         </CardContent>
       </Card>
@@ -85,6 +85,7 @@
 </template>
 
 <script setup>
+import { Upload, AlertTriangle } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import { Badge, Card, CardHeader, CardTitle, CardContent, Label } from '@motork/component-library/future/primitives'
 import { useFileUpload } from '@/composables/useFileUpload'

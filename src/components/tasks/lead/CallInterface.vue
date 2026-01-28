@@ -17,10 +17,10 @@
     <div v-if="isCallActive || callEnded" class="mb-4 space-y-4">
       
       <!-- Transcription Area (shows when call is active or ended) -->
-      <div v-if="isCallActive || callEnded" class="bg-slate-900 text-white rounded-lg">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+      <div v-if="isCallActive || callEnded" class="bg-slate-900 text-white rounded-lg overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3">
           <div class="flex items-center gap-2">
-            <i class="fa-solid fa-waveform-lines text-blue-400 animate-pulse"></i>
+            <Mic class="w-4 h-4 shrink-0 text-blue-400 animate-pulse" aria-hidden="true" />
             <span class="text-xs font-bold uppercase tracking-wider">
               {{ isCallActive ? 'TRANSCRIBING' : 'CALL SUMMARY' }}
             </span>
@@ -28,46 +28,46 @@
           <div class="flex items-center gap-3">
             <template v-if="isCallActive">
               <div class="flex items-center gap-2 text-red-400">
-                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse" aria-hidden="true"></span>
                 <span class="text-xs font-mono">REC {{ formattedCallDuration }}</span>
               </div>
-              <!-- Stop Call Button in Header -->
-              <button
+              <Button
+                variant="destructive"
+                size="sm"
+                class="inline-flex items-center gap-2 shrink-0"
                 @click="$emit('end-call')"
-                class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-stop text-xs cursor-pointer"></i>
+                <Square :size="14" class="shrink-0" aria-hidden="true" />
                 Stop Call
-              </button>
-              <button
-                type="button"
-                class="flex items-center justify-center px-3 h-8 rounded-btn border border-slate-600 bg-slate-800/80 hover:bg-slate-700 cursor-pointer"
+              </Button>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                class="shrink-0 border-slate-600 bg-slate-800/80 hover:bg-slate-700 hover:text-white text-white"
+                :aria-label="isExpanded ? 'Collapse transcription' : 'Expand transcription'"
                 @click="isExpanded = !isExpanded"
               >
-                <i
-                  :class="[
-                    'fa-solid text-xs cursor-pointer',
-                    isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'
-                  ]"
-                ></i>
-              </button>
+                <ChevronDown v-if="!isExpanded" :size="14" stroke-width="2" aria-hidden="true" />
+                <ChevronUp v-else :size="14" stroke-width="2" aria-hidden="true" />
+              </Button>
             </template>
             <template v-else>
               <span class="text-xs font-mono text-red-200">
                 Call duration {{ formattedCallDuration }}
               </span>
-              <button
-                type="button"
-                class="px-3 h-8 rounded-btn border border-slate-600 bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold cursor-pointer"
+              <Button
+                variant="outline"
+                size="sm"
+                class="shrink-0 border-slate-600 bg-slate-800/80 hover:bg-slate-700 text-white"
                 @click="isExpanded = !isExpanded"
               >
                 See transcription
-              </button>
+              </Button>
             </template>
           </div>
         </div>
 
-        <div v-if="isExpanded" class="p-4 space-y-4">
+        <div v-if="isExpanded" class="p-4 space-y-4 border-t border-slate-700">
           <!-- Summary when call has ended -->
           <div v-if="callEnded && !isCallActive" class="space-y-1">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Summary</h4>
@@ -114,11 +114,11 @@
       </div>
       
       <!-- Call Ended Section -->
-      <div v-if="callEnded && !isCallActive" class="bg-blue-50 rounded-lg p-4">
-        <div class="flex items-center justify-between">
+      <div v-if="callEnded && !isCallActive" class="rounded-lg p-px bg-ai-gradient">
+        <div class="rounded-lg bg-background p-4 flex items-center justify-between">
           <div>
-            <h4 class="font-bold text-foreground mb-1 text-sm">Call Ended</h4>
-            <p class="text-xs text-gray-600">Extract information from the transcription</p>
+            <h4 class="card-heading-sm mb-1">Call Ended</h4>
+            <p class="card-caption">Extract information from the transcription</p>
           </div>
           <div class="flex gap-2">
             <AIButton
@@ -134,9 +134,9 @@
 </template>
 
 <script setup>
+import { Mic, Square, Phone, ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import { Button } from '@motork/component-library/future/primitives'
-import { Phone } from 'lucide-vue-next'
 import AIButton from '@/components/shared/AIButton.vue'
 
 const props = defineProps({

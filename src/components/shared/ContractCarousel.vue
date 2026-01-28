@@ -33,7 +33,7 @@
   
   <!-- Empty State -->
   <div v-else class="flex flex-col items-center justify-center py-6 px-3 bg-muted border border-border rounded-lg gap-3">
-    <i class="fa-solid fa-file-contract text-2xl text-muted-foreground"></i>
+    <FileCheck class="w-8 h-8 shrink-0 text-muted-foreground" />
     <p class="text-xs font-medium text-muted-foreground">No contracts created yet</p>
     <p class="text-xs text-muted-foreground">Create a contract to track versions</p>
     <button
@@ -57,7 +57,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Plus } from 'lucide-vue-next'
+import { Plus, FileCheck } from 'lucide-vue-next'
 import ContractCard from '@/components/shared/ContractCard.vue'
 import CollectESignaturesModal from '@/components/modals/CollectESignaturesModal.vue'
 

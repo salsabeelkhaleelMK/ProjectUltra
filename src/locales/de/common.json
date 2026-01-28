@@ -106,7 +106,8 @@
     "assignToMe": "Mir zuweisen",
     "assignToSomeone": "Jemand anderem zuweisen",
     "searchPlaceholder": "Benutzer oder Teams suchen…",
-    "noAssigneesFound": "Keine Zuweisbaren gefunden"
+    "noAssigneesFound": "Keine Zuweisbaren gefunden",
+    "teamsLabel": "Teams"
   }
 }
 

@@ -10,7 +10,7 @@
         @click.stop="handleButtonClick"
         :class="buttonClass"
       >
-        <i class="fa-solid fa-plus text-xs text-muted-foreground"></i>
+        <Plus class="w-3 h-3 shrink-0 text-muted-foreground" />
         <span v-if="showButtonText" class="ml-1.5 text-muted-foreground">{{ buttonText }}</span>
       </button>
       
@@ -28,6 +28,7 @@
 </template>
 
 <script setup>
+import { Plus } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import { DropdownMenu } from '@motork/component-library/future/primitives'
 

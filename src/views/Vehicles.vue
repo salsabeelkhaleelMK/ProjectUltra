@@ -9,7 +9,7 @@
           size="small"
           class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-plus text-sm"></i>
+          <Plus class="w-4 h-4 shrink-0" />
           <span class="hidden sm:inline">Add new</span>
         </Button>
       </template>
@@ -238,6 +238,7 @@
 
 <script setup>
 import { ref, computed, onMounted, h } from 'vue'
+import { Plus } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useVehiclesStore } from '@/stores/vehicles'
 import PageHeader from '@/components/layout/PageHeader.vue'

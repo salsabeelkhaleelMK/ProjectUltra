@@ -12,8 +12,9 @@
     </template>
     
     <template #primary-action>
-      <!-- TaskAssignee (assigned card) -->
+      <!-- Blue banner with Assign to me only when unassigned; assigned state is in header -->
       <TaskAssignee
+        v-if="!(opportunity.assignee || opportunity.owner || opportunity.assignedTo)"
         :task="opportunity"
         task-type="opportunity"
         :readonly="opportunityState.isClosed.value"
@@ -185,7 +186,7 @@
         <!-- Assignment Note Card -->
         <div v-if="opportunity.assignmentNote" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div class="flex items-start gap-3">
-            <i class="fa-solid fa-sticky-note text-blue-600 text-sm mt-0.5"></i>
+            <StickyNote class="w-4 h-4 shrink-0 text-blue-600 mt-0.5" />
             <div class="flex-1">
               <h5 class="font-semibold text-foreground text-sm mb-1">Note from Assigner</h5>
               <p class="text-sm text-muted-foreground whitespace-pre-wrap">{{ opportunity.assignmentNote }}</p>
@@ -275,7 +276,7 @@
                   }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-truck"></i>
+                  <Truck class="w-4 h-4 shrink-0" />
                   <span>Schedule Delivery</span>
                 </Toggle>
                 <Toggle
@@ -292,7 +293,7 @@
                   }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-calendar-check"></i>
+                  <CalendarCheck class="w-4 h-4 shrink-0" />
                   <span>Confirm Delivery</span>
                 </Toggle>
               </div>
@@ -303,7 +304,7 @@
                 @click="handleReopen"
                 class="inline-flex items-center gap-2 cursor-pointer"
               >
-                <i class="fa-solid fa-rotate-left"></i>
+                <RotateCcw class="w-4 h-4 shrink-0" />
                 <span>Reopen Opportunity</span>
               </Button>
               
@@ -636,7 +637,7 @@
               <!-- Loss Reason Display - Always shown -->
               <div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <div class="flex items-start gap-2">
-                  <i class="fa-solid fa-info-circle text-red-600 text-sm mt-0.5"></i>
+                  <Info class="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
                   <div class="flex-1">
                     <p class="text-sm font-medium text-red-900">Reason for Closing</p>
                     <p class="text-sm text-red-700 mt-1">{{ opportunity.lossReason || 'No reason provided' }}</p>
@@ -653,7 +654,7 @@
                   @update:model-value="(p) => (showReopenSection = p)"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-rotate-left"></i>
+                  <RotateCcw class="w-4 h-4 shrink-0" />
                   <span>Reopen Opportunity</span>
                 </Toggle>
               </div>
@@ -947,7 +948,7 @@ import { useLQWidgetCall } from '@/composables/useLQWidgetCall'
 import { useContractPDF } from '@/composables/useContractPDF'
 import { useCloseAsLost } from '@/composables/useCloseAsLost'
 import { createCalendarEvent } from '@/api/calendar'
-import { ChevronDown, Wallet, CheckCircle2, Plus } from 'lucide-vue-next'
+import { ChevronDown, Wallet, CheckCircle2, Plus, StickyNote, Truck, CalendarCheck, RotateCcw, Info } from 'lucide-vue-next'
 
 // Components
 import TaskManagementWidget from '@/components/tasks/shared/TaskManagementWidget.vue'

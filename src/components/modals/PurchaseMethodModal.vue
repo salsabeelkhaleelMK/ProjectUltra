@@ -2,30 +2,43 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col">
+      <DialogContent
+        class="w-full sm:max-w-2xl max-h-[calc(100vh-4rem)] flex flex-col"
+        :show-close-button="true"
+      >
         <DialogHeader class="flex-shrink-0">
           <DialogTitle>{{ isEditMode ? 'Edit Purchase Method' : 'Add Purchase Method' }}</DialogTitle>
         </DialogHeader>
 
         <div class="flex-1 overflow-y-auto py-4 w-full space-y-6">
-          <!-- Purchase Method Type (radio buttons) -->
+          <!-- Purchase Method Type (toggle buttons) -->
           <div class="space-y-2">
             <Label class="block text-sm font-medium text-foreground">Purchase Method Type</Label>
-            <div class="space-y-3">
-              <label
-                v-for="typeOption in typeOptions"
-                :key="typeOption.value"
-                class="flex items-center gap-2 cursor-pointer"
+            <div class="outcome-toggle-group flex flex-wrap gap-3">
+              <Toggle
+                variant="outline"
+                :model-value="formData.type === 'FIN'"
+                class="outcome-toggle-item"
+                @update:model-value="(p) => selectType(p ? 'FIN' : '')"
               >
-                <input
-                  type="radio"
-                  :value="typeOption.value"
-                  v-model="formData.type"
-                  class="size-4 rounded-full border-2 border-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
-                  @change="handleTypeChange"
-                />
-                <span class="text-sm font-medium text-foreground">{{ typeOption.label }}</span>
-              </label>
+                <span>Financing</span>
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="formData.type === 'LEA'"
+                class="outcome-toggle-item"
+                @update:model-value="(p) => selectType(p ? 'LEA' : '')"
+              >
+                <span>Leasing</span>
+              </Toggle>
+              <Toggle
+                variant="outline"
+                :model-value="formData.type === 'LTR'"
+                class="outcome-toggle-item"
+                @update:model-value="(p) => selectType(p ? 'LTR' : '')"
+              >
+                <span>Long-Term Rental</span>
+              </Toggle>
             </div>
           </div>
 
@@ -177,22 +190,35 @@
           </div>
         </div>
 
-        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
-          <Button
-            label="Cancel"
-            variant="outline"
-            size="small"
-            @click="$emit('close')"
-          />
-          <Button
-            variant="default"
-            size="small"
-            :disabled="!isFormValid || saving"
-            @click="handleSubmit"
-          >
-            <span v-if="saving">Saving...</span>
-            <span v-else>{{ isEditMode ? 'Update' : 'Save' }}</span>
-          </Button>
+        <DialogFooter class="flex-shrink-0 flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
+          <div class="flex gap-3 order-2 sm:order-1">
+            <Button
+              v-if="isEditMode"
+              variant="destructive"
+              class="rounded-sm w-full sm:w-auto"
+              :disabled="saving"
+              @click="$emit('delete')"
+            >
+              Delete
+            </Button>
+          </div>
+          <div class="flex flex-col-reverse sm:flex-row gap-3 flex-1 sm:justify-end order-1 sm:order-2">
+            <Button
+              variant="outline"
+              class="rounded-sm w-full sm:w-auto"
+              @click="$emit('close')"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              class="rounded-sm w-full sm:w-auto"
+              :disabled="!isFormValid || saving"
+              @click="handleSubmit"
+            >
+              {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </DialogPortal>
@@ -219,7 +245,8 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogPortal,
-  DialogTitle
+  DialogTitle,
+  Toggle
 } from '@motork/component-library/future/primitives'
 import { usePurchaseMethodsStore } from '@/stores/purchaseMethods'
 import { purchaseMethodService } from '@/services/purchaseMethodService'
@@ -255,10 +282,14 @@ const props = defineProps({
   vehiclePrice: {
     type: Number,
     default: null
+  },
+  standalone: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save', 'delete'])
 
 const purchaseMethodsStore = usePurchaseMethodsStore()
 const userStore = useUserStore()
@@ -266,12 +297,6 @@ const userStore = useUserStore()
 const saving = ref(false)
 const errors = ref({})
 const validationErrors = ref([])
-
-const typeOptions = [
-  { value: 'FIN', label: 'Financing' },
-  { value: 'LEA', label: 'Leasing' },
-  { value: 'LTR', label: 'Long-Term Rental' }
-]
 
 const formData = ref({
   type: '',
@@ -329,6 +354,49 @@ const getTypeLabel = (type) => {
     LTR: 'Long-Term Rental'
   }
   return labels[type] || type
+}
+
+function inferTypeFromLabel(label) {
+  if (!label || typeof label !== 'string') return ''
+  const lower = label.toLowerCase()
+  if (lower.includes('captive') || lower.includes('loan') || (lower.includes('financing') && !lower.includes('leasing') && !lower.includes('rental'))) return 'FIN'
+  if (lower.includes('leasing')) return 'LEA'
+  if (lower.includes('rental') || lower.includes('ltr')) return 'LTR'
+  return ''
+}
+
+const defaultFormFields = () => ({
+  monthlyInstalment: null,
+  downPayment: null,
+  duration: null,
+  interestRate: null,
+  effectiveInterestRate: null,
+  gfv: null,
+  mileageLimit: null,
+  finalInstalment: null,
+  customerType: '',
+  insuranceIncluded: false,
+  maintenanceIncluded: false,
+  registrationTaxesIncluded: false
+})
+
+function loadPurchaseMethodIntoForm(pm) {
+  if (!pm) return
+  const hasType = pm.type && pm.type.length > 0
+  const hasFields = pm.fields && Object.keys(pm.fields || {}).length > 0
+  const type = hasType ? pm.type : inferTypeFromLabel(pm.label)
+  const duration = pm.termMonths ?? pm.fields?.duration ?? null
+  formData.value = {
+    type,
+    fields: {
+      ...defaultFormFields(),
+      ...(pm.fields || {}),
+      ...(duration != null && !hasFields ? { duration } : {})
+    },
+    currency: pm.currency || 'EUR',
+    offerValidFrom: pm.offerValidFrom ?? null,
+    offerValidTo: pm.offerValidTo ?? null
+  }
 }
 
 // Validation
@@ -410,8 +478,12 @@ const isFormValid = computed(() => {
   return Object.keys(errors.value).length === 0
 })
 
+const selectType = (value) => {
+  formData.value.type = value ?? ''
+  handleTypeChange()
+}
+
 const handleTypeChange = () => {
-  // Reset type-specific fields when type changes
   if (formData.value.type !== 'FIN') {
     formData.value.fields.effectiveInterestRate = null
     formData.value.fields.gfv = null
@@ -435,9 +507,9 @@ const handleSubmit = async () => {
   if (!validateForm()) {
     return
   }
-  
+
   saving.value = true
-  
+
   try {
     const purchaseMethodData = {
       type: formData.value.type,
@@ -447,30 +519,51 @@ const handleSubmit = async () => {
       offerValidTo: formData.value.offerValidTo || null,
       createdBy: userStore.currentUser?.id || null
     }
-    
-    // Add associations
+
+    if (props.standalone) {
+      const typeLabel = getTypeLabel(formData.value.type)
+      const monthly = formData.value.fields.monthlyInstalment ?? 0
+      const monthlyFormatted = formatCurrency(monthly)
+      const duration = formData.value.fields.duration ?? null
+      const foLabel = duration
+        ? `${typeLabel || 'Financing'} - €${monthlyFormatted}/mo, ${duration} months`
+        : `${typeLabel || 'Financing'} - €${monthlyFormatted}/mo`
+      emit('save', {
+        id: isEditMode.value ? props.purchaseMethod.id : undefined,
+        type: formData.value.type,
+        fields: { ...formData.value.fields },
+        label: foLabel,
+        termMonths: duration,
+        currency: formData.value.currency,
+        offerValidFrom: formData.value.offerValidFrom ?? null,
+        offerValidTo: formData.value.offerValidTo ?? null,
+        successMessage: `Purchase Method ${isEditMode.value ? 'Updated' : 'Added'}: ${typeLabel} - €${monthlyFormatted}/month`
+      })
+      emit('close')
+      return
+    }
+
     if (props.taskType === 'lead') {
       purchaseMethodData.leadId = parseInt(props.taskId)
     } else if (props.taskType === 'opportunity') {
       purchaseMethodData.opportunityId = parseInt(props.taskId)
     }
-    
+
     if (props.vehicleId) {
       purchaseMethodData.vehicleId = parseInt(props.vehicleId)
     }
-    
+
     if (props.offerId) {
       purchaseMethodData.offerId = parseInt(props.offerId)
     }
-    
+
     let result
     if (isEditMode.value) {
       result = await purchaseMethodsStore.updatePurchaseMethod(props.purchaseMethod.id, purchaseMethodData)
     } else {
       result = await purchaseMethodsStore.createPurchaseMethod(purchaseMethodData)
     }
-    
-    // Emit success event with formatted message
+
     const typeLabel = getTypeLabel(result.type)
     const monthly = formatCurrency(result.fields.monthlyInstalment || 0)
     emit('save', {
@@ -491,63 +584,32 @@ const handleOpenChange = (isOpen) => {
   }
 }
 
-// Load existing purchase method data if editing
-onMounted(() => {
-  if (props.purchaseMethod) {
-    formData.value = {
-      type: props.purchaseMethod.type || '',
-      fields: {
-        ...formData.value.fields,
-        ...props.purchaseMethod.fields
-      },
-      currency: props.purchaseMethod.currency || 'EUR',
-      offerValidFrom: props.purchaseMethod.offerValidFrom || null,
-      offerValidTo: props.purchaseMethod.offerValidTo || null
-    }
+watch(() => [props.show, props.purchaseMethod], ([isOpen, pm]) => {
+  if (isOpen && pm) {
+    loadPurchaseMethodIntoForm(pm)
   }
-})
-
-// Reset form when modal closes
-watch(() => props.show, (isOpen) => {
   if (!isOpen) {
-    // Reset form after a short delay to allow close animation
-    setTimeout(() => {
-      formData.value = {
-        type: '',
-        fields: {
-          monthlyInstalment: null,
-          downPayment: null,
-          duration: null,
-          interestRate: null,
-          effectiveInterestRate: null,
-          gfv: null,
-          mileageLimit: null,
-          finalInstalment: null,
-          customerType: '',
-          insuranceIncluded: false,
-          maintenanceIncluded: false,
-          registrationTaxesIncluded: false
-        },
-        currency: 'EUR',
-        offerValidFrom: null,
-        offerValidTo: null
+    const timeoutId = setTimeout(() => {
+      if (!props.show) {
+        formData.value = {
+          type: '',
+          fields: defaultFormFields(),
+          currency: 'EUR',
+          offerValidFrom: null,
+          offerValidTo: null
+        }
+        errors.value = {}
+        validationErrors.value = []
+        saving.value = false
       }
-      errors.value = {}
-      validationErrors.value = []
-      saving.value = false
     }, 300)
-  } else if (props.purchaseMethod) {
-    // Load purchase method data when opening for edit
-    formData.value = {
-      type: props.purchaseMethod.type || '',
-      fields: {
-        ...formData.value.fields,
-        ...props.purchaseMethod.fields
-      },
-      currency: props.purchaseMethod.currency || 'EUR',
-      offerValidFrom: props.purchaseMethod.offerValidFrom || null,
-      offerValidTo: props.purchaseMethod.offerValidTo || null
-    }
+    return () => clearTimeout(timeoutId)
+  }
+}, { immediate: true })
+
+watch(() => props.purchaseMethod, (pm) => {
+  if (props.show && pm) {
+    loadPurchaseMethodIntoForm(pm)
   }
 })
 </script>

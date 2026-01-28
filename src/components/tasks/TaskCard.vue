@@ -22,7 +22,7 @@
         @click.stop="$emit('menu-click', item.id)"
         class="text-gray-300 hover:text-gray-600"
       >
-        <i class="fa-solid fa-ellipsis-vertical"></i>
+        <MoreVertical class="w-4 h-4 shrink-0" />
       </button>
     </div>
 
@@ -61,6 +61,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { MoreVertical } from 'lucide-vue-next'
 import { formatDueDate, getDeadlineStatus } from '@/utils/formatters'
 import { getTaskActionTitle } from '@/utils/taskActionTitle'
 import TaskBadges from './shared/TaskBadges.vue'

@@ -1,8 +1,10 @@
 <template>
   <div
     class="rounded-lg"
-    :class="[isAssigned ? 'bg-muted' : 'bg-blue-50', attrs.class]"
-    :style="!isAssigned ? { borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--brand-primary)' } : undefined"
+    :class="[
+      isAssigned ? 'bg-muted' : 'bg-blue-50',
+      !isAssigned && 'border border-primary'
+    ]"
   >
     <div
       class="rounded-lg px-3 py-2 shadow-nsc-card flex items-center justify-between gap-2 flex-wrap"
@@ -27,56 +29,47 @@
             </p>
           </div>
         </div>
-        <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
-          <PopoverTrigger as-child>
-            <Button
-              v-if="!readonly"
-              variant="ghost"
-              size="sm"
-              class="shrink-0 text-xs px-2 py-1"
-            >
-              Change
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
-            side="bottom"
-            align="end"
-          >
-            <AssigneeDropdownContent @select="handleAssigneeFromDropdown" />
-          </PopoverContent>
-        </Popover>
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="showReassignModal = true"
+          class="shrink-0 text-xs px-2 py-1"
+        >
+          Change
+        </Button>
       </div>
 
       <!-- UNASSIGNED STATE: info + message left, split button group right -->
       <template v-else>
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <Info :size="14" class="shrink-0" aria-hidden="true" stroke-width="2" style="color: var(--brand-primary)" />
+          <Info :size="14" class="shrink-0 text-primary" aria-hidden="true" stroke-width="2" />
           <p class="text-sm font-medium text-foreground">{{ t('common.assignee.taskUnassigned') }}</p>
         </div>
-        <ButtonGroup v-if="!readonly" class="assignee-button-group flex items-stretch gap-0 rounded-lg overflow-hidden">
+        <ButtonGroup
+          class="assignee-button-group flex items-stretch gap-0 rounded-lg overflow-hidden border border-primary bg-primary"
+        >
           <Button
             variant="default"
             size="sm"
-            class="rounded-r-none border-r border-white/20 bg-primary"
+            class="rounded-l-lg rounded-r-none border-0 border-r border-white/20 bg-primary shadow-none"
             @click="assignToSelf"
           >
             {{ t('common.assignee.assignToMe') }}
           </Button>
-          <ButtonGroupSeparator />
+          <ButtonGroupSeparator class="w-px shrink-0 self-stretch bg-white/20" />
           <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
             <PopoverTrigger as-child>
               <Button
                 variant="default"
                 size="icon-sm"
-                class="rounded-l-none border-0 bg-primary -ml-px"
+                class="-ml-px rounded-l-none rounded-r-lg border-0 bg-primary shadow-none"
                 :aria-label="t('common.assignee.assignToSomeone')"
               >
                 <ChevronDown :size="14" stroke-width="2" aria-hidden="true" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              class="w-auto p-0 border border-border rounded-lg shadow-nsc-card bg-white"
+              class="w-auto p-0 rounded-lg shadow-nsc-card bg-background"
               side="bottom"
               align="end"
             >
@@ -87,10 +80,18 @@
       </template>
     </div>
   </div>
+
+  <ReassignUserModal
+    :show="showReassignModal"
+    :title="isAssigned ? 'Reassign task' : 'Assign task'"
+    :confirm-label="isAssigned ? 'Reassign' : 'Assign'"
+    @close="showReassignModal = false"
+    @confirm="handleReassign"
+  />
 </template>
 
 <script setup>
-import { ref, computed, useAttrs } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   Button,
@@ -101,6 +102,7 @@ import {
   PopoverContent
 } from '@motork/component-library/future/primitives'
 import { Info, ChevronDown } from 'lucide-vue-next'
+import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'
 import AssigneeDropdownContent from '@/components/tasks/AssigneeDropdownContent.vue'
 import { useUsersStore } from '@/stores/users'
 import { useUserStore } from '@/stores/user'
@@ -108,7 +110,6 @@ import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 
 const { t } = useI18n()
-const attrs = useAttrs()
 const props = defineProps({
   task: {
     type: Object,
@@ -117,25 +118,17 @@ const props = defineProps({
   taskType: {
     type: String,
     default: 'lead'
-  },
-  readonly: {
-    type: Boolean,
-    default: false
   }
 })
 
 const emit = defineEmits(['reassigned'])
-
-// Explicitly handle attrs to avoid fragment root warnings
-defineOptions({
-  inheritAttrs: false
-})
 
 const usersStore = useUsersStore()
 const userStore = useUserStore()
 const leadsStore = useLeadsStore()
 const opportunitiesStore = useOpportunitiesStore()
 
+const showReassignModal = ref(false)
 const assigneeDropdownOpen = ref(false)
 
 // Current user
@@ -179,7 +172,7 @@ const getRoleAvatarClass = (role) => {
 
 // Assign to self
 const assignToSelf = async () => {
-  if (!currentUser.value || props.readonly) return
+  if (!currentUser.value) return
   
   try {
     if (props.taskType === 'lead') {
@@ -207,8 +200,6 @@ const assignToSelf = async () => {
 }
 
 async function applyAssignment(assignee) {
-  if (props.readonly) return
-  
   const updateData = {
     assignee: assignee.name,
     assigneeType: assignee.type,
@@ -230,6 +221,15 @@ async function applyAssignment(assignee) {
 function handleAssigneeFromDropdown(assignee) {
   applyAssignment(assignee).catch((err) => console.error('Error assigning:', err))
   assigneeDropdownOpen.value = false
+}
+
+async function handleReassign(assignee) {
+  try {
+    await applyAssignment(assignee)
+    showReassignModal.value = false
+  } catch (error) {
+    console.error('Error reassigning:', error)
+  }
 }
 </script>
 

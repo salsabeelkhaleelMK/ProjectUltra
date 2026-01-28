@@ -24,7 +24,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div v-if="tasks.length === 0" class="text-center py-8 text-muted-foreground">
-        <i class="fa-solid fa-tasks text-4xl mb-2 text-gray-300"></i>
+        <ListTodo class="w-10 h-10 shrink-0 mb-2 text-muted-foreground/50" />
         <p class="text-sm">No tasks due today</p>
       </div>
       
@@ -41,7 +41,7 @@
               v-if="task.priority === 'Hot'"
               class="text-xs font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 flex items-center gap-1"
             >
-              <i class="fa-solid fa-fire text-xs"></i> HOT
+              <Zap class="w-3 h-3 shrink-0 inline" /> HOT
             </span>
             <span 
               v-else
@@ -94,7 +94,7 @@
           @click.stop="handleClick(task)"
           class="text-muted-foreground hover:text-blue-600 transition-colors"
         >
-          <i class="fa-solid fa-chevron-right"></i>
+          <ChevronRight class="w-4 h-4 shrink-0" />
         </button>
       </div>
     </div>
@@ -103,6 +103,7 @@
 </template>
 
 <script setup>
+import { ListTodo, Zap, ChevronRight } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

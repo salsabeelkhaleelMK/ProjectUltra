@@ -167,7 +167,7 @@
         <div class="flex-1 flex items-center justify-center p-8">
           <div class="text-center max-w-sm">
             <div class="w-16 h-16 mx-auto mb-4 rounded-lg bg-muted flex items-center justify-center">
-              <i class="fa-solid fa-tasks text-2xl text-muted-foreground"></i>
+              <ListTodo class="w-8 h-8 shrink-0 text-muted-foreground" />
             </div>
             <h3 class="text-content-bold mb-2">No task selected</h3>
             <p class="text-meta">Select a task from the list to view its details and manage activities</p>
@@ -235,7 +235,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
+import { Flame, Sun, CheckCircle, Circle, ListTodo } from 'lucide-vue-next'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { useUserStore } from '@/stores/user'
@@ -347,10 +347,15 @@ const showTaskListMobile = ref(false)
 const showReassignModal = ref(false)
 const taskToReassign = ref(null)
 const showTaskDrawer = ref(false) // Control drawer visibility in table view
-const drawerTask = ref(null) // Task displayed in drawer
+const drawerTaskCompositeId = ref(null) // 'lead-1' or 'opportunity-1' - used to resolve live task from store
 
 // Use task filters composable
 const { allTasks, applyFilters, shouldShowTypeFilter } = useTaskFilters(showClosed)
+
+const drawerTask = computed(() => {
+  if (!drawerTaskCompositeId.value) return null
+  return allTasks.value.find(t => t.compositeId === drawerTaskCompositeId.value) || null
+})
 
 // Use task sorting composable
 const { sortTasks } = useTaskSorting()
@@ -494,14 +499,10 @@ const selectTask = (compositeId) => {
   
   // If in table view, open drawer instead of switching views
   if (viewMode.value === 'table') {
-    // Find the task from allTasks
     const task = allTasks.value.find(t => t.compositeId === compositeId)
-    
     if (task) {
-      drawerTask.value = task
+      drawerTaskCompositeId.value = compositeId
       showTaskDrawer.value = true
-      
-      // Load task data if needed
       if (task.type === 'lead') {
         leadsStore.fetchLeadById(task.id)
       } else {
@@ -530,10 +531,9 @@ const handleBackToTaskList = () => {
 }
 
 const closeTaskDrawer = () => {
-  // Use nextTick to ensure proper cleanup order
   nextTick(() => {
     showTaskDrawer.value = false
-    drawerTask.value = null
+    drawerTaskCompositeId.value = null
   })
 }
 

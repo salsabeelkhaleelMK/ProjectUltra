@@ -21,7 +21,7 @@
     <!-- Actual Content -->
     <template v-else>
       <div v-if="appointments.length === 0" class="text-center py-8 text-muted-foreground">
-        <i class="fa-solid fa-calendar-check text-4xl mb-2 text-gray-300"></i>
+        <CalendarCheck class="w-10 h-10 shrink-0 mb-2 text-muted-foreground/50" />
         <p class="text-sm">No appointments scheduled for today</p>
       </div>
       
@@ -58,7 +58,7 @@
           </p>
           
           <div class="flex items-center gap-2 text-xs text-muted-foreground">
-            <i class="fa-solid fa-user text-muted-foreground"></i>
+            <User class="w-4 h-4 shrink-0 text-muted-foreground" />
             <span v-if="appointment.assigneeType === 'team'">
               {{ appointment.team }} Team
             </span>
@@ -72,7 +72,7 @@
           @click.stop="handleClick(appointment)"
           class="text-muted-foreground hover:text-blue-600 transition-colors"
         >
-          <i class="fa-solid fa-chevron-right"></i>
+          <ChevronRight class="w-4 h-4 shrink-0" />
         </button>
       </div>
     </div>
@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { CalendarCheck, User, ChevronRight } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

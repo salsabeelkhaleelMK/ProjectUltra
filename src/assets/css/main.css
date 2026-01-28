@@ -36,6 +36,8 @@
     0 3px 3px -1.5px rgba(42, 51, 70, 0.04), 0 6px 6px -3px rgba(42, 51, 70, 0.04),
     0 12px 12px -6px rgba(14, 63, 126, 0.04), 0 24px 24px -12px rgba(14, 63, 126, 0.04);
   --nsc-card-shadow: var(--mk-dashboard-card-shadow);
+
+  --ai-gradient: linear-gradient(to right, #40B3E9 0%, #8873FF 34%, #FE53A7 64%, #FF8B42 100%);
 }
 
 @media (max-width: 1024px) {
@@ -108,6 +110,10 @@
   box-shadow: var(--mk-dashboard-card-shadow);
 }
 
+.bg-ai-gradient {
+  background: var(--ai-gradient);
+}
+
 .shadow-mk-dashboard-card,
 .shadow-nsc-card {
   box-shadow: var(--nsc-card-shadow) !important;
@@ -121,6 +127,30 @@
     0 6px 6px -3px rgba(42, 51, 70, 0.04),
     0 12px 12px -6px rgba(14, 63, 126, 0.04),
     0 24px 24px -12px rgba(14, 63, 126, 0.04) !important;
+}
+
+/* ========================================
+   Interactive elements: pointer cursor on hover
+   ======================================== */
+
+button,
+a[href],
+[role="button"],
+[role="link"],
+[role="menuitem"],
+[role="menuitemcheckbox"],
+[role="menuitemradio"],
+[role="tab"],
+[role="option"],
+[role="switch"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="image"],
+select,
+summary,
+label[for] {
+  cursor: pointer;
 }
 
 /* ========================================
@@ -241,6 +271,19 @@
   color: var(--foreground);
 }
 
+.card-heading-sm {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.card-caption {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
 /* ========================================
    Layout Component Classes
    ======================================== */
@@ -359,7 +402,13 @@ button[class*='bg-primary']:active:not(:disabled) {
   transform: translateY(0px) !important;
 }
 
-/* Disabled state */
+/* TaskAssignee split button: no hover/active lift so the group stays as one unit */
+.assignee-button-group button:hover:not(:disabled),
+.assignee-button-group button:active:not(:disabled) {
+  transform: none !important;
+}
+
+/* Disabled state - same blue as enabled, 50% opacity (matches library) */
 button[data-variant='default']:disabled,
 button[data-variant='black']:disabled,
 button[data-variant='primary']:disabled,
@@ -371,11 +420,7 @@ button[class*='data-variant-black']:disabled,
 button[class*='data-variant-primary']:disabled,
 button[class*='bg-brand-primary']:disabled,
 button[class*='bg-primary']:disabled {
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #4b5563 100%) !important;
-  box-shadow:
-    0px 2px 4px 0px rgba(0, 0, 0, 0.08),
-    0px 0px 0px 1px rgba(255, 255, 255, 0.05) inset !important;
-  opacity: 0.6 !important;
+  opacity: 0.5 !important;
 }
 
 /* ========================================
@@ -954,11 +999,12 @@ button.mk-ai-mode-active-toggle[aria-pressed="true"]:hover:not(:disabled) {
 }
 
 /* ========================================
-   Dialog Layout (minimal, no theme overrides)
+   Dialog Layout (opt-in: only when NOT .dialog-natural-height)
+   Dialogs with .dialog-natural-height use Motork default (grid, p-6, natural height)
+   so header, content, footer and [x] render like the library reference.
    ======================================== */
 
-[data-slot="dialog-content"],
-[role="dialog"] {
+[data-slot="dialog-content"]:not(.dialog-natural-height) {
   max-height: calc(100vh - 4rem) !important;
   display: flex !important;
   flex-direction: column !important;
@@ -993,8 +1039,7 @@ button.mk-ai-mode-active-toggle[aria-pressed="true"]:hover:not(:disabled) {
 .dialog-2xl { width: 100%; max-width: 64rem; }
 
 @media (max-width: 640px) {
-  [data-slot="dialog-content"],
-  [role="dialog"] {
+  [data-slot="dialog-content"]:not(.dialog-natural-height) {
     max-height: 100vh !important;
     margin: 0 !important;
     border-radius: 0 !important;

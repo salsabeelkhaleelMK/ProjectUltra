@@ -8,7 +8,7 @@
           @click="router.push('/add-new')"
           class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
         >
-          <i class="fa-solid fa-plus text-muted-foreground group-hover:text-brand-red"></i>
+          <Plus class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-brand-red" />
           <span class="hidden sm:inline">Add new</span>
         </button>
       </template>
@@ -57,7 +57,7 @@
                 <template #fallback>
                   <div class="flex items-center justify-center py-12">
                     <div class="text-center">
-                      <i class="fa-solid fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+                      <Loader2 class="w-8 h-8 shrink-0 text-muted-foreground mb-2 animate-spin" />
                       <p class="text-meta">Loading...</p>
                     </div>
                   </div>
@@ -108,6 +108,7 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, watch, onMounted } from 'vue'
+import { Plus, Loader2 } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import AddCustomerModal from '@/components/modals/AddCustomerModal.vue'
@@ -174,7 +175,7 @@ const newItem = ref({
 // Drawer state
 const showDrawer = ref(false)
 const drawerEntity = ref(null) // { type: 'customer' | 'task', id: number }
-const drawerTask = ref(null)
+const drawerTaskCompositeId = ref(null) // 'lead-1' or 'opportunity-1' - used to resolve live task from store
 
 // Use task filters composable for drawer navigation
 const { allTasks } = useTaskFilters(ref(false))
@@ -182,6 +183,11 @@ const { allTasks } = useTaskFilters(ref(false))
 // Filtered tasks for drawer navigation
 const filteredTasks = computed(() => {
   return allTasks.value
+})
+
+const drawerTask = computed(() => {
+  if (!drawerTaskCompositeId.value) return null
+  return allTasks.value.find(t => t.compositeId === drawerTaskCompositeId.value) || null
 })
 
 // Computed ref for drawer task (for useTaskShell)
@@ -302,26 +308,24 @@ const handleRowClick = (row) => {
     // Customer/Contact - use customerId from row if available, otherwise parse from id
     const customerId = row.customerId || parseInt(row.id.replace('customer-', ''))
     drawerEntity.value = { type: 'customer', id: customerId }
-    drawerTask.value = null
+    drawerTaskCompositeId.value = null
     showDrawer.value = true
   } else if (row.id.startsWith('lead-')) {
-    // Lead task
     const idMatch = row.id.match(/-(\d+)$/)
     const leadId = idMatch ? parseInt(idMatch[1]) : parseInt(row.id.replace('lead-', ''))
     const task = allTasks.value.find(t => t.type === 'lead' && t.id === leadId)
     if (task) {
-      drawerTask.value = task
+      drawerTaskCompositeId.value = task.compositeId
       drawerEntity.value = { type: 'task', id: leadId }
       showDrawer.value = true
       leadsStore.fetchLeadById(leadId)
     }
   } else if (row.id.startsWith('opp-')) {
-    // Opportunity task
     const idMatch = row.id.match(/-(\d+)$/)
     const oppId = idMatch ? parseInt(idMatch[1]) : parseInt(row.id.replace('opp-', ''))
     const task = allTasks.value.find(t => t.type === 'opportunity' && t.id === oppId)
     if (task) {
-      drawerTask.value = task
+      drawerTaskCompositeId.value = task.compositeId
       drawerEntity.value = { type: 'task', id: oppId }
       showDrawer.value = true
       opportunitiesStore.fetchOpportunityById(oppId)
@@ -333,7 +337,7 @@ const handleRowClick = (row) => {
 const closeDrawer = () => {
   showDrawer.value = false
   drawerEntity.value = null
-  drawerTask.value = null
+  drawerTaskCompositeId.value = null
 }
 
 // Handle drawer task navigation

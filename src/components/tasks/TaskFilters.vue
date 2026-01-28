@@ -8,7 +8,7 @@
           @click="toggleFilterMenu"
           class="filter-dropdown-button"
         >
-          <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
+          <ArrowDownWideNarrow class="w-4 h-4 shrink-0" />
           <span 
             v-if="activeFilters.length > 0 || sortOption"
             class="filter-indicator"
@@ -62,7 +62,7 @@
             class="task-filter-badge-remove"
             aria-label="Remove filter"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <X class="w-4 h-4 shrink-0" />
           </button>
         </div>
         
@@ -77,7 +77,7 @@
             class="task-filter-badge-remove"
             aria-label="Remove sort"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <X class="w-4 h-4 shrink-0" />
           </button>
         </div>
       </div>
@@ -90,7 +90,7 @@
       @click="toggleFilterMenu"
       class="filter-dropdown-button"
     >
-      <i class="fa-solid fa-arrow-down-wide-short text-sm"></i>
+      <ArrowDownWideNarrow class="w-4 h-4 shrink-0" />
       <span 
         v-if="activeFilters.length > 0 || sortOption"
         class="filter-indicator"
@@ -144,7 +144,7 @@
         class="task-filter-badge-remove"
         aria-label="Remove filter"
       >
-        <i class="fa-solid fa-xmark"></i>
+        <X class="w-4 h-4 shrink-0" />
       </button>
     </div>
     
@@ -159,7 +159,7 @@
         class="task-filter-badge-remove"
         aria-label="Remove sort"
       >
-        <i class="fa-solid fa-xmark"></i>
+        <X class="w-4 h-4 shrink-0" />
       </button>
     </div>
   </div>
@@ -167,6 +167,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { ArrowDownWideNarrow, X } from 'lucide-vue-next'
 
 const props = defineProps({
   activeFilters: { type: Array, default: () => [] },

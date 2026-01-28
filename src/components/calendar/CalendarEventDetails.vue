@@ -3,7 +3,7 @@
     <!-- Date & Time -->
     <div class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-        <i class="fa-regular fa-calendar text-blue-600 text-sm"></i>
+        <Calendar class="w-4 h-4 shrink-0 text-blue-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ formattedDate }}</p>
@@ -14,7 +14,7 @@
     <!-- Customer -->
     <div v-if="event.customer" class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-        <i class="fa-regular fa-user text-green-600 text-sm"></i>
+        <User class="w-4 h-4 shrink-0 text-green-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ event.customer }}</p>
@@ -25,7 +25,7 @@
     <!-- Vehicle -->
     <div v-if="event.vehicle" class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-car text-purple-600 text-sm"></i>
+        <Car class="w-4 h-4 shrink-0 text-purple-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ event.vehicle }}</p>
@@ -36,7 +36,7 @@
     <!-- Dealership -->
     <div v-if="event.dealership" class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-building text-orange-600 text-sm"></i>
+        <Building2 class="w-4 h-4 shrink-0 text-orange-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ event.dealership }}</p>
@@ -47,7 +47,7 @@
     <!-- Assignee -->
     <div v-if="event.assignee" class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-        <i class="fa-regular fa-id-badge text-indigo-600 text-sm"></i>
+        <BadgeCheck class="w-4 h-4 shrink-0 text-indigo-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ event.assignee }}</p>
@@ -58,7 +58,7 @@
     <!-- Team -->
     <div v-if="event.team" class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-users text-teal-600 text-sm"></i>
+        <Users class="w-4 h-4 shrink-0 text-teal-600" />
       </div>
       <div>
         <p class="text-content-bold">{{ event.team }}</p>
@@ -70,6 +70,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Calendar, User, Car, Building2, BadgeCheck, Users } from 'lucide-vue-next'
 
 const props = defineProps({
   event: {

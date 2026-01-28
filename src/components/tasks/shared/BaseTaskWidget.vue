@@ -21,7 +21,7 @@
             @click="$emit('postpone')"
             class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted"
           >
-            <i class="fa-solid fa-clock"></i>
+            <Clock class="w-4 h-4 shrink-0" />
             <span>Postpone</span>
           </button>
         </div>
@@ -34,6 +34,8 @@
 </template>
 
 <script setup>
+import { Clock } from 'lucide-vue-next'
+
 defineProps({
   title: {
     type: String,

@@ -15,7 +15,7 @@ lerna-debug.log*
 .npmrc
 
 node_modules
-# dist  # Commented out - commit pre-built files to avoid build minutes
+dist
 dist-ssr
 *.local
 

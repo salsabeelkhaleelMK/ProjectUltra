@@ -106,7 +106,8 @@
     "assignToMe": "M'assigner",
     "assignToSomeone": "Assigner à quelqu'un",
     "searchPlaceholder": "Rechercher utilisateurs ou équipes…",
-    "noAssigneesFound": "Aucun assigné trouvé"
+    "noAssigneesFound": "Aucun assigné trouvé",
+    "teamsLabel": "Équipes"
   }
 }
 

@@ -12,7 +12,7 @@
           
           <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
           <div class="page-header-actions">
-            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -50,17 +50,19 @@
     </header>
     
     
-    <!-- Search Bar with Filter Button -->
+    <!-- Search: same Motork InputGroup as DataTable, no custom styling -->
     <div class="px-5 py-3">
       <div class="flex items-center gap-2">
-        <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-muted-foreground text-sm"></i>
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            :placeholder="searchPlaceholder" 
-            class="w-full bg-white border border-border rounded-btn pl-9 pr-3 py-2 text-sm"
-          />
+        <div class="flex-1 min-w-0">
+          <InputGroup>
+            <InputGroupInput
+              v-model="searchQuery"
+              :placeholder="searchPlaceholder"
+            />
+            <InputGroupAddon>
+              <Search :size="18" />
+            </InputGroupAddon>
+          </InputGroup>
         </div>
         <TaskFilters
           :active-filters="activeFilters"
@@ -119,8 +121,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Table, LayoutGrid } from 'lucide-vue-next'
-import { Button } from '@motork/component-library/future/primitives'
+import { Table, LayoutGrid, Search } from 'lucide-vue-next'
+import { Button, InputGroup, InputGroupInput, InputGroupAddon } from '@motork/component-library/future/primitives'
 import TaskCard from '@/components/tasks/TaskCard.vue'
 import TaskFilters from '@/components/tasks/TaskFilters.vue'
 
@@ -137,7 +139,7 @@ const props = defineProps({
   getVehicleInfo: { type: Function, default: () => 'No vehicle specified' },
   getMenuItems: { type: Function, default: null },
   showMenu: { type: Boolean, default: true },
-  searchPlaceholder: { type: String, default: 'Search tasks...' },
+  searchPlaceholder: { type: String, default: 'Search' },
   viewMode: { type: String, default: 'card' }
 })
 
@@ -212,4 +214,5 @@ const selectSort = (option) => {
 .tasks-list-container {
   background-color: var(--brand-gray) !important;
 }
+
 </style>

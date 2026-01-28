@@ -33,7 +33,7 @@
   
   <!-- Empty State -->
   <div v-else class="text-center py-6 px-3 bg-muted border border-border rounded-lg">
-    <i class="fa-solid fa-file-invoice text-2xl text-muted-foreground mb-2"></i>
+    <FileText class="w-8 h-8 shrink-0 text-muted-foreground mb-2" />
     <p class="text-xs font-medium text-muted-foreground">No offers created yet</p>
     <p class="text-xs text-muted-foreground mt-0.5">Create an offer to start negotiations</p>
   </div>
@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Plus } from 'lucide-vue-next'
+import { Plus, FileText } from 'lucide-vue-next'
 import OfferCard from '@/components/shared/OfferCard.vue'
 
 const props = defineProps({

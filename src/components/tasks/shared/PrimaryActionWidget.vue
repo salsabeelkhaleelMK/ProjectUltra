@@ -15,7 +15,7 @@
         :class="action.buttonClass"
         class="font-medium px-4 py-2 rounded-lg text-xs flex items-center gap-2 transition-colors shadow-sm shadow-gray-200"
       >
-        <i :class="action.icon"></i>
+        <component :is="getLucideIcon(action.icon)" class="w-4 h-4 shrink-0" />
         {{ action.label }}
       </button>
     </div>
@@ -23,6 +23,8 @@
 </template>
 
 <script setup>
+import { getLucideIcon } from '@/utils/lucideIcons'
+
 defineProps({
   action: { type: Object, required: true },
   colorScheme: { type: Object, required: true }

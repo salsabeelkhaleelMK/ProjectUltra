@@ -1,16 +1,17 @@
 <template>
   <div class="relative">
-    <button 
+    <Button
+      variant="secondary"
       @click.stop="toggleDropdown"
-      class="w-auto bg-surface hover:bg-muted border border-border text-muted-foreground font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-between gap-2 transition-colors whitespace-nowrap"
       :disabled="!actions || actions.length === 0"
+      class="inline-flex items-center gap-2 cursor-pointer"
     >
       <span>More actions</span>
-      <i 
-        class="fa-solid fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0"
+      <ChevronDown 
+        class="w-3 h-3 shrink-0 transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }"
-      ></i>
-    </button>
+      />
+    </Button>
 
     <!-- Dropdown menu -->
     <div 
@@ -34,6 +35,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { ChevronDown } from 'lucide-vue-next'
 
 const props = defineProps({
   actions: {

@@ -3,7 +3,7 @@
     <!-- Title Section -->
     <div class="px-4 py-2.5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-list text-foreground text-xs"></i>
+        <List class="w-3 h-3 shrink-0 text-foreground" />
         <h2 class="text-xs font-medium text-foreground">Other Tasks for This Customer</h2>
         <span v-if="relatedTasks.length > 0" class="ml-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded-full">
           {{ relatedTasks.length }}
@@ -14,7 +14,7 @@
     <!-- Card Content -->
     <div class="bg-white rounded-lg p-3 shadow-nsc-card flex flex-col flex-1 min-h-0">
       <div v-if="loading" class="text-center py-6 text-muted-foreground">
-        <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
+        <Loader2 class="w-5 h-5 shrink-0 mb-2 animate-spin text-muted-foreground" />
         <p class="text-xs">Loading related tasks...</p>
       </div>
       
@@ -53,25 +53,25 @@
               <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5">
                 <!-- Mobile only creation date -->
                 <div v-if="task.createdAt" class="flex sm:hidden items-center gap-1 text-xs text-muted-foreground">
-                  <i class="fa-solid fa-calendar opacity-70"></i>
+                  <Calendar class="w-4 h-4 shrink-0 opacity-70" />
                   <span>{{ formatDate(task.createdAt) }}</span>
                 </div>
 
                 <!-- Assignee -->
                 <div v-if="task.assignee" class="flex items-center gap-1 text-xs text-muted-foreground">
-                  <i class="fa-solid fa-user opacity-70"></i>
+                  <User class="w-4 h-4 shrink-0 opacity-70" />
                   <span>{{ task.assignee }}</span>
                 </div>
                 
                 <!-- Car Requested -->
                 <div v-if="getCarName(task)" class="flex items-center gap-1 text-xs text-muted-foreground">
-                  <i class="fa-solid fa-car opacity-70"></i>
+                  <Car class="w-4 h-4 shrink-0 opacity-70" />
                   <span class="truncate max-w-[150px]">{{ getCarName(task) }}</span>
                 </div>
                 
                 <!-- Value (only for opportunities) -->
                 <div v-if="task.type === 'opportunity' && task.value" class="flex items-center gap-1 text-xs">
-                  <i class="fa-solid fa-tag text-muted-foreground opacity-70"></i>
+                  <Tag class="w-4 h-4 shrink-0 text-muted-foreground opacity-70" />
                   <span class="font-bold text-foreground">€ {{ formatCurrency(task.value) }}</span>
                 </div>
               </div>
@@ -79,7 +79,7 @@
             
             <!-- Compact External Link Icon -->
             <div class="w-6 h-6 flex items-center justify-center bg-surface border border-border rounded hover:bg-white hover:border-brand-blue/30 text-muted-foreground hover:text-brand-blue transition-all shrink-0 self-center">
-              <i class="fa-solid fa-external-link text-xs"></i>
+              <ExternalLink class="w-3 h-3 shrink-0" />
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
       
       <!-- Empty State -->
       <div v-else class="text-center py-8 text-muted-foreground">
-        <i class="fa-solid fa-inbox text-2xl mb-2 opacity-30"></i>
+        <Inbox class="w-6 h-6 shrink-0 mb-2 opacity-30" />
         <p class="text-xs">No other tasks for this customer</p>
       </div>
     </div>
@@ -96,6 +96,7 @@
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
+import { List, Loader2, Calendar, User, Car, Tag, ExternalLink, Inbox } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'

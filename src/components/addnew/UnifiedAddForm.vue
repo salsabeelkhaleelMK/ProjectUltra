@@ -39,7 +39,7 @@
             <div class="relative space-y-2">
               <Label class="block text-sm font-semibold text-foreground">Search Contact</Label>
               <div class="relative w-full">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs z-10"></i>
+                <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 shrink-0 text-muted-foreground z-10" />
                 <Input 
                   v-model="searchQuery"
                   @input="handleSearch"
@@ -69,7 +69,7 @@
                       <div class="font-semibold text-foreground text-xs truncate">{{ contact.name }}</div>
                       <div class="text-muted-foreground text-xs truncate">{{ contact.email }}</div>
                     </div>
-                    <i class="fa-solid fa-chevron-right text-muted-foreground text-xs"></i>
+                    <ChevronRight class="w-3 h-3 shrink-0 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
@@ -94,7 +94,7 @@
                     class="h-8 w-8 p-0"
                     @click="clearSelection"
                   >
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                    <X class="w-4 h-4 shrink-0" />
                   </Button>
                 </div>
               </CardContent>
@@ -377,7 +377,7 @@
         <!-- If forceType is set, just show confirmation -->
         <Card v-else class="bg-white border-border">
           <CardContent class="flex items-center gap-3">
-            <i class="fa-solid fa-info-circle text-primary text-sm"></i>
+            <Info class="w-4 h-4 shrink-0 text-primary" />
             <div>
               <p class="text-xs font-bold text-foreground">
                 Converting to {{ forceType === 'lead' ? 'Lead' : 'Opportunity' }}
@@ -388,7 +388,7 @@
         
         <Card v-if="!hasVehicleData && !forceType" class="bg-orange-50 border-orange-200">
           <CardContent class="flex items-start gap-2">
-            <i class="fa-solid fa-exclamation-triangle text-orange-600 mt-0.5 text-sm"></i>
+            <AlertTriangle class="w-4 h-4 shrink-0 text-orange-600 mt-0.5" />
             <span class="text-xs text-orange-700">Fill in vehicle details to enable lead/opportunity creation</span>
           </CardContent>
         </Card>
@@ -399,6 +399,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { Search, ChevronRight, X, Info, AlertTriangle } from 'lucide-vue-next'
 import { Button, Checkbox, Input, Toggle, Card, CardHeader, CardTitle, CardContent, Textarea, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Label } from '@motork/component-library/future/primitives'
 import { useCustomersStore } from '@/stores/customers'
 import { useAddFormValidation } from '@/composables/useAddFormValidation'

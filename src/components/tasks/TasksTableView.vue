@@ -11,7 +11,7 @@
           <!-- Right Actions: View Toggle + Show Closed -->
           <div class="page-header-actions">
             <!-- View Toggle: Cards (left) → Table (right); highlighted = current view -->
-            <div class="bg-white border border-border p-0.5 rounded-btn inline-flex gap-0.5">
+            <div class="bg-white p-0.5 rounded-btn inline-flex gap-0.5">
               <Button
                 variant="secondary"
                 size="icon"
@@ -49,7 +49,7 @@
               @click="$emit('toggle-closed', !showClosed)"
               class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
-              <i class="fa-solid fa-eye-slash text-muted-foreground group-hover:text-brand-red"></i>
+              <EyeOff class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-brand-red" />
               <span class="hidden sm:inline">Show Closed</span>
             </button>
           </div>
@@ -101,7 +101,7 @@
           >
             <template #empty-state>
               <div class="empty-state">
-                <i class="fa-solid fa-tasks empty-state-icon"></i>
+                <ListTodo class="empty-state-icon w-8 h-8 shrink-0" />
                 <p class="empty-state-text">No tasks found</p>
               </div>
             </template>
@@ -119,7 +119,7 @@
                   size="sm"
                   @click="handleBulkDelete"
                 >
-                  <i class="fa-solid fa-trash mr-2"></i>
+                  <Trash2 class="w-4 h-4 shrink-0 mr-2" />
                   Delete
                 </Button>
                 <Button
@@ -127,7 +127,7 @@
                   size="sm"
                   @click="clearSelection"
                 >
-                  <i class="fa-solid fa-x mr-2"></i>
+                  <X class="w-4 h-4 shrink-0 mr-2" />
                   Close
                 </Button>
               </div>
@@ -139,7 +139,7 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
-import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
+import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle, EyeOff, ListTodo, Trash2, X } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
 import UnifiedSearchBar from '@/components/shared/UnifiedSearchBar.vue'
@@ -577,11 +577,30 @@ const tableMeta = computed(() => ({
   border-bottom: none !important;
 }
 
-/* Hide built-in DataTable search row only (UnifiedSearchBar is above) – scope to table container */
-.data-table-inner.table-search-wrapper :deep([data-slot="table-search"]),
-.data-table-inner.table-search-wrapper :deep(div:has(> input[placeholder*="Search"])),
-.data-table-inner.table-search-wrapper :deep(div:has(> input[type="search"])) {
-  display: none !important;
+/* Remove any dark borders from table container */
+:deep([data-slot="table-container"]),
+:deep(.table-wrapper) {
+  border: none !important;
+}
+
+/* Frame panel - should have gray background */
+:deep([data-slot="frame-panel"]) {
+  background-color: rgba(245, 245, 245, 1) !important;
+}
+
+/* Pagination dropdown - transparent in footer */
+:deep(footer select),
+:deep(footer button[role="combobox"]) {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Filter button - white background like reference */
+:deep(button[aria-label*="filter"]),
+:deep(button[aria-label*="Filter"]),
+:deep([data-slot="table-filter"] button) {
+  background-color: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Enable horizontal and vertical scrolling */

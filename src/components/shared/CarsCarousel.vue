@@ -1,7 +1,7 @@
 <template>
   <div v-if="cars.length > 0" class="mb-8">
     <div class="flex items-center gap-2 mb-4">
-      <i class="fa-solid fa-thumbtack text-muted-foreground text-xs"></i>
+      <Pin class="w-3 h-3 shrink-0 text-muted-foreground" />
       <h3 class="font-bold text-foreground text-sm">Cars</h3>
     </div>
     <div class="relative">
@@ -28,7 +28,7 @@
               alt="Car" 
               class="w-full h-full object-cover"
             >
-            <i v-else class="fa-solid fa-car text-4xl text-muted-foreground"></i>
+            <Car v-else class="w-10 h-10 shrink-0 text-muted-foreground" />
           </div>
           <div class="p-6">
             <h4 class="font-bold text-foreground text-sm mb-1">{{ car.brand }} {{ car.model }} ({{ car.year }})</h4>
@@ -55,6 +55,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Pin, Car } from 'lucide-vue-next'
 import ComingSoonModal from '@/components/modals/ComingSoonModal.vue'
 
 const props = defineProps({

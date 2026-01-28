@@ -3,7 +3,7 @@
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
       <h5 class="text-sm font-bold text-foreground">{{ item ? 'Edit Offer' : 'Create Offer' }}</h5>
       <Button variant="ghost" size="icon" @click="$emit('cancel')" class="text-muted-foreground hover:text-muted-foreground">
-        <i class="fa-solid fa-xmark"></i>
+        <X class="w-4 h-4 shrink-0" />
       </Button>
     </div>
     
@@ -14,15 +14,15 @@
         <p class="text-sm text-muted-foreground mb-4">Choose how you want to add a vehicle to this offer:</p>
         <div class="space-y-3">
           <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSubView = 'stock'">
-            <i class="fa-solid fa-warehouse"></i>
+            <Warehouse class="w-4 h-4 shrink-0" />
             <span>Add from Stock — Search and select an existing vehicle from inventory</span>
           </Button>
           <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSubView = 'configure'">
-            <i class="fa-solid fa-cog"></i>
+            <Settings class="w-4 h-4 shrink-0" />
             <span>Configure Vehicle — Build/customize a new vehicle</span>
           </Button>
           <Button variant="outline" class="w-full justify-start gap-2" @click="vehicleSelectionStep = 'manual'">
-            <i class="fa-solid fa-pen-to-square"></i>
+            <PenLine class="w-4 h-4 shrink-0" />
             <span>Skip & Enter Manually — Create vehicle data from scratch</span>
           </Button>
         </div>
@@ -50,7 +50,7 @@
             alt="Vehicle" 
             class="w-full h-full object-cover"
           />
-          <i v-else class="fa-solid fa-car text-muted-foreground w-full h-full flex items-center justify-center"></i>
+          <Car v-else class="w-full h-full shrink-0 text-muted-foreground flex items-center justify-center" />
         </div>
         <div>
           <h4 class="font-bold text-sm text-foreground">
@@ -312,7 +312,7 @@
               size="small"
               @click="addQuotationItem"
             >
-              <i class="fa-solid fa-plus mr-1 text-xs"></i>
+              <Plus class="w-3 h-3 shrink-0 mr-1" />
               Add Item
             </Button>
           </div>
@@ -334,7 +334,7 @@
                   @click="removeQuotationItem(index)"
                   class="text-red-600 hover:text-red-700 h-10 w-10"
                 >
-                  <i class="fa-solid fa-trash text-xs"></i>
+                  <Trash2 class="w-3 h-3 shrink-0" />
                 </Button>
               </div>
             </div>
@@ -394,7 +394,7 @@
               size="small"
               @click="addDiscount"
             >
-              <i class="fa-solid fa-plus mr-1 text-xs"></i>
+              <Plus class="w-3 h-3 shrink-0 mr-1" />
               Add Discount
             </Button>
           </div>
@@ -431,7 +431,7 @@
                 @click="removeDiscount(index)"
                 class="text-red-600 hover:text-red-700"
               >
-                <i class="fa-solid fa-trash text-xs"></i>
+                <Trash2 class="w-3 h-3 shrink-0" />
               </Button>
             </div>
           </div>
@@ -551,7 +551,7 @@
               size="small"
               @click="addPaymentMethod"
             >
-              <i class="fa-solid fa-plus mr-1 text-xs"></i>
+              <Plus class="w-3 h-3 shrink-0 mr-1" />
               Add Payment Method
             </Button>
           </div>
@@ -589,7 +589,7 @@
                 @click="removePaymentMethod(index)"
                 class="text-red-600 hover:text-red-700"
               >
-                <i class="fa-solid fa-trash text-xs"></i>
+                <Trash2 class="w-3 h-3 shrink-0" />
               </Button>
             </div>
           </div>
@@ -707,7 +707,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { Plus, ChevronDown } from 'lucide-vue-next'
+import { Plus, ChevronDown, X, Warehouse, Settings, PenLine, Car, Trash2 } from 'lucide-vue-next'
 import { useOpportunitiesStore } from '@/stores/opportunities'
 import { 
   Button, Input, Label, Textarea, Checkbox,

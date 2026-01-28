@@ -2,21 +2,21 @@
   <div class="bg-purple-50/50 border border-purple-100 rounded-lg p-4">
     <div class="flex items-start gap-3">
       <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
-        <i class="fa-solid fa-calendar text-sm"></i>
+        <Calendar class="w-4 h-4 shrink-0" />
       </div>
       <div class="flex-1 min-w-0">
         <h4 class="font-bold text-sm text-foreground mb-2">{{ appointmentData.type }}</h4>
         <div class="space-y-1.5 text-xs text-gray-600">
           <div class="flex items-center gap-2">
-            <i class="fa-regular fa-calendar text-gray-400"></i>
+            <Calendar class="w-4 h-4 shrink-0 text-muted-foreground" />
             <span>{{ formattedDate }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <i class="fa-regular fa-clock text-gray-400"></i>
+            <Clock class="w-4 h-4 shrink-0 text-muted-foreground" />
             <span>{{ formattedTime }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <i class="fa-solid fa-user text-gray-400"></i>
+            <User class="w-4 h-4 shrink-0 text-muted-foreground" />
             <span>{{ appointmentData.assignee }}</span>
           </div>
         </div>
@@ -34,6 +34,7 @@
 </template>
 
 <script setup>
+import { Calendar, Clock, User } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 const props = defineProps({

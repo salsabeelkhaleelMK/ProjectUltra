@@ -26,7 +26,7 @@
           class="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
           title="Dismiss"
         >
-          <i class="fa-solid fa-xmark text-sm"></i>
+          <X class="w-4 h-4 shrink-0" />
         </button>
         
         <!-- Dismiss Confirmation -->
@@ -149,6 +149,7 @@
 </template>
 
 <script setup>
+import { X } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 const props = defineProps({
