@@ -7,7 +7,7 @@
       class="w-full flex items-center justify-between text-sm text-muted-foreground hover:text-foreground py-2 transition-colors"
     >
       <span class="font-medium">Lead Qualification Survey</span>
-      <i class="fa-solid fa-chevron-down text-xs text-muted-foreground"></i>
+      <ChevronDown class="w-3 h-3 shrink-0 text-muted-foreground" />
     </button>
     
     <!-- Expanded State -->
@@ -18,7 +18,7 @@
           @click="isExpanded = false"
           class="text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
         >
-          <i class="fa-solid fa-chevron-up"></i>
+          <ChevronUp class="w-4 h-4 shrink-0" />
         </button>
       </div>
       
@@ -108,6 +108,7 @@
 </template>
 
 <script setup>
+import { ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import { 
   Button,

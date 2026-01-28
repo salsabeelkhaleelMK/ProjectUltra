@@ -23,7 +23,7 @@
         <CardContent class="p-4">
           <div class="flex items-center gap-3 mb-1">
             <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0">
-              <i :class="[type.icon, 'text-lg', selectedSource === type.value ? 'text-brand-primary' : 'text-muted-foreground']"></i>
+              <component :is="getLucideIcon(type.icon)" :class="['w-5 h-5 shrink-0', selectedSource === type.value ? 'text-brand-primary' : 'text-muted-foreground']" />
             </div>
             <div>
               <span class="font-bold text-foreground text-sm">{{ type.label }}</span>
@@ -89,7 +89,7 @@
         <Progress :value="progressPercentage" class="h-1.5" />
         <Card v-if="importErrors.length > 0" class="bg-orange-50 border-orange-200">
           <CardContent class="flex items-start gap-2">
-            <i class="fa-solid fa-exclamation-triangle text-orange-600 mt-0.5 text-sm"></i>
+            <AlertTriangle class="w-4 h-4 shrink-0 text-orange-600 mt-0.5" />
             <span class="text-xs text-orange-700">
               {{ importErrors.length }} errors encountered
             </span>
@@ -102,7 +102,7 @@
     <Card v-if="importSuccess" class="bg-green-50 border-green-200">
       <CardContent class="space-y-2">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-check-circle text-green-600 text-base"></i>
+          <CheckCircle class="w-4 h-4 shrink-0 text-green-600" />
           <span class="font-bold text-foreground text-xs">Import Successful</span>
         </div>
         <p class="text-muted-foreground text-xs">
@@ -123,6 +123,8 @@ import { Button, Progress, Card, CardHeader, CardTitle, CardContent } from '@mot
 import FileUploadForm from '@/components/addnew/FileUploadForm.vue'
 import ColumnMappingForm from '@/components/addnew/ColumnMappingForm.vue'
 import { useColumnMapping, getEntityFields } from '@/composables/useColumnMapping'
+import { AlertTriangle, CheckCircle } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import { useCustomersStore } from '@/stores/customers'
 import { useLeadsStore } from '@/stores/leads'
 import { useOpportunitiesStore } from '@/stores/opportunities'

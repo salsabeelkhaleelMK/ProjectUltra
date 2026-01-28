@@ -6,7 +6,7 @@
     <div v-if="!hideHeader" class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-border rotate-45"></div>
     <div v-if="!hideHeader" class="flex justify-between items-center mb-4">
       <h5 class="text-sm font-semibold text-foreground">{{ item ? 'Edit Trade-In' : 'Add Trade-In' }}</h5>
-      <button @click="$emit('cancel')" class="text-muted-foreground hover:text-muted-foreground"><i class="fa-solid fa-xmark"></i></button>
+      <button @click="$emit('cancel')" class="text-muted-foreground hover:text-muted-foreground"><X class="w-4 h-4 shrink-0" /></button>
     </div>
 
     <div class="space-y-4">
@@ -227,6 +227,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { X } from 'lucide-vue-next'
 import { 
   Button,
   Input,

@@ -17,7 +17,7 @@
                 ? 'text-foreground' 
                 : 'text-muted-foreground hover:text-muted-foreground'"
             >
-              <i :class="[getTabIcon(tab.key), 'text-sm']"></i>
+              <component :is="getLucideIcon(getTabIcon(tab.key))" class="w-4 h-4 shrink-0 text-sm" />
               <span class="hidden md:inline whitespace-nowrap">{{ tab.label }}</span>
               <span 
                 v-if="activeTab === tab.key"
@@ -56,6 +56,7 @@ import ManualTab from '@/components/addnew/ManualTab.vue'
 import UploadTab from '@/components/addnew/UploadTab.vue'
 import IntegrationsTab from '@/components/addnew/IntegrationsTab.vue'
 import { useTabPersistence } from '@/composables/useTabPersistence'
+import { getLucideIcon } from '@/utils/lucideIcons'
 
 const router = useRouter()
 const customersStore = useCustomersStore()

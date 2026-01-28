@@ -20,7 +20,7 @@
               @update:model-value="handleToggleChange('survey', $event)"
               class="outcome-toggle-item"
             >
-              <i class="fa-solid fa-clipboard-list"></i>
+              <ClipboardList class="w-4 h-4 shrink-0" />
               <span>Complete Survey</span>
             </Toggle>
           </div>
@@ -41,7 +41,7 @@
           @click="$emit('postpone', 'cfb')"
           class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-clock"></i>
+          <Clock class="w-4 h-4 shrink-0" />
           <span>Postpone</span>
         </Button>
         <div class="flex gap-2">
@@ -67,6 +67,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { ClipboardList, Clock } from 'lucide-vue-next'
 import { Button, Toggle } from '@motork/component-library/future/primitives'
 import ContractFeedbackSurvey from '@/components/tasks/opportunity/ContractFeedbackSurvey.vue'
 import { useOpportunitiesStore } from '@/stores/opportunities'

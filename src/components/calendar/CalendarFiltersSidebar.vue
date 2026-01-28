@@ -67,10 +67,10 @@
             {{ modelValue.eventTypes.length }}
           </span>
         </div>
-        <i 
-          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+        <ChevronDown 
+          class="w-3 h-3 shrink-0 text-muted-foreground transition-transform"
           :class="{ 'rotate-180': expandedSections.eventTypes }"
-        ></i>
+        />
       </button>
       <transition name="accordion">
         <div v-if="expandedSections.eventTypes" class="px-3 pb-3">
@@ -114,10 +114,10 @@
             {{ modelValue.dealerships.length }}
           </span>
         </div>
-        <i 
-          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+        <ChevronDown 
+          class="w-3 h-3 shrink-0 text-muted-foreground transition-transform"
           :class="{ 'rotate-180': expandedSections.dealerships }"
-        ></i>
+        />
       </button>
       <transition name="accordion">
         <div v-if="expandedSections.dealerships" class="px-3 pb-3">
@@ -153,10 +153,10 @@
             {{ modelValue.teams.length }}
           </span>
         </div>
-        <i 
-          class="fa-solid fa-chevron-down text-xs text-gray-400 transition-transform"
+        <ChevronDown 
+          class="w-3 h-3 shrink-0 text-muted-foreground transition-transform"
           :class="{ 'rotate-180': expandedSections.teams }"
-        ></i>
+        />
       </button>
       <transition name="accordion">
         <div v-if="expandedSections.teams" class="px-3 pb-3">
@@ -183,7 +183,7 @@
         @click="$emit('apply')"
         class="group w-full flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-xs font-medium text-gray-600 hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
-        <i class="fa-solid fa-check text-gray-400 group-hover:text-brand-red"></i>
+        <Check class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-brand-red" />
         <span>Apply Filters</span>
       </button>
     </div>
@@ -192,6 +192,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { ChevronDown, Check } from 'lucide-vue-next'
 import { Checkbox, Input, Toggle } from '@motork/component-library/future/primitives'
 
 const props = defineProps({

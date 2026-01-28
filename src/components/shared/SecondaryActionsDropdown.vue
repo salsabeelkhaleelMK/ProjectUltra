@@ -7,10 +7,10 @@
       class="inline-flex items-center gap-2 cursor-pointer"
     >
       <span>More actions</span>
-      <i 
-        class="fa-solid fa-chevron-down text-xs transition-transform duration-200 shrink-0"
+      <ChevronDown 
+        class="w-3 h-3 shrink-0 transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }"
-      ></i>
+      />
     </Button>
 
     <!-- Dropdown menu -->
@@ -35,6 +35,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { ChevronDown } from 'lucide-vue-next'
 
 const props = defineProps({
   actions: {

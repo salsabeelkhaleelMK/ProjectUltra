@@ -73,7 +73,7 @@
         alt="Vehicle" 
         class="w-full h-full object-cover"
       >
-      <i v-else class="fa-solid fa-car text-base text-muted-foreground"></i>
+      <Car v-else class="w-4 h-4 shrink-0 text-muted-foreground" />
     </div>
     
     <!-- Offer Details -->
@@ -112,7 +112,7 @@
       class="absolute bottom-0 left-0 right-0 z-10 bg-green-600/90 text-white text-[10px] font-medium px-2 py-1.5 flex items-center justify-between pointer-events-none"
     >
       <span class="flex items-center gap-1">
-        <i class="fa-solid fa-check-circle"></i>
+        <CheckCircle class="w-4 h-4 shrink-0" />
         Accepted
       </span>
       <span v-if="getAcceptanceDate()" class="opacity-90">
@@ -124,7 +124,7 @@
 
 <script setup>
 import { ref, nextTick, watch, computed } from 'vue'
-import { MoreVertical, Wallet, CarFront, BadgePercent } from 'lucide-vue-next'
+import { MoreVertical, Wallet, CarFront, BadgePercent, Car, CheckCircle } from 'lucide-vue-next'
 
 const props = defineProps({
   offer: {

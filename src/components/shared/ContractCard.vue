@@ -68,7 +68,7 @@
     
     <!-- Contract Icon/Preview Section -->
     <div :class="['w-full bg-muted flex items-center justify-center overflow-hidden', imageHeightClass]">
-      <i class="fa-solid fa-file-signature text-base text-muted-foreground"></i>
+      <FileSignature class="w-4 h-4 shrink-0 text-muted-foreground" />
     </div>
     
     <!-- Contract Details -->
@@ -117,7 +117,7 @@
       class="absolute bottom-0 left-0 right-0 z-10 bg-green-600/90 text-white text-[10px] font-medium px-2 py-1.5 flex items-center justify-between pointer-events-none"
     >
       <span class="flex items-center gap-1">
-        <i class="fa-solid fa-check-circle"></i>
+        <CheckCircle class="w-4 h-4 shrink-0" />
         Signed
       </span>
       <span v-if="contract.esignatureCollectedDate" class="opacity-90">
@@ -129,7 +129,7 @@
 
 <script setup>
 import { ref, nextTick, watch, computed } from 'vue'
-import { MoreVertical, Lock, CarFront, BadgePercent } from 'lucide-vue-next'
+import { MoreVertical, Lock, CarFront, BadgePercent, FileSignature, CheckCircle } from 'lucide-vue-next'
 
 const props = defineProps({
   contract: {

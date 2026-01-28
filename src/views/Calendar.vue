@@ -11,7 +11,7 @@
             size="small"
             class="flex items-center gap-2"
           >
-            <i class="fa-solid fa-filter text-sm"></i>
+            <Filter class="w-4 h-4 shrink-0" />
             <span class="hidden sm:inline">Filters</span>
           </Button>
           <Badge
@@ -30,7 +30,7 @@
             size="small"
             class="flex items-center gap-2"
           >
-            <i class="fa-solid fa-link text-sm"></i>
+            <Link class="w-4 h-4 shrink-0" />
             <span class="hidden sm:inline">{{ connectedCalendars.length > 0 ? 'Connected' : 'Connect' }}</span>
           </Button>
           <Badge
@@ -48,7 +48,7 @@
           size="small"
           class="flex items-center gap-2"
         >
-          <i class="fa-solid fa-plus text-sm"></i>
+          <Plus class="w-4 h-4 shrink-0" />
           <span class="hidden sm:inline">New Event</span>
         </Button>
       </template>
@@ -68,7 +68,7 @@
               theme="blue"
               class="cursor-pointer hover:opacity-80"
             />
-            <i class="fa-solid fa-xmark text-xs text-blue-400 hover:text-blue-600"></i>
+            <X class="w-3 h-3 shrink-0 text-blue-400 hover:text-blue-600" />
           </button>
           <Button
             label="Clear all"
@@ -129,7 +129,7 @@
             class="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded transition-colors"
             aria-label="Close filters"
           >
-            <i class="fa-solid fa-xmark text-lg"></i>
+            <X class="w-5 h-5 shrink-0" />
           </button>
         </div>
         <div class="p-4">
@@ -187,6 +187,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Filter, Link, Plus, X } from 'lucide-vue-next'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'

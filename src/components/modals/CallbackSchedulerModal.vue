@@ -118,7 +118,7 @@
             @click="handleConfirm"
           >
             <template #icon-left>
-              <i class="fa-solid fa-calendar-check"></i>
+              <CalendarCheck class="w-4 h-4 shrink-0" />
             </template>
           </Button>
         </DialogFooter>
@@ -128,6 +128,7 @@
 </template>
 
 <script setup>
+import { CalendarCheck } from 'lucide-vue-next'
 import { ref, computed, onMounted } from 'vue'
 import { 
   Button,

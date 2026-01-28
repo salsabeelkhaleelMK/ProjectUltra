@@ -127,7 +127,7 @@
               :key="source.name"
               class="flex items-center gap-2"
             >
-              <i class="fa-regular fa-clock text-xs text-muted-foreground"></i>
+              <Clock class="w-3 h-3 shrink-0 text-muted-foreground" />
               <span class="text-sm font-bold text-foreground">{{ getSourceAvgTime(source.name) }}</span>
               <span class="text-xs text-muted-foreground">on avg.</span>
             </div>
@@ -140,7 +140,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { ChevronDown, TrendingUp } from 'lucide-vue-next'
+import { ChevronDown, TrendingUp, Clock } from 'lucide-vue-next'
 import { Button } from '@motork/component-library/future/primitives'
 
 const selectedTimeRange = ref('This month')

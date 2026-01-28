@@ -6,10 +6,10 @@
       class="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
     >
       <h6 class="font-semibold text-foreground text-sm">{{ title }}</h6>
-      <i
-        class="fa-solid fa-chevron-down text-xs text-muted-foreground transition-transform duration-200"
+      <ChevronDown
+        class="w-3 h-3 shrink-0 text-muted-foreground transition-transform duration-200"
         :class="{ 'rotate-180': isExpanded }"
-      ></i>
+      />
     </button>
     
     <!-- Section Content -->
@@ -22,6 +22,8 @@
 </template>
 
 <script setup>
+import { ChevronDown } from 'lucide-vue-next'
+
 defineProps({
   title: {
     type: String,

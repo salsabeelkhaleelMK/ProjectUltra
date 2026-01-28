@@ -2,9 +2,19 @@
   <div class="overflow-hidden p-4 rounded-lg bg-white shadow-nsc-card">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-base font-medium text-foreground leading-6">Requested Car</h3>
-      <p v-if="source" class="text-sm text-muted-foreground">
-        {{ source }}
-      </p>
+      <div v-if="source" class="flex items-center gap-2">
+        <p class="text-sm text-muted-foreground">
+          {{ source }}
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="shrink-0"
+          @click="$emit('open-ad')"
+        >
+          <ExternalLink :size="14" />
+        </Button>
+      </div>
     </div>
 
     <div class="flex gap-4">
@@ -54,43 +64,13 @@
         "{{ requestMessage }}"
       </p>
     </div>
-
-    <div class="flex gap-2 pt-3 mt-3 border-t border-border">
-      <Button
-        variant="secondary"
-        size="sm"
-        class="flex-1"
-        @click="$emit('open-ad')"
-      >
-        <ExternalLink :size="16" />
-        <span>Open Ad</span>
-      </Button>
-      <div class="relative">
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          @click.stop="toggleMenu"
-        >
-          <MoreVertical :size="16" />
-        </Button>
-        
-        <!-- Dropdown Menu -->
-        <div 
-          v-if="showMenu"
-          v-click-outside="closeMenu"
-          class="absolute right-0 top-full mt-1 z-50"
-        >
-          <DropdownMenu :items="menuItems" className="w-48" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Button, DropdownMenu } from '@motork/component-library/future/primitives'
-import { Car, ExternalLink, MoreVertical } from 'lucide-vue-next'
+import { Button } from '@motork/component-library/future/primitives'
+import { Car, ExternalLink } from 'lucide-vue-next'
 
 const props = defineProps({
   vehicle: {
@@ -114,34 +94,6 @@ const props = defineProps({
 const emit = defineEmits(['open-ad', 'more-actions', 'edit-vehicle', 'remove-vehicle'])
 
 const imageError = ref(false)
-const showMenu = ref(false)
-
-const toggleMenu = () => {
-  showMenu.value = !showMenu.value
-}
-
-const closeMenu = () => {
-  showMenu.value = false
-}
-
-const menuItems = computed(() => [
-  {
-    key: 'edit',
-    label: 'Edit vehicle',
-    onClick: () => {
-      emit('edit-vehicle')
-      closeMenu()
-    }
-  },
-  {
-    key: 'remove',
-    label: 'Remove vehicle',
-    onClick: () => {
-      emit('remove-vehicle')
-      closeMenu()
-    }
-  }
-])
 
 const vehicleName = computed(() => {
   const parts = []

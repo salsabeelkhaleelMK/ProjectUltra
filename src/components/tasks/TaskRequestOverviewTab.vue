@@ -3,7 +3,7 @@
     <!-- Title Section -->
     <div class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-car text-foreground"></i>
+        <Car class="w-4 h-4 shrink-0 text-foreground" />
         <h2 class="text-base font-medium text-foreground leading-6">Requested Car</h2>
       </div>
       <div class="flex items-center gap-2">
@@ -55,7 +55,7 @@
         <div class="flex items-center gap-3">
           <div class="w-16 h-12 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0">
             <img v-if="carImage" :src="carImage" alt="Car" class="w-full h-full object-cover">
-            <i v-else class="fa-solid fa-car text-2xl text-muted-foreground w-full h-full flex items-center justify-center"></i>
+            <Car v-else class="w-6 h-6 shrink-0 text-muted-foreground" />
           </div>
           <div class="flex-1 min-w-0">
             <div class="font-bold text-foreground text-sm mb-1">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
@@ -92,7 +92,7 @@
       
       <!-- No car message with add button -->
       <div v-else class="flex flex-col items-center justify-center py-8 text-center">
-        <i class="fa-solid fa-car text-4xl text-muted-foreground mb-3"></i>
+        <Car class="w-12 h-12 shrink-0 text-muted-foreground mb-3" />
         <p class="text-sm text-muted-foreground mb-4">No requested car added yet</p>
         <Button
           label="+ Add or update"
@@ -125,6 +125,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Car } from 'lucide-vue-next'
 import { Badge, Button } from '@motork/component-library/future/primitives'
 import { getStageColor } from '@/utils/stageMapper'
 

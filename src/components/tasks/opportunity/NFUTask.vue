@@ -13,7 +13,7 @@
           @click="$emit('postpone', 'nfu')"
           class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted ml-4"
         >
-          <i class="fa-solid fa-clock"></i>
+          <Clock class="w-4 h-4 shrink-0" />
           <span>Postpone</span>
         </button>
       </div>
@@ -29,7 +29,7 @@
           class="flex-1"
           :class="selectedAction === 'schedule' ? 'border-purple-500 bg-purple-50 text-purple-700' : ''"
         >
-          <i class="fa-solid fa-calendar-plus mr-2"></i>
+          <CalendarPlus class="w-4 h-4 shrink-0 mr-2" />
           Schedule Appointment
         </Button>
         <Button
@@ -38,7 +38,7 @@
           class="flex-1"
           :class="selectedAction === 'close-lost' ? 'border-red-500 bg-red-50 text-red-700' : ''"
         >
-          <i class="fa-solid fa-xmark mr-2"></i>
+          <X class="w-4 h-4 shrink-0 mr-2" />
           Close as Lost
         </Button>
       </div>
@@ -67,6 +67,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { Clock, CalendarPlus, X } from 'lucide-vue-next'
 import { Button } from '@motork/component-library/future/primitives'
 import CloseAsLostForm from '@/components/shared/CloseAsLostForm.vue'
 

@@ -4,7 +4,7 @@
       <!-- Icon -->
       <div class="mb-6">
         <div class="inline-flex items-center justify-center w-24 h-24 bg-red-100 rounded-full">
-          <i class="fa-solid fa-ban text-red-600 text-4xl"></i>
+          <Ban class="w-10 h-10 shrink-0 text-red-600" />
         </div>
       </div>
       
@@ -24,7 +24,7 @@
         @click="goToTasks"
         class="group flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
       >
-        <i class="fa-solid fa-arrow-left text-muted-foreground group-hover:text-brand-red"></i>
+        <ArrowLeft class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-brand-red" />
         Return to Tasks
       </button>
     </div>
@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { Ban, ArrowLeft } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

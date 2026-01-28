@@ -19,7 +19,7 @@
                 @click="$emit('postpone', 'dfb')"
                 class="bg-white border border-D1D5DB text-brand-dark font-medium px-4 py-2 rounded-btn text-xs flex items-center gap-2 transition-colors hover:bg-muted ml-4"
               >
-                <i class="fa-solid fa-clock"></i>
+                <Clock class="w-4 h-4 shrink-0" />
                 <span>Postpone</span>
               </button>
             </div>
@@ -31,7 +31,7 @@
               @update:model-value="showSurvey = $event"
               class="outcome-toggle-item"
             >
-              <i class="fa-solid fa-clipboard-list"></i>
+              <ClipboardList class="w-4 h-4 shrink-0" />
               <span>Complete Survey</span>
             </Toggle>
             <Toggle
@@ -41,7 +41,7 @@
               @update:model-value="showReschedule = $event"
               class="outcome-toggle-item"
             >
-              <i class="fa-solid fa-calendar-days"></i>
+              <CalendarDays class="w-4 h-4 shrink-0" />
               <span>Reschedule Delivery</span>
             </Toggle>
           </div>
@@ -115,6 +115,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { Clock, ClipboardList, CalendarDays } from 'lucide-vue-next'
 import { Button, Toggle } from '@motork/component-library/future/primitives'
 import PostDeliverySurvey from '@/components/tasks/opportunity/PostDeliverySurvey.vue'
 import { useOpportunitiesStore } from '@/stores/opportunities'

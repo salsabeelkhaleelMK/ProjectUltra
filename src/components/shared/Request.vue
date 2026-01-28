@@ -5,7 +5,7 @@
           <!-- Left: Request title with chips (when request data exists) -->
           <div v-if="showRequestSection" class="flex items-center gap-2 shrink-0 flex-wrap">
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-thumbtack text-muted-foreground text-xs"></i>
+              <Pin class="w-3 h-3 shrink-0 text-muted-foreground" />
               <h3 class="font-bold text-foreground text-sm">Request</h3>
             </div>
             <div class="flex items-center gap-1.5">
@@ -62,7 +62,7 @@
             <div class="flex items-center gap-4">
               <div class="w-20 h-14 bg-surfaceTertiary rounded-lg overflow-hidden shrink-0 border border-border">
                 <img v-if="carImage" :src="carImage" alt="Car" class="w-full h-full object-cover">
-                <i v-else class="fa-solid fa-car text-3xl text-muted-foreground w-full h-full flex items-center justify-center"></i>
+                <Car v-else class="w-8 h-8 shrink-0 text-muted-foreground" />
               </div>
               <div>
                 <div class="font-bold text-foreground text-base md:text-lg mb-2">{{ carBrand }} {{ carModel }} ({{ carYear }})</div>
@@ -121,10 +121,10 @@
           class="w-full p-3 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
           <span class="font-medium">{{ isExpanded ? 'Hide' : 'View' }} Details</span>
-          <i 
-            class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+          <ChevronDown 
+            class="w-3 h-3 shrink-0 transition-transform duration-200"
             :class="{ 'rotate-180': isExpanded }"
-          ></i>
+          />
         </button>
       </div>
       
@@ -218,7 +218,7 @@
                 size="small"
                 class="flex items-center gap-2"
               >
-                <i class="fa-solid fa-list-check text-xs"></i> View technical specs
+                <ListChecks class="w-3 h-3 shrink-0 inline" /> View technical specs
               </Button>
             </div>
           </div>
@@ -229,6 +229,7 @@
 </template>
 
 <script setup>
+import { Pin, Car, ListChecks, ChevronDown } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import { Badge, Button, Card, CardHeader, CardContent } from '@motork/component-library/future/primitives'
 import { getDeliverySubstatusColor, getStageColor } from '@/utils/stageMapper'

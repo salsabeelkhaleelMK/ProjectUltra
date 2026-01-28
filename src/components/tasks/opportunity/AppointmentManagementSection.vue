@@ -27,7 +27,7 @@
               @click="$emit('confirm-appointment')"
               class="inline-flex items-center gap-2 cursor-pointer"
             >
-              <i class="fa-solid fa-calendar-check"></i>
+              <CalendarCheck class="w-4 h-4 shrink-0" />
               <span>Confirm appointment</span>
             </Button>
             <div class="outcome-toggle-group flex flex-wrap gap-3">
@@ -45,7 +45,7 @@
                 }"
                 class="outcome-toggle-item"
               >
-                <i class="fa-solid fa-calendar-days"></i>
+                <CalendarDays class="w-4 h-4 shrink-0" />
                 <span>Reschedule</span>
               </Toggle>
               <Toggle
@@ -62,7 +62,7 @@
                 }"
                 class="outcome-toggle-item"
               >
-                <i class="fa-solid fa-user-slash"></i>
+                <UserX class="w-4 h-4 shrink-0" />
                 <span>Mark No-Show</span>
               </Toggle>
               <Toggle
@@ -79,7 +79,7 @@
                 }"
                 class="outcome-toggle-item"
               >
-                <i class="fa-solid fa-user-check"></i>
+                <UserCheck class="w-4 h-4 shrink-0" />
                 <span>Mark Showed Up</span>
               </Toggle>
             </div>
@@ -182,6 +182,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { CalendarCheck, CalendarDays, UserX, UserCheck } from 'lucide-vue-next'
 import { Button, Toggle } from '@motork/component-library/future/primitives'
 import { formatDateTime } from '@/utils/formatters'
 import { useCloseAsLost } from '@/composables/useCloseAsLost'

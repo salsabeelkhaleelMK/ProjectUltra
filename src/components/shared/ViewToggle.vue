@@ -13,12 +13,14 @@
       ]"
       :title="option.label"
     >
-      <i :class="option.icon" class="text-xs"></i>
+      <component :is="getLucideIcon(option.icon)" class="w-4 h-4 shrink-0 text-xs" />
     </button>
   </div>
 </template>
 
 <script setup>
+import { getLucideIcon } from '@/utils/lucideIcons'
+
 defineProps({
   view: {
     type: String,

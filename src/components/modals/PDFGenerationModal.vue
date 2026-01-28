@@ -247,11 +247,11 @@
               @click="handleSend"
             >
               <template v-if="isSending">
-                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                <Loader2 class="w-4 h-4 shrink-0 mr-2 animate-spin" />
                 Sending...
               </template>
               <template v-else>
-                <i class="fa-solid fa-paper-plane mr-2"></i>
+                <Send class="w-4 h-4 shrink-0 mr-2" />
                 Send
               </template>
             </Button>
@@ -274,7 +274,7 @@
               @click="handleGenerate"
             >
               <template v-if="isGenerating">
-                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                <Loader2 class="w-4 h-4 shrink-0 mr-2 animate-spin" />
                 Generating...
               </template>
             </Button>
@@ -287,6 +287,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { Loader2, Send } from 'lucide-vue-next'
 import { Button, Label, Input, Textarea } from '@motork/component-library/future/primitives'
 import {
   Dialog,

@@ -25,7 +25,7 @@
       >
         <template #empty-state>
           <div class="empty-state">
-            <i class="fa-solid fa-inbox empty-state-icon"></i>
+            <Inbox class="empty-state-icon w-8 h-8 shrink-0" />
             <p class="empty-state-text">No records found</p>
           </div>
         </template>
@@ -43,7 +43,7 @@
               size="sm"
               @click="handleBulkDelete"
             >
-              <i class="fa-solid fa-trash mr-2"></i>
+              <Trash2 class="w-4 h-4 shrink-0 mr-2" />
               Delete
             </Button>
             <Button
@@ -51,7 +51,7 @@
               size="sm"
               @click="clearSelection"
             >
-              <i class="fa-solid fa-x mr-2"></i>
+              <X class="w-4 h-4 shrink-0 mr-2" />
               Close
             </Button>
           </div>
@@ -63,6 +63,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { Inbox, Trash2, X } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
 import { useCustomersStore } from '@/stores/customers'

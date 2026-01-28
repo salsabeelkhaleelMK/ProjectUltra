@@ -43,7 +43,7 @@
             @click="$emit('delete', event.id)"
             class="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-2 mr-auto order-1"
           >
-            <i class="fa-regular fa-trash-can text-xs"></i>
+            <Trash2 class="w-3 h-3 shrink-0" />
             <span>Delete</span>
           </button>
 
@@ -63,7 +63,7 @@
             @click="$emit('edit')"
           >
             <template #icon-left>
-              <i class="fa-regular fa-pen-to-square"></i>
+              <PenLine class="w-4 h-4 shrink-0" />
             </template>
           </Button>
         </DialogFooter>
@@ -73,6 +73,7 @@
 </template>
 
 <script setup>
+import { Trash2, PenLine } from 'lucide-vue-next'
 import { Button } from '@motork/component-library/future/primitives'
 import {
   Dialog,

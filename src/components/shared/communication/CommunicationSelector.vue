@@ -10,7 +10,7 @@
           class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
           :class="selectedChannel === 'email' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
-          <i class="fa-solid fa-envelope text-xs"></i>
+          <Mail class="w-3 h-3 shrink-0" />
           <span>Email</span>
         </button>
         
@@ -20,7 +20,7 @@
           class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
           :class="selectedChannel === 'sms' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
-          <i class="fa-solid fa-message text-xs"></i>
+          <MessageSquare class="w-3 h-3 shrink-0" />
           <span>SMS</span>
         </button>
         
@@ -30,7 +30,7 @@
           class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
           :class="selectedChannel === 'whatsapp' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
-          <i class="fa-brands fa-whatsapp text-xs"></i>
+          <MessageCircle class="w-3 h-3 shrink-0" />
           <span>WhatsApp</span>
         </button>
         
@@ -40,7 +40,7 @@
           class="flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all"
           :class="selectedChannel === 'dont-send' ? 'border-green-600 bg-muted text-foreground' : 'border-D1D5DB bg-white text-muted-foreground hover:border-brand-dark/30'"
         >
-          <i class="fa-solid fa-xmark text-xs"></i>
+          <X class="w-3 h-3 shrink-0" />
           <span>Don't send</span>
         </button>
       </div>
@@ -76,6 +76,7 @@
 </template>
 
 <script setup>
+import { Mail, MessageSquare, MessageCircle, X } from 'lucide-vue-next'
 import { ref } from 'vue'
 import EmailForm from './EmailForm.vue'
 import SMSForm from './SMSForm.vue'

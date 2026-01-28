@@ -49,7 +49,7 @@
               @click="$emit('toggle-closed', !showClosed)"
               class="group flex items-center gap-2 rounded-xl border border-border px-3 py-1.5 bg-surface text-sm font-medium text-muted-foreground hover:border-red-100 hover:bg-red-50 hover:text-brand-red transition-all"
             >
-              <i class="fa-solid fa-eye-slash text-muted-foreground group-hover:text-brand-red"></i>
+              <EyeOff class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-brand-red" />
               <span class="hidden sm:inline">Show Closed</span>
             </button>
           </div>
@@ -85,7 +85,7 @@
           >
             <template #empty-state>
               <div class="empty-state">
-                <i class="fa-solid fa-tasks empty-state-icon"></i>
+                <ListTodo class="empty-state-icon w-8 h-8 shrink-0" />
                 <p class="empty-state-text">No tasks found</p>
               </div>
             </template>
@@ -103,7 +103,7 @@
                   size="sm"
                   @click="handleBulkDelete"
                 >
-                  <i class="fa-solid fa-trash mr-2"></i>
+                  <Trash2 class="w-4 h-4 shrink-0 mr-2" />
                   Delete
                 </Button>
                 <Button
@@ -111,7 +111,7 @@
                   size="sm"
                   @click="clearSelection"
                 >
-                  <i class="fa-solid fa-x mr-2"></i>
+                  <X class="w-4 h-4 shrink-0 mr-2" />
                   Close
                 </Button>
               </div>
@@ -123,7 +123,7 @@
 
 <script setup>
 import { ref, computed, h } from 'vue'
-import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle } from 'lucide-vue-next'
+import { Table, LayoutGrid, Flame, Sun, CheckCircle, Circle, EyeOff, ListTodo, Trash2, X } from 'lucide-vue-next'
 import { DataTable } from '@motork/component-library/future/components'
 import { Button } from '@motork/component-library/future/primitives'
 import { formatCurrency, formatDeadlineFull, formatDate, getDeadlineStatus } from '@/utils/formatters'

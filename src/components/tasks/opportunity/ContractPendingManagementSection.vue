@@ -43,7 +43,7 @@
                 @update:model-value="$emit('update:show-set-delivery-date-section', $event)"
                 class="outcome-toggle-item"
               >
-                <i class="fa-solid fa-truck"></i>
+                <Truck class="w-4 h-4 shrink-0" />
                 <span>Set Delivery Date</span>
               </Toggle>
             </div>
@@ -150,6 +150,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Truck } from 'lucide-vue-next'
 import { Button, Toggle, Label, Input, Textarea, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@motork/component-library/future/primitives'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'
 import OpportunityScheduleForm from '@/components/tasks/opportunity/OpportunityScheduleForm.vue'

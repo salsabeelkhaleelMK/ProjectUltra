@@ -88,7 +88,7 @@
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <!-- Scheduled Follow-up Call -->
             <div v-if="hasScheduledFollowUp" class="flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-blue-600 text-sm"></i>
+              <CalendarCheck class="w-4 h-4 shrink-0 text-blue-600" />
               <div class="flex items-center gap-2">
                 <span class="text-sm font-semibold text-foreground">Scheduled Follow-up Call:</span>
                 <span class="text-sm text-muted-foreground">
@@ -99,14 +99,14 @@
             
             <!-- Contact Attempts -->
             <div v-if="contactAttempts > 0" class="flex items-center gap-2">
-              <i class="fa-solid fa-phone text-muted-foreground text-sm"></i>
+              <Phone class="w-4 h-4 shrink-0 text-muted-foreground" />
               <span class="text-sm font-semibold text-muted-foreground">Contact Attempts:</span>
               <span class="text-sm font-semibold text-foreground">{{ contactAttempts }} / {{ maxContactAttempts }}</span>
               <div
                 v-if="contactAttempts >= maxContactAttempts - 1"
                 class="text-sm text-orange-600 font-medium flex items-center gap-1 ml-2"
               >
-                <i class="fa-solid fa-exclamation-triangle"></i>
+                <AlertTriangle class="w-4 h-4 shrink-0" />
                 <span>One more attempt before auto-disqualification</span>
               </div>
             </div>
@@ -195,7 +195,7 @@
                   @update:model-value="(p) => p && setFollowupChannel('whatsapp')"
                   class="followup-toggle-item"
                 >
-                  <i class="fa-brands fa-whatsapp text-xs"></i>
+                  <MessageCircle class="w-3 h-3 shrink-0" />
                   <span>WhatsApp</span>
                 </Toggle>
                 <Toggle
@@ -204,7 +204,7 @@
                   @update:model-value="(p) => p && setFollowupChannel('sms')"
                   class="followup-toggle-item"
                 >
-                  <i class="fa-solid fa-message text-xs"></i>
+                  <MessageCircle class="w-3 h-3 shrink-0" />
                   <span>SMS</span>
                 </Toggle>
                 <Toggle
@@ -213,7 +213,7 @@
                   @update:model-value="(p) => p && setFollowupChannel('email')"
                   class="followup-toggle-item"
                 >
-                  <i class="fa-solid fa-envelope text-xs"></i>
+                  <Mail class="w-3 h-3 shrink-0" />
                   <span>Email</span>
                 </Toggle>
                 <Toggle
@@ -222,7 +222,7 @@
                   @update:model-value="(p) => p && setFollowupChannel('dont-send')"
                   class="followup-toggle-item"
                 >
-                  <i class="fa-solid fa-xmark text-xs"></i>
+                  <X class="w-3 h-3 shrink-0" />
                   <span>Don't send</span>
                 </Toggle>
               </div>
@@ -274,7 +274,7 @@
                   @update:model-value="(p) => p && setRescheduleTime('monday')"
                   class="followup-toggle-item"
                 >
-                  <i class="fa-solid fa-sparkles text-xs"></i>
+                  <Sparkles class="w-3 h-3 shrink-0" />
                   AI suggestion
                 </Toggle>
                 <Toggle
@@ -289,7 +289,7 @@
               <!-- AI Suggestion Details -->
               <div v-if="rescheduleTime === 'monday' && aiSuggestionData" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="flex items-start gap-2">
-                  <i class="fa-solid fa-lightbulb text-blue-600 text-sm mt-0.5"></i>
+                  <Lightbulb class="w-4 h-4 shrink-0 text-blue-600 mt-0.5" />
                   <div class="flex-1">
                     <p class="text-sm font-semibold text-foreground mb-1">
                       {{ aiSuggestionData.formattedDate }} at {{ aiSuggestionData.time }}
@@ -663,14 +663,14 @@
                           @click="previousMonth"
                           class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
                         >
-                          <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
+                          <ChevronLeft class="w-4 h-4 shrink-0 text-muted-foreground" />
                         </button>
                         <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
                         <button 
                           @click="nextMonth"
                           class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
                         >
-                          <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
+                          <ChevronRight class="w-4 h-4 shrink-0 text-muted-foreground" />
                         </button>
                       </div>
                       
@@ -744,7 +744,7 @@
             <div v-if="hasExistingAppointment && qualificationMethod === 'assign-only'" class="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-calendar-check text-blue-600"></i>
+                  <CalendarCheck class="w-4 h-4 shrink-0 text-blue-600" />
                   <h5 class="font-semibold text-foreground text-sm">Existing Appointment</h5>
                 </div>
                 <span class="text-sm font-semibold text-blue-600 uppercase">Scheduled</span>
@@ -885,7 +885,7 @@ import {
   DialogPortal,
   DialogTitle
 } from '@motork/component-library/future/primitives'
-import { Check, PhoneOff, ThumbsDown, RotateCcw } from 'lucide-vue-next'
+import { Check, PhoneOff, ThumbsDown, RotateCcw, CalendarCheck, Phone, AlertTriangle, MessageCircle, Mail, X, Sparkles, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import NoteWidget from '@/components/customer/activities/NoteWidget.vue'
 import ScheduleAppointmentModal from '@/components/modals/ScheduleAppointmentModal.vue'
 import ReassignUserModal from '@/components/modals/ReassignUserModal.vue'

@@ -7,7 +7,7 @@
     <!-- Title Section -->
     <div v-if="!hideTitle" class="px-4 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-clipboard-check text-foreground"></i>
+        <ClipboardCheck class="w-4 h-4 shrink-0 text-foreground" />
         <h2 class="text-sm font-medium text-foreground leading-5">Manage next steps</h2>
       </div>
     </div>
@@ -38,6 +38,8 @@
 </template>
 
 <script setup>
+import { ClipboardCheck } from 'lucide-vue-next'
+
 defineProps({
   task: {
     type: Object,

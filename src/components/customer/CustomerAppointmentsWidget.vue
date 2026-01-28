@@ -10,7 +10,7 @@
         <div 
           class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border bg-purple-100 text-purple-600 border-purple-200"
         >
-          <i class="fa-solid fa-calendar text-sm"></i>
+          <Calendar class="w-4 h-4 shrink-0" />
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
@@ -23,7 +23,7 @@
                 class="text-gray-400 hover:text-muted-foreground transition-colors p-1"
                 title="More actions"
               >
-                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                <MoreVertical class="w-4 h-4 shrink-0" />
               </button>
             </div>
           </div>
@@ -48,15 +48,15 @@
             </div>
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               <span class="flex items-center gap-1">
-                <i class="fa-solid fa-clock text-xs"></i>
+                <Clock class="w-3 h-3 shrink-0" />
                 {{ formatDateTime(apt.start) }}
               </span>
               <span v-if="apt.assignee" class="flex items-center gap-1">
-                <i class="fa-solid fa-user text-xs"></i>
+                <User class="w-3 h-3 shrink-0" />
                 {{ apt.assignee }}
               </span>
               <span v-if="apt.vehicle" class="flex items-center gap-1">
-                <i class="fa-solid fa-car text-xs"></i>
+                <Car class="w-3 h-3 shrink-0" />
                 {{ apt.vehicle }}
               </span>
             </div>
@@ -67,7 +67,7 @@
 
     <!-- Empty State -->
     <div v-else class="text-center py-8 text-muted-foreground">
-      <i class="fa-solid fa-calendar-xmark text-2xl mb-2 opacity-30"></i>
+      <CalendarX class="w-6 h-6 shrink-0 mb-2 opacity-30" />
       <p class="text-xs">No appointments for this customer</p>
     </div>
   </div>
@@ -75,6 +75,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Calendar, MoreVertical, Clock, User, Car, CalendarX } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

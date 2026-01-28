@@ -106,7 +106,8 @@
     "assignToMe": "Aan mij toewijzen",
     "assignToSomeone": "Aan iemand toewijzen",
     "searchPlaceholder": "Zoek gebruikers of teams…",
-    "noAssigneesFound": "Geen toegewezen personen gevonden"
+    "noAssigneesFound": "Geen toegewezen personen gevonden",
+    "teamsLabel": "Teams"
   }
 }
 

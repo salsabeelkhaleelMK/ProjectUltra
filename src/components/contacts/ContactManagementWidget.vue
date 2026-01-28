@@ -5,7 +5,7 @@
   >
     <div class="p-4 border-b border bg-gray-50/50 flex justify-between items-center">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-user-circle text-gray-400 text-xs"></i>
+        <UserCircle class="w-3 h-3 shrink-0 text-muted-foreground" />
         <h3 class="font-bold text-gray-900 text-sm">Manage next steps</h3>
       </div>
     </div>
@@ -16,7 +16,7 @@
         v-if="!contact.requestedCar"
         class="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3"
       >
-        <i class="fa-solid fa-exclamation-triangle text-orange-600 text-lg mt-0.5"></i>
+        <AlertTriangle class="w-5 h-5 shrink-0 text-orange-600 mt-0.5" />
         <div class="flex-1">
           <p class="text-sm font-semibold text-orange-900 mb-1">No Requested Car</p>
           <p class="text-xs text-orange-700">
@@ -30,7 +30,7 @@
         v-else
         class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3"
       >
-        <i class="fa-solid fa-check-circle text-green-600 text-lg mt-0.5"></i>
+        <CheckCircle class="w-5 h-5 shrink-0 text-green-600 mt-0.5" />
         <div class="flex-1">
           <p class="text-sm font-semibold text-green-900 mb-1">Requested Car Added</p>
           <p class="text-xs text-green-700">
@@ -46,7 +46,7 @@
           @click="showAddCarModal = true"
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
         >
-          <i class="fa-solid fa-car"></i>
+          <Car class="w-4 h-4 shrink-0" />
           {{ contact.requestedCar ? 'Edit Requested Car' : 'Add Requested Car' }}
         </button>
 
@@ -58,7 +58,7 @@
             :title="!contact.requestedCar ? 'Add a requested car first' : ''"
             class="flex-1 bg-surface hover:bg-gray-50 border-2 border-blue-600 text-blue-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
           >
-            <i class="fa-solid fa-user-plus"></i>
+            <UserPlus class="w-4 h-4 shrink-0" />
             Convert to Lead
           </button>
           
@@ -69,7 +69,7 @@
             :title="!contact.requestedCar ? 'Add a requested car first' : ''"
             class="flex-1 bg-surface hover:bg-gray-50 border-2 border-purple-600 text-purple-600 font-medium px-4 py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
           >
-            <i class="fa-solid fa-briefcase"></i>
+            <Briefcase class="w-4 h-4 shrink-0" />
             Convert to Opportunity
           </button>
         </div>
@@ -88,6 +88,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { UserCircle, AlertTriangle, CheckCircle, Car, UserPlus, Briefcase } from 'lucide-vue-next'
 import RequestedCarModal from '@/components/modals/RequestedCarModal.vue'
 
 const props = defineProps({

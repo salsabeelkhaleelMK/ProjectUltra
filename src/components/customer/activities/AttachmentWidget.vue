@@ -63,7 +63,7 @@
     <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-surface border-t border-l border-border rotate-45"></div>
     <div class="flex justify-between items-center mb-4">
       <h5 class="text-sm font-semibold text-foreground">{{ item ? 'Edit Attachment' : 'Add Attachment' }}</h5>
-      <button @click="handleCancel" class="text-muted-foreground hover:text-muted-foreground"><i class="fa-solid fa-xmark"></i></button>
+      <button @click="handleCancel" class="text-muted-foreground hover:text-muted-foreground"><X class="w-4 h-4 shrink-0" /></button>
     </div>
     <div>
       <label class="block text-xs font-medium text-slate-700 mb-1">File</label>
@@ -104,6 +104,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { X } from 'lucide-vue-next'
 import { 
   Button,
   Label

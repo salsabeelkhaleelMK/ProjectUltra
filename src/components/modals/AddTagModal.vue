@@ -2,56 +2,63 @@
   <Dialog :open="show" @update:open="handleOpenChange">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-50 bg-black/50" />
-      <DialogContent class="w-full sm:max-w-md max-h-[calc(100vh-4rem)] flex flex-col">
-        <DialogHeader class="flex-shrink-0">
-          <DialogTitle>Add Tag</DialogTitle>
+      <DialogContent
+        class="dialog-natural-height w-full sm:max-w-md"
+        :show-close-button="true"
+      >
+        <DialogHeader>
+          <DialogTitle>Add tag</DialogTitle>
         </DialogHeader>
 
-        <div class="flex-1 overflow-y-auto px-6 py-4 w-full space-y-6">
-      <div class="space-y-2">
-        <Label class="block text-sm font-semibold text-foreground">Tag Name</Label>
-        <Input
-          v-model="tagName"
-          @keyup.enter="handleAdd"
-          type="text"
-          placeholder="Enter tag name"
-          class="w-full h-10"
-          autofocus
-        />
-      </div>
-      
-      <!-- Existing tags -->
-      <div v-if="existingTags.length > 0" class="space-y-2">
-        <Label class="block text-sm font-semibold text-foreground">Existing Tags</Label>
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="tag in existingTags"
-            :key="tag"
-            @click="tagName = tag"
-            class="px-3 py-1 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
-          >
-            {{ tag }}
-          </button>
+        <div class="grid gap-4">
+          <div class="grid gap-2">
+            <Label class="text-sm font-semibold text-foreground">Tag name</Label>
+            <Input
+              v-model="tagName"
+              type="text"
+              placeholder="Tag name"
+              class="w-full h-10"
+              @keyup.enter="handleSave"
+            />
+          </div>
+
+          <div class="grid gap-2">
+            <Label class="text-sm font-semibold text-foreground">Colour</Label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="color in TAG_COLORS"
+                :key="color"
+                type="button"
+                class="w-9 h-9 rounded-full p-0 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 overflow-hidden"
+                :class="selectedColor === color ? 'border border-primary p-px bg-transparent' : 'border-2 border-border hover:border-muted-foreground/50'"
+                :aria-pressed="selectedColor === color"
+                @click="selectedColor = color"
+              >
+                <span
+                  class="block w-full h-full rounded-full"
+                  :style="{ backgroundColor: color }"
+                />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-        </div>
-    
-        <DialogFooter class="flex-shrink-0 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+
+        <DialogFooter class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button
-            label="Cancel"
             variant="outline"
-            size="small"
             class="rounded-sm w-full sm:w-auto"
             @click="$emit('close')"
-          />
+          >
+            Cancel
+          </Button>
           <Button
-            label="Add Tag"
-            variant="primary"
-            size="small"
-            class="rounded-sm w-full sm:w-auto !bg-brand-red !hover:bg-brand-red-dark !text-white !border-brand-red"
-            :disabled="!tagName.trim()"
-            @click="handleAdd"
-          />
+            variant="default"
+            class="rounded-sm w-full sm:w-auto"
+            :disabled="!tagName.trim() || !selectedColor"
+            @click="handleSave"
+          >
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </DialogPortal>
@@ -60,7 +67,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { 
+import {
   Button,
   Input,
   Label
@@ -74,6 +81,17 @@ import {
   DialogPortal,
   DialogTitle
 } from '@motork/component-library/future/primitives'
+
+const TAG_COLORS = [
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#06b6d4',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899'
+]
 
 const props = defineProps({
   show: {
@@ -89,6 +107,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'add'])
 
 const tagName = ref('')
+const selectedColor = ref('')
 
 const handleOpenChange = (isOpen) => {
   if (!isOpen) {
@@ -99,20 +118,17 @@ const handleOpenChange = (isOpen) => {
 watch(() => props.show, (newValue) => {
   if (newValue) {
     tagName.value = ''
+    selectedColor.value = ''
   }
 })
 
-const handleAdd = () => {
-  const trimmedTag = tagName.value.trim()
-  if (!trimmedTag) return
-  
-  // Check if tag already exists
-  if (props.existingTags.includes(trimmedTag)) {
-    return
-  }
-  
-  emit('add', trimmedTag)
+const handleSave = () => {
+  const name = tagName.value.trim()
+  if (!name || !selectedColor.value) return
+  if (props.existingTags.includes(name)) return
+  emit('add', { name, color: selectedColor.value })
+  emit('close')
   tagName.value = ''
+  selectedColor.value = ''
 }
 </script>
-

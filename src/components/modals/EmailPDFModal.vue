@@ -57,7 +57,7 @@
           <!-- Success Message -->
           <div v-if="success" class="p-3 bg-green-50 border border-green-200 rounded-lg">
             <p class="text-sm text-green-600">
-              <i class="fa-solid fa-check-circle mr-2"></i>
+              <CheckCircle class="w-4 h-4 shrink-0 mr-2" />
               PDF sent successfully!
             </p>
           </div>
@@ -81,11 +81,11 @@
             @click="handleSend"
           >
             <template v-if="sending">
-              <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+              <Loader2 class="w-4 h-4 shrink-0 mr-2 animate-spin" />
               Sending...
             </template>
             <template v-else>
-              <i class="fa-solid fa-envelope mr-2"></i>
+              <Mail class="w-4 h-4 shrink-0 mr-2" />
             </template>
           </Button>
         </DialogFooter>
@@ -96,6 +96,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { CheckCircle, Loader2, Mail } from 'lucide-vue-next'
 import { Button, Input, Label } from '@motork/component-library/future/primitives'
 import {
   Dialog,

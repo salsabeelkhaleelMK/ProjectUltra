@@ -76,7 +76,7 @@
                 @click="previousMonth"
                 class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-left text-sm text-muted-foreground"></i>
+                <ChevronLeft class="w-4 h-4 shrink-0 text-muted-foreground" />
               </button>
               <h6 class="text-sm font-semibold text-foreground">{{ currentMonthYear }}</h6>
               <button
@@ -84,7 +84,7 @@
                 @click="nextMonth"
                 class="p-1 hover:bg-muted rounded transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-chevron-right text-sm text-muted-foreground"></i>
+                <ChevronRight class="w-4 h-4 shrink-0 text-muted-foreground" />
               </button>
             </div>
             <div class="grid grid-cols-7 gap-1 mb-2">
@@ -168,6 +168,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { Button, Label, Toggle } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import { useUsersStore } from '@/stores/users'

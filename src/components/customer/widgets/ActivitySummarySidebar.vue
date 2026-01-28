@@ -15,7 +15,7 @@
           @click="$emit('close')"
           class="xl:hidden w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
         >
-          <i class="fa-solid fa-xmark text-lg"></i>
+          <X class="w-5 h-5 shrink-0" />
         </button>
         <!-- Desktop collapse button -->
         <button 
@@ -24,8 +24,8 @@
           class="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           :title="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         >
-          <i v-if="collapsed" class="fa-solid fa-arrow-left text-sm"></i>
-          <i v-else class="fa-solid fa-arrow-right text-sm"></i>
+          <ArrowLeft v-if="collapsed" class="w-4 h-4 shrink-0" />
+          <ArrowRight v-else class="w-4 h-4 shrink-0" />
         </button>
         <h2 v-if="!collapsed" class="font-bold text-lg text-foreground">{{ title }}</h2>
       </div>
@@ -35,7 +35,7 @@
     <div v-if="!collapsed" class="flex-1 overflow-y-auto px-5 py-6 scrollbar-hide relative">
       <div v-if="activities.length > 0" class="absolute left-[2.4375rem] top-0 bottom-0 w-0.5 bg-border z-0"></div>
       <div v-if="activities.length === 0" class="text-center py-8 text-muted-foreground relative z-10">
-        <i class="fa-solid fa-clock text-4xl mb-2"></i>
+        <Clock class="w-10 h-10 shrink-0 mb-2" />
         <p class="text-sm">{{ emptyMessage }}</p>
       </div>
       
@@ -49,7 +49,7 @@
               class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
               :class="getActivityIconClass(activity.type)"
             >
-              <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
+              <component :is="getLucideIcon(getActivityIcon(activity.type))" class="w-4 h-4 shrink-0" />
             </div>
             <div class="flex-1 min-w-0">
               <div class="text-sm text-slate-700 leading-snug">
@@ -89,7 +89,7 @@
       
       <!-- Empty state when collapsed -->
       <div v-else class="text-center py-8 text-muted-foreground relative z-10">
-        <i class="fa-solid fa-clock text-2xl mb-2"></i>
+        <Clock class="w-6 h-6 shrink-0 mb-2" />
       </div>
     </div>
   </div>
@@ -97,6 +97,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { X, ArrowLeft, ArrowRight, Clock } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 
 const props = defineProps({
   title: {

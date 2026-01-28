@@ -1,0 +1,115 @@
+---
+description: Post-pull UI fixes: TaskAssignee "Assign to me" split button, TaskDetailView right panel backgrounds, and tab bar divider (no gap between tabs and muted content).
+globs: ["**/TaskAssignee.vue", "**/TaskDetailView.vue"]
+alwaysApply: false
+---
+
+# Post-pull UI fixes
+
+Re-apply these after a new build/pull. Covers: (1) TaskAssignee split button, (2) TaskDetailView right panel + tab divider.
+
+---
+
+# 1. TaskAssignee split button – styling fix
+
+After pulling a new build, the "Assign to me" + chevron group in `TaskAssignee.vue` may revert. Re-apply this so it matches the reference: **one bordered unit, rounded only on the outside, thin vertical divider, no gap** (same grouping style as Motork outline "Snooze + ellipsis", but for default/primary).
+
+**Location**: Unassigned state block, the `ButtonGroup` that wraps "Assign to me" and the dropdown trigger.
+
+## Target markup and classes
+
+1. **ButtonGroup**  
+   Single visual unit: one border, one fill, outer rounding.
+   - Add: `border border-primary bg-primary`
+   - Keep: `flex items-stretch gap-0 rounded-lg overflow-hidden`
+
+2. **First Button ("Assign to me")**  
+   Left side only rounded; thin divider on the right.
+   - Use: `class="rounded-l-lg rounded-r-none border-0 border-r border-white/20 bg-primary shadow-none"`
+   - Keep: `variant="default"` `size="sm"` and `@click="assignToSelf"`
+
+3. **ButtonGroupSeparator**  
+   Thin vertical line between the two actions.
+   - Use: `class="w-px shrink-0 self-stretch bg-white/20"`
+   - Keep: `<ButtonGroupSeparator />` (no other props unless needed)
+
+4. **Second Button (chevron, inside PopoverTrigger)**  
+   Right side only rounded; no gap next to the separator.
+   - Use: `class="-ml-px rounded-l-none rounded-r-lg border-0 bg-primary shadow-none"`
+   - Keep: `variant="default"` `size="icon-sm"` and the ChevronDown icon
+
+## Quick reference (snippet)
+
+```vue
+<ButtonGroup
+  class="assignee-button-group flex items-stretch gap-0 rounded-lg overflow-hidden border border-primary bg-primary"
+>
+  <Button
+    variant="default"
+    size="sm"
+    class="rounded-l-lg rounded-r-none border-0 border-r border-white/20 bg-primary shadow-none"
+    @click="assignToSelf"
+  >
+    {{ t('common.assignee.assignToMe') }}
+  </Button>
+  <ButtonGroupSeparator class="w-px shrink-0 self-stretch bg-white/20" />
+  <Popover :open="assigneeDropdownOpen" @update:open="(v) => (assigneeDropdownOpen = v)">
+    <PopoverTrigger as-child>
+      <Button
+        variant="default"
+        size="icon-sm"
+        class="-ml-px rounded-l-none rounded-r-lg border-0 bg-primary shadow-none"
+        :aria-label="t('common.assignee.assignToSomeone')"
+      >
+        <ChevronDown :size="14" stroke-width="2" aria-hidden="true" />
+      </Button>
+    </PopoverTrigger>
+    ...
+  </Popover>
+</ButtonGroup>
+```
+
+All building blocks are from **Motork future primitives** (`ButtonGroup`, `ButtonGroupSeparator`, `Button`, `Popover`, `PopoverTrigger`, `PopoverContent`); only the classes above need to be re-applied after a pull.
+
+## No hover movement (main.css)
+
+The project’s primary/default buttons get `transform: translateY(-1px)` on hover in `src/assets/css/main.css`, which makes the split button “lift” and break the single-unit look. Override it for the assignee group by adding this **after** the primary button active-state block in main.css:
+
+```css
+/* TaskAssignee split button: no hover/active lift so the group stays as one unit */
+.assignee-button-group button:hover:not(:disabled),
+.assignee-button-group button:active:not(:disabled) {
+  transform: none !important;
+}
+```
+
+---
+
+# 2. TaskDetailView right panel – backgrounds and tab divider
+
+**File**: `src/components/tasks/TaskDetailView.vue`
+
+After a pull, the right sidebar (Request | Activity) may revert to two backgrounds or show a gap between the tab bar and the muted content. Re-apply the following.
+
+## Right panel structure
+
+- **Right sidebar container** (the `right-sidebar` div): use `bg-background` (not `bg-muted`).  
+  - Class: `right-sidebar flex flex-col min-h-0 overflow-hidden shrink-0 border-l border-border bg-background`
+
+- **TabsList** (Request | Activity bar): no bottom border so the blue active indicator is the only divider.  
+  - Class: `flex shrink-0 border-0 bg-background rounded-none w-full relative h-full`  
+  - Do **not** use `border-b border-border`.
+
+- **Sidebar content** (scrollable area below the tabs): use `bg-muted` as the background **behind** the cards.  
+  - Class: `flex-1 min-h-0 flex flex-col overflow-y-auto bg-muted`
+
+- **Tabs** (root): remove default gap between TabsList and content so the tab bar touches the muted area.  
+  - Add `gap-0` to the Tabs `class`, e.g.  
+    `class="flex flex-col flex-1 min-h-0 overflow-hidden gap-0"`
+
+## Summary of edits in TaskDetailView.vue
+
+1. Right sidebar div: `bg-background` (not `bg-muted`).
+2. TabsList: `border-0` and no `border-b`; keep `bg-background`.
+3. Sidebar content div (below tabs): `bg-muted`.
+4. Tabs component: include `gap-0` in its `class` so there is no padding between the tab bar and the muted content.

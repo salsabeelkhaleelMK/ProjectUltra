@@ -46,7 +46,7 @@
                 variant="outline"
                 class="text-xs font-semibold uppercase tracking-wider"
               >
-                <component :is="getPreferenceIcon(pref.icon)" class="w-3 h-3 mr-1.5 text-primary" />
+                <component :is="getLucideIcon(pref.icon)" class="w-3 h-3 mr-1.5 text-primary shrink-0" />
                 {{ pref.label }}
               </Badge>
             </div>
@@ -61,7 +61,8 @@
 import { computed } from 'vue'
 import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
 import { Badge } from '@motork/component-library/future/primitives'
-import { Lightbulb, Info, Car, MessageCircle, Phone, Mail, MessageSquare, Clock, DollarSign } from 'lucide-vue-next'
+import { Lightbulb, Info } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 
 const props = defineProps({
   summary: {
@@ -81,21 +82,6 @@ const props = defineProps({
     default: false
   }
 })
-
-// Map Font Awesome icon classes to lucide-vue-next components
-const getPreferenceIcon = (iconClass) => {
-  const iconMap = {
-    'fa-solid fa-car': Car,
-    'fa-brands fa-whatsapp': MessageCircle,
-    'fa-solid fa-phone': Phone,
-    'fa-solid fa-envelope': Mail,
-    'fa-solid fa-message': MessageSquare,
-    'fa-solid fa-comment': MessageCircle,
-    'fa-solid fa-clock': Clock,
-    'fa-solid fa-dollar-sign': DollarSign
-  }
-  return iconMap[iconClass] || Info
-}
 
 // Generate preferences from customer data if available
 const preferences = computed(() => {

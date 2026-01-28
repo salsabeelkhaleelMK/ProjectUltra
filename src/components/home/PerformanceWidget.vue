@@ -3,7 +3,7 @@
     <!-- Title Section -->
     <div class="px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 shrink-0">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-chart-line text-foreground"></i>
+        <LineChart class="w-4 h-4 shrink-0 text-foreground" />
         <h2 class="text-sm font-medium text-foreground leading-5">Performance</h2>
       </div>
       <select
@@ -433,7 +433,7 @@
 
       <!-- Fallback for other roles -->
       <div v-else class="text-center py-8 text-gray-500">
-        <i class="fa-solid fa-chart-line text-4xl mb-2 text-gray-300"></i>
+        <LineChart class="w-10 h-10 shrink-0 mb-2 text-muted-foreground/50" />
         <p class="text-sm">Performance metrics not available</p>
         <p class="text-xs text-muted-foreground mt-1">Contact your administrator</p>
       </div>
@@ -443,6 +443,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { LineChart } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { fetchBDCOperatorMetrics, fetchSalespersonMetrics, fetchManagerFunnelMetrics } from '@/api/dashboard'
 

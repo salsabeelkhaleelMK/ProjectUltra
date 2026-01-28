@@ -58,7 +58,8 @@
             class="text-xs font-medium flex items-center gap-0.5"
             :class="vehicle.changeType === 'increase' ? 'text-green-600' : 'text-red-600'"
           >
-            <i :class="vehicle.changeType === 'increase' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'" class="text-xs"></i>
+            <ArrowUp v-if="vehicle.changeType === 'increase'" class="w-3 h-3 shrink-0" />
+            <ArrowDown v-else class="w-3 h-3 shrink-0" />
             {{ Math.abs(vehicle.change) }}%
           </span>
           <span class="text-xs text-muted-foreground">{{ vehicle.avgPerDay }} avg/day</span>
@@ -102,6 +103,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { ArrowUp, ArrowDown } from 'lucide-vue-next'
 
 const props = defineProps({
   vehicles: {

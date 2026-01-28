@@ -28,7 +28,7 @@
           title="Open in new page"
           aria-label="Open customer page"
         >
-          <i class="fa-solid fa-external-link text-xs"></i>
+          <ExternalLink class="w-3 h-3 shrink-0" />
         </button>
       </template>
     </CustomerContactHeader>
@@ -117,7 +117,7 @@
                     @click.stop="showInlineAppointmentForm = true"
                     class="bg-surface hover:bg-muted text-muted-foreground font-medium rounded-full text-sm shadow-sm transition-all flex items-center justify-center px-4 py-2 h-9 border border-border"
                   >
-                    <i class="fa-solid fa-plus text-xs text-muted-foreground"></i>
+                    <Plus class="w-3 h-3 shrink-0 text-muted-foreground" />
                     <span class="ml-1.5 text-muted-foreground">add appointment</span>
                   </button>
                 </div>
@@ -137,7 +137,7 @@
                     @click="showInlineAppointmentForm = false"
                     class="text-muted-foreground hover:text-muted-foreground"
                   >
-                    <i class="fa-solid fa-xmark"></i>
+                    <X class="w-4 h-4 shrink-0" />
                   </button>
                 </div>
                 <CreateEventForm
@@ -307,10 +307,12 @@
             <TradeInsCard
               :items="task.tradeIns || []"
               @open-add="openTradeInModalFromCard"
+              @open-edit="openTradeInEdit"
             />
             <FinancingOptionsCard
               :items="task.financingOptions || []"
               @open-add="openFinancingModalFromCard"
+              @open-edit="openFinancingEdit"
             />
           </div>
 
@@ -326,7 +328,7 @@
             <!-- Title Section -->
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-clock text-foreground"></i>
+                <Clock class="w-4 h-4 shrink-0 text-foreground" />
                 <h2 class="text-sm font-semibold text-foreground leading-5">Activity Summary</h2>
               </div>
             </div>
@@ -338,7 +340,7 @@
                 <div v-if="allActivities.length > 0" class="absolute left-5 top-0 bottom-0 w-0.5 bg-border z-0"></div>
                 
                 <div v-if="allActivities.length === 0" class="text-center py-6 text-muted-foreground">
-                  <i class="fa-solid fa-clock text-2xl mb-2"></i>
+                  <Clock class="w-8 h-8 shrink-0 mb-2" />
                   <p class="text-sm text-muted-foreground">No activities yet</p>
                 </div>
                 
@@ -349,7 +351,7 @@
                       class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 relative bg-surface"
                       :class="getActivityIconClass(activity.type)"
                     >
-                      <i :class="getActivityIcon(activity.type)" class="text-sm"></i>
+                      <component :is="getLucideIcon(getActivityIcon(activity.type))" class="w-4 h-4 shrink-0" />
                     </div>
                     <div v-if="activity" class="flex-1 min-w-0">
                       <div class="text-sm text-muted-foreground leading-snug">
@@ -430,7 +432,7 @@
 
           <!-- Empty State -->
           <div v-else-if="!enrichWidgetType" class="text-center py-12 text-muted-foreground">
-            <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+            <FolderOpen class="w-12 h-12 shrink-0 mb-3" />
             <p class="text-sm text-muted-foreground">No enrichment data yet</p>
             <p class="text-xs text-muted-foreground mt-1">Click the + button above to add notes, attachments, trade-ins, or purchase methods</p>
           </div>
@@ -442,7 +444,7 @@
           <div class="rounded-lg flex flex-col bg-muted">
             <div class="px-4 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-comments text-foreground"></i>
+                <MessageCircle class="w-4 h-4 shrink-0 text-foreground" />
                 <h2 class="text-sm font-semibold text-foreground leading-5">Communicate</h2>
               </div>
             </div>
@@ -495,7 +497,10 @@
       :show="overviewModalType === 'financing' && showOverviewModal"
       :task-type="type"
       :task-id="task.id"
+      :purchase-method="editingFinancingOption"
+      standalone
       @save="handlePurchaseMethodSave"
+      @delete="handleFinancingDelete"
       @close="closeOverviewModal"
     />
     
@@ -503,10 +508,11 @@
     <AddVehicleModal
       :show="overviewModalType === 'tradein' && showOverviewModal"
       mode="tradein"
-      :item="null"
+      :item="editingTradeIn"
       :task-type="type"
       :task-id="task.id"
       @save="handleOverviewModalSave"
+      @delete="handleTradeInDelete"
       @close="closeOverviewModal"
     />
     
@@ -606,8 +612,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ExternalLink, Plus, X, Clock, FolderOpen, MessageCircle } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import CustomerContactHeader from '@/components/customer/widgets/CustomerContactHeader.vue'
 import Tabs from '@/components/customer/widgets/Tabs.vue'
 import Request from '@/components/shared/Request.vue'
@@ -842,14 +850,35 @@ const openTradeInModal = () => {
   showOverviewModal.value = true
 }
 
+const editingTradeIn = ref(null)
+const editingFinancingOption = ref(null)
+
 const openTradeInModalFromCard = () => {
+  editingTradeIn.value = null
   overviewModalType.value = 'tradein'
   showOverviewModal.value = true
 }
 
 const openFinancingModalFromCard = () => {
+  editingFinancingOption.value = null
   overviewModalType.value = 'financing'
   showOverviewModal.value = true
+}
+
+const openTradeInEdit = (t) => {
+  editingTradeIn.value = t
+  overviewModalType.value = 'tradein'
+  nextTick(() => {
+    showOverviewModal.value = true
+  })
+}
+
+const openFinancingEdit = (f) => {
+  editingFinancingOption.value = f
+  overviewModalType.value = 'financing'
+  nextTick(() => {
+    showOverviewModal.value = true
+  })
 }
 
 const formatGridDate = (dateString) => {
@@ -1216,6 +1245,8 @@ const handleContactInfoAction = (action) => {
 const closeOverviewModal = () => {
   showOverviewModal.value = false
   overviewModalType.value = null
+  editingTradeIn.value = null
+  editingFinancingOption.value = null
 }
 
 // Handle modal save
@@ -1225,53 +1256,101 @@ const handlePurchaseMethodSave = async (purchaseMethodData) => {
       : purchaseMethodData.type === 'LEA' ? 'Leasing'
       : 'Long-Term Rental'
     const monthly = purchaseMethodData.fields?.monthlyInstalment || 0
-    const duration = purchaseMethodData.fields?.duration ?? null
+    const duration = purchaseMethodData.fields?.duration ?? purchaseMethodData.termMonths ?? null
 
     await handleWidgetSave({
       type: 'purchase-method',
-      action: `added a ${typeLabel} purchase method`,
+      action: editingFinancingOption.value ? `updated a ${typeLabel} purchase method` : `added a ${typeLabel} purchase method`,
       content: `${typeLabel}: €${monthly.toLocaleString()}/month for ${duration || 0} months`,
       data: {
         purchaseMethodId: purchaseMethodData.id,
         type: purchaseMethodData.type,
-        ...purchaseMethodData.fields
+        ...(purchaseMethodData.fields || {})
       }
     })
-    const foLabel = duration ? `${purchaseMethodData.type || 'Financing'} ${duration} months` : (typeLabel || 'Financing')
-    await handleAddFinancingOption({
-      id: `fo-${Date.now()}`,
+    const foLabel = purchaseMethodData.label ?? (duration ? `${typeLabel} - ${duration} months` : typeLabel)
+    const fullItem = {
+      id: purchaseMethodData.id || `fo-${Date.now()}`,
       label: foLabel,
-      termMonths: duration || null
-    })
+      termMonths: duration || null,
+      type: purchaseMethodData.type,
+      fields: purchaseMethodData.fields ? { ...purchaseMethodData.fields } : {},
+      currency: purchaseMethodData.currency || 'EUR',
+      offerValidFrom: purchaseMethodData.offerValidFrom ?? null,
+      offerValidTo: purchaseMethodData.offerValidTo ?? null
+    }
+    const list = props.task.financingOptions || []
+    const updatedList = editingFinancingOption.value
+      ? list.map((f) => (String(f.id) === String(fullItem.id) ? fullItem : f))
+      : [...list, fullItem]
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { financingOptions: updatedList })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { financingOptions: updatedList })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
     closeOverviewModal()
   } catch (error) {
     console.error('Error saving purchase method:', error)
   }
 }
 
+async function handleFinancingDelete() {
+  if (!editingFinancingOption.value) return
+  try {
+    const list = (props.task.financingOptions || []).filter((f) => String(f.id) !== String(editingFinancingOption.value.id))
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { financingOptions: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+    closeOverviewModal()
+  } catch (error) {
+    console.error('Error deleting financing option:', error)
+  }
+}
+
 const handleOverviewModalSave = async (data) => {
   if (overviewModalType.value === 'tradein') {
     try {
-      const { saveTradeInVehicle } = useTradeInVehicle()
-      const result = await saveTradeInVehicle(props.type, props.task.id, data.vehicle, data.valuation || {})
-      inlineContent.value.push({
-        id: result.activity.id,
-        type: 'tradein',
-        action: 'added a trade-in',
-        vehicleId: result.vehicle.id,
-        data: result.activity.data,
-        timestamp: result.activity.timestamp,
-        activityId: result.activity.id
-      })
+      if (!data.isEdit) {
+        const { saveTradeInVehicle } = useTradeInVehicle()
+        const result = await saveTradeInVehicle(props.type, props.task.id, data.vehicle, data.valuation || {})
+        inlineContent.value.push({
+          id: result.activity.id,
+          type: 'tradein',
+          action: 'added a trade-in',
+          vehicleId: result.vehicle.id,
+          data: result.activity.data,
+          timestamp: result.activity.timestamp,
+          activityId: result.activity.id
+        })
+      }
       const v = data.vehicle || {}
       const parts = [v.brand, v.model].filter(Boolean)
       const label = (parts.length ? parts.join(' ') + (v.year ? ` (${v.year})` : '') : 'Trade-in') || 'Trade-in'
       const valuation = data.valuation?.tradeInPrice ?? 0
-      await handleAddTradeIn({
-        id: `ti-${Date.now()}`,
+      const fullItem = {
+        id: data.id || `ti-${Date.now()}`,
         label,
-        valuation: typeof valuation === 'number' ? valuation : parseFloat(valuation) || 0
-      })
+        valuation: typeof valuation === 'number' ? valuation : parseFloat(valuation) || 0,
+        vehicle: data.vehicle,
+        valuationDetail: data.valuation
+      }
+      const list = props.task.tradeIns || []
+      const updatedList = data.isEdit
+        ? list.map((t) => (String(t.id) === String(fullItem.id) ? fullItem : t))
+        : [...list, fullItem]
+      if (props.type === 'lead') {
+        await props.storeAdapter.updateLead?.(props.task.id, { tradeIns: updatedList })
+        await props.storeAdapter.loadLeadById?.(props.task.id)
+      } else {
+        await props.storeAdapter.updateOpportunity?.(props.task.id, { tradeIns: updatedList })
+        await props.storeAdapter.loadOpportunityById?.(props.task.id)
+      }
       closeOverviewModal()
     } catch (error) {
       console.error('Error saving trade-in:', error)
@@ -1279,6 +1358,23 @@ const handleOverviewModalSave = async (data) => {
   } else if (overviewModalType.value === 'purchase') {
     await handleWidgetSave(data)
     closeOverviewModal()
+  }
+}
+
+async function handleTradeInDelete() {
+  if (!editingTradeIn.value) return
+  try {
+    const list = (props.task.tradeIns || []).filter((t) => String(t.id) !== String(editingTradeIn.value.id))
+    if (props.type === 'lead') {
+      await props.storeAdapter.updateLead?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadLeadById?.(props.task.id)
+    } else {
+      await props.storeAdapter.updateOpportunity?.(props.task.id, { tradeIns: list })
+      await props.storeAdapter.loadOpportunityById?.(props.task.id)
+    }
+    closeOverviewModal()
+  } catch (error) {
+    console.error('Error deleting trade-in:', error)
   }
 }
 
@@ -1438,10 +1534,10 @@ const handleCreateOffer = async (data) => {
 }
 
 // Handle tag addition
-const handleAddTag = async (tagName) => {
+const handleAddTag = async (payload) => {
+  const tagName = typeof payload === 'string' ? payload : payload.name
   const currentTags = props.task.tags || []
   
-  // Check if tag already exists
   if (currentTags.includes(tagName)) {
     showAddTagModal.value = false
     return

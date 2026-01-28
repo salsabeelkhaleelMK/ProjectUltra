@@ -77,7 +77,7 @@
         </SelectContent>
       </Select>
       <p v-if="isTeamSelected" class="text-xs text-muted-foreground mt-1">
-        <i class="fa-solid fa-users text-muted-foreground"></i> Any available team member will be assigned
+        <Users class="w-4 h-4 shrink-0 text-muted-foreground inline" /> Any available team member will be assigned
       </p>
     </div>
 
@@ -113,6 +113,7 @@
 </template>
 
 <script setup>
+import { Users } from 'lucide-vue-next'
 import { ref, watch, computed, onMounted } from 'vue'
 import { 
   Button,

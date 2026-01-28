@@ -6,7 +6,7 @@
         <div class="flex items-center gap-3 min-w-0">
           <!-- Platform Icon (Avatar style) -->
           <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center border border-border shrink-0 group-hover:border-primary/30 transition-colors">
-            <i :class="integration.icon" class="text-base text-primary"></i>
+            <component :is="getLucideIcon(integration.icon)" class="w-4 h-4 shrink-0 text-primary" />
           </div>
           <div class="min-w-0">
             <span class="text-xs font-bold uppercase tracking-tighter text-muted-foreground block mb-0.5">Platform</span>
@@ -48,6 +48,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { Card, CardTitle, Input, Label } from '@motork/component-library/future/primitives'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import { useIntegrationsStore } from '@/stores/integrations'
 
 const props = defineProps({

@@ -33,7 +33,7 @@
                   @update:model-value="(p) => { $emit('update:show-negotiation-section', p); if (p) { $emit('update:show-add-offer-section', false); $emit('update:show-survey-section', false); } else { $emit('reset-negotiation-form') } }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-phone-volume"></i>
+                  <Phone class="w-4 h-4 shrink-0" />
                   <span>Follow Up</span>
                 </Toggle>
                 <Toggle
@@ -43,7 +43,7 @@
                   @update:model-value="(p) => { $emit('update:show-survey-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-add-offer-section', false); } }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-clipboard-list"></i>
+                  <ClipboardList class="w-4 h-4 shrink-0" />
                   <span>Complete Survey</span>
                 </Toggle>
               </div>
@@ -58,7 +58,7 @@
                   @update:model-value="(p) => { $emit('update:show-negotiation-section', p); if (p) { $emit('update:show-add-offer-section', false); $emit('update:show-survey-section', false); } else { $emit('reset-negotiation-form') } }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-phone-volume"></i>
+                  <Phone class="w-4 h-4 shrink-0" />
                   <span>{{ (opportunity.negotiationSubstatus === 'Offer Feedback') ? 'Request Feedback' : 'Follow Up' }}</span>
                 </Toggle>
                 <Button
@@ -67,7 +67,7 @@
                   class="gap-2"
                   @click="$emit('open-add-offer-modal')"
                 >
-                  <i class="fa-solid fa-plus"></i>
+                  <Plus class="w-4 h-4 shrink-0" />
                   <span>Add Offer</span>
                 </Button>
                 <Toggle
@@ -77,7 +77,7 @@
                   @update:model-value="(p) => { $emit('update:show-survey-section', p); if (p) { $emit('update:show-negotiation-section', false); $emit('update:show-add-offer-section', false); } }"
                   class="outcome-toggle-item"
                 >
-                  <i class="fa-solid fa-clipboard-list"></i>
+                  <ClipboardList class="w-4 h-4 shrink-0" />
                   <span>Complete Survey</span>
                 </Toggle>
               </div>
@@ -109,7 +109,7 @@
               @update:model-value="(p) => p && $emit('update:negotiation-channel', 'call')"
               class="followup-toggle-item"
             >
-              <i class="fa-solid fa-phone text-xs"></i>
+              <Phone class="w-3 h-3 shrink-0" />
               <span>Call</span>
             </Toggle>
             <Toggle
@@ -118,7 +118,7 @@
               @update:model-value="(p) => p && $emit('update:negotiation-channel', 'whatsapp')"
               class="followup-toggle-item"
             >
-              <i class="fa-brands fa-whatsapp text-xs"></i>
+              <MessageCircle class="w-3 h-3 shrink-0" />
               <span>WhatsApp</span>
             </Toggle>
             <Toggle
@@ -127,7 +127,7 @@
               @update:model-value="(p) => p && $emit('update:negotiation-channel', 'sms')"
               class="followup-toggle-item"
             >
-              <i class="fa-solid fa-message text-xs"></i>
+              <MessageSquare class="w-3 h-3 shrink-0" />
               <span>SMS</span>
             </Toggle>
             <Toggle
@@ -136,7 +136,7 @@
               @update:model-value="(p) => p && $emit('update:negotiation-channel', 'email')"
               class="followup-toggle-item"
             >
-              <i class="fa-solid fa-envelope text-xs"></i>
+              <Mail class="w-3 h-3 shrink-0" />
               <span>Email</span>
             </Toggle>
           </div>
@@ -207,7 +207,7 @@
             @click="$emit('ofb-postpone', 'ofb')"
             class="flex items-center gap-2"
           >
-            <i class="fa-solid fa-clock"></i>
+            <Clock class="w-4 h-4 shrink-0" />
             <span>Postpone</span>
           </Button>
           <div class="flex gap-2">
@@ -233,6 +233,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { Phone, ClipboardList, Plus, MessageCircle, MessageSquare, Mail, Clock } from 'lucide-vue-next'
 import { Button, Toggle, Label, Textarea } from '@motork/component-library/future/primitives'
 import { SelectMenu } from '@motork/component-library/future/components'
 import SecondaryActionsDropdown from '@/components/shared/SecondaryActionsDropdown.vue'

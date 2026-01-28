@@ -74,6 +74,7 @@ import { useRouter } from 'vue-router'
 import { Card, CardHeader, CardTitle, CardContent } from '@motork/component-library/future/primitives'
 import { Button } from '@motork/component-library/future/primitives'
 import { Lightbulb } from 'lucide-vue-next'
+import { getLucideIcon } from '@/utils/lucideIcons'
 import { getPrimaryAction } from '@/utils/opportunityRules'
 import { getLeadPrimaryAction } from '@/utils/leadRules'
 import { getDisplayStage } from '@/utils/stageMapper'
@@ -97,12 +98,7 @@ const props = defineProps({
   }
 })
 
-// Map action icon classes to lucide-vue-next components
-// This will need to be expanded based on what icons are returned from getPrimaryAction/getLeadPrimaryAction
-const getActionIcon = (iconClass) => {
-  // Default icon - can be expanded based on actual icon classes used
-  return Lightbulb
-}
+const getActionIcon = (iconClass) => getLucideIcon(iconClass)
 
 const router = useRouter()
 

@@ -22,7 +22,7 @@
             class="flex items-center gap-1"
             :class="addButtonColorClass"
           >
-            <i class="fa-solid fa-plus-circle text-xs"></i>
+            <PlusCircle class="w-3 h-3 shrink-0" />
             {{ addButtonLabel || 'Add' }}
           </Button>
         </div>
@@ -31,7 +31,7 @@
     
     <CardContent v-if="hasEmptyState" class="p-6 text-center text-muted-foreground">
       <slot name="empty-state">
-        <i class="fa-solid fa-inbox text-2xl mb-2 text-muted-foreground opacity-50"></i>
+        <Inbox class="w-6 h-6 shrink-0 mb-2 text-muted-foreground opacity-50" />
         <p class="text-base text-muted-foreground">{{ emptyStateMessage || 'No items found' }}</p>
       </slot>
     </CardContent>
@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import { PlusCircle, Inbox } from 'lucide-vue-next'
 import { Card, CardHeader, CardTitle, CardContent, Button, Badge } from '@motork/component-library/future/primitives'
 
 defineProps({

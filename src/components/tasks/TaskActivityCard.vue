@@ -22,7 +22,7 @@
               @click.stop="toggleFilterMenu"
               class="relative w-8 h-8"
             >
-              <i class="fa-solid fa-filter text-sm"></i>
+              <Filter class="w-4 h-4 shrink-0" />
               <span 
                 v-if="selectedFilters.length > 0"
                 class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-black"
@@ -49,7 +49,7 @@
               class="relative w-8 h-8 bg-primary text-white border border-primary hover:bg-primary/90"
               aria-label="Add activity"
             >
-              <i class="fa-solid fa-plus text-sm"></i>
+              <Plus class="w-4 h-4 shrink-0" />
             </Button>
             <div
               v-if="showAddDropdown"
@@ -59,26 +59,26 @@
             >
             <!-- Communication Group -->
             <button @click="handleAddActivity('email')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-envelope text-sm text-primary"></i> Email
+              <Mail class="w-4 h-4 shrink-0 text-primary" /> Email
             </button>
             <button @click="handleAddActivity('sms')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-comment text-sm text-purple-600"></i> SMS
+              <MessageCircle class="w-4 h-4 shrink-0 text-purple-600" /> SMS
             </button>
             <button @click="handleAddActivity('whatsapp')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-brands fa-whatsapp text-sm text-green-600"></i> WhatsApp
+              <MessageCircle class="w-4 h-4 shrink-0 text-green-600" /> WhatsApp
             </button>
             <button @click="handleAddActivity('call')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-phone text-sm text-green-600"></i> Call
+              <Phone class="w-4 h-4 shrink-0 text-green-600" /> Call
             </button>
 
             <div class="border-t border-black/10 my-1"></div>
 
             <!-- Activities Group -->
             <button @click="handleAddActivity('note')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-sticky-note text-sm text-orange-600"></i> Note
+              <StickyNote class="w-4 h-4 shrink-0 text-orange-600" /> Note
             </button>
             <button @click="handleAddActivity('attachment')" class="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-2">
-              <i class="fa-solid fa-paperclip text-sm text-muted-foreground"></i> Attachment
+              <Paperclip class="w-4 h-4 shrink-0 text-muted-foreground" /> Attachment
             </button>
         </div>
       </div>
@@ -263,7 +263,7 @@
                 class="w-4 h-4 rounded-full"
                 aria-label="Remove filter"
               >
-                <i class="fa-solid fa-xmark text-sm"></i>
+                <X class="w-4 h-4 shrink-0" />
               </Button>
             </div>
           </div>
@@ -292,7 +292,10 @@ import {
   FileText,
   Clock,
   Sparkles,
-  Paperclip
+  Paperclip,
+  Filter,
+  Plus,
+  X
 } from 'lucide-vue-next'
 import { DropdownMenu } from '@motork/component-library/future/primitives'
 
